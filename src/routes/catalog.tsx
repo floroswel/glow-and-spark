@@ -30,6 +30,28 @@ export const Route = createFileRoute("/catalog")({
       { property: "og:description", content: "Explorează catalogul complet de lumânări artizanale premium." },
     ],
   }),
+  beforeLoad: ({ navigate, location }) => {
+    // Convert hash-based short URLs (#q=lavanda&category=...) to standard search params
+    if (typeof window !== "undefined" && window.location.hash.length > 1) {
+      const hashParams = new URLSearchParams(window.location.hash.slice(1));
+      const updates: Record<string, unknown> = {};
+      if (hashParams.has("q")) updates.q = hashParams.get("q");
+      if (hashParams.has("category")) updates.category = hashParams.get("category");
+      if (hashParams.has("sort")) updates.sort = hashParams.get("sort");
+      if (hashParams.has("page")) updates.page = Number(hashParams.get("page"));
+      if (hashParams.has("minPrice")) updates.minPrice = Number(hashParams.get("minPrice"));
+      if (hashParams.has("maxPrice")) updates.maxPrice = Number(hashParams.get("maxPrice"));
+
+      if (Object.keys(updates).length > 0) {
+        // Clear the hash and redirect with proper search params
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        throw navigate({
+          search: (prev: Record<string, unknown>) => ({ ...prev, ...updates }),
+          replace: true,
+        });
+      }
+    }
+  },
   component: CatalogPage,
 });
 

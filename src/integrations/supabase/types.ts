@@ -17,65 +17,140 @@ export type Database = {
       categories: {
         Row: {
           created_at: string | null
+          description: string | null
           icon: string | null
           id: string
+          image_url: string | null
           name: string
+          parent_id: string | null
           slug: string
           sort_order: number | null
+          visible: boolean | null
         }
         Insert: {
           created_at?: string | null
+          description?: string | null
           icon?: string | null
           id?: string
+          image_url?: string | null
           name: string
+          parent_id?: string | null
           slug: string
           sort_order?: number | null
+          visible?: boolean | null
         }
         Update: {
           created_at?: string | null
+          description?: string | null
           icon?: string | null
           id?: string
+          image_url?: string | null
           name?: string
+          parent_id?: string | null
           slug?: string
           sort_order?: number | null
+          visible?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupons: {
+        Row: {
+          active: boolean | null
+          code: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          max_uses: number | null
+          min_order: number | null
+          type: string | null
+          uses: number | null
+          value: number
+        }
+        Insert: {
+          active?: boolean | null
+          code: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          max_uses?: number | null
+          min_order?: number | null
+          type?: string | null
+          uses?: number | null
+          value: number
+        }
+        Update: {
+          active?: boolean | null
+          code?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          max_uses?: number | null
+          min_order?: number | null
+          type?: string | null
+          uses?: number | null
+          value?: number
         }
         Relationships: []
       }
       newsletter_subscribers: {
         Row: {
           created_at: string | null
+          discount_code: string | null
           email: string
           id: string
           is_active: boolean | null
+          name: string | null
+          source: string | null
         }
         Insert: {
           created_at?: string | null
+          discount_code?: string | null
           email: string
           id?: string
           is_active?: boolean | null
+          name?: string | null
+          source?: string | null
         }
         Update: {
           created_at?: string | null
+          discount_code?: string | null
           email?: string
           id?: string
           is_active?: boolean | null
+          name?: string | null
+          source?: string | null
         }
         Relationships: []
       }
       orders: {
         Row: {
+          billing_type: string | null
           city: string | null
+          company_cui: string | null
+          company_name: string | null
+          company_reg: string | null
           county: string | null
           created_at: string | null
           customer_email: string
           customer_name: string
           customer_phone: string | null
           discount: number | null
+          discount_amount: number | null
+          discount_code: string | null
           id: string
           items: Json
           notes: string | null
           order_number: string
           payment_method: string | null
+          payment_status: string | null
           postal_code: string | null
           shipping_address: string | null
           shipping_cost: number | null
@@ -85,18 +160,25 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          billing_type?: string | null
           city?: string | null
+          company_cui?: string | null
+          company_name?: string | null
+          company_reg?: string | null
           county?: string | null
           created_at?: string | null
           customer_email: string
           customer_name: string
           customer_phone?: string | null
           discount?: number | null
+          discount_amount?: number | null
+          discount_code?: string | null
           id?: string
           items?: Json
           notes?: string | null
           order_number: string
           payment_method?: string | null
+          payment_status?: string | null
           postal_code?: string | null
           shipping_address?: string | null
           shipping_cost?: number | null
@@ -106,18 +188,25 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          billing_type?: string | null
           city?: string | null
+          company_cui?: string | null
+          company_name?: string | null
+          company_reg?: string | null
           county?: string | null
           created_at?: string | null
           customer_email?: string
           customer_name?: string
           customer_phone?: string | null
           discount?: number | null
+          discount_amount?: number | null
+          discount_code?: string | null
           id?: string
           items?: Json
           notes?: string | null
           order_number?: string
           payment_method?: string | null
+          payment_status?: string | null
           postal_code?: string | null
           shipping_address?: string | null
           shipping_cost?: number | null
@@ -140,12 +229,15 @@ export type Database = {
           image_url: string | null
           is_active: boolean | null
           is_featured: boolean | null
+          meta_description: string | null
+          meta_title: string | null
           name: string
           old_price: number | null
           price: number
           rating: number | null
           reviews_count: number | null
           short_description: string | null
+          sku: string | null
           slug: string
           sort_order: number | null
           stock: number | null
@@ -163,12 +255,15 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          meta_description?: string | null
+          meta_title?: string | null
           name: string
           old_price?: number | null
           price: number
           rating?: number | null
           reviews_count?: number | null
           short_description?: string | null
+          sku?: string | null
           slug: string
           sort_order?: number | null
           stock?: number | null
@@ -186,12 +281,15 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          meta_description?: string | null
+          meta_title?: string | null
           name?: string
           old_price?: number | null
           price?: number
           rating?: number | null
           reviews_count?: number | null
           short_description?: string | null
+          sku?: string | null
           slug?: string
           sort_order?: number | null
           stock?: number | null

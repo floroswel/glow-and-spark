@@ -1,18 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Pencil, Trash2, X, Eye, EyeOff, GripVertical, Image } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Eye, EyeOff, GripVertical, Image, Search, Package } from "lucide-react";
 
 export const Route = createFileRoute("/admin/categories")({
   component: AdminCategories,
 });
 
 function slugify(str: string) {
-  return str
-    .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
+  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 const emptyCategory = {
@@ -22,28 +18,46 @@ const emptyCategory = {
 
 function AdminCategories() {
   const [categories, setCategories] = useState<any[]>([]);
+  const [productCounts, setProductCounts] = useState<Record<string, number>>({});
   const [editing, setEditing] = useState<any>(null);
   const [isNew, setIsNew] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [toast, setToast] = useState("");
+
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 2500); };
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase.from("categories").select("*").order("sort_order");
-    setCategories(data || []);
+    const [{ data: cats }, { data: prods }] = await Promise.all([
+      supabase.from("categories").select("*").order("sort_order"),
+      supabase.from("products").select("category_id"),
+    ]);
+    setCategories(cats || []);
+    const counts: Record<string, number> = {};
+    (prods || []).forEach((p: any) => { if (p.category_id) counts[p.category_id] = (counts[p.category_id] || 0) + 1; });
+    setProductCounts(counts);
     setLoading(false);
   };
 
   useEffect(() => { load(); }, []);
 
+  const filtered = useMemo(() =>
+    categories.filter(c => !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.slug.includes(search.toLowerCase())),
+    [categories, search]
+  );
+
   const handleSave = async () => {
     if (!editing) return;
     const { id, created_at, ...data } = editing;
-    if (!data.name.trim()) return;
+    if (!data.name.trim()) { showToast("⚠️ Numele este obligatoriu"); return; }
     if (!data.slug.trim()) data.slug = slugify(data.name);
     if (isNew) {
       await supabase.from("categories").insert(data);
+      showToast("✅ Categorie creată!");
     } else {
       await supabase.from("categories").update(data).eq("id", id);
+      showToast("✅ Categorie actualizată!");
     }
     setEditing(null);
     setIsNew(false);
@@ -51,9 +65,11 @@ function AdminCategories() {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Ești sigur că vrei să ștergi categoria "${name}"?\n\nProdusele din această categorie NU vor fi șterse.`)) return;
+    const count = productCounts[id] || 0;
+    if (!confirm(`Ești sigur că vrei să ștergi "${name}"?\n${count > 0 ? `${count} produse vor rămâne fără categorie.` : "Nu are produse asociate."}`)) return;
     await supabase.from("products").update({ category_id: null }).eq("category_id", id);
     await supabase.from("categories").delete().eq("id", id);
+    showToast("Categorie ștearsă.");
     load();
   };
 
@@ -62,18 +78,13 @@ function AdminCategories() {
     load();
   };
 
-  const openNew = () => {
-    setIsNew(true);
-    setEditing({ ...emptyCategory, sort_order: categories.length + 1 });
-  };
+  const openNew = () => { setIsNew(true); setEditing({ ...emptyCategory, sort_order: categories.length + 1 }); };
 
   const updateField = (field: string, value: any) => {
     setEditing((prev: any) => {
       if (!prev) return null;
       const next = { ...prev, [field]: value };
-      if (field === "name" && (isNew || !prev.slug)) {
-        next.slug = slugify(value);
-      }
+      if (field === "name" && (isNew || !prev.slug)) next.slug = slugify(value);
       return next;
     });
   };
@@ -83,25 +94,40 @@ function AdminCategories() {
   const inputClass = "mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20";
   const labelClass = "text-xs font-medium text-muted-foreground uppercase tracking-wider";
 
+  // Stats
+  const totalProducts = Object.values(productCounts).reduce((s, c) => s + c, 0);
+  const visibleCount = categories.filter(c => c.visible).length;
+
   return (
     <div>
+      {toast && (
+        <div className="fixed top-4 right-4 z-[60] rounded-lg bg-foreground px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-lg animate-in fade-in slide-in-from-top-2">
+          {toast}
+        </div>
+      )}
+
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-heading text-2xl font-bold text-foreground">Categorii</h1>
-          <p className="text-sm text-muted-foreground">{categories.length} categorii</p>
+          <p className="text-sm text-muted-foreground">{categories.length} categorii · {visibleCount} vizibile · {totalProducts} produse</p>
         </div>
         <button onClick={openNew} className="flex items-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-accent hover:text-accent-foreground transition">
           <Plus className="h-4 w-4" /> Categorie Nouă
         </button>
       </div>
 
+      {/* Search */}
+      <div className="mt-4 relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Caută categorii..."
+          className="w-full rounded-lg border border-border bg-card pl-10 pr-3 py-2 text-sm focus:border-accent focus:outline-none" />
+      </div>
+
       {/* Categories list */}
-      <div className="mt-6 space-y-3">
-        {categories.map((c) => (
+      <div className="mt-4 space-y-3">
+        {filtered.map((c) => (
           <div key={c.id} className={`flex items-center gap-4 rounded-xl border bg-card p-4 shadow-sm transition ${c.visible ? "border-border" : "border-border/50 opacity-60"}`}>
             <GripVertical className="h-5 w-5 text-muted-foreground/40 shrink-0 cursor-grab" />
-
-            {/* Image */}
             {c.image_url ? (
               <img src={c.image_url} alt={c.name} className="h-14 w-14 rounded-lg object-cover border border-border shrink-0" />
             ) : (
@@ -109,8 +135,6 @@ function AdminCategories() {
                 <Image className="h-6 w-6 text-muted-foreground/40" />
               </div>
             )}
-
-            {/* Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 {c.icon && <span className="text-lg">{c.icon}</span>}
@@ -119,11 +143,12 @@ function AdminCategories() {
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">/{c.slug} {c.description ? `— ${c.description}` : ""}</p>
             </div>
-
-            {/* Order */}
-            <span className="text-xs text-muted-foreground bg-secondary rounded px-2 py-1 shrink-0">#{c.sort_order}</span>
-
-            {/* Actions */}
+            <div className="flex items-center gap-1 shrink-0">
+              <span className="flex items-center gap-1 text-xs text-muted-foreground bg-secondary rounded px-2 py-1 mr-2">
+                <Package className="h-3 w-3" /> {productCounts[c.id] || 0}
+              </span>
+              <span className="text-xs text-muted-foreground bg-secondary rounded px-2 py-1">#{c.sort_order}</span>
+            </div>
             <div className="flex items-center gap-1 shrink-0">
               <button onClick={() => toggleVisible(c)} title={c.visible ? "Ascunde" : "Arată"} className="rounded p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground transition">
                 {c.visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
@@ -137,9 +162,9 @@ function AdminCategories() {
             </div>
           </div>
         ))}
-        {categories.length === 0 && (
+        {filtered.length === 0 && (
           <div className="rounded-xl border border-dashed border-border py-12 text-center text-muted-foreground">
-            Nicio categorie. Adaugă prima!
+            {categories.length === 0 ? "Nicio categorie. Adaugă prima!" : "Niciun rezultat."}
           </div>
         )}
       </div>
@@ -170,23 +195,19 @@ function AdminCategories() {
               </div>
               <div>
                 <label className={labelClass}>Descriere</label>
-                <textarea value={editing.description || ""} onChange={(e) => updateField("description", e.target.value)} rows={2} className={inputClass} placeholder="Descriere opțională a categoriei..." />
+                <textarea value={editing.description || ""} onChange={(e) => updateField("description", e.target.value)} rows={2} className={inputClass} placeholder="Descriere opțională..." />
               </div>
               <div>
                 <label className={labelClass}>Imagine categorie (URL)</label>
                 <input value={editing.image_url || ""} onChange={(e) => updateField("image_url", e.target.value)} className={inputClass} placeholder="https://..." />
-                {editing.image_url && (
-                  <img src={editing.image_url} alt="Preview" className="mt-2 h-24 w-full rounded-lg object-cover border border-border" />
-                )}
+                {editing.image_url && <img src={editing.image_url} alt="Preview" className="mt-2 h-24 w-full rounded-lg object-cover border border-border" />}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={labelClass}>Categorie părinte</label>
                   <select value={editing.parent_id || ""} onChange={(e) => updateField("parent_id", e.target.value || null)} className={inputClass}>
-                    <option value="">Niciuna (categorie principală)</option>
-                    {categories.filter((c) => c.id !== editing.id).map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
+                    <option value="">Niciuna (principală)</option>
+                    {categories.filter((c) => c.id !== editing.id).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
                 <div>

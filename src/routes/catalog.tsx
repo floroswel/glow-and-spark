@@ -84,12 +84,13 @@ function CatalogPage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams();
+    if (searchQuery) params.set("q", searchQuery);
     if (categorySlug) params.set("category", categorySlug);
     if (sort !== "newest") params.set("sort", sort);
     if (page > 1) params.set("page", String(page));
     const qs = params.toString();
     window.history.replaceState({}, "", `/catalog${qs ? `?${qs}` : ""}`);
-  }, [categorySlug, sort, page]);
+  }, [searchQuery, categorySlug, sort, page]);
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
   const activeCat = categories.find((c) => c.slug === categorySlug);

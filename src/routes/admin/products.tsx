@@ -1167,6 +1167,201 @@ function AdminProducts() {
                 </div>
               )}
 
+              {activeTab === "variants" && (
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">Variante de produs (mărimi, culori, etc.) — fiecare variantă poate avea preț și stoc propriu.</p>
+                  {/* Existing variants */}
+                  {variants.length > 0 && (
+                    <div className="rounded-lg border border-border divide-y divide-border">
+                      {variants.map((v, i) => (
+                        <div key={i} className="p-3 flex items-center gap-3 flex-wrap">
+                          <div className="flex-1 min-w-[120px]">
+                            <input value={v.name} onChange={(e) => updateVariant(i, "name", e.target.value)} className={inputClass + " mt-0 text-sm"} placeholder="Nume variantă" />
+                          </div>
+                          <div className="w-24">
+                            <input value={v.sku || ""} onChange={(e) => updateVariant(i, "sku", e.target.value)} className={inputClass + " mt-0 text-xs"} placeholder="SKU" />
+                          </div>
+                          <div className="w-24">
+                            <input type="number" value={v.price ?? ""} onChange={(e) => updateVariant(i, "price", e.target.value ? Number(e.target.value) : null)} className={inputClass + " mt-0 text-sm"} placeholder="Preț" />
+                          </div>
+                          <div className="w-20">
+                            <input type="number" value={v.stock} onChange={(e) => updateVariant(i, "stock", Number(e.target.value))} className={inputClass + " mt-0 text-sm"} placeholder="Stoc" />
+                          </div>
+                          <label className="flex items-center gap-1 text-xs">
+                            <input type="checkbox" checked={v.is_active} onChange={(e) => updateVariant(i, "is_active", e.target.checked)} className="accent-accent" />
+                            Activ
+                          </label>
+                          <button onClick={() => removeVariant(i)} className="text-destructive hover:text-destructive/80"><Trash2 className="h-4 w-4" /></button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {/* Add new variant */}
+                  <div className="rounded-lg border border-dashed border-accent/40 p-4 space-y-3">
+                    <p className="text-xs font-medium text-accent uppercase">Adaugă variantă nouă</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <input value={newVariant.name} onChange={(e) => setNewVariant(prev => ({ ...prev, name: e.target.value }))} className={inputClass + " mt-0"} placeholder="Ex: Mărime M, Roșu" />
+                      <input value={newVariant.sku || ""} onChange={(e) => setNewVariant(prev => ({ ...prev, sku: e.target.value }))} className={inputClass + " mt-0"} placeholder="SKU variantă" />
+                      <input type="number" value={newVariant.price ?? ""} onChange={(e) => setNewVariant(prev => ({ ...prev, price: e.target.value ? Number(e.target.value) : null }))} className={inputClass + " mt-0"} placeholder="Preț (RON)" />
+                      <input type="number" value={newVariant.stock} onChange={(e) => setNewVariant(prev => ({ ...prev, stock: Number(e.target.value) }))} className={inputClass + " mt-0"} placeholder="Stoc" />
+                    </div>
+                    <button onClick={addVariant} disabled={!newVariant.name.trim()} className="flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition disabled:opacity-50">
+                      <Plus className="h-4 w-4" /> Adaugă variantă
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "tags" && (
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">Taguri pentru filtrare și organizare. Poți crea taguri noi sau selecta din cele existente.</p>
+                  {/* Selected tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {productTagIds.map(tagId => {
+                      const tag = allTags.find(t => t.id === tagId);
+                      if (!tag) return null;
+                      return (
+                        <span key={tagId} className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-sm text-accent font-medium">
+                          <Tag className="h-3 w-3" /> {tag.name}
+                          <button onClick={() => toggleTag(tagId)} className="hover:text-destructive"><X className="h-3 w-3" /></button>
+                        </span>
+                      );
+                    })}
+                    {productTagIds.length === 0 && <p className="text-sm text-muted-foreground italic">Niciun tag selectat</p>}
+                  </div>
+                  {/* Add new tag */}
+                  <div className="flex gap-2">
+                    <input value={newTagName} onChange={(e) => setNewTagName(e.target.value)} className={inputClass + " mt-0"} placeholder="Nume tag nou..."
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTag())} />
+                    <button onClick={handleAddTag} disabled={!newTagName.trim()} className="shrink-0 flex items-center gap-1 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition disabled:opacity-50">
+                      <Plus className="h-4 w-4" /> Adaugă
+                    </button>
+                  </div>
+                  {/* Existing tags */}
+                  {allTags.length > 0 && (
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground uppercase mb-2">Taguri existente (click pentru a adăuga/scoate)</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {allTags.map(tag => (
+                          <button key={tag.id} onClick={() => toggleTag(tag.id)}
+                            className={`rounded-full px-3 py-1 text-xs font-medium border transition ${productTagIds.includes(tag.id) ? "bg-accent text-accent-foreground border-accent" : "bg-card text-muted-foreground border-border hover:border-accent hover:text-accent"}`}>
+                            {tag.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === "related" && (
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">Produse similare, cross-sell și up-sell. Apar pe pagina produsului.</p>
+                  {/* Current related */}
+                  {relatedProducts.length > 0 && (
+                    <div className="rounded-lg border border-border divide-y divide-border">
+                      {relatedProducts.map((r, i) => {
+                        const target = products.find(p => p.id === r.target_product_id);
+                        return (
+                          <div key={i} className="p-3 flex items-center gap-3">
+                            {target?.image_url ? (
+                              <img src={target.image_url} alt="" className="h-10 w-10 rounded-lg object-cover border border-border" />
+                            ) : (
+                              <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{target?.name || r.target_product_id}</p>
+                              <p className="text-xs text-muted-foreground">{target?.price} RON</p>
+                            </div>
+                            <select value={r.relation_type} onChange={(e) => setRelatedProducts(prev => prev.map((rp, ri) => ri === i ? { ...rp, relation_type: e.target.value } : rp))}
+                              className="rounded border border-border px-2 py-1 text-xs bg-card">
+                              <option value="similar">Similar</option>
+                              <option value="cross-sell">Cross-sell</option>
+                              <option value="up-sell">Up-sell</option>
+                            </select>
+                            <button onClick={() => removeRelated(i)} className="text-destructive hover:text-destructive/80"><Trash2 className="h-4 w-4" /></button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {/* Search to add */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input value={relatedSearchTerm} onChange={(e) => searchRelated(e.target.value)} className={inputClass + " mt-0 pl-10"} placeholder="Caută produs de adăugat..." />
+                    {relatedSearchResults.length > 0 && (
+                      <div className="absolute z-10 mt-1 w-full max-h-60 overflow-y-auto rounded-lg border border-border bg-card shadow-lg">
+                        {relatedSearchResults.filter(p => p.id !== editing?.id && !relatedProducts.some(r => r.target_product_id === p.id)).map(p => (
+                          <button key={p.id} onClick={() => addRelated(p.id)} className="w-full flex items-center gap-3 p-3 text-left hover:bg-secondary transition">
+                            {p.image_url ? (
+                              <img src={p.image_url} alt="" className="h-8 w-8 rounded object-cover border border-border" />
+                            ) : (
+                              <div className="h-8 w-8 rounded bg-muted flex items-center justify-center"><ImageIcon className="h-3 w-3 text-muted-foreground" /></div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                            </div>
+                            <span className="text-xs text-muted-foreground">{p.price} RON</span>
+                            <Plus className="h-4 w-4 text-accent" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "logistics" && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="col-span-2">
+                      <label className={labelClass}>Cod de bare (EAN/GTIN)</label>
+                      <input value={editing.barcode || ""} onChange={(e) => updateField("barcode", e.target.value)} className={inputClass} placeholder="5901234123457" />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Lungime (cm)</label>
+                      <input type="number" step="0.1" value={editing.length_cm ?? ""} onChange={(e) => updateField("length_cm", e.target.value ? Number(e.target.value) : null)} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Lățime (cm)</label>
+                      <input type="number" step="0.1" value={editing.width_cm ?? ""} onChange={(e) => updateField("width_cm", e.target.value ? Number(e.target.value) : null)} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Înălțime (cm)</label>
+                      <input type="number" step="0.1" value={editing.height_cm ?? ""} onChange={(e) => updateField("height_cm", e.target.value ? Number(e.target.value) : null)} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Greutate</label>
+                      <input value={editing.weight || ""} onChange={(e) => updateField("weight", e.target.value)} className={inputClass} placeholder="250g" />
+                    </div>
+                    {(editing.length_cm && editing.width_cm && editing.height_cm) ? (
+                      <div className="col-span-2 rounded-lg bg-secondary/50 p-3">
+                        <p className="text-xs text-muted-foreground">Volum: {((editing.length_cm * editing.width_cm * editing.height_cm) / 1000).toFixed(1)} litri · Dimensiuni: {editing.length_cm} × {editing.width_cm} × {editing.height_cm} cm</p>
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="border-t border-border pt-6">
+                    <label className={labelClass}>Produs digital</label>
+                    <label className="mt-2 flex items-center gap-2 text-sm text-foreground cursor-pointer">
+                      <input type="checkbox" checked={editing.is_digital || false} onChange={(e) => updateField("is_digital", e.target.checked)} className="rounded border-border accent-accent h-4 w-4" />
+                      <FileDown className="h-4 w-4" /> Acest produs este digital (descărcabil)
+                    </label>
+                    {editing.is_digital && (
+                      <div className="mt-3 grid grid-cols-2 gap-4">
+                        <div className="col-span-2">
+                          <label className="text-xs text-muted-foreground">URL fișier descărcare</label>
+                          <input value={editing.digital_file_url || ""} onChange={(e) => updateField("digital_file_url", e.target.value)} className={inputClass} placeholder="https://...file.pdf" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-muted-foreground">Nr. maxim descărcări</label>
+                          <input type="number" value={editing.digital_max_downloads ?? 5} onChange={(e) => updateField("digital_max_downloads", Number(e.target.value))} className={inputClass} min={1} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {activeTab === "seo" && (
                 <div className="space-y-4">
                   <div className="rounded-lg bg-secondary/50 p-4">

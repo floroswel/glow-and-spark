@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { ChevronRight, Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 
@@ -157,6 +158,7 @@ function CatalogPage() {
                 navigator.clipboard.writeText(window.location.href).then(() => {
                   setCopied(true);
                   setTimeout(() => setCopied(false), 2000);
+                  toast.success("Link copiat în clipboard!", { duration: 2000 });
                 });
               }}
               className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"

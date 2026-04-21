@@ -1,20 +1,78 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useCart } from "@/hooks/useCart";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package, X } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 
+function useProductSearch() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const search = useCallback((term: string) => {
+    setQuery(term);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (term.trim().length < 2) {
+      setResults([]);
+      setOpen(false);
+      return;
+    }
+    setLoading(true);
+    setOpen(true);
+    debounceRef.current = setTimeout(async () => {
+      const { data } = await supabase
+        .from("products")
+        .select("id, name, slug, price, old_price, image_url")
+        .eq("is_active", true)
+        .ilike("name", `%${term.trim()}%`)
+        .order("is_featured", { ascending: false })
+        .limit(6);
+      setResults(data || []);
+      setLoading(false);
+    }, 300);
+  }, []);
+
+  const clear = useCallback(() => {
+    setQuery("");
+    setResults([]);
+    setOpen(false);
+  }, []);
+
+  return { query, results, loading, open, setOpen, search, clear };
+}
+
 export function SiteHeader() {
   const { header, general } = useSiteSettings();
   const { cartCount } = useCart();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const desktopSearch = useProductSearch();
+  const mobileSearch = useProductSearch();
+  const desktopSearchRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
 
   const navLinks = (header?.navbar_links || []).filter((link: any) => link.active);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (desktopSearchRef.current && !desktopSearchRef.current.contains(e.target as Node)) {
+        desktopSearch.setOpen(false);
+      }
+      if (mobileSearchRef.current && !mobileSearchRef.current.contains(e.target as Node)) {
+        mobileSearch.setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   useEffect(() => {
     supabase

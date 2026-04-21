@@ -49,7 +49,7 @@ function CartPage() {
       setCouponLoading(false);
       return;
     }
-    if (data.max_uses && data.uses >= data.max_uses) {
+    if (data.max_uses && (data.uses ?? 0) >= data.max_uses) {
       setCouponError("Cuponul a fost folosit de prea multe ori.");
       setCouponLoading(false);
       return;

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface SiteSettings {
@@ -135,20 +135,31 @@ function hexToOklch(hex: string): string {
 }
 
 export function SiteSettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<SiteSettings>(() => {
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) return JSON.parse(cached);
-    } catch {}
-    return defaultSettings;
-  });
+  // Always start with defaults to avoid hydration mismatch (no localStorage on server)
+  const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
+  const mounted = useRef(false);
 
   useEffect(() => {
+    mounted.current = true;
+
+    // Load from cache first for instant display
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        setSettings(parsed);
+        if (parsed.theme && Object.keys(parsed.theme).length) {
+          applyThemeVariables(parsed.theme);
+        }
+      }
+    } catch {}
+
+    // Then fetch fresh from DB
     supabase
       .from("site_settings")
       .select("key, value")
       .then(({ data }) => {
-        if (data) {
+        if (data && mounted.current) {
           const s = { ...defaultSettings };
           data.forEach((row) => {
             if (row.key in s) {
@@ -156,7 +167,7 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
             }
           });
           setSettings(s);
-          localStorage.setItem(CACHE_KEY, JSON.stringify(s));
+          try { localStorage.setItem(CACHE_KEY, JSON.stringify(s)); } catch {}
           if (s.theme && Object.keys(s.theme).length) applyThemeVariables(s.theme);
         }
       });
@@ -171,7 +182,7 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
           if (row?.key) {
             setSettings((prev) => {
               const next = { ...prev, [row.key]: row.value };
-              localStorage.setItem(CACHE_KEY, JSON.stringify(next));
+              try { localStorage.setItem(CACHE_KEY, JSON.stringify(next)); } catch {}
               if (row.key === "theme") applyThemeVariables(row.value);
               return next;
             });
@@ -181,14 +192,9 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
       .subscribe();
 
     return () => {
+      mounted.current = false;
       supabase.removeChannel(channel);
     };
-  }, []);
-
-  useEffect(() => {
-    if (settings.theme && Object.keys(settings.theme).length) {
-      applyThemeVariables(settings.theme);
-    }
   }, []);
 
   return (

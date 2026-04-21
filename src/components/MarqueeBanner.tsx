@@ -1,8 +1,14 @@
+import { useState, useEffect } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export function MarqueeBanner() {
   const { ticker } = useSiteSettings();
-  if (!ticker?.show) return null;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  // Don't render on server or before client hydration to avoid mismatch
+  if (!mounted || !ticker?.show) return null;
 
   const messages = ticker.messages || [];
   const text = messages.join("   \u00A0\u00A0\u00A0   ");

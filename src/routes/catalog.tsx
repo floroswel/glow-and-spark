@@ -30,6 +30,25 @@ export const Route = createFileRoute("/catalog")({
       { property: "og:description", content: "Explorează catalogul complet de lumânări artizanale premium." },
     ],
   }),
+  beforeLoad: ({ navigate }) => {
+    if (typeof window !== "undefined" && window.location.hash.length > 1) {
+      const hashParams = new URLSearchParams(window.location.hash.slice(1));
+      const search: z.infer<typeof catalogSearchSchema> = {
+        q: hashParams.get("q") || "",
+        category: hashParams.get("category") || "",
+        sort: (hashParams.get("sort") as any) || "newest",
+        page: hashParams.has("page") ? Number(hashParams.get("page")) : 1,
+        minPrice: hashParams.has("minPrice") ? Number(hashParams.get("minPrice")) : 0,
+        maxPrice: hashParams.has("maxPrice") ? Number(hashParams.get("maxPrice")) : 1000,
+      };
+
+      const hasValues = search.q || search.category || search.sort !== "newest" || search.page !== 1 || search.minPrice > 0 || search.maxPrice < 1000;
+      if (hasValues) {
+        window.history.replaceState(null, "", window.location.pathname);
+        throw navigate({ to: "/catalog", search, replace: true });
+      }
+    }
+  },
   component: CatalogPage,
 });
 

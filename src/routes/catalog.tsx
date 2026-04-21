@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/ProductCard";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
@@ -7,7 +7,7 @@ import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Copy, Check } from "lucide-react";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 
@@ -142,14 +142,17 @@ function CatalogPage() {
           <h1 className="font-heading text-3xl font-bold text-foreground">
             {q ? `Rezultate pentru „${q}"` : activeCat ? activeCat.name : "Toate Produsele"}
           </h1>
-          {q && (
-            <button
-              onClick={() => updateSearch({ q: "", page: 1 })}
-              className="text-sm text-accent hover:underline"
-            >
-              ✕ Șterge căutarea
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {q && (
+              <button
+                onClick={() => updateSearch({ q: "", page: 1 })}
+                className="text-sm text-accent hover:underline"
+              >
+                ✕ Șterge căutarea
+              </button>
+            )}
+            <CopyFiltersButton />
+          </div>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">

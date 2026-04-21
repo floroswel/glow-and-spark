@@ -153,32 +153,67 @@ export function SiteHeader() {
                   <div className="absolute left-0 right-0 top-full mt-1 z-50 rounded-xl border border-border bg-card shadow-xl overflow-hidden">
                     {desktopSearch.loading ? (
                       <div className="p-4 text-center text-sm text-muted-foreground">Se caută...</div>
-                    ) : desktopSearch.results.length === 0 ? (
-                      <div className="p-4 text-center text-sm text-muted-foreground">Niciun produs găsit</div>
+                    ) : desktopSearch.results.length === 0 && desktopSearch.categoryResults.length === 0 ? (
+                      <div className="p-4 text-center text-sm text-muted-foreground">Niciun rezultat găsit</div>
                     ) : (
-                      <div className="max-h-[360px] overflow-y-auto divide-y divide-border">
-                        {desktopSearch.results.map((p) => (
-                          <Link
-                            key={p.id}
-                            to="/produs/$slug"
-                            params={{ slug: p.slug }}
-                            onClick={() => desktopSearch.clear()}
-                            className="flex items-center gap-3 px-4 py-3 hover:bg-secondary transition"
-                          >
-                            {p.image_url && (
-                              <img src={p.image_url} alt={p.name} className="h-12 w-12 rounded-lg object-cover bg-muted" />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <span className="text-sm font-bold text-accent">{p.price} RON</span>
-                                {p.old_price && (
-                                  <span className="text-xs text-muted-foreground line-through">{p.old_price} RON</span>
-                                )}
-                              </div>
+                      <div className="max-h-[420px] overflow-y-auto">
+                        {desktopSearch.categoryResults.length > 0 && (
+                          <>
+                            <div className="px-4 pt-3 pb-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Categorii</div>
+                            <div className="divide-y divide-border">
+                              {desktopSearch.categoryResults.map((cat) => (
+                                <Link
+                                  key={cat.id}
+                                  to="/categorie/$slug"
+                                  params={{ slug: cat.slug }}
+                                  onClick={() => desktopSearch.clear()}
+                                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary transition"
+                                >
+                                  {cat.image_url ? (
+                                    <img src={cat.image_url} alt={cat.name} className="h-10 w-10 rounded-lg object-cover bg-muted" />
+                                  ) : (
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent text-lg">
+                                      {cat.icon || "📁"}
+                                    </div>
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-foreground truncate">{cat.name}</p>
+                                    <span className="text-xs text-muted-foreground">Categorie</span>
+                                  </div>
+                                </Link>
+                              ))}
                             </div>
-                          </Link>
-                        ))}
+                          </>
+                        )}
+                        {desktopSearch.results.length > 0 && (
+                          <>
+                            <div className="px-4 pt-3 pb-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Produse</div>
+                            <div className="divide-y divide-border">
+                              {desktopSearch.results.map((p) => (
+                                <Link
+                                  key={p.id}
+                                  to="/produs/$slug"
+                                  params={{ slug: p.slug }}
+                                  onClick={() => desktopSearch.clear()}
+                                  className="flex items-center gap-3 px-4 py-3 hover:bg-secondary transition"
+                                >
+                                  {p.image_url && (
+                                    <img src={p.image_url} alt={p.name} className="h-12 w-12 rounded-lg object-cover bg-muted" />
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                      <span className="text-sm font-bold text-accent">{p.price} RON</span>
+                                      {p.old_price && (
+                                        <span className="text-xs text-muted-foreground line-through">{p.old_price} RON</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          </>
+                        )}
                       </div>
                     )}
                     {desktopSearch.query.trim().length >= 2 && (

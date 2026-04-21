@@ -216,14 +216,39 @@ function AdminProducts() {
     }
     if (!data.slug) data.slug = slugify(data.name);
     data.updated_at = new Date().toISOString();
+    let productId = id;
     if (isNew) {
-      const { error } = await supabase.from("products").insert(data);
-      if (error) showToast("❌ Eroare: " + error.message);
-      else showToast("✅ Produs creat cu succes!");
+      const { data: inserted, error } = await supabase.from("products").insert(data).select("id").single();
+      if (error) { showToast("❌ Eroare: " + error.message); setSaving(false); return; }
+      productId = inserted.id;
+      showToast("✅ Produs creat cu succes!");
     } else {
       const { error } = await supabase.from("products").update(data).eq("id", id);
-      if (error) showToast("❌ Eroare: " + error.message);
-      else showToast("✅ Produs actualizat!");
+      if (error) { showToast("❌ Eroare: " + error.message); setSaving(false); return; }
+      showToast("✅ Produs actualizat!");
+    }
+
+    // Save variants
+    if (productId) {
+      if (!isNew) await supabase.from("product_variants").delete().eq("product_id", productId);
+      if (variants.length > 0) {
+        const varData = variants.map((v, i) => ({ ...v, product_id: productId, sort_order: i, id: undefined }));
+        await supabase.from("product_variants").insert(varData as any);
+      }
+
+      // Save tags
+      if (!isNew) await supabase.from("product_tag_links").delete().eq("product_id", productId);
+      if (productTagIds.length > 0) {
+        const tagLinks = productTagIds.map(tag_id => ({ product_id: productId, tag_id }));
+        await supabase.from("product_tag_links").insert(tagLinks as any);
+      }
+
+      // Save related products
+      if (!isNew) await supabase.from("related_products").delete().eq("source_product_id", productId);
+      if (relatedProducts.length > 0) {
+        const relData = relatedProducts.map((r, i) => ({ source_product_id: productId, target_product_id: r.target_product_id, relation_type: r.relation_type, sort_order: i, id: undefined }));
+        await supabase.from("related_products").insert(relData as any);
+      }
     }
     setSaving(false);
     setEditing(null);

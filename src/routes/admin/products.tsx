@@ -193,7 +193,8 @@ function AdminProducts() {
     if (!inlineEdit) return;
     const value = inlineEdit.field === "stock" ? parseInt(inlineEdit.value) : parseFloat(inlineEdit.value);
     if (isNaN(value) || value < 0) { showToast("⚠️ Valoare invalidă"); setInlineEdit(null); return; }
-    await supabase.from("products").update({ [inlineEdit.field]: value, updated_at: new Date().toISOString() }).eq("id", inlineEdit.id);
+    const updateData: Record<string, any> = { [inlineEdit.field]: value, updated_at: new Date().toISOString() };
+    await supabase.from("products").update(updateData as any).eq("id", inlineEdit.id);
     setInlineEdit(null);
     showToast("✅ Actualizat rapid!");
     load();

@@ -123,7 +123,7 @@ function AdminLayout() {
         </nav>
         <div className="border-t border-border p-2">
           <button
-            onClick={handleLogout}
+            onClick={signOut}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-destructive transition"
           >
             <LogOut className="h-5 w-5 shrink-0" />

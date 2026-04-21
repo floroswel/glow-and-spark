@@ -10,6 +10,7 @@ import { HowToBuy } from "@/components/HowToBuy";
 import { SiteFooter } from "@/components/SiteFooter";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { SocialProofToast } from "@/components/SocialProofToast";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -38,6 +39,7 @@ function Index() {
       <SiteFooter />
       <NewsletterPopup />
       <WhatsAppButton />
+      <SocialProofToast />
     </div>
   );
 }

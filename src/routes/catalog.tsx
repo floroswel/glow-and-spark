@@ -51,7 +51,8 @@ function CatalogPage() {
       let query = supabase.from("products").select("*, categories!products_category_id_fkey(slug, name)", { count: "exact" }).eq("is_active", true);
 
       if (searchQuery.trim()) {
-        query = query.ilike("name", `%${searchQuery.trim()}%`);
+        const q = searchQuery.trim();
+        query = query.or(`name.ilike.%${q}%,short_description.ilike.%${q}%`);
       }
 
       if (categorySlug) {

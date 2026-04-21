@@ -30,11 +30,11 @@ function useProductSearch() {
       const [productsRes, categoriesRes] = await Promise.all([
         supabase
           .from("products")
-          .select("id, name, slug, price, old_price, image_url")
+          .select("id, name, slug, price, old_price, image_url, short_description")
           .eq("is_active", true)
-          .ilike("name", `%${t}%`)
+          .or(`name.ilike.%${t}%,short_description.ilike.%${t}%`)
           .order("is_featured", { ascending: false })
-          .limit(5),
+          .limit(6),
         supabase
           .from("categories")
           .select("id, name, slug, icon, image_url")

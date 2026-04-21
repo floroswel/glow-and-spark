@@ -52,7 +52,15 @@ function CatalogPage() {
 
       if (searchQuery.trim()) {
         const q = searchQuery.trim();
-        query = query.or(`name.ilike.%${q}%,short_description.ilike.%${q}%`);
+        const { data: matchIds } = await supabase.rpc("search_product_ids_unaccent", { term: q });
+        if (matchIds && matchIds.length > 0) {
+          query = query.in("id", matchIds.map((r: any) => r.id));
+        } else {
+          setProducts([]);
+          setTotalCount(0);
+          setLoading(false);
+          return;
+        }
       }
 
       if (categorySlug) {

@@ -967,7 +967,31 @@ function AdminProducts() {
                     )}
                   </div>
                   <div className="border-t border-border pt-6">
-                    <label className={labelClass}>Galerie imagini ({(editing.gallery || []).length} imagini)</label>
+                    <label className={labelClass}>⚙️ Setări redimensionare</label>
+                    <div className="mt-2 rounded-lg border border-border p-4 space-y-3">
+                      <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
+                        <input type="checkbox" checked={resizeEnabled} onChange={(e) => setResizeEnabled(e.target.checked)} className="rounded border-border accent-accent h-4 w-4" />
+                        Redimensionare automată la upload
+                      </label>
+                      {resizeEnabled && (
+                        <div className="grid grid-cols-3 gap-3">
+                          <div>
+                            <label className="text-xs text-muted-foreground">Lățime max (px)</label>
+                            <input type="number" value={maxImageWidth} onChange={(e) => setMaxImageWidth(Number(e.target.value))} className={inputClass} min={100} max={4000} step={100} />
+                          </div>
+                          <div>
+                            <label className="text-xs text-muted-foreground">Înălțime max (px)</label>
+                            <input type="number" value={maxImageHeight} onChange={(e) => setMaxImageHeight(Number(e.target.value))} className={inputClass} min={100} max={4000} step={100} />
+                          </div>
+                          <div>
+                            <label className="text-xs text-muted-foreground">Calitate (%)</label>
+                            <input type="number" value={imageQuality} onChange={(e) => setImageQuality(Number(e.target.value))} className={inputClass} min={10} max={100} step={5} />
+                          </div>
+                          <p className="col-span-3 text-xs text-muted-foreground">Imaginile mai mari de {maxImageWidth}×{maxImageHeight}px vor fi redimensionate automat. Calitate JPEG: {imageQuality}%.</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                     <div className="mt-2 flex gap-2">
                       <input value={galleryInput} onChange={(e) => setGalleryInput(e.target.value)} className={`${inputClass} mt-0`} placeholder="URL imagine galerie"
                         onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addGalleryImage())} />

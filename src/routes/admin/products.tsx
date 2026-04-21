@@ -1,7 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, useMemo } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Pencil, Trash2, X, Search, Eye, EyeOff, Star, Copy, Download, Upload, ChevronLeft, ChevronRight, CheckSquare, Square, AlertTriangle, Loader2, ArrowUpDown } from "lucide-react";
+import {
+  Plus, Pencil, Trash2, X, Search, Eye, EyeOff, Star, Copy, Download, Upload,
+  ChevronLeft, ChevronRight, CheckSquare, Square, AlertTriangle, Loader2,
+  ArrowUpDown, ExternalLink, GripVertical, Image as ImageIcon, Package,
+  TrendingUp, DollarSign, BarChart3, Filter, RotateCcw, Percent, FolderOpen,
+  Save, Check, ChevronDown, FileSpreadsheet, RefreshCw
+} from "lucide-react";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
@@ -31,23 +37,21 @@ interface Product {
   is_featured: boolean;
   sort_order: number;
   created_at: string;
+  updated_at: string;
 }
 
-const emptyProduct: Omit<Product, "id" | "created_at"> = {
+const emptyProduct: Omit<Product, "id" | "created_at" | "updated_at"> = {
   name: "", slug: "", description: "", short_description: "", price: 0, old_price: null,
   image_url: "", gallery: [], category_id: null, badge: "", badge_type: "new", rating: 0,
   reviews_count: 0, stock: 0, weight: "", sku: "", meta_title: "", meta_description: "",
   is_active: true, is_featured: false, sort_order: 0,
 };
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 25;
 
 function slugify(str: string) {
-  return str
-    .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
+  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 function AdminProducts() {
@@ -61,6 +65,9 @@ function AdminProducts() {
   const [filterCat, setFilterCat] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterStock, setFilterStock] = useState("");
+  const [filterBadge, setFilterBadge] = useState("");
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
   const [activeTab, setActiveTab] = useState("info");
   const [galleryInput, setGalleryInput] = useState("");
   const [page, setPage] = useState(1);
@@ -68,10 +75,24 @@ function AdminProducts() {
   const [sortField, setSortField] = useState<string>("sort_order");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [toast, setToast] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [inlineEdit, setInlineEdit] = useState<{ id: string; field: string; value: string } | null>(null);
+  const [bulkAction, setBulkAction] = useState("");
+  const [bulkCategoryId, setBulkCategoryId] = useState("");
+  const [bulkPricePercent, setBulkPricePercent] = useState("");
+  const [showImport, setShowImport] = useState(false);
+  const [importData, setImportData] = useState("");
+  const [importLoading, setImportLoading] = useState(false);
 
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 2500); };
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryFileRef = useRef<HTMLInputElement>(null);
+  const csvFileRef = useRef<HTMLInputElement>(null);
 
-  const load = async () => {
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
+
+  const load = useCallback(async () => {
     setLoading(true);
     const [pRes, cRes] = await Promise.all([
       supabase.from("products").select("*").order("sort_order"),
@@ -80,14 +101,17 @@ function AdminProducts() {
     setProducts((pRes.data as any) || []);
     setCategories(cRes.data || []);
     setLoading(false);
-  };
+  }, []);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   // Filtered & sorted
   const filtered = useMemo(() => {
     let list = products.filter((p) => {
-      if (search && !p.name.toLowerCase().includes(search.toLowerCase()) && !p.sku?.toLowerCase().includes(search.toLowerCase())) return false;
+      if (search) {
+        const s = search.toLowerCase();
+        if (!p.name.toLowerCase().includes(s) && !p.sku?.toLowerCase().includes(s) && !p.short_description?.toLowerCase().includes(s)) return false;
+      }
       if (filterCat && p.category_id !== filterCat) return false;
       if (filterStatus === "active" && !p.is_active) return false;
       if (filterStatus === "inactive" && p.is_active) return false;
@@ -95,6 +119,9 @@ function AdminProducts() {
       if (filterStock === "in_stock" && p.stock <= 0) return false;
       if (filterStock === "low" && (p.stock <= 0 || p.stock > 10)) return false;
       if (filterStock === "out" && p.stock > 0) return false;
+      if (filterBadge && (p.badge_type !== filterBadge)) return false;
+      if (priceMin && p.price < Number(priceMin)) return false;
+      if (priceMax && p.price > Number(priceMax)) return false;
       return true;
     });
     list.sort((a: any, b: any) => {
@@ -104,16 +131,21 @@ function AdminProducts() {
       return sortDir === "asc" ? cmp : -cmp;
     });
     return list;
-  }, [products, search, filterCat, filterStatus, filterStock, sortField, sortDir]);
+  }, [products, search, filterCat, filterStatus, filterStock, filterBadge, priceMin, priceMax, sortField, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const hasActiveFilters = filterCat || filterStatus || filterStock || filterBadge || priceMin || priceMax;
 
-  useEffect(() => { setPage(1); }, [search, filterCat, filterStatus, filterStock]);
+  useEffect(() => { setPage(1); }, [search, filterCat, filterStatus, filterStock, filterBadge, priceMin, priceMax]);
 
   const handleSort = (field: string) => {
     if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");
     else { setSortField(field); setSortDir("asc"); }
+  };
+
+  const clearFilters = () => {
+    setFilterCat(""); setFilterStatus(""); setFilterStock(""); setFilterBadge(""); setPriceMin(""); setPriceMax("");
   };
 
   // Validation
@@ -133,12 +165,15 @@ function AdminProducts() {
       try { data.gallery = JSON.parse(data.gallery); } catch { data.gallery = []; }
     }
     if (!data.slug) data.slug = slugify(data.name);
+    data.updated_at = new Date().toISOString();
     if (isNew) {
-      await supabase.from("products").insert(data);
-      showToast("✅ Produs creat cu succes!");
+      const { error } = await supabase.from("products").insert(data);
+      if (error) showToast("❌ Eroare: " + error.message);
+      else showToast("✅ Produs creat cu succes!");
     } else {
-      await supabase.from("products").update(data).eq("id", id);
-      showToast("✅ Produs actualizat!");
+      const { error } = await supabase.from("products").update(data).eq("id", id);
+      if (error) showToast("❌ Eroare: " + error.message);
+      else showToast("✅ Produs actualizat!");
     }
     setSaving(false);
     setEditing(null);
@@ -153,43 +188,174 @@ function AdminProducts() {
     load();
   };
 
-  const handleBulkDelete = async () => {
-    if (selectedIds.size === 0) return;
-    if (!confirm(`Ștergi ${selectedIds.size} produse selectate?`)) return;
-    for (const id of selectedIds) {
-      await supabase.from("products").delete().eq("id", id);
-    }
-    setSelectedIds(new Set());
-    showToast(`${selectedIds.size} produse șterse.`);
+  // Inline quick edit
+  const handleInlineEditSave = async () => {
+    if (!inlineEdit) return;
+    const value = inlineEdit.field === "stock" ? parseInt(inlineEdit.value) : parseFloat(inlineEdit.value);
+    if (isNaN(value) || value < 0) { showToast("⚠️ Valoare invalidă"); setInlineEdit(null); return; }
+    const updateData: Record<string, any> = { [inlineEdit.field]: value, updated_at: new Date().toISOString() };
+    await supabase.from("products").update(updateData as any).eq("id", inlineEdit.id);
+    setInlineEdit(null);
+    showToast("✅ Actualizat rapid!");
     load();
   };
 
-  const handleBulkToggle = async (field: "is_active" | "is_featured", value: boolean) => {
-    if (selectedIds.size === 0) return;
-    for (const id of selectedIds) {
-      if (field === "is_active") {
-        await supabase.from("products").update({ is_active: value }).eq("id", id);
-      } else {
-        await supabase.from("products").update({ is_featured: value }).eq("id", id);
+  // Quick toggle active from table
+  const handleQuickToggleActive = async (id: string, current: boolean) => {
+    await supabase.from("products").update({ is_active: !current, updated_at: new Date().toISOString() }).eq("id", id);
+    showToast(!current ? "✅ Produs activat" : "Produs dezactivat");
+    load();
+  };
+
+  // Quick toggle featured from table
+  const handleQuickToggleFeatured = async (id: string, current: boolean) => {
+    await supabase.from("products").update({ is_featured: !current, updated_at: new Date().toISOString() }).eq("id", id);
+    showToast(!current ? "★ Marcat recomandat" : "Recomandat scos");
+    load();
+  };
+
+  // Bulk actions
+  const handleBulkAction = async () => {
+    if (selectedIds.size === 0 || !bulkAction) return;
+    const ids = Array.from(selectedIds);
+
+    if (bulkAction === "delete") {
+      if (!confirm(`Ștergi ${ids.length} produse selectate?`)) return;
+      for (const id of ids) await supabase.from("products").delete().eq("id", id);
+      showToast(`${ids.length} produse șterse.`);
+    } else if (bulkAction === "activate") {
+      for (const id of ids) await supabase.from("products").update({ is_active: true }).eq("id", id);
+      showToast(`${ids.length} produse activate.`);
+    } else if (bulkAction === "deactivate") {
+      for (const id of ids) await supabase.from("products").update({ is_active: false }).eq("id", id);
+      showToast(`${ids.length} produse dezactivate.`);
+    } else if (bulkAction === "featured") {
+      for (const id of ids) await supabase.from("products").update({ is_featured: true }).eq("id", id);
+      showToast(`${ids.length} produse marcate recomandat.`);
+    } else if (bulkAction === "unfeatured") {
+      for (const id of ids) await supabase.from("products").update({ is_featured: false }).eq("id", id);
+      showToast(`${ids.length} produse scoase din recomandat.`);
+    } else if (bulkAction === "category" && bulkCategoryId) {
+      for (const id of ids) await supabase.from("products").update({ category_id: bulkCategoryId }).eq("id", id);
+      showToast(`Categorie schimbată pentru ${ids.length} produse.`);
+    } else if (bulkAction === "price_increase" && bulkPricePercent) {
+      const pct = parseFloat(bulkPricePercent);
+      if (isNaN(pct)) return;
+      for (const id of ids) {
+        const p = products.find(x => x.id === id);
+        if (p) await supabase.from("products").update({ price: Math.round(p.price * (1 + pct / 100) * 100) / 100 }).eq("id", id);
       }
+      showToast(`Preț majorat cu ${pct}% pentru ${ids.length} produse.`);
+    } else if (bulkAction === "price_decrease" && bulkPricePercent) {
+      const pct = parseFloat(bulkPricePercent);
+      if (isNaN(pct)) return;
+      for (const id of ids) {
+        const p = products.find(x => x.id === id);
+        if (p) await supabase.from("products").update({ price: Math.round(p.price * (1 - pct / 100) * 100) / 100 }).eq("id", id);
+      }
+      showToast(`Preț redus cu ${pct}% pentru ${ids.length} produse.`);
     }
+
     setSelectedIds(new Set());
-    showToast(`${selectedIds.size} produse actualizate.`);
+    setBulkAction("");
+    setBulkCategoryId("");
+    setBulkPricePercent("");
     load();
   };
 
+  // CSV Export
   const handleExportCSV = () => {
-    const headers = "Nume,SKU,Categorie,Preț,Preț vechi,Stoc,Activ,Recomandat,Slug\n";
-    const rows = filtered.map(p => `"${p.name}","${p.sku || ""}","${catName(p.category_id)}",${p.price},${p.old_price || ""},${p.stock},${p.is_active ? "Da" : "Nu"},${p.is_featured ? "Da" : "Nu"},"${p.slug}"`).join("\n");
-    const blob = new Blob([headers + rows], { type: "text/csv" });
+    const headers = "Nume,SKU,Categorie,Preț,Preț vechi,Stoc,Greutate,Activ,Recomandat,Badge,Slug,Descriere scurtă,Meta Title,Meta Description\n";
+    const rows = filtered.map(p =>
+      `"${p.name}","${p.sku || ""}","${catName(p.category_id)}",${p.price},${p.old_price || ""},${p.stock},"${p.weight || ""}",${p.is_active ? "Da" : "Nu"},${p.is_featured ? "Da" : "Nu"},"${p.badge || ""}","${p.slug}","${(p.short_description || "").replace(/"/g, '""')}","${(p.meta_title || "").replace(/"/g, '""')}","${(p.meta_description || "").replace(/"/g, '""')}"`
+    ).join("\n");
+    const blob = new Blob(["\ufeff" + headers + rows], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = "produse.csv"; a.click();
-    showToast("CSV exportat!");
+    const a = document.createElement("a"); a.href = url; a.download = `produse_${new Date().toISOString().split("T")[0]}.csv`; a.click();
+    showToast("📥 CSV exportat cu succes!");
+  };
+
+  // CSV Import
+  const handleImportCSV = async () => {
+    if (!importData.trim()) return;
+    setImportLoading(true);
+    try {
+      const lines = importData.trim().split("\n");
+      const header = lines[0].toLowerCase();
+      const hasHeader = header.includes("nume") || header.includes("name") || header.includes("sku");
+      const dataLines = hasHeader ? lines.slice(1) : lines;
+      let imported = 0;
+
+      for (const line of dataLines) {
+        const cols = line.split(",").map(c => c.trim().replace(/^"|"$/g, ""));
+        if (cols.length < 3) continue;
+        const [name, sku, category, priceStr, oldPriceStr, stockStr] = cols;
+        if (!name) continue;
+        const cat = categories.find(c => c.name.toLowerCase() === (category || "").toLowerCase());
+        const productData: any = {
+          name,
+          slug: slugify(name),
+          sku: sku || null,
+          category_id: cat?.id || null,
+          price: parseFloat(priceStr) || 0,
+          old_price: oldPriceStr ? parseFloat(oldPriceStr) : null,
+          stock: parseInt(stockStr) || 0,
+          is_active: true,
+        };
+        await supabase.from("products").insert(productData);
+        imported++;
+      }
+      showToast(`✅ ${imported} produse importate!`);
+      setShowImport(false);
+      setImportData("");
+      load();
+    } catch {
+      showToast("❌ Eroare la import");
+    }
+    setImportLoading(false);
+  };
+
+  const handleCSVFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setImportData(ev.target?.result as string || "");
+      setShowImport(true);
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  // Image upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "main" | "gallery") => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const setter = type === "main" ? setUploading : setUploadingGallery;
+    setter(true);
+    const ext = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage.from("product-images").upload(fileName, file);
+    if (error) {
+      showToast("❌ Eroare upload: " + error.message);
+      setter(false);
+      return;
+    }
+    const { data: { publicUrl } } = supabase.storage.from("product-images").getPublicUrl(fileName);
+
+    if (type === "main") {
+      setEditing((prev: any) => ({ ...prev, image_url: publicUrl }));
+    } else {
+      setEditing((prev: any) => ({ ...prev, gallery: [...(prev.gallery || []), publicUrl] }));
+    }
+    setter(false);
+    showToast("✅ Imagine încărcată!");
+    e.target.value = "";
   };
 
   const handleDuplicate = (p: Product) => {
     setIsNew(true);
-    setEditing({ ...p, id: "", name: p.name + " (copie)", slug: p.slug + "-copie", created_at: undefined });
+    setEditing({ ...p, id: "", name: p.name + " (copie)", slug: p.slug + "-copie", sku: p.sku ? p.sku + "-COPY" : "", created_at: undefined });
     setActiveTab("info");
   };
 
@@ -201,6 +367,7 @@ function AdminProducts() {
       if (!prev) return null;
       const next = { ...prev, [field]: value };
       if (field === "name" && (isNew || !prev.slug)) next.slug = slugify(value);
+      if (field === "name" && !prev.meta_title) next.meta_title = "";
       return next;
     });
   };
@@ -215,12 +382,18 @@ function AdminProducts() {
     setEditing((prev: any) => ({ ...prev, gallery: prev.gallery.filter((_: any, i: number) => i !== idx) }));
   };
 
-  const toggleSelect = (id: string) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
+  const moveGalleryImage = (idx: number, dir: -1 | 1) => {
+    setEditing((prev: any) => {
+      const g = [...(prev.gallery || [])];
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= g.length) return prev;
+      [g[idx], g[newIdx]] = [g[newIdx], g[idx]];
+      return { ...prev, gallery: g };
     });
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
   };
 
   const toggleSelectAll = () => {
@@ -231,18 +404,33 @@ function AdminProducts() {
   const catName = (catId: string | null) => categories.find((c) => c.id === catId)?.name || "—";
 
   // Stats
-  const statsData = useMemo(() => ({
-    total: products.length,
-    active: products.filter(p => p.is_active).length,
-    outOfStock: products.filter(p => p.stock <= 0).length,
-    lowStock: products.filter(p => p.stock > 0 && p.stock <= 10).length,
-  }), [products]);
+  const statsData = useMemo(() => {
+    const totalValue = products.reduce((s, p) => s + p.price * p.stock, 0);
+    const avgPrice = products.length ? products.reduce((s, p) => s + p.price, 0) / products.length : 0;
+    return {
+      total: products.length,
+      active: products.filter(p => p.is_active).length,
+      featured: products.filter(p => p.is_featured).length,
+      outOfStock: products.filter(p => p.stock <= 0).length,
+      lowStock: products.filter(p => p.stock > 0 && p.stock <= 10).length,
+      totalValue,
+      avgPrice,
+      withImages: products.filter(p => p.image_url).length,
+    };
+  }, [products]);
 
-  if (loading) return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" /></div>;
+  if (loading) return (
+    <div className="space-y-4">
+      <div className="flex justify-between"><div className="h-8 w-48 bg-muted animate-pulse rounded-lg" /><div className="h-10 w-36 bg-muted animate-pulse rounded-lg" /></div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-muted animate-pulse rounded-xl" />)}</div>
+      <div className="h-96 bg-muted animate-pulse rounded-xl" />
+    </div>
+  );
 
   const inputClass = "mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20";
   const labelClass = "text-xs font-medium text-muted-foreground uppercase tracking-wider";
   const thBtn = "flex items-center gap-1 cursor-pointer hover:text-foreground transition";
+  const selectClass = "rounded-lg border border-border bg-card px-3 py-2 text-sm focus:border-accent focus:outline-none";
 
   return (
     <div>
@@ -253,14 +441,25 @@ function AdminProducts() {
         </div>
       )}
 
+      {/* Hidden file inputs */}
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, "main")} />
+      <input ref={galleryFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, "gallery")} />
+      <input ref={csvFileRef} type="file" accept=".csv,.txt" className="hidden" onChange={handleCSVFileUpload} />
+
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-heading text-2xl font-bold text-foreground">Produse</h1>
-          <p className="text-sm text-muted-foreground">{products.length} produse total</p>
+          <p className="text-sm text-muted-foreground">{products.length} produse total · {statsData.active} active · {statsData.outOfStock} epuizate</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={handleExportCSV} className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button onClick={() => load()} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-secondary transition" title="Reîncarcă">
+            <RefreshCw className="h-4 w-4" />
+          </button>
+          <button onClick={() => csvFileRef.current?.click()} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">
+            <Upload className="h-4 w-4" /> Import CSV
+          </button>
+          <button onClick={handleExportCSV} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">
             <Download className="h-4 w-4" /> Export CSV
           </button>
           <button onClick={openNew} className="flex items-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-accent hover:text-accent-foreground transition">
@@ -269,55 +468,131 @@ function AdminProducts() {
         </div>
       </div>
 
-      {/* Quick stats */}
-      <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {/* KPI cards */}
+      <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
         {[
-          { label: "Total", value: statsData.total, color: "text-foreground" },
-          { label: "Active", value: statsData.active, color: "text-chart-2" },
-          { label: "Stoc scăzut", value: statsData.lowStock, color: "text-accent" },
-          { label: "Epuizate", value: statsData.outOfStock, color: "text-destructive" },
+          { label: "Total", value: statsData.total, icon: Package, color: "text-foreground" },
+          { label: "Active", value: statsData.active, icon: Eye, color: "text-chart-2" },
+          { label: "Recomandate", value: statsData.featured, icon: Star, color: "text-accent" },
+          { label: "Stoc scăzut", value: statsData.lowStock, icon: AlertTriangle, color: "text-amber-500" },
+          { label: "Epuizate", value: statsData.outOfStock, icon: EyeOff, color: "text-destructive" },
+          { label: "Cu imagine", value: `${statsData.withImages}/${statsData.total}`, icon: ImageIcon, color: "text-chart-1" },
+          { label: "Preț mediu", value: `${statsData.avgPrice.toFixed(0)} RON`, icon: DollarSign, color: "text-chart-3" },
+          { label: "Valoare stoc", value: `${(statsData.totalValue / 1000).toFixed(1)}k`, icon: TrendingUp, color: "text-chart-2" },
         ].map(s => (
-          <div key={s.label} className="rounded-xl border border-border bg-card p-3 text-center">
-            <p className="text-xs text-muted-foreground">{s.label}</p>
-            <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
+          <div key={s.label} className="rounded-xl border border-border bg-card p-3">
+            <div className="flex items-center gap-1.5 mb-1">
+              <s.icon className={`h-3.5 w-3.5 ${s.color}`} />
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">{s.label}</span>
+            </div>
+            <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
           </div>
         ))}
       </div>
 
-      {/* Filters */}
+      {/* Search + Filter toggle */}
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Caută după nume sau SKU..."
+          <input value={search} onChange={(e) => setSearch(e.target.value)}
+            placeholder="Caută după nume, SKU sau descriere..."
             className="w-full rounded-lg border border-border bg-card pl-10 pr-3 py-2 text-sm focus:border-accent focus:outline-none" />
         </div>
-        <select value={filterCat} onChange={(e) => setFilterCat(e.target.value)} className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
-          <option value="">Toate categoriile</option>
-          {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
-          <option value="">Toate statusurile</option>
-          <option value="active">Activ</option>
-          <option value="inactive">Inactiv</option>
-          <option value="featured">Recomandat</option>
-        </select>
-        <select value={filterStock} onChange={(e) => setFilterStock(e.target.value)} className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
-          <option value="">Tot stocul</option>
-          <option value="in_stock">În stoc</option>
-          <option value="low">Stoc scăzut (≤10)</option>
-          <option value="out">Epuizat</option>
-        </select>
+        <button onClick={() => setShowFilters(!showFilters)}
+          className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition ${showFilters || hasActiveFilters ? "border-accent bg-accent/10 text-accent" : "border-border text-muted-foreground hover:bg-secondary"}`}>
+          <Filter className="h-4 w-4" /> Filtre {hasActiveFilters && <span className="rounded-full bg-accent text-accent-foreground px-1.5 text-[10px] font-bold">{[filterCat, filterStatus, filterStock, filterBadge, priceMin, priceMax].filter(Boolean).length}</span>}
+        </button>
+        {hasActiveFilters && (
+          <button onClick={clearFilters} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition">
+            <RotateCcw className="h-3.5 w-3.5" /> Reset
+          </button>
+        )}
       </div>
+
+      {/* Filters panel */}
+      {showFilters && (
+        <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 rounded-xl border border-border bg-card p-4">
+          <div>
+            <label className="text-[10px] font-medium text-muted-foreground uppercase">Categorie</label>
+            <select value={filterCat} onChange={(e) => setFilterCat(e.target.value)} className={selectClass + " w-full mt-1"}>
+              <option value="">Toate</option>
+              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-[10px] font-medium text-muted-foreground uppercase">Status</label>
+            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={selectClass + " w-full mt-1"}>
+              <option value="">Toate</option>
+              <option value="active">Activ</option>
+              <option value="inactive">Inactiv</option>
+              <option value="featured">Recomandat</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-[10px] font-medium text-muted-foreground uppercase">Stoc</label>
+            <select value={filterStock} onChange={(e) => setFilterStock(e.target.value)} className={selectClass + " w-full mt-1"}>
+              <option value="">Tot</option>
+              <option value="in_stock">În stoc</option>
+              <option value="low">Stoc scăzut (≤10)</option>
+              <option value="out">Epuizat</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-[10px] font-medium text-muted-foreground uppercase">Badge</label>
+            <select value={filterBadge} onChange={(e) => setFilterBadge(e.target.value)} className={selectClass + " w-full mt-1"}>
+              <option value="">Toate</option>
+              <option value="new">Nou</option>
+              <option value="sale">Reducere</option>
+              <option value="bestseller">Bestseller</option>
+              <option value="limited">Stoc limitat</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-[10px] font-medium text-muted-foreground uppercase">Preț min (RON)</label>
+            <input type="number" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} className={selectClass + " w-full mt-1"} placeholder="0" />
+          </div>
+          <div>
+            <label className="text-[10px] font-medium text-muted-foreground uppercase">Preț max (RON)</label>
+            <input type="number" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} className={selectClass + " w-full mt-1"} placeholder="999" />
+          </div>
+        </div>
+      )}
 
       {/* Bulk actions */}
       {selectedIds.size > 0 && (
-        <div className="mt-3 flex items-center gap-3 rounded-lg border border-accent/30 bg-accent/5 px-4 py-2.5">
-          <span className="text-sm font-medium text-foreground">{selectedIds.size} selectate</span>
-          <button onClick={() => handleBulkToggle("is_active", true)} className="rounded px-3 py-1 text-xs font-medium bg-chart-2/15 text-chart-2 hover:bg-chart-2/25 transition">Activează</button>
-          <button onClick={() => handleBulkToggle("is_active", false)} className="rounded px-3 py-1 text-xs font-medium bg-muted text-muted-foreground hover:bg-secondary transition">Dezactivează</button>
-          <button onClick={() => handleBulkToggle("is_featured", true)} className="rounded px-3 py-1 text-xs font-medium bg-accent/15 text-accent hover:bg-accent/25 transition">★ Recomandat</button>
-          <button onClick={handleBulkDelete} className="rounded px-3 py-1 text-xs font-medium bg-destructive/15 text-destructive hover:bg-destructive/25 transition">Șterge</button>
-          <button onClick={() => setSelectedIds(new Set())} className="ml-auto text-xs text-muted-foreground hover:text-foreground">Deselectează</button>
+        <div className="mt-3 flex items-center gap-3 rounded-lg border border-accent/30 bg-accent/5 px-4 py-3 flex-wrap">
+          <span className="text-sm font-semibold text-foreground">{selectedIds.size} selectate</span>
+          <select value={bulkAction} onChange={(e) => setBulkAction(e.target.value)} className={selectClass}>
+            <option value="">Acțiune în masă...</option>
+            <option value="activate">✅ Activează</option>
+            <option value="deactivate">⛔ Dezactivează</option>
+            <option value="featured">⭐ Marchează recomandat</option>
+            <option value="unfeatured">☆ Scoate recomandat</option>
+            <option value="category">📁 Schimbă categoria</option>
+            <option value="price_increase">📈 Majorare preț %</option>
+            <option value="price_decrease">📉 Reducere preț %</option>
+            <option value="delete">🗑️ Șterge</option>
+          </select>
+          {bulkAction === "category" && (
+            <select value={bulkCategoryId} onChange={(e) => setBulkCategoryId(e.target.value)} className={selectClass}>
+              <option value="">Selectează categoria...</option>
+              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          )}
+          {(bulkAction === "price_increase" || bulkAction === "price_decrease") && (
+            <div className="flex items-center gap-1">
+              <input type="number" value={bulkPricePercent} onChange={(e) => setBulkPricePercent(e.target.value)} className={selectClass + " w-20"} placeholder="%" />
+              <Percent className="h-4 w-4 text-muted-foreground" />
+            </div>
+          )}
+          {bulkAction && (
+            <button onClick={handleBulkAction} className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition">
+              Aplică
+            </button>
+          )}
+          <button onClick={() => { setSelectedIds(new Set()); setBulkAction(""); }} className="ml-auto text-xs text-muted-foreground hover:text-foreground">
+            <X className="h-4 w-4" />
+          </button>
         </div>
       )}
 
@@ -332,11 +607,12 @@ function AdminProducts() {
                 </button>
               </th>
               <th className="px-4 py-3 text-left"><button onClick={() => handleSort("name")} className={thBtn}><span className="font-medium text-muted-foreground">Produs</span><ArrowUpDown className="h-3 w-3" /></button></th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">SKU</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground hidden lg:table-cell">SKU</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Categorie</th>
               <th className="px-4 py-3 text-left"><button onClick={() => handleSort("price")} className={thBtn}><span className="font-medium text-muted-foreground">Preț</span><ArrowUpDown className="h-3 w-3" /></button></th>
               <th className="px-4 py-3 text-left"><button onClick={() => handleSort("stock")} className={thBtn}><span className="font-medium text-muted-foreground">Stoc</span><ArrowUpDown className="h-3 w-3" /></button></th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground hidden xl:table-cell"><button onClick={() => handleSort("updated_at")} className={thBtn}><span>Actualizat</span><ArrowUpDown className="h-3 w-3" /></button></th>
               <th className="px-4 py-3 text-right font-medium text-muted-foreground">Acțiuni</th>
             </tr>
           </thead>
@@ -351,45 +627,77 @@ function AdminProducts() {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     {p.image_url ? (
-                      <img src={p.image_url} alt="" className="h-12 w-12 rounded-lg object-cover border border-border" />
+                      <img src={p.image_url} alt="" className="h-12 w-12 rounded-lg object-cover border border-border shrink-0" />
                     ) : (
-                      <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-xs">N/A</div>
+                      <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0"><ImageIcon className="h-5 w-5" /></div>
                     )}
-                    <div>
-                      <p className="font-medium text-foreground">{p.name}</p>
-                      <p className="text-xs text-muted-foreground line-clamp-1">{p.short_description || "—"}</p>
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground truncate">{p.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{p.short_description || p.slug}</p>
+                      {p.badge && (
+                        <span className={`mt-0.5 inline-block rounded px-1.5 py-0.5 text-[10px] font-bold uppercase ${
+                          p.badge_type === "sale" ? "bg-accent/15 text-accent" : p.badge_type === "limited" ? "bg-destructive/15 text-destructive" : "bg-chart-2/15 text-chart-2"
+                        }`}>{p.badge}</span>
+                      )}
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground font-mono text-xs">{p.sku || "—"}</td>
-                <td className="px-4 py-3 text-muted-foreground text-xs">{catName(p.category_id)}</td>
+                <td className="px-4 py-3 text-muted-foreground font-mono text-xs hidden lg:table-cell">{p.sku || "—"}</td>
                 <td className="px-4 py-3">
-                  <div>
-                    {p.old_price && <span className="text-xs text-muted-foreground line-through mr-1">{p.old_price}</span>}
-                    <span className="font-medium text-foreground">{p.price} RON</span>
-                    {p.old_price && p.price < p.old_price && (
-                      <span className="ml-1 text-xs text-chart-2">-{Math.round((1 - p.price / p.old_price) * 100)}%</span>
-                    )}
-                  </div>
+                  <span className="text-xs text-muted-foreground bg-secondary rounded-md px-2 py-1">{catName(p.category_id)}</span>
                 </td>
                 <td className="px-4 py-3">
-                  <div className="flex items-center gap-1">
-                    {p.stock <= 0 && <AlertTriangle className="h-3.5 w-3.5 text-destructive" />}
-                    <span className={`text-xs font-medium ${p.stock > 10 ? "text-chart-2" : p.stock > 0 ? "text-accent" : "text-destructive"}`}>
-                      {p.stock > 0 ? p.stock : "Epuizat"}
-                    </span>
-                  </div>
+                  {inlineEdit?.id === p.id && inlineEdit.field === "price" ? (
+                    <div className="flex items-center gap-1">
+                      <input type="number" value={inlineEdit.value} onChange={(e) => setInlineEdit({ ...inlineEdit, value: e.target.value })}
+                        className="w-20 rounded border border-accent px-2 py-1 text-sm" autoFocus
+                        onKeyDown={(e) => { if (e.key === "Enter") handleInlineEditSave(); if (e.key === "Escape") setInlineEdit(null); }}
+                        onBlur={handleInlineEditSave} />
+                    </div>
+                  ) : (
+                    <div className="cursor-pointer group" onClick={() => setInlineEdit({ id: p.id, field: "price", value: String(p.price) })} title="Click pentru editare rapidă">
+                      {p.old_price && <span className="text-xs text-muted-foreground line-through mr-1">{p.old_price}</span>}
+                      <span className="font-medium text-foreground group-hover:text-accent transition">{p.price} <span className="text-xs text-muted-foreground">RON</span></span>
+                      {p.old_price && p.price < p.old_price && (
+                        <span className="ml-1 text-xs text-chart-2 font-medium">-{Math.round((1 - p.price / p.old_price) * 100)}%</span>
+                      )}
+                    </div>
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  {inlineEdit?.id === p.id && inlineEdit.field === "stock" ? (
+                    <input type="number" value={inlineEdit.value} onChange={(e) => setInlineEdit({ ...inlineEdit, value: e.target.value })}
+                      className="w-16 rounded border border-accent px-2 py-1 text-sm" autoFocus
+                      onKeyDown={(e) => { if (e.key === "Enter") handleInlineEditSave(); if (e.key === "Escape") setInlineEdit(null); }}
+                      onBlur={handleInlineEditSave} />
+                  ) : (
+                    <div className="flex items-center gap-1 cursor-pointer group" onClick={() => setInlineEdit({ id: p.id, field: "stock", value: String(p.stock) })} title="Click pentru editare rapidă">
+                      {p.stock <= 0 && <AlertTriangle className="h-3.5 w-3.5 text-destructive" />}
+                      <span className={`text-xs font-medium group-hover:text-accent transition ${p.stock > 10 ? "text-chart-2" : p.stock > 0 ? "text-amber-500" : "text-destructive"}`}>
+                        {p.stock > 0 ? p.stock : "Epuizat"}
+                      </span>
+                    </div>
+                  )}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-1.5">
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${p.is_active ? "bg-chart-2/15 text-chart-2" : "bg-muted text-muted-foreground"}`}>
+                    <button onClick={() => handleQuickToggleActive(p.id, p.is_active)} title={p.is_active ? "Dezactivează" : "Activează"}
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium transition cursor-pointer ${p.is_active ? "bg-chart-2/15 text-chart-2 hover:bg-chart-2/25" : "bg-muted text-muted-foreground hover:bg-secondary"}`}>
                       {p.is_active ? "Activ" : "Inactiv"}
-                    </span>
-                    {p.is_featured && <Star className="h-3.5 w-3.5 text-accent fill-accent" />}
+                    </button>
+                    <button onClick={() => handleQuickToggleFeatured(p.id, p.is_featured)} title={p.is_featured ? "Scoate recomandat" : "Marchează recomandat"}>
+                      <Star className={`h-3.5 w-3.5 transition cursor-pointer ${p.is_featured ? "text-accent fill-accent" : "text-muted-foreground/30 hover:text-accent/50"}`} />
+                    </button>
                   </div>
                 </td>
+                <td className="px-4 py-3 text-xs text-muted-foreground hidden xl:table-cell">
+                  {p.updated_at ? new Date(p.updated_at).toLocaleDateString("ro-RO") : "—"}
+                </td>
                 <td className="px-4 py-3 text-right">
-                  <div className="flex items-center justify-end gap-1">
+                  <div className="flex items-center justify-end gap-0.5">
+                    <Link to="/produs/$slug" params={{ slug: p.slug }} target="_blank" title="Vezi pe site" className="rounded p-1.5 text-muted-foreground hover:bg-secondary hover:text-chart-2 transition">
+                      <ExternalLink className="h-4 w-4" />
+                    </Link>
                     <button onClick={() => handleDuplicate(p)} title="Duplică" className="rounded p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground transition"><Copy className="h-4 w-4" /></button>
                     <button onClick={() => openEdit(p)} title="Editează" className="rounded p-1.5 text-muted-foreground hover:bg-secondary hover:text-accent transition"><Pencil className="h-4 w-4" /></button>
                     <button onClick={() => handleDelete(p.id)} title="Șterge" className="rounded p-1.5 text-muted-foreground hover:bg-secondary hover:text-destructive transition"><Trash2 className="h-4 w-4" /></button>
@@ -398,7 +706,8 @@ function AdminProducts() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">
+              <tr><td colSpan={9} className="px-4 py-12 text-center text-muted-foreground">
+                <Package className="h-10 w-10 mx-auto mb-2 text-muted-foreground/30" />
                 {products.length === 0 ? "Niciun produs încă. Adaugă primul!" : "Niciun produs nu corespunde filtrelor."}
               </td></tr>
             )}
@@ -410,9 +719,10 @@ function AdminProducts() {
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Afișând {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} din {filtered.length}
+            {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} din {filtered.length} produse
           </p>
           <div className="flex items-center gap-1">
+            <button onClick={() => setPage(1)} disabled={page === 1} className="rounded-lg border border-border px-2 py-1.5 text-xs disabled:opacity-40 hover:bg-secondary transition">Prima</button>
             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-lg border border-border p-2 text-sm disabled:opacity-40 hover:bg-secondary transition">
               <ChevronLeft className="h-4 w-4" />
             </button>
@@ -432,6 +742,34 @@ function AdminProducts() {
             <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="rounded-lg border border-border p-2 text-sm disabled:opacity-40 hover:bg-secondary transition">
               <ChevronRight className="h-4 w-4" />
             </button>
+            <button onClick={() => setPage(totalPages)} disabled={page === totalPages} className="rounded-lg border border-border px-2 py-1.5 text-xs disabled:opacity-40 hover:bg-secondary transition">Ultima</button>
+          </div>
+        </div>
+      )}
+
+      {/* CSV Import Modal */}
+      {showImport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm p-4" onClick={() => setShowImport(false)}>
+          <div className="w-full max-w-2xl rounded-xl bg-card shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+              <h2 className="font-heading text-lg font-bold text-foreground">Import CSV Produse</h2>
+              <button onClick={() => setShowImport(false)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="rounded-lg bg-secondary/50 p-4 text-sm text-muted-foreground">
+                <p className="font-medium text-foreground mb-1">Format CSV acceptat:</p>
+                <code className="text-xs">Nume, SKU, Categorie, Preț, Preț vechi, Stoc</code>
+                <p className="mt-2 text-xs">Prima linie poate fi header (se detectează automat). Categoria se potrivește după nume.</p>
+              </div>
+              <textarea value={importData} onChange={(e) => setImportData(e.target.value)} rows={10} className={inputClass + " font-mono text-xs"} placeholder="Lumânare Vanilla, GS-001, Lumânări, 49.99, 69.99, 50&#10;Lumânare Lavandă, GS-002, Lumânări, 39.99, , 30" />
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setShowImport(false)} className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">Anulează</button>
+                <button onClick={handleImportCSV} disabled={importLoading || !importData.trim()} className="flex items-center gap-2 rounded-lg bg-foreground px-6 py-2 text-sm font-semibold text-primary-foreground hover:bg-accent hover:text-accent-foreground transition disabled:opacity-50">
+                  {importLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  Importă
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -439,22 +777,33 @@ function AdminProducts() {
       {/* Edit modal */}
       {editing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm p-4" onClick={() => setEditing(null)}>
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl bg-card shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-xl bg-card shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card px-6 py-4 rounded-t-xl">
-              <h2 className="font-heading text-xl font-bold text-foreground">{isNew ? "Produs Nou" : "Editează Produs"}</h2>
-              <button onClick={() => setEditing(null)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
+              <div>
+                <h2 className="font-heading text-xl font-bold text-foreground">{isNew ? "Produs Nou" : "Editează Produs"}</h2>
+                {!isNew && editing.slug && <p className="text-xs text-muted-foreground mt-0.5">/produs/{editing.slug}</p>}
+              </div>
+              <div className="flex items-center gap-2">
+                {!isNew && editing.slug && (
+                  <Link to="/produs/$slug" params={{ slug: editing.slug }} target="_blank" className="flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition">
+                    <ExternalLink className="h-3.5 w-3.5" /> Preview
+                  </Link>
+                )}
+                <button onClick={() => setEditing(null)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
+              </div>
             </div>
 
             <div className="border-b border-border px-6">
-              <div className="flex gap-1">
+              <div className="flex gap-1 overflow-x-auto">
                 {[
-                  { key: "info", label: "Informații" },
-                  { key: "price", label: "Preț & Stoc" },
-                  { key: "media", label: "Media" },
-                  { key: "seo", label: "SEO & Badge-uri" },
+                  { key: "info", label: "📝 Informații" },
+                  { key: "price", label: "💰 Preț & Stoc" },
+                  { key: "media", label: "🖼️ Media" },
+                  { key: "seo", label: "🔍 SEO" },
+                  { key: "badges", label: "🏷️ Badge & Rating" },
                 ].map((tab) => (
                   <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                    className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-[1px] transition ${activeTab === tab.key ? "border-accent text-accent" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
+                    className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-[1px] transition whitespace-nowrap ${activeTab === tab.key ? "border-accent text-accent" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
                     {tab.label}
                   </button>
                 ))}
@@ -484,10 +833,12 @@ function AdminProducts() {
                   <div className="col-span-2">
                     <label className={labelClass}>Descriere scurtă</label>
                     <input value={editing.short_description || ""} onChange={(e) => updateField("short_description", e.target.value)} className={inputClass} placeholder="Notă caldă de vanilie și lemn de santal" />
+                    <p className="mt-1 text-xs text-muted-foreground">{(editing.short_description || "").length} caractere</p>
                   </div>
                   <div className="col-span-2">
-                    <label className={labelClass}>Descriere completă</label>
-                    <textarea value={editing.description || ""} onChange={(e) => updateField("description", e.target.value)} rows={5} className={inputClass} placeholder="Descriere detaliată a produsului..." />
+                    <label className={labelClass}>Descriere completă (HTML acceptat)</label>
+                    <textarea value={editing.description || ""} onChange={(e) => updateField("description", e.target.value)} rows={8} className={inputClass + " font-mono text-xs"} placeholder="Descriere detaliată a produsului..." />
+                    <p className="mt-1 text-xs text-muted-foreground">{(editing.description || "").length} caractere</p>
                   </div>
                 </div>
               )}
@@ -503,18 +854,21 @@ function AdminProducts() {
                     <label className={labelClass}>Preț vechi (RON)</label>
                     <input type="number" step="0.01" value={editing.old_price || ""} onChange={(e) => updateField("old_price", e.target.value ? Number(e.target.value) : null)} className={inputClass} placeholder="Pentru reducere" />
                     {editing.old_price && editing.price < editing.old_price && (
-                      <p className="mt-1 text-xs text-chart-2">-{Math.round((1 - editing.price / editing.old_price) * 100)}% reducere</p>
+                      <p className="mt-1 text-xs text-chart-2 font-medium">🏷️ Reducere: -{Math.round((1 - editing.price / editing.old_price) * 100)}% ({(editing.old_price - editing.price).toFixed(2)} RON economie)</p>
                     )}
                   </div>
                   <div>
                     <label className={labelClass}>Stoc *</label>
                     <input type="number" value={editing.stock} onChange={(e) => updateField("stock", Number(e.target.value))} className={inputClass} />
-                    <p className={`mt-1 text-xs ${editing.stock > 10 ? "text-chart-2" : editing.stock > 0 ? "text-accent" : "text-destructive"}`}>
-                      {editing.stock > 10 ? "În stoc" : editing.stock > 0 ? "Stoc limitat" : "Epuizat"}
-                    </p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <div className={`h-2 w-2 rounded-full ${editing.stock > 10 ? "bg-chart-2" : editing.stock > 0 ? "bg-amber-500" : "bg-destructive"}`} />
+                      <p className={`text-xs font-medium ${editing.stock > 10 ? "text-chart-2" : editing.stock > 0 ? "text-amber-500" : "text-destructive"}`}>
+                        {editing.stock > 10 ? "În stoc" : editing.stock > 0 ? `Stoc limitat (${editing.stock} buc.)` : "Epuizat"}
+                      </p>
+                    </div>
                   </div>
                   <div>
-                    <label className={labelClass}>SKU</label>
+                    <label className={labelClass}>SKU (Cod produs)</label>
                     <input value={editing.sku || ""} onChange={(e) => updateField("sku", e.target.value)} className={inputClass} placeholder="GS-VAN-001" />
                   </div>
                   <div>
@@ -525,14 +879,14 @@ function AdminProducts() {
                     <label className={labelClass}>Ordine afișare</label>
                     <input type="number" value={editing.sort_order || 0} onChange={(e) => updateField("sort_order", Number(e.target.value))} className={inputClass} />
                   </div>
-                  <div className="col-span-2 flex items-center gap-6 pt-2">
+                  <div className="col-span-2 flex items-center gap-6 pt-2 border-t border-border">
                     <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
-                      <input type="checkbox" checked={editing.is_active} onChange={(e) => updateField("is_active", e.target.checked)} className="rounded border-border" />
+                      <input type="checkbox" checked={editing.is_active} onChange={(e) => updateField("is_active", e.target.checked)} className="rounded border-border accent-accent h-4 w-4" />
                       <span className="flex items-center gap-1">{editing.is_active ? <Eye className="h-4 w-4 text-chart-2" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />} Activ (vizibil pe site)</span>
                     </label>
                     <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
-                      <input type="checkbox" checked={editing.is_featured} onChange={(e) => updateField("is_featured", e.target.checked)} className="rounded border-border" />
-                      <span className="flex items-center gap-1"><Star className={`h-4 w-4 ${editing.is_featured ? "text-accent fill-accent" : "text-muted-foreground"}`} /> Recomandat</span>
+                      <input type="checkbox" checked={editing.is_featured} onChange={(e) => updateField("is_featured", e.target.checked)} className="rounded border-border accent-accent h-4 w-4" />
+                      <span className="flex items-center gap-1"><Star className={`h-4 w-4 ${editing.is_featured ? "text-accent fill-accent" : "text-muted-foreground"}`} /> Produs recomandat</span>
                     </label>
                   </div>
                 </div>
@@ -541,26 +895,50 @@ function AdminProducts() {
               {activeTab === "media" && (
                 <div className="space-y-6">
                   <div>
-                    <label className={labelClass}>Imagine principală (URL)</label>
-                    <input value={editing.image_url || ""} onChange={(e) => updateField("image_url", e.target.value)} className={inputClass} placeholder="https://..." />
-                    {editing.image_url && <img src={editing.image_url} alt="Preview" className="mt-3 h-40 w-40 rounded-xl object-cover border border-border" />}
+                    <label className={labelClass}>Imagine principală</label>
+                    <div className="mt-2 flex gap-3 items-start">
+                      <div className="flex-1">
+                        <input value={editing.image_url || ""} onChange={(e) => updateField("image_url", e.target.value)} className={inputClass + " mt-0"} placeholder="https://... sau încarcă o imagine" />
+                      </div>
+                      <button onClick={() => fileInputRef.current?.click()} disabled={uploading}
+                        className="flex items-center gap-1.5 rounded-lg border border-dashed border-accent px-4 py-2 text-sm font-medium text-accent hover:bg-accent/10 transition disabled:opacity-50">
+                        {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                        Upload
+                      </button>
+                    </div>
+                    {editing.image_url && (
+                      <div className="mt-3 relative group inline-block">
+                        <img src={editing.image_url} alt="Preview" className="h-40 w-40 rounded-xl object-cover border border-border" />
+                        <button onClick={() => updateField("image_url", "")} className="absolute -right-2 -top-2 rounded-full bg-destructive p-1 text-white opacity-0 group-hover:opacity-100 transition">
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <label className={labelClass}>Galerie imagini</label>
+                  <div className="border-t border-border pt-6">
+                    <label className={labelClass}>Galerie imagini ({(editing.gallery || []).length} imagini)</label>
                     <div className="mt-2 flex gap-2">
-                      <input value={galleryInput} onChange={(e) => setGalleryInput(e.target.value)} className={`${inputClass} mt-0`} placeholder="URL imagine galerie" onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addGalleryImage())} />
-                      <button onClick={addGalleryImage} className="shrink-0 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-accent hover:text-accent-foreground transition">
+                      <input value={galleryInput} onChange={(e) => setGalleryInput(e.target.value)} className={`${inputClass} mt-0`} placeholder="URL imagine galerie"
+                        onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addGalleryImage())} />
+                      <button onClick={addGalleryImage} className="shrink-0 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">
                         <Plus className="h-4 w-4" />
+                      </button>
+                      <button onClick={() => galleryFileRef.current?.click()} disabled={uploadingGallery}
+                        className="shrink-0 flex items-center gap-1 rounded-lg border border-dashed border-accent px-3 py-2 text-sm font-medium text-accent hover:bg-accent/10 transition disabled:opacity-50">
+                        {uploadingGallery ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                       </button>
                     </div>
                     {(editing.gallery || []).length > 0 && (
                       <div className="mt-3 flex gap-2 flex-wrap">
                         {(editing.gallery as string[]).map((img: string, i: number) => (
                           <div key={i} className="relative group">
-                            <img src={img} alt={`Gallery ${i}`} className="h-20 w-20 rounded-lg object-cover border border-border" />
-                            <button onClick={() => removeGalleryImage(i)} className="absolute -right-1.5 -top-1.5 rounded-full bg-destructive p-0.5 text-white opacity-0 group-hover:opacity-100 transition">
-                              <X className="h-3 w-3" />
-                            </button>
+                            <img src={img} alt={`Gallery ${i + 1}`} className="h-24 w-24 rounded-lg object-cover border border-border" />
+                            <div className="absolute inset-0 bg-foreground/50 rounded-lg opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1">
+                              {i > 0 && <button onClick={() => moveGalleryImage(i, -1)} className="rounded bg-card p-1 text-foreground text-xs hover:bg-secondary">◀</button>}
+                              <button onClick={() => removeGalleryImage(i)} className="rounded bg-destructive p-1 text-white"><X className="h-3 w-3" /></button>
+                              {i < (editing.gallery as string[]).length - 1 && <button onClick={() => moveGalleryImage(i, 1)} className="rounded bg-card p-1 text-foreground text-xs hover:bg-secondary">▶</button>}
+                            </div>
+                            <span className="absolute bottom-1 left-1 bg-foreground/70 text-primary-foreground text-[10px] px-1 rounded">{i + 1}</span>
                           </div>
                         ))}
                       </div>
@@ -571,18 +949,39 @@ function AdminProducts() {
 
               {activeTab === "seo" && (
                 <div className="space-y-4">
+                  <div className="rounded-lg bg-secondary/50 p-4">
+                    <p className="text-xs font-medium text-muted-foreground mb-2">GOOGLE PREVIEW</p>
+                    <p className="text-blue-600 text-base font-medium truncate">{editing.meta_title || editing.name || "Titlu produs"} — Lumini.ro</p>
+                    <p className="text-green-700 text-xs">lumini.ro/produs/{editing.slug || "..."}</p>
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{editing.meta_description || editing.short_description || "Descriere produs..."}</p>
+                  </div>
                   <div>
                     <label className={labelClass}>Meta Title</label>
                     <input value={editing.meta_title || ""} onChange={(e) => updateField("meta_title", e.target.value)} className={inputClass} placeholder={editing.name || "Titlu pagină"} />
-                    <p className={`mt-1 text-xs ${(editing.meta_title || editing.name || "").length > 60 ? "text-destructive" : "text-muted-foreground"}`}>{(editing.meta_title || editing.name || "").length}/60 caractere</p>
+                    <div className="mt-1 flex items-center justify-between">
+                      <p className="text-xs text-muted-foreground">Ideal: 50-60 caractere</p>
+                      <p className={`text-xs font-medium ${(editing.meta_title || editing.name || "").length > 60 ? "text-destructive" : (editing.meta_title || editing.name || "").length >= 50 ? "text-chart-2" : "text-muted-foreground"}`}>
+                        {(editing.meta_title || editing.name || "").length}/60
+                      </p>
+                    </div>
                   </div>
                   <div>
                     <label className={labelClass}>Meta Description</label>
-                    <textarea value={editing.meta_description || ""} onChange={(e) => updateField("meta_description", e.target.value)} rows={2} className={inputClass} placeholder={editing.short_description || "Descriere pentru motoare de căutare"} />
-                    <p className={`mt-1 text-xs ${(editing.meta_description || "").length > 160 ? "text-destructive" : "text-muted-foreground"}`}>{(editing.meta_description || "").length}/160 caractere</p>
+                    <textarea value={editing.meta_description || ""} onChange={(e) => updateField("meta_description", e.target.value)} rows={3} className={inputClass} placeholder={editing.short_description || "Descriere pentru motoare de căutare"} />
+                    <div className="mt-1 flex items-center justify-between">
+                      <p className="text-xs text-muted-foreground">Ideal: 120-160 caractere</p>
+                      <p className={`text-xs font-medium ${(editing.meta_description || "").length > 160 ? "text-destructive" : (editing.meta_description || "").length >= 120 ? "text-chart-2" : "text-muted-foreground"}`}>
+                        {(editing.meta_description || "").length}/160
+                      </p>
+                    </div>
                   </div>
-                  <div className="border-t border-border pt-4">
-                    <label className={labelClass}>Badge</label>
+                </div>
+              )}
+
+              {activeTab === "badges" && (
+                <div className="space-y-6">
+                  <div>
+                    <label className={labelClass}>Badge produs</label>
                     <div className="grid grid-cols-2 gap-4 mt-2">
                       <div>
                         <label className="text-xs text-muted-foreground">Text badge</label>
@@ -599,25 +998,29 @@ function AdminProducts() {
                       </div>
                     </div>
                     {editing.badge && (
-                      <div className="mt-3">
+                      <div className="mt-3 flex items-center gap-3">
                         <span className="text-xs text-muted-foreground">Preview:</span>
-                        <span className={`ml-2 inline-block rounded-md px-2.5 py-1 text-xs font-bold uppercase ${
+                        <span className={`inline-block rounded-md px-2.5 py-1 text-xs font-bold uppercase ${
                           editing.badge_type === "sale" ? "bg-accent text-accent-foreground" :
                           editing.badge_type === "bestseller" ? "bg-accent text-accent-foreground" :
                           editing.badge_type === "limited" ? "bg-destructive text-white" :
                           "bg-chart-2 text-white"
-                        }`}>
-                          {editing.badge}
-                        </span>
+                        }`}>{editing.badge}</span>
                       </div>
                     )}
                   </div>
-                  <div className="border-t border-border pt-4">
+                  <div className="border-t border-border pt-6">
                     <label className={labelClass}>Rating & Reviews</label>
                     <div className="grid grid-cols-2 gap-4 mt-2">
                       <div>
                         <label className="text-xs text-muted-foreground">Rating (0-5)</label>
                         <input type="number" step="0.1" min="0" max="5" value={editing.rating || 0} onChange={(e) => updateField("rating", Number(e.target.value))} className={inputClass} />
+                        <div className="mt-1 flex items-center gap-0.5">
+                          {[1,2,3,4,5].map(s => (
+                            <Star key={s} className={`h-4 w-4 ${s <= Math.round(editing.rating || 0) ? "text-accent fill-accent" : "text-muted-foreground/20"}`} />
+                          ))}
+                          <span className="ml-2 text-xs text-muted-foreground">{editing.rating || 0}/5</span>
+                        </div>
                       </div>
                       <div>
                         <label className="text-xs text-muted-foreground">Număr review-uri</label>
@@ -630,14 +1033,15 @@ function AdminProducts() {
             </div>
 
             <div className="sticky bottom-0 flex items-center justify-between border-t border-border bg-card px-6 py-4 rounded-b-xl">
-              <div className="text-xs text-muted-foreground">
-                {!isNew && editing.created_at && `Creat: ${new Date(editing.created_at).toLocaleDateString("ro-RO")}`}
+              <div className="text-xs text-muted-foreground space-y-0.5">
+                {!isNew && editing.created_at && <p>Creat: {new Date(editing.created_at).toLocaleDateString("ro-RO")}</p>}
+                {!isNew && editing.updated_at && <p>Actualizat: {new Date(editing.updated_at).toLocaleDateString("ro-RO")}</p>}
               </div>
               <div className="flex gap-3">
                 <button onClick={() => setEditing(null)} className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">Anulează</button>
                 <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 rounded-lg bg-foreground px-6 py-2 text-sm font-semibold text-primary-foreground hover:bg-accent hover:text-accent-foreground transition disabled:opacity-50">
-                  {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {isNew ? "Creează Produs" : "Salvează Modificările"}
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  {isNew ? "Creează Produs" : "Salvează"}
                 </button>
               </div>
             </div>

@@ -12,11 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminTickerRouteImport } from './routes/admin/ticker'
 import { Route as AdminThemeRouteImport } from './routes/admin/theme'
 import { Route as AdminSubscribersRouteImport } from './routes/admin/subscribers'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
+import { Route as AdminPopupRouteImport } from './routes/admin/popup'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
+import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
+import { Route as AdminHeaderRouteImport } from './routes/admin/header'
+import { Route as AdminFooterRouteImport } from './routes/admin/footer'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 
 const AdminRoute = AdminRouteImport.update({
@@ -32,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTickerRoute = AdminTickerRouteImport.update({
+  id: '/ticker',
+  path: '/ticker',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminThemeRoute = AdminThemeRouteImport.update({
@@ -54,9 +64,29 @@ const AdminProductsRoute = AdminProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPopupRoute = AdminPopupRouteImport.update({
+  id: '/popup',
+  path: '/popup',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminHomepageRoute = AdminHomepageRouteImport.update({
+  id: '/homepage',
+  path: '/homepage',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminHeaderRoute = AdminHeaderRouteImport.update({
+  id: '/header',
+  path: '/header',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFooterRoute = AdminFooterRouteImport.update({
+  id: '/footer',
+  path: '/footer',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
@@ -69,21 +99,31 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/footer': typeof AdminFooterRoute
+  '/admin/header': typeof AdminHeaderRoute
+  '/admin/homepage': typeof AdminHomepageRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/theme': typeof AdminThemeRoute
+  '/admin/ticker': typeof AdminTickerRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/footer': typeof AdminFooterRoute
+  '/admin/header': typeof AdminHeaderRoute
+  '/admin/homepage': typeof AdminHomepageRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/theme': typeof AdminThemeRoute
+  '/admin/ticker': typeof AdminTickerRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -91,11 +131,16 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/footer': typeof AdminFooterRoute
+  '/admin/header': typeof AdminHeaderRoute
+  '/admin/homepage': typeof AdminHomepageRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/theme': typeof AdminThemeRoute
+  '/admin/ticker': typeof AdminTickerRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -104,32 +149,47 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/admin/categories'
+    | '/admin/footer'
+    | '/admin/header'
+    | '/admin/homepage'
     | '/admin/orders'
+    | '/admin/popup'
     | '/admin/products'
     | '/admin/settings'
     | '/admin/subscribers'
     | '/admin/theme'
+    | '/admin/ticker'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin/categories'
+    | '/admin/footer'
+    | '/admin/header'
+    | '/admin/homepage'
     | '/admin/orders'
+    | '/admin/popup'
     | '/admin/products'
     | '/admin/settings'
     | '/admin/subscribers'
     | '/admin/theme'
+    | '/admin/ticker'
     | '/admin'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/admin/categories'
+    | '/admin/footer'
+    | '/admin/header'
+    | '/admin/homepage'
     | '/admin/orders'
+    | '/admin/popup'
     | '/admin/products'
     | '/admin/settings'
     | '/admin/subscribers'
     | '/admin/theme'
+    | '/admin/ticker'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -161,6 +221,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/ticker': {
+      id: '/admin/ticker'
+      path: '/ticker'
+      fullPath: '/admin/ticker'
+      preLoaderRoute: typeof AdminTickerRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/theme': {
       id: '/admin/theme'
       path: '/theme'
@@ -189,11 +256,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/popup': {
+      id: '/admin/popup'
+      path: '/popup'
+      fullPath: '/admin/popup'
+      preLoaderRoute: typeof AdminPopupRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/orders': {
       id: '/admin/orders'
       path: '/orders'
       fullPath: '/admin/orders'
       preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/homepage': {
+      id: '/admin/homepage'
+      path: '/homepage'
+      fullPath: '/admin/homepage'
+      preLoaderRoute: typeof AdminHomepageRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/header': {
+      id: '/admin/header'
+      path: '/header'
+      fullPath: '/admin/header'
+      preLoaderRoute: typeof AdminHeaderRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/footer': {
+      id: '/admin/footer'
+      path: '/footer'
+      fullPath: '/admin/footer'
+      preLoaderRoute: typeof AdminFooterRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/categories': {
@@ -208,21 +303,31 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminFooterRoute: typeof AdminFooterRoute
+  AdminHeaderRoute: typeof AdminHeaderRoute
+  AdminHomepageRoute: typeof AdminHomepageRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminPopupRoute: typeof AdminPopupRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSubscribersRoute: typeof AdminSubscribersRoute
   AdminThemeRoute: typeof AdminThemeRoute
+  AdminTickerRoute: typeof AdminTickerRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminFooterRoute: AdminFooterRoute,
+  AdminHeaderRoute: AdminHeaderRoute,
+  AdminHomepageRoute: AdminHomepageRoute,
   AdminOrdersRoute: AdminOrdersRoute,
+  AdminPopupRoute: AdminPopupRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSubscribersRoute: AdminSubscribersRoute,
   AdminThemeRoute: AdminThemeRoute,
+  AdminTickerRoute: AdminTickerRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -235,3 +340,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

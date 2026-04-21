@@ -75,9 +75,15 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   return (
     <SiteSettingsProvider>
-      <CartProvider>
-        <Outlet />
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <FavoritesProvider>
+            <CompareProvider>
+              <Outlet />
+            </CompareProvider>
+          </FavoritesProvider>
+        </CartProvider>
+      </AuthProvider>
     </SiteSettingsProvider>
   );
 }

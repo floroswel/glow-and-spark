@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Package, FolderOpen, ShoppingCart, Users, Settings,
-  Palette, LogOut, Menu, X, ChevronRight
+  Palette, LogOut, Menu, X, Type, TicketPercent, Home, PanelBottom, MessageSquare
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -22,8 +22,13 @@ const navItems = [
   { to: "/admin/categories", icon: FolderOpen, label: "Categorii" },
   { to: "/admin/orders", icon: ShoppingCart, label: "Comenzi" },
   { to: "/admin/subscribers", icon: Users, label: "Abonați" },
-  { to: "/admin/settings", icon: Settings, label: "Setări Magazin" },
-  { to: "/admin/theme", icon: Palette, label: "Temă & Design" },
+  { to: "/admin/theme", icon: Palette, label: "Temă & Culori" },
+  { to: "/admin/header", icon: Type, label: "Header" },
+  { to: "/admin/ticker", icon: TicketPercent, label: "Ticker Banner" },
+  { to: "/admin/homepage", icon: Home, label: "Homepage" },
+  { to: "/admin/footer", icon: PanelBottom, label: "Footer" },
+  { to: "/admin/popup", icon: MessageSquare, label: "Popup" },
+  { to: "/admin/settings", icon: Settings, label: "Setări Generale" },
 ];
 
 function AdminLayout() {

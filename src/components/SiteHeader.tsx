@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useCart } from "@/hooks/useCart";
 import { Link } from "@tanstack/react-router";
-import { Menu, X, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package } from "lucide-react";
+import { Menu, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export function SiteHeader() {
   const { header, general } = useSiteSettings();

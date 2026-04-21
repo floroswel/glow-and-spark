@@ -106,17 +106,79 @@ export function SiteHeader() {
 
             {/* Desktop search */}
             {header?.show_search !== false && (
-              <div className="hidden flex-1 max-w-xl mx-8 md:block">
+              <div className="hidden flex-1 max-w-xl mx-8 md:block relative" ref={desktopSearchRef}>
                 <div className="relative">
                   <input
                     type="text"
+                    value={desktopSearch.query}
+                    onChange={(e) => desktopSearch.search(e.target.value)}
+                    onFocus={() => { if (desktopSearch.results.length > 0) desktopSearch.setOpen(true); }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && desktopSearch.query.trim()) {
+                        navigate({ to: "/catalog", search: { q: desktopSearch.query.trim() } as any });
+                        desktopSearch.clear();
+                      }
+                    }}
                     placeholder={header?.search_placeholder || "Caută produse, categorii, arome..."}
                     className="w-full rounded-full border border-border bg-secondary px-5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
                   />
-                  <button className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-foreground p-2 text-primary-foreground transition hover:bg-accent">
+                  <button
+                    onClick={() => {
+                      if (desktopSearch.query.trim()) {
+                        navigate({ to: "/catalog", search: { q: desktopSearch.query.trim() } as any });
+                        desktopSearch.clear();
+                      }
+                    }}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-foreground p-2 text-primary-foreground transition hover:bg-accent"
+                  >
                     <Search className="h-4 w-4" />
                   </button>
                 </div>
+                {/* Search dropdown */}
+                {desktopSearch.open && (
+                  <div className="absolute left-0 right-0 top-full mt-1 z-50 rounded-xl border border-border bg-card shadow-xl overflow-hidden">
+                    {desktopSearch.loading ? (
+                      <div className="p-4 text-center text-sm text-muted-foreground">Se caută...</div>
+                    ) : desktopSearch.results.length === 0 ? (
+                      <div className="p-4 text-center text-sm text-muted-foreground">Niciun produs găsit</div>
+                    ) : (
+                      <div className="max-h-[360px] overflow-y-auto divide-y divide-border">
+                        {desktopSearch.results.map((p) => (
+                          <Link
+                            key={p.id}
+                            to="/produs/$slug"
+                            params={{ slug: p.slug }}
+                            onClick={() => desktopSearch.clear()}
+                            className="flex items-center gap-3 px-4 py-3 hover:bg-secondary transition"
+                          >
+                            {p.image_url && (
+                              <img src={p.image_url} alt={p.name} className="h-12 w-12 rounded-lg object-cover bg-muted" />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-sm font-bold text-accent">{p.price} RON</span>
+                                {p.old_price && (
+                                  <span className="text-xs text-muted-foreground line-through">{p.old_price} RON</span>
+                                )}
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                    {desktopSearch.query.trim().length >= 2 && (
+                      <Link
+                        to="/catalog"
+                        search={{ q: desktopSearch.query.trim() } as any}
+                        onClick={() => desktopSearch.clear()}
+                        className="block border-t border-border px-4 py-2.5 text-center text-sm font-medium text-accent hover:bg-secondary transition"
+                      >
+                        Vezi toate rezultatele →
+                      </Link>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 

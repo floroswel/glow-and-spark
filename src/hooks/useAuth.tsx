@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from "react";
+import { useState, useEffect, createContext, useContext, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 
@@ -31,56 +31,77 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const loadProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", userId)
-      .maybeSingle();
-    setProfile(data as Profile | null);
+  const loadProfile = useCallback(async (userId: string) => {
+    try {
+      const [{ data: profileData }, { data: roleData }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("*")
+          .eq("user_id", userId)
+          .maybeSingle(),
+        supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", userId)
+          .eq("role", "admin")
+          .maybeSingle(),
+      ]);
 
-    const { data: roleData } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
-    setIsAdmin(!!roleData);
-  };
+      setProfile(profileData as Profile | null);
+      setIsAdmin(Boolean(roleData));
+    } catch (error) {
+      console.error("Failed to load auth profile", error);
+      setProfile(null);
+      setIsAdmin(false);
+    }
+  }, []);
+
+  const applySession = useCallback(
+    async (nextSession: Session | null) => {
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+
+      if (!nextSession?.user) {
+        setProfile(null);
+        setIsAdmin(false);
+        setLoading(false);
+        return;
+      }
+
+      await loadProfile(nextSession.user.id);
+      setLoading(false);
+    },
+    [loadProfile],
+  );
 
   const refreshProfile = async () => {
     if (user) await loadProfile(user.id);
   };
 
   useEffect(() => {
-    let initialSessionHandled = false;
+    let isMounted = true;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await loadProfile(session.user.id);
-      } else {
-        setProfile(null);
-        setIsAdmin(false);
-      }
-      initialSessionHandled = true;
-      setLoading(false);
+    const runApplySession = (nextSession: Session | null) => {
+      void applySession(nextSession).finally(() => {
+        if (!isMounted) return;
+      });
+    };
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      runApplySession(nextSession);
     });
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!initialSessionHandled) {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          await loadProfile(session.user.id);
-        }
-        setLoading(false);
-      }
+    void supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      runApplySession(initialSession);
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, [applySession]);
 
   const signUp = async (email: string, password: string, fullName: string) => {
     const { error } = await supabase.auth.signUp({

@@ -9,8 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as CompareRouteImport } from './routes/compare'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as CartRouteImport } from './routes/cart'
@@ -39,6 +42,16 @@ import { Route as AccountOrdersRouteImport } from './routes/account/orders'
 import { Route as AccountFavoritesRouteImport } from './routes/account/favorites'
 import { Route as AccountAddressesRouteImport } from './routes/account/addresses'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackOrderRoute = TrackOrderRouteImport.update({
+  id: '/track-order',
+  path: '/track-order',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -47,6 +60,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareRoute = CompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -193,8 +211,11 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
+  '/compare': typeof CompareRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/track-order': typeof TrackOrderRoute
+  '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/favorites': typeof AccountFavoritesRoute
   '/account/orders': typeof AccountOrdersRoute
@@ -222,8 +243,11 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
+  '/compare': typeof CompareRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/track-order': typeof TrackOrderRoute
+  '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/favorites': typeof AccountFavoritesRoute
   '/account/orders': typeof AccountOrdersRoute
@@ -254,8 +278,11 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
+  '/compare': typeof CompareRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/track-order': typeof TrackOrderRoute
+  '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/favorites': typeof AccountFavoritesRoute
   '/account/orders': typeof AccountOrdersRoute
@@ -287,8 +314,11 @@ export interface FileRouteTypes {
     | '/cart'
     | '/catalog'
     | '/checkout'
+    | '/compare'
     | '/forgot-password'
     | '/reset-password'
+    | '/track-order'
+    | '/wishlist'
     | '/account/addresses'
     | '/account/favorites'
     | '/account/orders'
@@ -316,8 +346,11 @@ export interface FileRouteTypes {
     | '/cart'
     | '/catalog'
     | '/checkout'
+    | '/compare'
     | '/forgot-password'
     | '/reset-password'
+    | '/track-order'
+    | '/wishlist'
     | '/account/addresses'
     | '/account/favorites'
     | '/account/orders'
@@ -347,8 +380,11 @@ export interface FileRouteTypes {
     | '/cart'
     | '/catalog'
     | '/checkout'
+    | '/compare'
     | '/forgot-password'
     | '/reset-password'
+    | '/track-order'
+    | '/wishlist'
     | '/account/addresses'
     | '/account/favorites'
     | '/account/orders'
@@ -379,8 +415,11 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CatalogRoute: typeof CatalogRoute
   CheckoutRoute: typeof CheckoutRoute
+  CompareRoute: typeof CompareRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TrackOrderRoute: typeof TrackOrderRoute
+  WishlistRoute: typeof WishlistRoute
   CategorieSlugRoute: typeof CategorieSlugRoute
   OrderConfirmedOrderIdRoute: typeof OrderConfirmedOrderIdRoute
   ProdusSlugRoute: typeof ProdusSlugRoute
@@ -388,6 +427,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/track-order': {
+      id: '/track-order'
+      path: '/track-order'
+      fullPath: '/track-order'
+      preLoaderRoute: typeof TrackOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -400,6 +453,13 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare': {
+      id: '/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof CompareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -653,8 +713,11 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CatalogRoute: CatalogRoute,
   CheckoutRoute: CheckoutRoute,
+  CompareRoute: CompareRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TrackOrderRoute: TrackOrderRoute,
+  WishlistRoute: WishlistRoute,
   CategorieSlugRoute: CategorieSlugRoute,
   OrderConfirmedOrderIdRoute: OrderConfirmedOrderIdRoute,
   ProdusSlugRoute: ProdusSlugRoute,

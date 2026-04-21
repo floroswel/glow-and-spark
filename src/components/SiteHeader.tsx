@@ -90,9 +90,9 @@ export function SiteHeader() {
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="md:hidden flex items-center justify-center rounded-md p-1.5 hover:bg-secondary transition"
-              aria-label={mobileOpen ? "Închide meniu" : "Deschide meniu"}
+              aria-label="Deschide meniu"
             >
-              {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              <Menu className="h-6 w-6" />
             </button>
           </div>
         </div>
@@ -133,7 +133,7 @@ export function SiteHeader() {
                       onMouseEnter={() => setActiveCategory(cat.id)}
                       onClick={() => setMegaMenuOpen(false)}
                     >
-                      <span>{cat.icon || "🕯️"} {cat.name}</span>
+                      <span>{cat.name}</span>
                       <span className="text-xs transition-transform" style={{ transform: activeCategory === cat.id ? "translateX(4px)" : undefined }}>›</span>
                     </Link>
                   ))}
@@ -205,113 +205,112 @@ export function SiteHeader() {
         </div>
       </nav>
 
-      {/* Mobile menu overlay */}
-      {mobileOpen && (
-        <div className="md:hidden fixed inset-0 top-[57px] z-50 bg-background/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-      )}
+      {/* Mobile menu - Sheet from left */}
+      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+        <SheetContent side="left" className="w-[280px] p-0 overflow-y-auto">
+          <SheetHeader className="p-4 border-b border-border">
+            <SheetTitle className="font-heading text-lg font-bold tracking-tight">
+              {general?.site_name || "LUMINI"}<span className="text-accent">.RO</span>
+            </SheetTitle>
+          </SheetHeader>
 
-      {/* Mobile slide-in menu */}
-      <div
-        className={`md:hidden fixed top-[57px] left-0 z-50 h-[calc(100dvh-57px)] w-[280px] bg-card border-r border-border shadow-xl transition-transform duration-300 ease-in-out overflow-y-auto ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        {/* Mobile search */}
-        {header?.show_search !== false && (
-          <div className="p-4 border-b border-border">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder={header?.search_placeholder || "Caută produse..."}
-                className="w-full rounded-full border border-border bg-secondary px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-              />
-              <button className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-foreground p-2 text-primary-foreground">
-                <Search className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Mobile nav links */}
-        <div className="p-3 space-y-1">
-          <MobileLink to="/" icon={<Home className="h-5 w-5" />} label="Acasă" onClick={() => setMobileOpen(false)} />
-          <MobileLink to="/catalog" icon={<Package className="h-5 w-5" />} label="Toate Produsele" onClick={() => setMobileOpen(false)} />
-
-          {/* Categories in mobile */}
-          {categories.map((cat) => (
-            <Link
-              key={cat.id}
-              to="/categorie/$slug"
-              params={{ slug: cat.slug }}
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition pl-8"
-            >
-              {cat.icon || "🕯️"} {cat.name}
-            </Link>
-          ))}
-
-          {navLinks.map((link: any, i: number) => {
-            const isInternal = link.url?.startsWith("/");
-            if (isInternal) {
-              return (
-                <MobileLink
-                  key={i}
-                  to={link.url}
-                  label={link.label}
-                  onClick={() => setMobileOpen(false)}
-                  highlight={link.highlight}
-                  highlightColor={link.color}
+          {/* Mobile search */}
+          {header?.show_search !== false && (
+            <div className="p-4 border-b border-border">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder={header?.search_placeholder || "Caută produse..."}
+                  className="w-full rounded-full border border-border bg-secondary px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
                 />
-              );
-            }
-            return (
-              <a
-                key={i}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
-                style={{ color: link.highlight ? link.color : undefined }}
-              >
-                {link.label}
-              </a>
-            );
-          })}
-
-          <MobileLink to="/blog" icon={<FileText className="h-5 w-5" />} label="Blog" onClick={() => setMobileOpen(false)} />
-        </div>
-
-        {/* Divider */}
-        <div className="mx-4 border-t border-border" />
-
-        {/* Mobile utility links */}
-        <div className="p-3 space-y-1">
-          {header?.show_compare !== false && (
-            <MobileLink to="/compare" icon={<GitCompare className="h-5 w-5" />} label="Compară" onClick={() => setMobileOpen(false)} />
-          )}
-          {header?.show_favorites !== false && (
-            <MobileLink to="/wishlist" icon={<Heart className="h-5 w-5" />} label="Favorite" onClick={() => setMobileOpen(false)} />
-          )}
-          <MobileLink to="/account" icon={<User className="h-5 w-5" />} label="Contul Meu" onClick={() => setMobileOpen(false)} />
-          <MobileLink to="/track-order" icon={<Search className="h-5 w-5" />} label="Urmărește Comanda" onClick={() => setMobileOpen(false)} />
-        </div>
-
-        {/* Mobile contact */}
-        {(general?.phone || general?.email) && (
-          <>
-            <div className="mx-4 border-t border-border" />
-            <div className="p-4 space-y-2">
-              {general?.phone && (
-                <a href={`tel:${general.phone}`} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition">
-                  <Phone className="h-4 w-4" />
-                  {general.phone}
-                </a>
-              )}
+                <button className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-foreground p-2 text-primary-foreground">
+                  <Search className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
-          </>
-        )}
-      </div>
+          )}
+
+          {/* Mobile nav links */}
+          <div className="p-3 space-y-0.5">
+            <MobileLink to="/" icon={<Home className="h-5 w-5" />} label="Acasă" onClick={() => setMobileOpen(false)} />
+            <MobileLink to="/catalog" icon={<Package className="h-5 w-5" />} label="Toate Produsele" onClick={() => setMobileOpen(false)} />
+
+            {/* Categories in mobile */}
+            {categories.map((cat) => (
+              <Link
+                key={cat.id}
+                to="/categorie/$slug"
+                params={{ slug: cat.slug }}
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition pl-8"
+              >
+                {cat.name}
+              </Link>
+            ))}
+
+            {navLinks.map((link: any, i: number) => {
+              const isInternal = link.url?.startsWith("/");
+              if (isInternal) {
+                return (
+                  <MobileLink
+                    key={i}
+                    to={link.url}
+                    label={link.label}
+                    onClick={() => setMobileOpen(false)}
+                    highlight={link.highlight}
+                    highlightColor={link.color}
+                  />
+                );
+              }
+              return (
+                <a
+                  key={i}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+                  style={{ color: link.highlight ? link.color : undefined }}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
+
+            <MobileLink to="/blog" icon={<FileText className="h-5 w-5" />} label="Blog" onClick={() => setMobileOpen(false)} />
+          </div>
+
+          {/* Divider */}
+          <div className="mx-4 border-t border-border" />
+
+          {/* Mobile utility links */}
+          <div className="p-3 space-y-0.5">
+            {header?.show_compare !== false && (
+              <MobileLink to="/compare" icon={<GitCompare className="h-5 w-5" />} label="Compară" onClick={() => setMobileOpen(false)} />
+            )}
+            {header?.show_favorites !== false && (
+              <MobileLink to="/wishlist" icon={<Heart className="h-5 w-5" />} label="Favorite" onClick={() => setMobileOpen(false)} />
+            )}
+            <MobileLink to="/account" icon={<User className="h-5 w-5" />} label="Contul Meu" onClick={() => setMobileOpen(false)} />
+            <MobileLink to="/track-order" icon={<Search className="h-5 w-5" />} label="Urmărește Comanda" onClick={() => setMobileOpen(false)} />
+          </div>
+
+          {/* Mobile contact */}
+          {(general?.phone || general?.email) && (
+            <>
+              <div className="mx-4 border-t border-border" />
+              <div className="p-4 space-y-2">
+                {general?.phone && (
+                  <a href={`tel:${general.phone}`} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition">
+                    <Phone className="h-4 w-4" />
+                    {general.phone}
+                  </a>
+                )}
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </header>
   );
 }

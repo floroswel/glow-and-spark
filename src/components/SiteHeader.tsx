@@ -29,20 +29,8 @@ function useProductSearch() {
     debounceRef.current = setTimeout(async () => {
       const t = term.trim();
       const [productsRes, categoriesRes] = await Promise.all([
-        supabase
-          .from("products")
-          .select("id, name, slug, price, old_price, image_url, short_description")
-          .eq("is_active", true)
-          .or(`name.ilike.%${t}%,short_description.ilike.%${t}%`)
-          .order("is_featured", { ascending: false })
-          .limit(6),
-        supabase
-          .from("categories")
-          .select("id, name, slug, icon, image_url")
-          .eq("visible", true)
-          .ilike("name", `%${t}%`)
-          .order("sort_order")
-          .limit(4),
+        supabase.rpc("search_products_unaccent", { term: t, lim: 6 }),
+        supabase.rpc("search_categories_unaccent", { term: t, lim: 4 }),
       ]);
       setResults(productsRes.data || []);
       setCategoryResults(categoriesRes.data || []);

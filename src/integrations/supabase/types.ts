@@ -586,6 +586,68 @@ export type Database = {
         }
         Returns: boolean
       }
+      search_categories_unaccent: {
+        Args: { lim?: number; term: string }
+        Returns: {
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          image_url: string | null
+          name: string
+          parent_id: string | null
+          slug: string
+          sort_order: number | null
+          visible: boolean | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "categories"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      search_product_ids_unaccent: {
+        Args: { term: string }
+        Returns: {
+          id: string
+        }[]
+      }
+      search_products_unaccent: {
+        Args: { lim?: number; term: string }
+        Returns: {
+          badge: string | null
+          badge_type: string | null
+          category_id: string | null
+          created_at: string | null
+          description: string | null
+          gallery: Json | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          is_featured: boolean | null
+          meta_description: string | null
+          meta_title: string | null
+          name: string
+          old_price: number | null
+          price: number
+          rating: number | null
+          reviews_count: number | null
+          short_description: string | null
+          sku: string | null
+          slug: string
+          sort_order: number | null
+          stock: number | null
+          updated_at: string | null
+          weight: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "products"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
     }
     Enums: {
       app_role: "admin" | "user"

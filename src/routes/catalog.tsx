@@ -46,7 +46,7 @@ function CatalogPage() {
 
   // Helper to update search params
   const updateSearch = (updates: Partial<z.infer<typeof catalogSearchSchema>>) => {
-    navigate({ search: (prev) => ({ ...prev, ...updates }) });
+    navigate({ search: (prev: z.infer<typeof catalogSearchSchema>) => ({ ...prev, ...updates }) });
   };
 
   // Fetch categories

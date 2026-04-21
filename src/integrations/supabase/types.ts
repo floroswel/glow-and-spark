@@ -416,18 +416,134 @@ export type Database = {
           },
         ]
       }
+      product_tag_links: {
+        Row: {
+          id: string
+          product_id: string
+          tag_id: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          tag_id: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_tag_links_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_tag_links_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "product_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      product_variants: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name: string
+          old_price: number | null
+          options: Json | null
+          price: number | null
+          product_id: string
+          sku: string | null
+          sort_order: number | null
+          stock: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name: string
+          old_price?: number | null
+          options?: Json | null
+          price?: number | null
+          product_id: string
+          sku?: string | null
+          sort_order?: number | null
+          stock?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name?: string
+          old_price?: number | null
+          options?: Json | null
+          price?: number | null
+          product_id?: string
+          sku?: string | null
+          sort_order?: number | null
+          stock?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           badge: string | null
           badge_type: string | null
+          barcode: string | null
           category_id: string | null
           created_at: string | null
           description: string | null
+          digital_file_url: string | null
+          digital_max_downloads: number | null
           gallery: Json | null
+          height_cm: number | null
           id: string
           image_url: string | null
           is_active: boolean | null
+          is_digital: boolean | null
           is_featured: boolean | null
+          length_cm: number | null
           meta_description: string | null
           meta_title: string | null
           name: string
@@ -442,18 +558,25 @@ export type Database = {
           stock: number | null
           updated_at: string | null
           weight: string | null
+          width_cm: number | null
         }
         Insert: {
           badge?: string | null
           badge_type?: string | null
+          barcode?: string | null
           category_id?: string | null
           created_at?: string | null
           description?: string | null
+          digital_file_url?: string | null
+          digital_max_downloads?: number | null
           gallery?: Json | null
+          height_cm?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_digital?: boolean | null
           is_featured?: boolean | null
+          length_cm?: number | null
           meta_description?: string | null
           meta_title?: string | null
           name: string
@@ -468,18 +591,25 @@ export type Database = {
           stock?: number | null
           updated_at?: string | null
           weight?: string | null
+          width_cm?: number | null
         }
         Update: {
           badge?: string | null
           badge_type?: string | null
+          barcode?: string | null
           category_id?: string | null
           created_at?: string | null
           description?: string | null
+          digital_file_url?: string | null
+          digital_max_downloads?: number | null
           gallery?: Json | null
+          height_cm?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_digital?: boolean | null
           is_featured?: boolean | null
+          length_cm?: number | null
           meta_description?: string | null
           meta_title?: string | null
           name?: string
@@ -494,6 +624,7 @@ export type Database = {
           stock?: number | null
           updated_at?: string | null
           weight?: string | null
+          width_cm?: number | null
         }
         Relationships: [
           {
@@ -534,6 +665,45 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      related_products: {
+        Row: {
+          id: string
+          relation_type: string
+          sort_order: number | null
+          source_product_id: string
+          target_product_id: string
+        }
+        Insert: {
+          id?: string
+          relation_type?: string
+          sort_order?: number | null
+          source_product_id: string
+          target_product_id: string
+        }
+        Update: {
+          id?: string
+          relation_type?: string
+          sort_order?: number | null
+          source_product_id?: string
+          target_product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "related_products_source_product_id_fkey"
+            columns: ["source_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "related_products_target_product_id_fkey"
+            columns: ["target_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       site_settings: {
         Row: {
@@ -618,14 +788,20 @@ export type Database = {
         Returns: {
           badge: string | null
           badge_type: string | null
+          barcode: string | null
           category_id: string | null
           created_at: string | null
           description: string | null
+          digital_file_url: string | null
+          digital_max_downloads: number | null
           gallery: Json | null
+          height_cm: number | null
           id: string
           image_url: string | null
           is_active: boolean | null
+          is_digital: boolean | null
           is_featured: boolean | null
+          length_cm: number | null
           meta_description: string | null
           meta_title: string | null
           name: string
@@ -640,6 +816,7 @@ export type Database = {
           stock: number | null
           updated_at: string | null
           weight: string | null
+          width_cm: number | null
         }[]
         SetofOptions: {
           from: "*"

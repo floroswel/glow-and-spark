@@ -1,4 +1,9 @@
+import { useCart, type CartItem } from "@/hooks/useCart";
+import { useState } from "react";
+
 interface ProductCardProps {
+  id: string;
+  slug: string;
   image: string;
   title: string;
   description: string;
@@ -11,16 +16,11 @@ interface ProductCardProps {
 }
 
 export function ProductCard({
-  image,
-  title,
-  description,
-  price,
-  oldPrice,
-  rating,
-  reviews,
-  badge,
-  badgeType = "new",
+  id, slug, image, title, description, price, oldPrice, rating, reviews, badge, badgeType = "new",
 }: ProductCardProps) {
+  const { addItem } = useCart();
+  const [added, setAdded] = useState(false);
+
   const badgeColors: Record<string, string> = {
     sale: "bg-sale text-sale-foreground",
     bestseller: "bg-accent text-accent-foreground",
@@ -30,6 +30,12 @@ export function ProductCard({
 
   const stars = "★".repeat(Math.floor(rating)) + (rating % 1 >= 0.5 ? "☆" : "");
 
+  const handleAdd = () => {
+    addItem({ id, slug, name: title, price, old_price: oldPrice, image_url: image });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  };
+
   return (
     <div className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition hover:shadow-md">
       <div className="relative overflow-hidden">
@@ -38,14 +44,7 @@ export function ProductCard({
             {badge}
           </span>
         )}
-        <img
-          src={image}
-          alt={title}
-          className="img-zoom aspect-square w-full object-cover"
-          loading="lazy"
-          width={640}
-          height={640}
-        />
+        <img src={image} alt={title} className="img-zoom aspect-square w-full object-cover" loading="lazy" width={640} height={640} />
       </div>
       <div className="p-4">
         <h3 className="font-heading text-sm font-semibold leading-snug text-foreground">{title}</h3>
@@ -56,13 +55,14 @@ export function ProductCard({
         </div>
         <div className="mt-3 flex items-center justify-between">
           <div className="flex items-baseline gap-2">
-            {oldPrice && (
-              <span className="text-sm text-muted-foreground line-through">{oldPrice} RON</span>
-            )}
+            {oldPrice && <span className="text-sm text-muted-foreground line-through">{oldPrice} RON</span>}
             <span className="text-lg font-bold text-foreground">{price} RON</span>
           </div>
-          <button className="rounded-lg bg-foreground px-4 py-2 text-xs font-semibold text-primary-foreground transition hover:bg-accent hover:text-accent-foreground">
-            Adaugă
+          <button
+            onClick={handleAdd}
+            className={`rounded-lg px-4 py-2 text-xs font-semibold transition ${added ? "bg-chart-2 text-primary-foreground" : "bg-foreground text-primary-foreground hover:bg-accent hover:text-accent-foreground"}`}
+          >
+            {added ? "✓ Adăugat" : "Adaugă"}
           </button>
         </div>
       </div>

@@ -1,9 +1,10 @@
-import { useState } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useCart } from "@/hooks/useCart";
+import { Link } from "@tanstack/react-router";
 
 export function SiteHeader() {
   const { header, general } = useSiteSettings();
-  const [cartCount] = useState(3);
+  const { cartCount } = useCart();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card shadow-sm">
@@ -47,7 +48,7 @@ export function SiteHeader() {
             </button>
           )}
           {header?.show_cart !== false && (
-            <button className="relative flex items-center gap-1 hover:text-foreground transition">
+            <Link to="/cart" className="relative flex items-center gap-1 hover:text-foreground transition">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
@@ -57,7 +58,7 @@ export function SiteHeader() {
                   {cartCount}
                 </span>
               )}
-            </button>
+            </Link>
           )}
         </div>
       </div>

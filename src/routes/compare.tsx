@@ -60,7 +60,7 @@ function ComparePage() {
     { label: "Stoc", render: (p) => {
       const stock = p.stock ?? 0;
       return stock > 5 ? <span className="text-sm text-accent font-medium">În stoc ({stock})</span>
-        : stock > 0 ? <span className="text-sm text-yellow-600 font-medium">Stoc limitat ({stock})</span>
+        : stock > 0 ? <span className="text-sm text-accent/70 font-medium">Stoc limitat ({stock})</span>
         : <span className="text-sm text-destructive font-medium">Epuizat</span>;
     }},
     { label: "Acțiune", render: (p) => (

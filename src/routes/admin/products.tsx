@@ -6,7 +6,8 @@ import {
   ChevronLeft, ChevronRight, CheckSquare, Square, AlertTriangle, Loader2,
   ArrowUpDown, ExternalLink, GripVertical, Image as ImageIcon, Package,
   TrendingUp, DollarSign, BarChart3, Filter, RotateCcw, Percent, FolderOpen,
-  Save, Check, ChevronDown, FileSpreadsheet, RefreshCw
+  Save, Check, ChevronDown, FileSpreadsheet, RefreshCw, Tag, Link2, Ruler,
+  FileDown, Layers, BoxIcon
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/products")({

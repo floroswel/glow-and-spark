@@ -100,7 +100,7 @@ function AdminLayout() {
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
-        <nav className="flex-1 space-y-1 p-2">
+        <nav className="flex-1 space-y-1 overflow-y-auto p-2">
           {navItems.map((item) => {
             const isActive = item.end
               ? location.pathname === "/admin" || location.pathname === "/admin/"

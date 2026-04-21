@@ -231,6 +231,7 @@ function CatalogPage() {
                       reviews={p.reviews_count || 0}
                       badge={p.badge}
                       badgeType={p.badge_type}
+                      searchQuery={searchQuery}
                     />
                   ))}
                 </div>

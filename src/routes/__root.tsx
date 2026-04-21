@@ -1,6 +1,9 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { SiteSettingsProvider } from "@/hooks/useSiteSettings";
 import { CartProvider } from "@/hooks/useCart";
+import { AuthProvider } from "@/hooks/useAuth";
+import { FavoritesProvider } from "@/hooks/useFavorites";
+import { CompareProvider } from "@/hooks/useCompare";
 
 import appCss from "../styles.css?url";
 

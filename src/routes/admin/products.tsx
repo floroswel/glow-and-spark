@@ -167,7 +167,11 @@ function AdminProducts() {
   const handleBulkToggle = async (field: "is_active" | "is_featured", value: boolean) => {
     if (selectedIds.size === 0) return;
     for (const id of selectedIds) {
-      await supabase.from("products").update({ [field]: value }).eq("id", id);
+      if (field === "is_active") {
+        await supabase.from("products").update({ is_active: value }).eq("id", id);
+      } else {
+        await supabase.from("products").update({ is_featured: value }).eq("id", id);
+      }
     }
     setSelectedIds(new Set());
     showToast(`${selectedIds.size} produse actualizate.`);

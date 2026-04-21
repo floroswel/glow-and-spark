@@ -992,6 +992,8 @@ function AdminProducts() {
                       )}
                     </div>
                   </div>
+                  <div className="border-t border-border pt-6">
+                    <label className={labelClass}>Galerie imagini ({(editing.gallery || []).length} imagini)</label>
                     <div className="mt-2 flex gap-2">
                       <input value={galleryInput} onChange={(e) => setGalleryInput(e.target.value)} className={`${inputClass} mt-0`} placeholder="URL imagine galerie"
                         onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addGalleryImage())} />

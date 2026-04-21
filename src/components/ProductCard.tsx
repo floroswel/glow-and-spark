@@ -48,7 +48,7 @@ export function ProductCard({
         <img src={image} alt={title} className="img-zoom aspect-square w-full object-cover" loading="lazy" width={640} height={640} />
       </Link>
       <div className="p-4">
-        <h3 className="font-heading text-sm font-semibold leading-snug text-foreground">{title}</h3>
+        <Link to="/produs/$slug" params={{ slug }} className="hover:text-accent transition"><h3 className="font-heading text-sm font-semibold leading-snug text-foreground">{title}</h3></Link>
         <p className="mt-1 text-xs text-muted-foreground">{description}</p>
         <div className="mt-2 flex items-center gap-1.5">
           <span className="text-sm text-accent">{stars}</span>

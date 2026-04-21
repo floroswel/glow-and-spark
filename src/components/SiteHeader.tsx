@@ -429,27 +429,58 @@ export function SiteHeader() {
                 <div className="mt-2 rounded-xl border border-border bg-card shadow-lg overflow-hidden">
                   {mobileSearch.loading ? (
                     <div className="p-3 text-center text-sm text-muted-foreground">Se caută...</div>
-                  ) : mobileSearch.results.length === 0 ? (
-                    <div className="p-3 text-center text-sm text-muted-foreground">Niciun produs găsit</div>
+                  ) : mobileSearch.results.length === 0 && mobileSearch.categoryResults.length === 0 ? (
+                    <div className="p-3 text-center text-sm text-muted-foreground">Niciun rezultat găsit</div>
                   ) : (
-                    <div className="max-h-[240px] overflow-y-auto divide-y divide-border">
-                      {mobileSearch.results.map((p) => (
-                        <Link
-                          key={p.id}
-                          to="/produs/$slug"
-                          params={{ slug: p.slug }}
-                          onClick={() => { mobileSearch.clear(); setMobileOpen(false); }}
-                          className="flex items-center gap-3 px-3 py-2.5 hover:bg-secondary transition"
-                        >
-                          {p.image_url && (
-                            <img src={p.image_url} alt={p.name} className="h-10 w-10 rounded-lg object-cover bg-muted" />
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
-                            <span className="text-xs font-bold text-accent">{p.price} RON</span>
+                    <div className="max-h-[300px] overflow-y-auto">
+                      {mobileSearch.categoryResults.length > 0 && (
+                        <>
+                          <div className="px-3 pt-2.5 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Categorii</div>
+                          <div className="divide-y divide-border">
+                            {mobileSearch.categoryResults.map((cat) => (
+                              <Link
+                                key={cat.id}
+                                to="/categorie/$slug"
+                                params={{ slug: cat.slug }}
+                                onClick={() => { mobileSearch.clear(); setMobileOpen(false); }}
+                                className="flex items-center gap-3 px-3 py-2.5 hover:bg-secondary transition"
+                              >
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10 text-accent text-sm">
+                                  {cat.icon || "📁"}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium text-foreground truncate">{cat.name}</p>
+                                  <span className="text-xs text-muted-foreground">Categorie</span>
+                                </div>
+                              </Link>
+                            ))}
                           </div>
-                        </Link>
-                      ))}
+                        </>
+                      )}
+                      {mobileSearch.results.length > 0 && (
+                        <>
+                          <div className="px-3 pt-2.5 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Produse</div>
+                          <div className="divide-y divide-border">
+                            {mobileSearch.results.map((p) => (
+                              <Link
+                                key={p.id}
+                                to="/produs/$slug"
+                                params={{ slug: p.slug }}
+                                onClick={() => { mobileSearch.clear(); setMobileOpen(false); }}
+                                className="flex items-center gap-3 px-3 py-2.5 hover:bg-secondary transition"
+                              >
+                                {p.image_url && (
+                                  <img src={p.image_url} alt={p.name} className="h-10 w-10 rounded-lg object-cover bg-muted" />
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                                  <span className="text-xs font-bold text-accent">{p.price} RON</span>
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>

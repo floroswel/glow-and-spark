@@ -1,10 +1,15 @@
-const steps = [
-  { num: "1", label: "Alege produsele" },
-  { num: "2", label: "Finalizează comanda" },
-  { num: "3", label: "Primește comanda" },
-];
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export function HowToBuy() {
+  const { homepage } = useSiteSettings();
+  if (homepage?.show_how_to_buy === false) return null;
+
+  const steps = [
+    { num: "1", label: homepage?.step1 || "Alege produsele" },
+    { num: "2", label: homepage?.step2 || "Finalizează comanda" },
+    { num: "3", label: homepage?.step3 || "Primește comanda" },
+  ];
+
   return (
     <section className="mx-auto max-w-7xl px-4 py-16">
       <div className="flex flex-col items-center justify-center gap-8 md:flex-row md:gap-16">

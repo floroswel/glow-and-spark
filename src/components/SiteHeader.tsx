@@ -9,9 +9,9 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-        <a href="/" className="font-heading text-2xl font-bold tracking-tight text-foreground">
+        <Link to="/" className="font-heading text-2xl font-bold tracking-tight text-foreground">
           {general?.site_name || "LUMINI"}<span className="text-accent">.RO</span>
-        </a>
+        </Link>
 
         {(header?.show_search !== false) && (
           <div className="hidden flex-1 max-w-xl mx-8 md:block">
@@ -32,20 +32,20 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           {header?.show_compare !== false && (
-            <button className="hidden md:flex items-center gap-1 hover:text-foreground transition">
+            <Link to="/compare" className="hidden md:flex items-center gap-1 hover:text-foreground transition">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
               Compară
-            </button>
+            </Link>
           )}
           {header?.show_favorites !== false && (
-            <button className="hidden md:flex items-center gap-1 hover:text-foreground transition">
+            <Link to="/wishlist" className="hidden md:flex items-center gap-1 hover:text-foreground transition">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
               Favorite
-            </button>
+            </Link>
           )}
           {header?.show_cart !== false && (
             <Link to="/cart" className="relative flex items-center gap-1 hover:text-foreground transition">
@@ -65,27 +65,51 @@ export function SiteHeader() {
 
       <nav className="border-t border-border bg-card">
         <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-2 text-sm font-medium">
-          <button className="flex items-center gap-1.5 rounded-md bg-foreground px-4 py-2 text-primary-foreground transition hover:bg-accent hover:text-accent-foreground">
+          <Link to="/catalog" className="flex items-center gap-1.5 rounded-md bg-foreground px-4 py-2 text-primary-foreground transition hover:bg-accent hover:text-accent-foreground">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
             Toate Produsele
-          </button>
+          </Link>
           {(header?.navbar_links || [])
             .filter((link: any) => link.active)
-            .map((link: any, i: number) => (
-              <a
-                key={i}
-                href={link.url}
-                className="transition hover:text-foreground"
-                style={{
-                  color: link.highlight ? link.color : undefined,
-                  fontWeight: link.highlight ? 600 : undefined,
-                }}
-              >
-                {link.label}
-              </a>
-            ))}
+            .map((link: any, i: number) => {
+              const isInternal = link.url?.startsWith("/");
+              if (isInternal) {
+                return (
+                  <Link
+                    key={i}
+                    to={link.url}
+                    className="transition hover:text-foreground"
+                    activeProps={{ className: "text-accent font-semibold" }}
+                    style={{
+                      color: link.highlight ? link.color : undefined,
+                      fontWeight: link.highlight ? 600 : undefined,
+                    }}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              }
+              return (
+                <a
+                  key={i}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition hover:text-foreground"
+                  style={{
+                    color: link.highlight ? link.color : undefined,
+                    fontWeight: link.highlight ? 600 : undefined,
+                  }}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
+          <Link to="/blog" className="transition hover:text-foreground" activeProps={{ className: "text-accent font-semibold" }}>
+            Blog
+          </Link>
         </div>
       </nav>
     </header>

@@ -17,6 +17,7 @@ import { Route as CompareRouteImport } from './routes/compare'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
@@ -24,8 +25,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as ProdusSlugRouteImport } from './routes/produs.$slug'
+import { Route as PageSlugRouteImport } from './routes/page.$slug'
 import { Route as OrderConfirmedOrderIdRouteImport } from './routes/order-confirmed.$orderId'
 import { Route as CategorieSlugRouteImport } from './routes/categorie.$slug'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminTickerRouteImport } from './routes/admin/ticker'
 import { Route as AdminThemeRouteImport } from './routes/admin/theme'
 import { Route as AdminSubscribersRouteImport } from './routes/admin/subscribers'
@@ -88,6 +91,11 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -123,6 +131,11 @@ const ProdusSlugRoute = ProdusSlugRouteImport.update({
   path: '/produs/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PageSlugRoute = PageSlugRouteImport.update({
+  id: '/page/$slug',
+  path: '/page/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrderConfirmedOrderIdRoute = OrderConfirmedOrderIdRouteImport.update({
   id: '/order-confirmed/$orderId',
   path: '/order-confirmed/$orderId',
@@ -132,6 +145,11 @@ const CategorieSlugRoute = CategorieSlugRouteImport.update({
   id: '/categorie/$slug',
   path: '/categorie/$slug',
   getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
 } as any)
 const AdminTickerRoute = AdminTickerRouteImport.update({
   id: '/ticker',
@@ -244,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
@@ -273,8 +292,10 @@ export interface FileRoutesByFullPath {
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/theme': typeof AdminThemeRoute
   '/admin/ticker': typeof AdminTickerRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/categorie/$slug': typeof CategorieSlugRoute
   '/order-confirmed/$orderId': typeof OrderConfirmedOrderIdRoute
+  '/page/$slug': typeof PageSlugRoute
   '/produs/$slug': typeof ProdusSlugRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -282,6 +303,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
@@ -311,8 +333,10 @@ export interface FileRoutesByTo {
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/theme': typeof AdminThemeRoute
   '/admin/ticker': typeof AdminTickerRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/categorie/$slug': typeof CategorieSlugRoute
   '/order-confirmed/$orderId': typeof OrderConfirmedOrderIdRoute
+  '/page/$slug': typeof PageSlugRoute
   '/produs/$slug': typeof ProdusSlugRoute
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
@@ -323,6 +347,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
@@ -352,8 +377,10 @@ export interface FileRoutesById {
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/theme': typeof AdminThemeRoute
   '/admin/ticker': typeof AdminTickerRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/categorie/$slug': typeof CategorieSlugRoute
   '/order-confirmed/$orderId': typeof OrderConfirmedOrderIdRoute
+  '/page/$slug': typeof PageSlugRoute
   '/produs/$slug': typeof ProdusSlugRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -365,6 +392,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/auth'
+    | '/blog'
     | '/cart'
     | '/catalog'
     | '/checkout'
@@ -394,8 +422,10 @@ export interface FileRouteTypes {
     | '/admin/subscribers'
     | '/admin/theme'
     | '/admin/ticker'
+    | '/blog/$slug'
     | '/categorie/$slug'
     | '/order-confirmed/$orderId'
+    | '/page/$slug'
     | '/produs/$slug'
     | '/account/'
     | '/admin/'
@@ -403,6 +433,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/blog'
     | '/cart'
     | '/catalog'
     | '/checkout'
@@ -432,8 +463,10 @@ export interface FileRouteTypes {
     | '/admin/subscribers'
     | '/admin/theme'
     | '/admin/ticker'
+    | '/blog/$slug'
     | '/categorie/$slug'
     | '/order-confirmed/$orderId'
+    | '/page/$slug'
     | '/produs/$slug'
     | '/account'
     | '/admin'
@@ -443,6 +476,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/auth'
+    | '/blog'
     | '/cart'
     | '/catalog'
     | '/checkout'
@@ -472,8 +506,10 @@ export interface FileRouteTypes {
     | '/admin/subscribers'
     | '/admin/theme'
     | '/admin/ticker'
+    | '/blog/$slug'
     | '/categorie/$slug'
     | '/order-confirmed/$orderId'
+    | '/page/$slug'
     | '/produs/$slug'
     | '/account/'
     | '/admin/'
@@ -484,6 +520,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BlogRoute: typeof BlogRouteWithChildren
   CartRoute: typeof CartRoute
   CatalogRoute: typeof CatalogRoute
   CheckoutRoute: typeof CheckoutRoute
@@ -494,6 +531,7 @@ export interface RootRouteChildren {
   WishlistRoute: typeof WishlistRoute
   CategorieSlugRoute: typeof CategorieSlugRoute
   OrderConfirmedOrderIdRoute: typeof OrderConfirmedOrderIdRoute
+  PageSlugRoute: typeof PageSlugRoute
   ProdusSlugRoute: typeof ProdusSlugRoute
 }
 
@@ -555,6 +593,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -604,6 +649,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdusSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/page/$slug': {
+      id: '/page/$slug'
+      path: '/page/$slug'
+      fullPath: '/page/$slug'
+      preLoaderRoute: typeof PageSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/order-confirmed/$orderId': {
       id: '/order-confirmed/$orderId'
       path: '/order-confirmed/$orderId'
@@ -617,6 +669,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/categorie/$slug'
       preLoaderRoute: typeof CategorieSlugRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
     }
     '/admin/ticker': {
       id: '/admin/ticker'
@@ -831,11 +890,22 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  BlogRoute: BlogRouteWithChildren,
   CartRoute: CartRoute,
   CatalogRoute: CatalogRoute,
   CheckoutRoute: CheckoutRoute,
@@ -846,6 +916,7 @@ const rootRouteChildren: RootRouteChildren = {
   WishlistRoute: WishlistRoute,
   CategorieSlugRoute: CategorieSlugRoute,
   OrderConfirmedOrderIdRoute: OrderConfirmedOrderIdRoute,
+  PageSlugRoute: PageSlugRoute,
   ProdusSlugRoute: ProdusSlugRoute,
 }
 export const routeTree = rootRouteImport

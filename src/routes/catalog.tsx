@@ -25,6 +25,7 @@ const ITEMS_PER_PAGE = 12;
 
 function CatalogPage() {
   const searchParams = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [categorySlug, setCategorySlug] = useState(searchParams.get("category") || "");
   const [sort, setSort] = useState(searchParams.get("sort") || "newest");
   const [minPrice, setMinPrice] = useState(0);

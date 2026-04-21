@@ -143,7 +143,18 @@ export function SiteHeader() {
                     {desktopSearch.loading ? (
                       <div className="p-4 text-center text-sm text-muted-foreground">Se caută...</div>
                     ) : desktopSearch.results.length === 0 && desktopSearch.categoryResults.length === 0 ? (
-                      <div className="p-4 text-center text-sm text-muted-foreground">Niciun rezultat găsit</div>
+                      <div className="px-4 py-6 text-center">
+                        <p className="text-2xl mb-2">🔍</p>
+                        <p className="text-sm font-medium text-foreground">Niciun rezultat pentru „{desktopSearch.query}"</p>
+                        <p className="mt-1 text-xs text-muted-foreground">Încearcă altă aromă, categorie sau cuvânt cheie</p>
+                        <Link
+                          to="/catalog"
+                          onClick={() => desktopSearch.clear()}
+                          className="mt-3 inline-block text-xs font-medium text-accent hover:underline"
+                        >
+                          Explorează catalogul complet →
+                        </Link>
+                      </div>
                     ) : (
                       <div className="max-h-[420px] overflow-y-auto">
                         {desktopSearch.categoryResults.length > 0 && (
@@ -422,7 +433,18 @@ export function SiteHeader() {
                   {mobileSearch.loading ? (
                     <div className="p-3 text-center text-sm text-muted-foreground">Se caută...</div>
                   ) : mobileSearch.results.length === 0 && mobileSearch.categoryResults.length === 0 ? (
-                    <div className="p-3 text-center text-sm text-muted-foreground">Niciun rezultat găsit</div>
+                    <div className="px-3 py-5 text-center">
+                      <p className="text-xl mb-1.5">🔍</p>
+                      <p className="text-sm font-medium text-foreground">Niciun rezultat pentru „{mobileSearch.query}"</p>
+                      <p className="mt-1 text-xs text-muted-foreground">Încearcă altă aromă sau categorie</p>
+                      <Link
+                        to="/catalog"
+                        onClick={() => { mobileSearch.clear(); setMobileOpen(false); }}
+                        className="mt-2.5 inline-block text-xs font-medium text-accent hover:underline"
+                      >
+                        Vezi catalogul →
+                      </Link>
+                    </div>
                   ) : (
                     <div className="max-h-[300px] overflow-y-auto">
                       {mobileSearch.categoryResults.length > 0 && (

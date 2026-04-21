@@ -27,28 +27,100 @@ const CACHE_KEY = "site_settings_cache";
 
 const SiteSettingsContext = createContext<SiteSettings>(defaultSettings);
 
+// Load Google Fonts dynamically
+function loadGoogleFont(fontName: string) {
+  const id = `gfont-${fontName.replace(/\s+/g, "-").toLowerCase()}`;
+  if (document.getElementById(id)) return;
+  const link = document.createElement("link");
+  link.id = id;
+  link.rel = "stylesheet";
+  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:wght@300;400;500;600;700;800;900&display=swap`;
+  document.head.appendChild(link);
+}
+
 function applyThemeVariables(theme: Record<string, any>) {
   const root = document.documentElement;
-  if (theme.primary_color) root.style.setProperty("--primary", hexToOklch(theme.primary_color));
-  if (theme.accent_color) root.style.setProperty("--accent", hexToOklch(theme.accent_color));
-  if (theme.background_color) root.style.setProperty("--background", hexToOklch(theme.background_color));
-  if (theme.foreground_color) root.style.setProperty("--foreground", hexToOklch(theme.foreground_color));
-  if (theme.card_color) root.style.setProperty("--card", hexToOklch(theme.card_color));
-  if (theme.secondary_color) root.style.setProperty("--secondary", hexToOklch(theme.secondary_color));
-  if (theme.heading_font) root.style.setProperty("--font-heading", `'${theme.heading_font}', serif`);
-  if (theme.body_font) root.style.setProperty("--font-body", `'${theme.body_font}', sans-serif`);
-  if (theme.border_radius) root.style.setProperty("--radius", `${theme.border_radius}px`);
+
+  const colorMap: Record<string, string> = {
+    primary_color: "--primary",
+    accent_color: "--accent",
+    background_color: "--background",
+    foreground_color: "--foreground",
+    card_color: "--card",
+    secondary_color: "--secondary",
+    muted_color: "--muted",
+    destructive_color: "--destructive",
+    border_color: "--border",
+  };
+
+  for (const [key, cssVar] of Object.entries(colorMap)) {
+    if (theme[key]) {
+      const oklch = hexToOklch(theme[key]);
+      root.style.setProperty(cssVar, oklch);
+    }
+  }
+
+  // Derived foreground tokens
+  if (theme.foreground_color) {
+    const fg = hexToOklch(theme.foreground_color);
+    root.style.setProperty("--card-foreground", fg);
+    root.style.setProperty("--popover-foreground", fg);
+  }
+  if (theme.card_color) {
+    root.style.setProperty("--popover", hexToOklch(theme.card_color));
+  }
+  if (theme.background_color) {
+    const bgOklch = hexToOklch(theme.background_color);
+    root.style.setProperty("--sidebar", bgOklch);
+  }
+  if (theme.primary_color) {
+    // primary-foreground = light color for contrast
+    root.style.setProperty("--primary-foreground", "oklch(0.98 0.005 80)");
+  }
+  if (theme.secondary_color) {
+    root.style.setProperty("--secondary-foreground", theme.foreground_color ? hexToOklch(theme.foreground_color) : "oklch(0.30 0.03 50)");
+  }
+  if (theme.muted_color) {
+    // muted-foreground = mid-tone
+    root.style.setProperty("--muted-foreground", "oklch(0.50 0.02 50)");
+  }
+  if (theme.accent_color) {
+    root.style.setProperty("--accent-foreground", theme.foreground_color ? hexToOklch(theme.foreground_color) : "oklch(0.20 0.02 50)");
+    root.style.setProperty("--ring", hexToOklch(theme.accent_color));
+    root.style.setProperty("--warm-gold", hexToOklch(theme.accent_color));
+    root.style.setProperty("--chart-1", hexToOklch(theme.accent_color));
+  }
+  if (theme.destructive_color) {
+    root.style.setProperty("--destructive-foreground", "oklch(0.98 0.005 80)");
+    root.style.setProperty("--sale", hexToOklch(theme.destructive_color));
+  }
+  if (theme.border_color) {
+    root.style.setProperty("--input", hexToOklch(theme.border_color));
+    root.style.setProperty("--sidebar-border", hexToOklch(theme.border_color));
+  }
+
+  // Typography
+  if (theme.heading_font) {
+    loadGoogleFont(theme.heading_font);
+    root.style.setProperty("--font-heading", `'${theme.heading_font}', serif`);
+  }
+  if (theme.body_font) {
+    loadGoogleFont(theme.body_font);
+    root.style.setProperty("--font-body", `'${theme.body_font}', sans-serif`);
+  }
+
+  // Border radius
+  if (theme.border_radius) {
+    root.style.setProperty("--radius", `${theme.border_radius}rem`);
+  }
 }
 
 function hexToOklch(hex: string): string {
-  // Simple hex to oklch approximation via sRGB
   const r = parseInt(hex.slice(1, 3), 16) / 255;
   const g = parseInt(hex.slice(3, 5), 16) / 255;
   const b = parseInt(hex.slice(5, 7), 16) / 255;
-  // Convert to linear sRGB
   const toLinear = (c: number) => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
   const rl = toLinear(r), gl = toLinear(g), bl = toLinear(b);
-  // To OKLab via LMS
   const l_ = 0.4122214708 * rl + 0.5363325363 * gl + 0.0514459929 * bl;
   const m_ = 0.2119034982 * rl + 0.6806995451 * gl + 0.1073969566 * bl;
   const s_ = 0.0883024619 * rl + 0.2817188376 * gl + 0.6299787005 * bl;
@@ -72,7 +144,6 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    // Load all settings
     supabase
       .from("site_settings")
       .select("key, value")
@@ -90,7 +161,6 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
         }
       });
 
-    // Realtime subscription
     const channel = supabase
       .channel("site_settings_realtime")
       .on(
@@ -115,7 +185,6 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Apply theme on initial load
   useEffect(() => {
     if (settings.theme && Object.keys(settings.theme).length) {
       applyThemeVariables(settings.theme);

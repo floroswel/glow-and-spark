@@ -25,6 +25,7 @@ const ITEMS_PER_PAGE = 12;
 
 function CatalogPage() {
   const searchParams = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [categorySlug, setCategorySlug] = useState(searchParams.get("category") || "");
   const [sort, setSort] = useState(searchParams.get("sort") || "newest");
   const [minPrice, setMinPrice] = useState(0);
@@ -49,8 +50,11 @@ function CatalogPage() {
     const fetchProducts = async () => {
       let query = supabase.from("products").select("*, categories!products_category_id_fkey(slug, name)", { count: "exact" }).eq("is_active", true);
 
+      if (searchQuery.trim()) {
+        query = query.ilike("name", `%${searchQuery.trim()}%`);
+      }
+
       if (categorySlug) {
-        // Get category id from slug
         const cat = categories.find((c) => c.slug === categorySlug);
         if (cat) query = query.eq("category_id", cat.id);
       }
@@ -74,18 +78,19 @@ function CatalogPage() {
       setLoading(false);
     };
     fetchProducts();
-  }, [categorySlug, sort, minPrice, maxPrice, page, categories]);
+  }, [searchQuery, categorySlug, sort, minPrice, maxPrice, page, categories]);
 
   // Update URL
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams();
+    if (searchQuery) params.set("q", searchQuery);
     if (categorySlug) params.set("category", categorySlug);
     if (sort !== "newest") params.set("sort", sort);
     if (page > 1) params.set("page", String(page));
     const qs = params.toString();
     window.history.replaceState({}, "", `/catalog${qs ? `?${qs}` : ""}`);
-  }, [categorySlug, sort, page]);
+  }, [searchQuery, categorySlug, sort, page]);
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
   const activeCat = categories.find((c) => c.slug === categorySlug);
@@ -106,9 +111,19 @@ function CatalogPage() {
           </span>
         </nav>
 
-        <h1 className="font-heading text-3xl font-bold text-foreground mb-8">
-          {activeCat ? activeCat.name : "Toate Produsele"}
-        </h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <h1 className="font-heading text-3xl font-bold text-foreground">
+            {searchQuery ? `Rezultate pentru „${searchQuery}"` : activeCat ? activeCat.name : "Toate Produsele"}
+          </h1>
+          {searchQuery && (
+            <button
+              onClick={() => { setSearchQuery(""); setPage(1); }}
+              className="text-sm text-accent hover:underline"
+            >
+              ✕ Șterge căutarea
+            </button>
+          )}
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar filters */}

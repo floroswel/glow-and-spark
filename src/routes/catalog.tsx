@@ -62,6 +62,7 @@ function CatalogPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   // Helper to update search params
   const updateSearch = (updates: Partial<z.infer<typeof catalogSearchSchema>>) => {
@@ -151,7 +152,18 @@ function CatalogPage() {
                 ✕ Șterge căutarea
               </button>
             )}
-            <CopyFiltersButton />
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                });
+              }}
+              className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+            >
+              {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+              {copied ? "Copiat!" : "Copiază link"}
+            </button>
           </div>
         </div>
 

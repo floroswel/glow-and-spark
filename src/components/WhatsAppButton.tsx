@@ -1,7 +1,15 @@
+import { useSiteSettings } from "@/hooks/useSiteSettings";
+
 export function WhatsAppButton() {
+  const { general } = useSiteSettings();
+  if (general?.whatsapp_show === false) return null;
+
+  const number = general?.whatsapp_number || "40800123456";
+  const message = encodeURIComponent(general?.whatsapp_message || "Buna ziua!");
+
   return (
     <a
-      href="https://wa.me/40800123456"
+      href={`https://wa.me/${number}?text=${message}`}
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-semibold shadow-lg transition hover:bg-[#20bd5a] hover:shadow-xl"

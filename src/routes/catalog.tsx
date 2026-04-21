@@ -158,6 +158,7 @@ function CatalogPage() {
                 navigator.clipboard.writeText(window.location.href).then(() => {
                   setCopied(true);
                   setTimeout(() => setCopied(false), 2000);
+                  toast.success("Link copiat în clipboard!", { duration: 2000 });
                 });
               }}
               className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"

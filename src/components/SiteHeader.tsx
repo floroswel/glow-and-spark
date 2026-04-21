@@ -143,7 +143,17 @@ export function SiteHeader() {
                     {desktopSearch.loading ? (
                       <div className="p-4 text-center text-sm text-muted-foreground">Se caută...</div>
                     ) : desktopSearch.results.length === 0 && desktopSearch.categoryResults.length === 0 ? (
-                      <div className="p-4 text-center text-sm text-muted-foreground">Niciun rezultat găsit</div>
+                      <div className="p-4 text-center">
+                        <p className="text-sm text-muted-foreground">Niciun rezultat pentru „{desktopSearch.query}"</p>
+                        <Link
+                          to="/catalog"
+                          search={{ q: desktopSearch.query.trim() } as any}
+                          onClick={() => desktopSearch.clear()}
+                          className="mt-2 inline-block text-sm font-medium text-accent hover:underline"
+                        >
+                          Caută în catalog →
+                        </Link>
+                      </div>
                     ) : (
                       <div className="max-h-[420px] overflow-y-auto">
                         {desktopSearch.categoryResults.length > 0 && (
@@ -422,7 +432,17 @@ export function SiteHeader() {
                   {mobileSearch.loading ? (
                     <div className="p-3 text-center text-sm text-muted-foreground">Se caută...</div>
                   ) : mobileSearch.results.length === 0 && mobileSearch.categoryResults.length === 0 ? (
-                    <div className="p-3 text-center text-sm text-muted-foreground">Niciun rezultat găsit</div>
+                    <div className="p-3 text-center">
+                      <p className="text-sm text-muted-foreground">Niciun rezultat pentru „{mobileSearch.query}"</p>
+                      <Link
+                        to="/catalog"
+                        search={{ q: mobileSearch.query.trim() } as any}
+                        onClick={() => { mobileSearch.clear(); setMobileOpen(false); }}
+                        className="mt-2 inline-block text-sm font-medium text-accent hover:underline"
+                      >
+                        Caută în catalog →
+                      </Link>
+                    </div>
                   ) : (
                     <div className="max-h-[300px] overflow-y-auto">
                       {mobileSearch.categoryResults.length > 0 && (
@@ -477,6 +497,16 @@ export function SiteHeader() {
                         </>
                       )}
                     </div>
+                  )}
+                  {mobileSearch.query.trim().length >= 2 && (mobileSearch.results.length > 0 || mobileSearch.categoryResults.length > 0) && (
+                    <Link
+                      to="/catalog"
+                      search={{ q: mobileSearch.query.trim() } as any}
+                      onClick={() => { mobileSearch.clear(); setMobileOpen(false); }}
+                      className="block border-t border-border px-3 py-2.5 text-center text-sm font-medium text-accent hover:bg-secondary transition"
+                    >
+                      Vezi toate rezultatele →
+                    </Link>
                   )}
                 </div>
               )}

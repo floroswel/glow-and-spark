@@ -1,0 +1,71 @@
+interface ProductCardProps {
+  image: string;
+  title: string;
+  description: string;
+  price: number;
+  oldPrice?: number;
+  rating: number;
+  reviews: number;
+  badge?: string;
+  badgeType?: "sale" | "bestseller" | "limited" | "new";
+}
+
+export function ProductCard({
+  image,
+  title,
+  description,
+  price,
+  oldPrice,
+  rating,
+  reviews,
+  badge,
+  badgeType = "new",
+}: ProductCardProps) {
+  const badgeColors: Record<string, string> = {
+    sale: "bg-sale text-sale-foreground",
+    bestseller: "bg-accent text-accent-foreground",
+    limited: "bg-foreground text-primary-foreground",
+    new: "bg-chart-2 text-primary-foreground",
+  };
+
+  const stars = "★".repeat(Math.floor(rating)) + (rating % 1 >= 0.5 ? "☆" : "");
+
+  return (
+    <div className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition hover:shadow-md">
+      <div className="relative overflow-hidden">
+        {badge && (
+          <span className={`absolute left-3 top-3 z-10 rounded-md px-2.5 py-1 text-xs font-bold uppercase ${badgeColors[badgeType]}`}>
+            {badge}
+          </span>
+        )}
+        <img
+          src={image}
+          alt={title}
+          className="img-zoom aspect-square w-full object-cover"
+          loading="lazy"
+          width={640}
+          height={640}
+        />
+      </div>
+      <div className="p-4">
+        <h3 className="font-heading text-sm font-semibold leading-snug text-foreground">{title}</h3>
+        <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+        <div className="mt-2 flex items-center gap-1.5">
+          <span className="text-sm text-accent">{stars}</span>
+          <span className="text-xs text-muted-foreground">({reviews})</span>
+        </div>
+        <div className="mt-3 flex items-center justify-between">
+          <div className="flex items-baseline gap-2">
+            {oldPrice && (
+              <span className="text-sm text-muted-foreground line-through">{oldPrice} RON</span>
+            )}
+            <span className="text-lg font-bold text-foreground">{price} RON</span>
+          </div>
+          <button className="rounded-lg bg-foreground px-4 py-2 text-xs font-semibold text-primary-foreground transition hover:bg-accent hover:text-accent-foreground">
+            Adaugă
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

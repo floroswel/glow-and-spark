@@ -6,7 +6,8 @@ import {
   ChevronLeft, ChevronRight, CheckSquare, Square, AlertTriangle, Loader2,
   ArrowUpDown, ExternalLink, GripVertical, Image as ImageIcon, Package,
   TrendingUp, DollarSign, BarChart3, Filter, RotateCcw, Percent, FolderOpen,
-  Save, Check, ChevronDown, FileSpreadsheet, RefreshCw
+  Save, Check, ChevronDown, FileSpreadsheet, RefreshCw, Tag, Link2, Ruler,
+  FileDown, Layers, BoxIcon
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/products")({
@@ -38,6 +39,41 @@ interface Product {
   sort_order: number;
   created_at: string;
   updated_at: string;
+  barcode: string | null;
+  length_cm: number | null;
+  width_cm: number | null;
+  height_cm: number | null;
+  is_digital: boolean;
+  digital_file_url: string | null;
+  digital_max_downloads: number | null;
+}
+
+interface ProductVariant {
+  id?: string;
+  product_id?: string;
+  name: string;
+  sku: string | null;
+  price: number | null;
+  old_price: number | null;
+  stock: number;
+  options: Record<string, string>;
+  sort_order: number;
+  image_url: string | null;
+  is_active: boolean;
+}
+
+interface ProductTag {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+interface RelatedProduct {
+  id?: string;
+  source_product_id?: string;
+  target_product_id: string;
+  relation_type: string;
+  sort_order: number;
 }
 
 const emptyProduct: Omit<Product, "id" | "created_at" | "updated_at"> = {
@@ -45,6 +81,8 @@ const emptyProduct: Omit<Product, "id" | "created_at" | "updated_at"> = {
   image_url: "", gallery: [], category_id: null, badge: "", badge_type: "new", rating: 0,
   reviews_count: 0, stock: 0, weight: "", sku: "", meta_title: "", meta_description: "",
   is_active: true, is_featured: false, sort_order: 0,
+  barcode: null, length_cm: null, width_cm: null, height_cm: null,
+  is_digital: false, digital_file_url: null, digital_max_downloads: 5,
 };
 
 const PAGE_SIZE = 25;
@@ -90,16 +128,28 @@ function AdminProducts() {
   const galleryFileRef = useRef<HTMLInputElement>(null);
   const csvFileRef = useRef<HTMLInputElement>(null);
 
+  // New enterprise state
+  const [variants, setVariants] = useState<ProductVariant[]>([]);
+  const [allTags, setAllTags] = useState<ProductTag[]>([]);
+  const [productTagIds, setProductTagIds] = useState<string[]>([]);
+  const [newTagName, setNewTagName] = useState("");
+  const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
+  const [relatedSearchTerm, setRelatedSearchTerm] = useState("");
+  const [relatedSearchResults, setRelatedSearchResults] = useState<Product[]>([]);
+  const [newVariant, setNewVariant] = useState<ProductVariant>({ name: "", sku: null, price: null, old_price: null, stock: 0, options: {}, sort_order: 0, image_url: null, is_active: true });
+
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [pRes, cRes] = await Promise.all([
+    const [pRes, cRes, tRes] = await Promise.all([
       supabase.from("products").select("*").order("sort_order"),
       supabase.from("categories").select("*").order("sort_order"),
+      supabase.from("product_tags").select("*").order("name"),
     ]);
     setProducts((pRes.data as any) || []);
     setCategories(cRes.data || []);
+    setAllTags((tRes.data as any) || []);
     setLoading(false);
   }, []);
 
@@ -166,14 +216,39 @@ function AdminProducts() {
     }
     if (!data.slug) data.slug = slugify(data.name);
     data.updated_at = new Date().toISOString();
+    let productId = id;
     if (isNew) {
-      const { error } = await supabase.from("products").insert(data);
-      if (error) showToast("❌ Eroare: " + error.message);
-      else showToast("✅ Produs creat cu succes!");
+      const { data: inserted, error } = await supabase.from("products").insert(data).select("id").single();
+      if (error) { showToast("❌ Eroare: " + error.message); setSaving(false); return; }
+      productId = inserted.id;
+      showToast("✅ Produs creat cu succes!");
     } else {
       const { error } = await supabase.from("products").update(data).eq("id", id);
-      if (error) showToast("❌ Eroare: " + error.message);
-      else showToast("✅ Produs actualizat!");
+      if (error) { showToast("❌ Eroare: " + error.message); setSaving(false); return; }
+      showToast("✅ Produs actualizat!");
+    }
+
+    // Save variants
+    if (productId) {
+      if (!isNew) await supabase.from("product_variants").delete().eq("product_id", productId);
+      if (variants.length > 0) {
+        const varData = variants.map((v, i) => ({ ...v, product_id: productId, sort_order: i, id: undefined }));
+        await supabase.from("product_variants").insert(varData as any);
+      }
+
+      // Save tags
+      if (!isNew) await supabase.from("product_tag_links").delete().eq("product_id", productId);
+      if (productTagIds.length > 0) {
+        const tagLinks = productTagIds.map(tag_id => ({ product_id: productId, tag_id }));
+        await supabase.from("product_tag_links").insert(tagLinks as any);
+      }
+
+      // Save related products
+      if (!isNew) await supabase.from("related_products").delete().eq("source_product_id", productId);
+      if (relatedProducts.length > 0) {
+        const relData = relatedProducts.map((r, i) => ({ source_product_id: productId, target_product_id: r.target_product_id, relation_type: r.relation_type, sort_order: i, id: undefined }));
+        await supabase.from("related_products").insert(relData as any);
+      }
     }
     setSaving(false);
     setEditing(null);
@@ -410,8 +485,72 @@ function AdminProducts() {
     setActiveTab("info");
   };
 
-  const openNew = () => { setIsNew(true); setEditing({ id: "", ...emptyProduct }); setActiveTab("info"); };
-  const openEdit = (p: Product) => { setEditing({ ...p, gallery: Array.isArray(p.gallery) ? p.gallery : [] }); setIsNew(false); setActiveTab("info"); };
+  const openNew = () => { setIsNew(true); setEditing({ id: "", ...emptyProduct }); setActiveTab("info"); setVariants([]); setProductTagIds([]); setRelatedProducts([]); };
+  const openEdit = async (p: Product) => {
+    setEditing({ ...p, gallery: Array.isArray(p.gallery) ? p.gallery : [] });
+    setIsNew(false);
+    setActiveTab("info");
+    // Load variants, tags, related
+    const [vRes, tlRes, rRes] = await Promise.all([
+      supabase.from("product_variants").select("*").eq("product_id", p.id).order("sort_order"),
+      supabase.from("product_tag_links").select("tag_id").eq("product_id", p.id),
+      supabase.from("related_products").select("*").eq("source_product_id", p.id).order("sort_order"),
+    ]);
+    setVariants((vRes.data as any) || []);
+    setProductTagIds((tlRes.data || []).map((t: any) => t.tag_id));
+    setRelatedProducts((rRes.data as any) || []);
+  };
+
+  // Tag helpers
+  const handleAddTag = async () => {
+    if (!newTagName.trim()) return;
+    const slug = slugify(newTagName);
+    const existing = allTags.find(t => t.slug === slug);
+    if (existing) {
+      if (!productTagIds.includes(existing.id)) setProductTagIds(prev => [...prev, existing.id]);
+    } else {
+      const { data } = await supabase.from("product_tags").insert({ name: newTagName.trim(), slug }).select().single();
+      if (data) {
+        setAllTags(prev => [...prev, data as any]);
+        setProductTagIds(prev => [...prev, data.id]);
+      }
+    }
+    setNewTagName("");
+  };
+
+  const toggleTag = (tagId: string) => {
+    setProductTagIds(prev => prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]);
+  };
+
+  // Variant helpers
+  const addVariant = () => {
+    if (!newVariant.name.trim()) return;
+    setVariants(prev => [...prev, { ...newVariant, sort_order: prev.length }]);
+    setNewVariant({ name: "", sku: null, price: null, old_price: null, stock: 0, options: {}, sort_order: 0, image_url: null, is_active: true });
+  };
+
+  const removeVariant = (idx: number) => setVariants(prev => prev.filter((_, i) => i !== idx));
+
+  const updateVariant = (idx: number, field: string, value: any) => {
+    setVariants(prev => prev.map((v, i) => i === idx ? { ...v, [field]: value } : v));
+  };
+
+  // Related products helpers
+  const searchRelated = async (term: string) => {
+    setRelatedSearchTerm(term);
+    if (term.length < 2) { setRelatedSearchResults([]); return; }
+    const { data } = await supabase.from("products").select("id, name, image_url, price, slug").ilike("name", `%${term}%`).limit(10);
+    setRelatedSearchResults((data as any) || []);
+  };
+
+  const addRelated = (targetId: string, type: string = "similar") => {
+    if (relatedProducts.some(r => r.target_product_id === targetId)) return;
+    setRelatedProducts(prev => [...prev, { target_product_id: targetId, relation_type: type, sort_order: prev.length }]);
+    setRelatedSearchTerm("");
+    setRelatedSearchResults([]);
+  };
+
+  const removeRelated = (idx: number) => setRelatedProducts(prev => prev.filter((_, i) => i !== idx));
 
   const updateField = (field: string, value: any) => {
     setEditing((prev: any) => {
@@ -849,9 +988,13 @@ function AdminProducts() {
                 {[
                   { key: "info", label: "📝 Informații" },
                   { key: "price", label: "💰 Preț & Stoc" },
+                  { key: "variants", label: "📦 Variante" },
                   { key: "media", label: "🖼️ Media" },
+                  { key: "tags", label: "🏷️ Taguri" },
+                  { key: "related", label: "🔗 Relationate" },
+                  { key: "logistics", label: "📐 Logistică" },
                   { key: "seo", label: "🔍 SEO" },
-                  { key: "badges", label: "🏷️ Badge & Rating" },
+                  { key: "badges", label: "⭐ Badge" },
                 ].map((tab) => (
                   <button key={tab.key} onClick={() => setActiveTab(tab.key)}
                     className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-[1px] transition whitespace-nowrap ${activeTab === tab.key ? "border-accent text-accent" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
@@ -1018,6 +1161,201 @@ function AdminProducts() {
                             <span className="absolute bottom-1 left-1 bg-foreground/70 text-primary-foreground text-[10px] px-1 rounded">{i + 1}</span>
                           </div>
                         ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "variants" && (
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">Variante de produs (mărimi, culori, etc.) — fiecare variantă poate avea preț și stoc propriu.</p>
+                  {/* Existing variants */}
+                  {variants.length > 0 && (
+                    <div className="rounded-lg border border-border divide-y divide-border">
+                      {variants.map((v, i) => (
+                        <div key={i} className="p-3 flex items-center gap-3 flex-wrap">
+                          <div className="flex-1 min-w-[120px]">
+                            <input value={v.name} onChange={(e) => updateVariant(i, "name", e.target.value)} className={inputClass + " mt-0 text-sm"} placeholder="Nume variantă" />
+                          </div>
+                          <div className="w-24">
+                            <input value={v.sku || ""} onChange={(e) => updateVariant(i, "sku", e.target.value)} className={inputClass + " mt-0 text-xs"} placeholder="SKU" />
+                          </div>
+                          <div className="w-24">
+                            <input type="number" value={v.price ?? ""} onChange={(e) => updateVariant(i, "price", e.target.value ? Number(e.target.value) : null)} className={inputClass + " mt-0 text-sm"} placeholder="Preț" />
+                          </div>
+                          <div className="w-20">
+                            <input type="number" value={v.stock} onChange={(e) => updateVariant(i, "stock", Number(e.target.value))} className={inputClass + " mt-0 text-sm"} placeholder="Stoc" />
+                          </div>
+                          <label className="flex items-center gap-1 text-xs">
+                            <input type="checkbox" checked={v.is_active} onChange={(e) => updateVariant(i, "is_active", e.target.checked)} className="accent-accent" />
+                            Activ
+                          </label>
+                          <button onClick={() => removeVariant(i)} className="text-destructive hover:text-destructive/80"><Trash2 className="h-4 w-4" /></button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {/* Add new variant */}
+                  <div className="rounded-lg border border-dashed border-accent/40 p-4 space-y-3">
+                    <p className="text-xs font-medium text-accent uppercase">Adaugă variantă nouă</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <input value={newVariant.name} onChange={(e) => setNewVariant(prev => ({ ...prev, name: e.target.value }))} className={inputClass + " mt-0"} placeholder="Ex: Mărime M, Roșu" />
+                      <input value={newVariant.sku || ""} onChange={(e) => setNewVariant(prev => ({ ...prev, sku: e.target.value }))} className={inputClass + " mt-0"} placeholder="SKU variantă" />
+                      <input type="number" value={newVariant.price ?? ""} onChange={(e) => setNewVariant(prev => ({ ...prev, price: e.target.value ? Number(e.target.value) : null }))} className={inputClass + " mt-0"} placeholder="Preț (RON)" />
+                      <input type="number" value={newVariant.stock} onChange={(e) => setNewVariant(prev => ({ ...prev, stock: Number(e.target.value) }))} className={inputClass + " mt-0"} placeholder="Stoc" />
+                    </div>
+                    <button onClick={addVariant} disabled={!newVariant.name.trim()} className="flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition disabled:opacity-50">
+                      <Plus className="h-4 w-4" /> Adaugă variantă
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "tags" && (
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">Taguri pentru filtrare și organizare. Poți crea taguri noi sau selecta din cele existente.</p>
+                  {/* Selected tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {productTagIds.map(tagId => {
+                      const tag = allTags.find(t => t.id === tagId);
+                      if (!tag) return null;
+                      return (
+                        <span key={tagId} className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-sm text-accent font-medium">
+                          <Tag className="h-3 w-3" /> {tag.name}
+                          <button onClick={() => toggleTag(tagId)} className="hover:text-destructive"><X className="h-3 w-3" /></button>
+                        </span>
+                      );
+                    })}
+                    {productTagIds.length === 0 && <p className="text-sm text-muted-foreground italic">Niciun tag selectat</p>}
+                  </div>
+                  {/* Add new tag */}
+                  <div className="flex gap-2">
+                    <input value={newTagName} onChange={(e) => setNewTagName(e.target.value)} className={inputClass + " mt-0"} placeholder="Nume tag nou..."
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTag())} />
+                    <button onClick={handleAddTag} disabled={!newTagName.trim()} className="shrink-0 flex items-center gap-1 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition disabled:opacity-50">
+                      <Plus className="h-4 w-4" /> Adaugă
+                    </button>
+                  </div>
+                  {/* Existing tags */}
+                  {allTags.length > 0 && (
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground uppercase mb-2">Taguri existente (click pentru a adăuga/scoate)</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {allTags.map(tag => (
+                          <button key={tag.id} onClick={() => toggleTag(tag.id)}
+                            className={`rounded-full px-3 py-1 text-xs font-medium border transition ${productTagIds.includes(tag.id) ? "bg-accent text-accent-foreground border-accent" : "bg-card text-muted-foreground border-border hover:border-accent hover:text-accent"}`}>
+                            {tag.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === "related" && (
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">Produse similare, cross-sell și up-sell. Apar pe pagina produsului.</p>
+                  {/* Current related */}
+                  {relatedProducts.length > 0 && (
+                    <div className="rounded-lg border border-border divide-y divide-border">
+                      {relatedProducts.map((r, i) => {
+                        const target = products.find(p => p.id === r.target_product_id);
+                        return (
+                          <div key={i} className="p-3 flex items-center gap-3">
+                            {target?.image_url ? (
+                              <img src={target.image_url} alt="" className="h-10 w-10 rounded-lg object-cover border border-border" />
+                            ) : (
+                              <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{target?.name || r.target_product_id}</p>
+                              <p className="text-xs text-muted-foreground">{target?.price} RON</p>
+                            </div>
+                            <select value={r.relation_type} onChange={(e) => setRelatedProducts(prev => prev.map((rp, ri) => ri === i ? { ...rp, relation_type: e.target.value } : rp))}
+                              className="rounded border border-border px-2 py-1 text-xs bg-card">
+                              <option value="similar">Similar</option>
+                              <option value="cross-sell">Cross-sell</option>
+                              <option value="up-sell">Up-sell</option>
+                            </select>
+                            <button onClick={() => removeRelated(i)} className="text-destructive hover:text-destructive/80"><Trash2 className="h-4 w-4" /></button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {/* Search to add */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input value={relatedSearchTerm} onChange={(e) => searchRelated(e.target.value)} className={inputClass + " mt-0 pl-10"} placeholder="Caută produs de adăugat..." />
+                    {relatedSearchResults.length > 0 && (
+                      <div className="absolute z-10 mt-1 w-full max-h-60 overflow-y-auto rounded-lg border border-border bg-card shadow-lg">
+                        {relatedSearchResults.filter(p => p.id !== editing?.id && !relatedProducts.some(r => r.target_product_id === p.id)).map(p => (
+                          <button key={p.id} onClick={() => addRelated(p.id)} className="w-full flex items-center gap-3 p-3 text-left hover:bg-secondary transition">
+                            {p.image_url ? (
+                              <img src={p.image_url} alt="" className="h-8 w-8 rounded object-cover border border-border" />
+                            ) : (
+                              <div className="h-8 w-8 rounded bg-muted flex items-center justify-center"><ImageIcon className="h-3 w-3 text-muted-foreground" /></div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                            </div>
+                            <span className="text-xs text-muted-foreground">{p.price} RON</span>
+                            <Plus className="h-4 w-4 text-accent" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "logistics" && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="col-span-2">
+                      <label className={labelClass}>Cod de bare (EAN/GTIN)</label>
+                      <input value={editing.barcode || ""} onChange={(e) => updateField("barcode", e.target.value)} className={inputClass} placeholder="5901234123457" />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Lungime (cm)</label>
+                      <input type="number" step="0.1" value={editing.length_cm ?? ""} onChange={(e) => updateField("length_cm", e.target.value ? Number(e.target.value) : null)} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Lățime (cm)</label>
+                      <input type="number" step="0.1" value={editing.width_cm ?? ""} onChange={(e) => updateField("width_cm", e.target.value ? Number(e.target.value) : null)} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Înălțime (cm)</label>
+                      <input type="number" step="0.1" value={editing.height_cm ?? ""} onChange={(e) => updateField("height_cm", e.target.value ? Number(e.target.value) : null)} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Greutate</label>
+                      <input value={editing.weight || ""} onChange={(e) => updateField("weight", e.target.value)} className={inputClass} placeholder="250g" />
+                    </div>
+                    {(editing.length_cm && editing.width_cm && editing.height_cm) ? (
+                      <div className="col-span-2 rounded-lg bg-secondary/50 p-3">
+                        <p className="text-xs text-muted-foreground">Volum: {((editing.length_cm * editing.width_cm * editing.height_cm) / 1000).toFixed(1)} litri · Dimensiuni: {editing.length_cm} × {editing.width_cm} × {editing.height_cm} cm</p>
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="border-t border-border pt-6">
+                    <label className={labelClass}>Produs digital</label>
+                    <label className="mt-2 flex items-center gap-2 text-sm text-foreground cursor-pointer">
+                      <input type="checkbox" checked={editing.is_digital || false} onChange={(e) => updateField("is_digital", e.target.checked)} className="rounded border-border accent-accent h-4 w-4" />
+                      <FileDown className="h-4 w-4" /> Acest produs este digital (descărcabil)
+                    </label>
+                    {editing.is_digital && (
+                      <div className="mt-3 grid grid-cols-2 gap-4">
+                        <div className="col-span-2">
+                          <label className="text-xs text-muted-foreground">URL fișier descărcare</label>
+                          <input value={editing.digital_file_url || ""} onChange={(e) => updateField("digital_file_url", e.target.value)} className={inputClass} placeholder="https://...file.pdf" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-muted-foreground">Nr. maxim descărcări</label>
+                          <input type="number" value={editing.digital_max_downloads ?? 5} onChange={(e) => updateField("digital_max_downloads", Number(e.target.value))} className={inputClass} min={1} />
+                        </div>
                       </div>
                     )}
                   </div>

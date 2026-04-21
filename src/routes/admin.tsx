@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, Link, useLocation } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import {
   LayoutDashboard, Package, FolderOpen, ShoppingCart, Users, Settings,
   Palette, LogOut, Menu, X, Type, TicketPercent, Home, PanelBottom, MessageSquare,
@@ -38,37 +38,45 @@ const navItems = [
   { to: "/admin/settings", icon: Settings, label: "Setări Generale" },
 ];
 
-function AdminLayout() {
-  const [session, setSession] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+function AdminLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
-  const location = useLocation();
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setLoading(false);
-    });
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
+  const { signIn } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await signIn(email, password);
     if (error) setAuthError(error.message);
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-secondary px-4">
+      <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8 shadow-lg">
+        <h1 className="font-heading text-2xl font-bold text-center text-foreground">Admin Lumini.ro</h1>
+        <p className="mt-1 text-center text-sm text-muted-foreground">Conectează-te pentru a gestiona magazinul</p>
+        {authError && (
+          <div className="mt-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{authError}</div>
+        )}
+        <form onSubmit={handleLogin} className="mt-6 space-y-4">
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-lg border border-border px-4 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30" required />
+          <input type="password" placeholder="Parolă" value={password} onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-lg border border-border px-4 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30" required />
+          <button type="submit" className="w-full rounded-lg bg-foreground py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-accent hover:text-accent-foreground">
+            Conectare
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function AdminLayout() {
+  const { user, loading, isAdmin, signOut } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -78,42 +86,8 @@ function AdminLayout() {
     );
   }
 
-  if (!session) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-secondary px-4">
-        <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8 shadow-lg">
-          <h1 className="font-heading text-2xl font-bold text-center text-foreground">Admin Lumini.ro</h1>
-          <p className="mt-1 text-center text-sm text-muted-foreground">Conectează-te pentru a gestiona magazinul</p>
-          {authError && (
-            <div className="mt-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{authError}</div>
-          )}
-          <form onSubmit={handleLogin} className="mt-6 space-y-4">
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-border px-4 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-              required
-            />
-            <input
-              type="password"
-              placeholder="Parolă"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-border px-4 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-              required
-            />
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-foreground py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-accent hover:text-accent-foreground"
-            >
-              Conectare
-            </button>
-          </form>
-        </div>
-      </div>
-    );
+  if (!user || !isAdmin) {
+    return <AdminLoginForm />;
   }
 
   return (
@@ -149,7 +123,7 @@ function AdminLayout() {
         </nav>
         <div className="border-t border-border p-2">
           <button
-            onClick={handleLogout}
+            onClick={signOut}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-destructive transition"
           >
             <LogOut className="h-5 w-5 shrink-0" />

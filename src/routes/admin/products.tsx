@@ -501,6 +501,57 @@ function AdminProducts() {
     setRelatedProducts((rRes.data as any) || []);
   };
 
+  // Tag helpers
+  const handleAddTag = async () => {
+    if (!newTagName.trim()) return;
+    const slug = slugify(newTagName);
+    const existing = allTags.find(t => t.slug === slug);
+    if (existing) {
+      if (!productTagIds.includes(existing.id)) setProductTagIds(prev => [...prev, existing.id]);
+    } else {
+      const { data } = await supabase.from("product_tags").insert({ name: newTagName.trim(), slug }).select().single();
+      if (data) {
+        setAllTags(prev => [...prev, data as any]);
+        setProductTagIds(prev => [...prev, data.id]);
+      }
+    }
+    setNewTagName("");
+  };
+
+  const toggleTag = (tagId: string) => {
+    setProductTagIds(prev => prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]);
+  };
+
+  // Variant helpers
+  const addVariant = () => {
+    if (!newVariant.name.trim()) return;
+    setVariants(prev => [...prev, { ...newVariant, sort_order: prev.length }]);
+    setNewVariant({ name: "", sku: null, price: null, old_price: null, stock: 0, options: {}, sort_order: 0, image_url: null, is_active: true });
+  };
+
+  const removeVariant = (idx: number) => setVariants(prev => prev.filter((_, i) => i !== idx));
+
+  const updateVariant = (idx: number, field: string, value: any) => {
+    setVariants(prev => prev.map((v, i) => i === idx ? { ...v, [field]: value } : v));
+  };
+
+  // Related products helpers
+  const searchRelated = async (term: string) => {
+    setRelatedSearchTerm(term);
+    if (term.length < 2) { setRelatedSearchResults([]); return; }
+    const { data } = await supabase.from("products").select("id, name, image_url, price, slug").ilike("name", `%${term}%`).limit(10);
+    setRelatedSearchResults((data as any) || []);
+  };
+
+  const addRelated = (targetId: string, type: string = "similar") => {
+    if (relatedProducts.some(r => r.target_product_id === targetId)) return;
+    setRelatedProducts(prev => [...prev, { target_product_id: targetId, relation_type: type, sort_order: prev.length }]);
+    setRelatedSearchTerm("");
+    setRelatedSearchResults([]);
+  };
+
+  const removeRelated = (idx: number) => setRelatedProducts(prev => prev.filter((_, i) => i !== idx));
+
   const updateField = (field: string, value: any) => {
     setEditing((prev: any) => {
       if (!prev) return null;

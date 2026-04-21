@@ -460,8 +460,21 @@ function AdminProducts() {
     setActiveTab("info");
   };
 
-  const openNew = () => { setIsNew(true); setEditing({ id: "", ...emptyProduct }); setActiveTab("info"); };
-  const openEdit = (p: Product) => { setEditing({ ...p, gallery: Array.isArray(p.gallery) ? p.gallery : [] }); setIsNew(false); setActiveTab("info"); };
+  const openNew = () => { setIsNew(true); setEditing({ id: "", ...emptyProduct }); setActiveTab("info"); setVariants([]); setProductTagIds([]); setRelatedProducts([]); };
+  const openEdit = async (p: Product) => {
+    setEditing({ ...p, gallery: Array.isArray(p.gallery) ? p.gallery : [] });
+    setIsNew(false);
+    setActiveTab("info");
+    // Load variants, tags, related
+    const [vRes, tlRes, rRes] = await Promise.all([
+      supabase.from("product_variants").select("*").eq("product_id", p.id).order("sort_order"),
+      supabase.from("product_tag_links").select("tag_id").eq("product_id", p.id),
+      supabase.from("related_products").select("*").eq("source_product_id", p.id).order("sort_order"),
+    ]);
+    setVariants((vRes.data as any) || []);
+    setProductTagIds((tlRes.data || []).map((t: any) => t.tag_id));
+    setRelatedProducts((rRes.data as any) || []);
+  };
 
   const updateField = (field: string, value: any) => {
     setEditing((prev: any) => {

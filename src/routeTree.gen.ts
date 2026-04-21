@@ -10,11 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as ProdusSlugRouteImport } from './routes/produs.$slug'
 import { Route as OrderConfirmedOrderIdRouteImport } from './routes/order-confirmed.$orderId'
+import { Route as CategorieSlugRouteImport } from './routes/categorie.$slug'
 import { Route as AdminTickerRouteImport } from './routes/admin/ticker'
 import { Route as AdminThemeRouteImport } from './routes/admin/theme'
 import { Route as AdminSubscribersRouteImport } from './routes/admin/subscribers'
@@ -30,6 +33,11 @@ import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogRoute = CatalogRouteImport.update({
+  id: '/catalog',
+  path: '/catalog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CartRoute = CartRouteImport.update({
@@ -52,9 +60,19 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const ProdusSlugRoute = ProdusSlugRouteImport.update({
+  id: '/produs/$slug',
+  path: '/produs/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrderConfirmedOrderIdRoute = OrderConfirmedOrderIdRouteImport.update({
   id: '/order-confirmed/$orderId',
   path: '/order-confirmed/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategorieSlugRoute = CategorieSlugRouteImport.update({
+  id: '/categorie/$slug',
+  path: '/categorie/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminTickerRoute = AdminTickerRouteImport.update({
@@ -117,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/cart': typeof CartRoute
+  '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/footer': typeof AdminFooterRoute
@@ -129,12 +148,15 @@ export interface FileRoutesByFullPath {
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/theme': typeof AdminThemeRoute
   '/admin/ticker': typeof AdminTickerRoute
+  '/categorie/$slug': typeof CategorieSlugRoute
   '/order-confirmed/$orderId': typeof OrderConfirmedOrderIdRoute
+  '/produs/$slug': typeof ProdusSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
+  '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/footer': typeof AdminFooterRoute
@@ -147,7 +169,9 @@ export interface FileRoutesByTo {
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/theme': typeof AdminThemeRoute
   '/admin/ticker': typeof AdminTickerRoute
+  '/categorie/$slug': typeof CategorieSlugRoute
   '/order-confirmed/$orderId': typeof OrderConfirmedOrderIdRoute
+  '/produs/$slug': typeof ProdusSlugRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -155,6 +179,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/cart': typeof CartRoute
+  '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/footer': typeof AdminFooterRoute
@@ -167,7 +192,9 @@ export interface FileRoutesById {
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/theme': typeof AdminThemeRoute
   '/admin/ticker': typeof AdminTickerRoute
+  '/categorie/$slug': typeof CategorieSlugRoute
   '/order-confirmed/$orderId': typeof OrderConfirmedOrderIdRoute
+  '/produs/$slug': typeof ProdusSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -176,6 +203,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/cart'
+    | '/catalog'
     | '/checkout'
     | '/admin/categories'
     | '/admin/footer'
@@ -188,12 +216,15 @@ export interface FileRouteTypes {
     | '/admin/subscribers'
     | '/admin/theme'
     | '/admin/ticker'
+    | '/categorie/$slug'
     | '/order-confirmed/$orderId'
+    | '/produs/$slug'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/cart'
+    | '/catalog'
     | '/checkout'
     | '/admin/categories'
     | '/admin/footer'
@@ -206,13 +237,16 @@ export interface FileRouteTypes {
     | '/admin/subscribers'
     | '/admin/theme'
     | '/admin/ticker'
+    | '/categorie/$slug'
     | '/order-confirmed/$orderId'
+    | '/produs/$slug'
     | '/admin'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/cart'
+    | '/catalog'
     | '/checkout'
     | '/admin/categories'
     | '/admin/footer'
@@ -225,7 +259,9 @@ export interface FileRouteTypes {
     | '/admin/subscribers'
     | '/admin/theme'
     | '/admin/ticker'
+    | '/categorie/$slug'
     | '/order-confirmed/$orderId'
+    | '/produs/$slug'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -233,8 +269,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   CartRoute: typeof CartRoute
+  CatalogRoute: typeof CatalogRoute
   CheckoutRoute: typeof CheckoutRoute
+  CategorieSlugRoute: typeof CategorieSlugRoute
   OrderConfirmedOrderIdRoute: typeof OrderConfirmedOrderIdRoute
+  ProdusSlugRoute: typeof ProdusSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -244,6 +283,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalog': {
+      id: '/catalog'
+      path: '/catalog'
+      fullPath: '/catalog'
+      preLoaderRoute: typeof CatalogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cart': {
@@ -274,11 +320,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/produs/$slug': {
+      id: '/produs/$slug'
+      path: '/produs/$slug'
+      fullPath: '/produs/$slug'
+      preLoaderRoute: typeof ProdusSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/order-confirmed/$orderId': {
       id: '/order-confirmed/$orderId'
       path: '/order-confirmed/$orderId'
       fullPath: '/order-confirmed/$orderId'
       preLoaderRoute: typeof OrderConfirmedOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categorie/$slug': {
+      id: '/categorie/$slug'
+      path: '/categorie/$slug'
+      fullPath: '/categorie/$slug'
+      preLoaderRoute: typeof CategorieSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/ticker': {
@@ -397,8 +457,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   CartRoute: CartRoute,
+  CatalogRoute: CatalogRoute,
   CheckoutRoute: CheckoutRoute,
+  CategorieSlugRoute: CategorieSlugRoute,
   OrderConfirmedOrderIdRoute: OrderConfirmedOrderIdRoute,
+  ProdusSlugRoute: ProdusSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

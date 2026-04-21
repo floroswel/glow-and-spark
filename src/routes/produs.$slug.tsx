@@ -120,18 +120,6 @@ function ProductPage() {
       : "Epuizat";
   const stockColor = product.stock > 10 ? "text-chart-2" : product.stock > 0 ? "text-accent" : "text-destructive";
 
-  const discount = product.old_price ? Math.round((1 - product.price / product.old_price) * 100) : 0;
-
-  const badges = [];
-  if (product.badge) badges.push({ label: product.badge, type: product.badge_type || "new" });
-
-  const badgeColors: Record<string, string> = {
-    sale: "bg-sale text-sale-foreground",
-    bestseller: "bg-accent text-accent-foreground",
-    limited: "bg-foreground text-primary-foreground",
-    new: "bg-chart-2 text-primary-foreground",
-  };
-
   // Update page title dynamically
   useEffect(() => {
     if (product) {
@@ -140,6 +128,18 @@ function ProductPage() {
       if (metaDesc) metaDesc.setAttribute("content", product.meta_description || product.short_description || "");
     }
   }, [product]);
+
+  const discount = product ? (product.old_price ? Math.round((1 - product.price / product.old_price) * 100) : 0) : 0;
+
+  const badges: { label: string; type: string }[] = [];
+  if (product?.badge) badges.push({ label: product.badge, type: product.badge_type || "new" });
+
+  const badgeColors: Record<string, string> = {
+    sale: "bg-sale text-sale-foreground",
+    bestseller: "bg-accent text-accent-foreground",
+    limited: "bg-foreground text-primary-foreground",
+    new: "bg-chart-2 text-primary-foreground",
+  };
 
   return (
     <div className="min-h-screen">

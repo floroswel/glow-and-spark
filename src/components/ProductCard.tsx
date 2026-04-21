@@ -1,5 +1,6 @@
 import { useCart, type CartItem } from "@/hooks/useCart";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 
 interface ProductCardProps {
   id: string;

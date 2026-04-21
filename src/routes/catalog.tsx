@@ -78,7 +78,7 @@ function CatalogPage() {
       setLoading(false);
     };
     fetchProducts();
-  }, [categorySlug, sort, minPrice, maxPrice, page, categories]);
+  }, [searchQuery, categorySlug, sort, minPrice, maxPrice, page, categories]);
 
   // Update URL
   useEffect(() => {

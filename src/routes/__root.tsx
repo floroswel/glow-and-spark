@@ -34,6 +34,12 @@ export const Route = createRootRoute({
       { name: "author", content: "Lumini.ro" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { property: "og:title", content: "Lumini.ro - Lumânări Artizanale Premium" },
+      { name: "twitter:title", content: "Lumini.ro - Lumânări Artizanale Premium" },
+      { property: "og:description", content: "Magazin online de lumânări artizanale premium din ceară de soia pură." },
+      { name: "twitter:description", content: "Magazin online de lumânări artizanale premium din ceară de soia pură." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/848fc03d-3dcb-4f52-825d-f0d1bb6c1ec8/id-preview-3bff9c21--b382c71c-cfbb-4967-add4-5e8c15bf4fcd.lovable.app-1776749135330.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/848fc03d-3dcb-4f52-825d-f0d1bb6c1ec8/id-preview-3bff9c21--b382c71c-cfbb-4967-add4-5e8c15bf4fcd.lovable.app-1776749135330.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

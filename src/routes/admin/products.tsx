@@ -327,29 +327,80 @@ function AdminProducts() {
     e.target.value = "";
   };
 
-  // Image upload
+  // Image resize settings
+  const [maxImageWidth, setMaxImageWidth] = useState(1200);
+  const [maxImageHeight, setMaxImageHeight] = useState(1200);
+  const [imageQuality, setImageQuality] = useState(85);
+  const [resizeEnabled, setResizeEnabled] = useState(true);
+
+  const resizeImage = useCallback((file: File, maxW: number, maxH: number, quality: number): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        let { width, height } = img;
+        if (width <= maxW && height <= maxH) {
+          resolve(file);
+          return;
+        }
+        const ratio = Math.min(maxW / width, maxH / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d")!;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, 0, 0, width, height);
+        const mime = file.type === "image/png" ? "image/png" : "image/jpeg";
+        canvas.toBlob(
+          (blob) => blob ? resolve(blob) : reject(new Error("Canvas toBlob failed")),
+          mime,
+          quality / 100
+        );
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Image load failed")); };
+      img.src = url;
+    });
+  }, []);
+
+  // Image upload with optional resize
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "main" | "gallery") => {
     const file = e.target.files?.[0];
     if (!file) return;
     const setter = type === "main" ? setUploading : setUploadingGallery;
     setter(true);
-    const ext = file.name.split(".").pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const { error } = await supabase.storage.from("product-images").upload(fileName, file);
-    if (error) {
-      showToast("❌ Eroare upload: " + error.message);
-      setter(false);
-      return;
-    }
-    const { data: { publicUrl } } = supabase.storage.from("product-images").getPublicUrl(fileName);
-
-    if (type === "main") {
-      setEditing((prev: any) => ({ ...prev, image_url: publicUrl }));
-    } else {
-      setEditing((prev: any) => ({ ...prev, gallery: [...(prev.gallery || []), publicUrl] }));
+    try {
+      let uploadBlob: Blob = file;
+      let ext = file.name.split(".").pop() || "jpg";
+      if (resizeEnabled && file.type.startsWith("image/")) {
+        uploadBlob = await resizeImage(file, maxImageWidth, maxImageHeight, imageQuality);
+        if (uploadBlob !== file) {
+          ext = file.type === "image/png" ? "png" : "jpg";
+        }
+      }
+      const origSize = (file.size / 1024).toFixed(0);
+      const newSize = (uploadBlob.size / 1024).toFixed(0);
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("product-images").upload(fileName, uploadBlob);
+      if (error) {
+        showToast("❌ Eroare upload: " + error.message);
+        setter(false);
+        return;
+      }
+      const { data: { publicUrl } } = supabase.storage.from("product-images").getPublicUrl(fileName);
+      if (type === "main") {
+        setEditing((prev: any) => ({ ...prev, image_url: publicUrl }));
+      } else {
+        setEditing((prev: any) => ({ ...prev, gallery: [...(prev.gallery || []), publicUrl] }));
+      }
+      const saved = uploadBlob !== file ? ` (${origSize}KB → ${newSize}KB)` : "";
+      showToast(`✅ Imagine încărcată!${saved}`);
+    } catch (err: any) {
+      showToast("❌ Eroare: " + err.message);
     }
     setter(false);
-    showToast("✅ Imagine încărcată!");
     e.target.value = "";
   };
 

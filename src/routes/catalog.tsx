@@ -216,10 +216,31 @@ function CatalogPage() {
               </div>
             ) : products.length === 0 ? (
               <div className="py-20 text-center">
-                <p className="text-lg text-muted-foreground">Niciun produs găsit.</p>
-                <button onClick={() => { setCategorySlug(""); setMinPrice(0); setMaxPrice(1000); }} className="mt-4 text-accent hover:underline">
-                  Resetează filtrele
-                </button>
+                <p className="text-4xl mb-3">🔍</p>
+                <p className="text-lg font-medium text-foreground">
+                  {searchQuery ? `Niciun rezultat pentru „${searchQuery}"` : "Niciun produs găsit"}
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {searchQuery
+                    ? "Încearcă altă aromă, categorie sau verifică ortografia"
+                    : "Modifică filtrele pentru a vedea mai multe produse"}
+                </p>
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+                  {searchQuery && (
+                    <button
+                      onClick={() => { setSearchQuery(""); setPage(1); }}
+                      className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:bg-accent/90 transition"
+                    >
+                      Șterge căutarea
+                    </button>
+                  )}
+                  <button
+                    onClick={() => { setCategorySlug(""); setMinPrice(0); setMaxPrice(1000); setSearchQuery(""); setPage(1); }}
+                    className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary transition"
+                  >
+                    Resetează toate filtrele
+                  </button>
+                </div>
               </div>
             ) : (
               <>

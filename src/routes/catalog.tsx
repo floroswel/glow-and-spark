@@ -50,8 +50,11 @@ function CatalogPage() {
     const fetchProducts = async () => {
       let query = supabase.from("products").select("*, categories!products_category_id_fkey(slug, name)", { count: "exact" }).eq("is_active", true);
 
+      if (searchQuery.trim()) {
+        query = query.ilike("name", `%${searchQuery.trim()}%`);
+      }
+
       if (categorySlug) {
-        // Get category id from slug
         const cat = categories.find((c) => c.slug === categorySlug);
         if (cat) query = query.eq("category_id", cat.id);
       }

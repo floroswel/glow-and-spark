@@ -128,6 +128,16 @@ function AdminProducts() {
   const galleryFileRef = useRef<HTMLInputElement>(null);
   const csvFileRef = useRef<HTMLInputElement>(null);
 
+  // New enterprise state
+  const [variants, setVariants] = useState<ProductVariant[]>([]);
+  const [allTags, setAllTags] = useState<ProductTag[]>([]);
+  const [productTagIds, setProductTagIds] = useState<string[]>([]);
+  const [newTagName, setNewTagName] = useState("");
+  const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
+  const [relatedSearchTerm, setRelatedSearchTerm] = useState("");
+  const [relatedSearchResults, setRelatedSearchResults] = useState<Product[]>([]);
+  const [newVariant, setNewVariant] = useState<ProductVariant>({ name: "", sku: null, price: null, old_price: null, stock: 0, options: {}, sort_order: 0, image_url: null, is_active: true });
+
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
   const load = useCallback(async () => {

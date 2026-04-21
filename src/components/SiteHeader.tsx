@@ -1,19 +1,26 @@
+import { useState } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useCart } from "@/hooks/useCart";
 import { Link } from "@tanstack/react-router";
+import { Menu, X, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package } from "lucide-react";
 
 export function SiteHeader() {
   const { header, general } = useSiteSettings();
   const { cartCount } = useCart();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navLinks = (header?.navbar_links || []).filter((link: any) => link.active);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card shadow-sm">
+      {/* Top bar */}
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <Link to="/" className="font-heading text-2xl font-bold tracking-tight text-foreground">
           {general?.site_name || "LUMINI"}<span className="text-accent">.RO</span>
         </Link>
 
-        {(header?.show_search !== false) && (
+        {/* Desktop search */}
+        {header?.show_search !== false && (
           <div className="hidden flex-1 max-w-xl mx-8 md:block">
             <div className="relative">
               <input
@@ -22,37 +29,30 @@ export function SiteHeader() {
                 className="w-full rounded-full border border-border bg-secondary px-5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
               />
               <button className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-foreground p-2 text-primary-foreground transition hover:bg-accent">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <Search className="h-4 w-4" />
               </button>
             </div>
           </div>
         )}
 
+        {/* Desktop icons */}
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           {header?.show_compare !== false && (
             <Link to="/compare" className="hidden md:flex items-center gap-1 hover:text-foreground transition">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
+              <GitCompare className="h-5 w-5" />
               Compară
             </Link>
           )}
           {header?.show_favorites !== false && (
             <Link to="/wishlist" className="hidden md:flex items-center gap-1 hover:text-foreground transition">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
+              <Heart className="h-5 w-5" />
               Favorite
             </Link>
           )}
           {header?.show_cart !== false && (
             <Link to="/cart" className="relative flex items-center gap-1 hover:text-foreground transition">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              Coș
+              <ShoppingBag className="h-5 w-5" />
+              <span className="hidden md:inline">Coș</span>
               {cartCount > 0 && (
                 <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
                   {cartCount}
@@ -60,58 +60,191 @@ export function SiteHeader() {
               )}
             </Link>
           )}
+
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden flex items-center justify-center rounded-md p-1.5 hover:bg-secondary transition"
+            aria-label={mobileOpen ? "Închide meniu" : "Deschide meniu"}
+          >
+            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
       </div>
 
-      <nav className="border-t border-border bg-card">
+      {/* Desktop nav */}
+      <nav className="hidden md:block border-t border-border bg-card">
         <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-2 text-sm font-medium">
           <Link to="/catalog" className="flex items-center gap-1.5 rounded-md bg-foreground px-4 py-2 text-primary-foreground transition hover:bg-accent hover:text-accent-foreground">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+            <Package className="h-4 w-4" />
             Toate Produsele
           </Link>
-          {(header?.navbar_links || [])
-            .filter((link: any) => link.active)
-            .map((link: any, i: number) => {
-              const isInternal = link.url?.startsWith("/");
-              if (isInternal) {
-                return (
-                  <Link
-                    key={i}
-                    to={link.url}
-                    className="transition hover:text-foreground"
-                    activeProps={{ className: "text-accent font-semibold" }}
-                    style={{
-                      color: link.highlight ? link.color : undefined,
-                      fontWeight: link.highlight ? 600 : undefined,
-                    }}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              }
+          {navLinks.map((link: any, i: number) => {
+            const isInternal = link.url?.startsWith("/");
+            if (isInternal) {
               return (
-                <a
+                <Link
                   key={i}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  to={link.url}
                   className="transition hover:text-foreground"
+                  activeProps={{ className: "text-accent font-semibold" }}
                   style={{
                     color: link.highlight ? link.color : undefined,
                     fontWeight: link.highlight ? 600 : undefined,
                   }}
                 >
                   {link.label}
-                </a>
+                </Link>
               );
-            })}
+            }
+            return (
+              <a
+                key={i}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition hover:text-foreground"
+                style={{
+                  color: link.highlight ? link.color : undefined,
+                  fontWeight: link.highlight ? 600 : undefined,
+                }}
+              >
+                {link.label}
+              </a>
+            );
+          })}
           <Link to="/blog" className="transition hover:text-foreground" activeProps={{ className: "text-accent font-semibold" }}>
             Blog
           </Link>
         </div>
       </nav>
+
+      {/* Mobile menu overlay */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 top-[57px] z-50 bg-background/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+      )}
+
+      {/* Mobile slide-in menu */}
+      <div
+        className={`md:hidden fixed top-[57px] right-0 z-50 h-[calc(100dvh-57px)] w-[280px] bg-card border-l border-border shadow-xl transition-transform duration-300 ease-in-out overflow-y-auto ${
+          mobileOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Mobile search */}
+        {header?.show_search !== false && (
+          <div className="p-4 border-b border-border">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder={header?.search_placeholder || "Caută produse..."}
+                className="w-full rounded-full border border-border bg-secondary px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+              />
+              <button className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-foreground p-2 text-primary-foreground">
+                <Search className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Mobile nav links */}
+        <div className="p-3 space-y-1">
+          <MobileLink to="/" icon={<Home className="h-5 w-5" />} label="Acasă" onClick={() => setMobileOpen(false)} />
+          <MobileLink to="/catalog" icon={<Package className="h-5 w-5" />} label="Toate Produsele" onClick={() => setMobileOpen(false)} />
+
+          {navLinks.map((link: any, i: number) => {
+            const isInternal = link.url?.startsWith("/");
+            if (isInternal) {
+              return (
+                <MobileLink
+                  key={i}
+                  to={link.url}
+                  label={link.label}
+                  onClick={() => setMobileOpen(false)}
+                  highlight={link.highlight}
+                  highlightColor={link.color}
+                />
+              );
+            }
+            return (
+              <a
+                key={i}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+                style={{ color: link.highlight ? link.color : undefined }}
+              >
+                {link.label}
+              </a>
+            );
+          })}
+
+          <MobileLink to="/blog" icon={<FileText className="h-5 w-5" />} label="Blog" onClick={() => setMobileOpen(false)} />
+        </div>
+
+        {/* Divider */}
+        <div className="mx-4 border-t border-border" />
+
+        {/* Mobile utility links */}
+        <div className="p-3 space-y-1">
+          {header?.show_compare !== false && (
+            <MobileLink to="/compare" icon={<GitCompare className="h-5 w-5" />} label="Compară" onClick={() => setMobileOpen(false)} />
+          )}
+          {header?.show_favorites !== false && (
+            <MobileLink to="/wishlist" icon={<Heart className="h-5 w-5" />} label="Favorite" onClick={() => setMobileOpen(false)} />
+          )}
+          <MobileLink to="/account" icon={<User className="h-5 w-5" />} label="Contul Meu" onClick={() => setMobileOpen(false)} />
+          <MobileLink to="/track-order" icon={<Search className="h-5 w-5" />} label="Urmărește Comanda" onClick={() => setMobileOpen(false)} />
+        </div>
+
+        {/* Mobile contact */}
+        {(general?.phone || general?.email) && (
+          <>
+            <div className="mx-4 border-t border-border" />
+            <div className="p-4 space-y-2">
+              {general?.phone && (
+                <a href={`tel:${general.phone}`} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition">
+                  <Phone className="h-4 w-4" />
+                  {general.phone}
+                </a>
+              )}
+            </div>
+          </>
+        )}
+      </div>
     </header>
+  );
+}
+
+function MobileLink({
+  to,
+  icon,
+  label,
+  onClick,
+  highlight,
+  highlightColor,
+}: {
+  to: string;
+  icon?: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  highlight?: boolean;
+  highlightColor?: string;
+}) {
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+      activeProps={{ className: "bg-accent/10 text-accent font-semibold" }}
+      style={{
+        color: highlight ? highlightColor : undefined,
+        fontWeight: highlight ? 600 : undefined,
+      }}
+    >
+      {icon}
+      {label}
+    </Link>
   );
 }

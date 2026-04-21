@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 function useProductSearch() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
+  const [categoryResults, setCategoryResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -18,20 +19,32 @@ function useProductSearch() {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (term.trim().length < 2) {
       setResults([]);
+      setCategoryResults([]);
       setOpen(false);
       return;
     }
     setLoading(true);
     setOpen(true);
     debounceRef.current = setTimeout(async () => {
-      const { data } = await supabase
-        .from("products")
-        .select("id, name, slug, price, old_price, image_url")
-        .eq("is_active", true)
-        .ilike("name", `%${term.trim()}%`)
-        .order("is_featured", { ascending: false })
-        .limit(6);
-      setResults(data || []);
+      const t = term.trim();
+      const [productsRes, categoriesRes] = await Promise.all([
+        supabase
+          .from("products")
+          .select("id, name, slug, price, old_price, image_url")
+          .eq("is_active", true)
+          .ilike("name", `%${t}%`)
+          .order("is_featured", { ascending: false })
+          .limit(5),
+        supabase
+          .from("categories")
+          .select("id, name, slug, icon, image_url")
+          .eq("visible", true)
+          .ilike("name", `%${t}%`)
+          .order("sort_order")
+          .limit(4),
+      ]);
+      setResults(productsRes.data || []);
+      setCategoryResults(categoriesRes.data || []);
       setLoading(false);
     }, 300);
   }, []);
@@ -39,10 +52,11 @@ function useProductSearch() {
   const clear = useCallback(() => {
     setQuery("");
     setResults([]);
+    setCategoryResults([]);
     setOpen(false);
   }, []);
 
-  return { query, results, loading, open, setOpen, search, clear };
+  return { query, results, categoryResults, loading, open, setOpen, search, clear };
 }
 
 export function SiteHeader() {

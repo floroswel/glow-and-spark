@@ -39,6 +39,41 @@ interface Product {
   sort_order: number;
   created_at: string;
   updated_at: string;
+  barcode: string | null;
+  length_cm: number | null;
+  width_cm: number | null;
+  height_cm: number | null;
+  is_digital: boolean;
+  digital_file_url: string | null;
+  digital_max_downloads: number | null;
+}
+
+interface ProductVariant {
+  id?: string;
+  product_id?: string;
+  name: string;
+  sku: string | null;
+  price: number | null;
+  old_price: number | null;
+  stock: number;
+  options: Record<string, string>;
+  sort_order: number;
+  image_url: string | null;
+  is_active: boolean;
+}
+
+interface ProductTag {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+interface RelatedProduct {
+  id?: string;
+  source_product_id?: string;
+  target_product_id: string;
+  relation_type: string;
+  sort_order: number;
 }
 
 const emptyProduct: Omit<Product, "id" | "created_at" | "updated_at"> = {
@@ -46,6 +81,8 @@ const emptyProduct: Omit<Product, "id" | "created_at" | "updated_at"> = {
   image_url: "", gallery: [], category_id: null, badge: "", badge_type: "new", rating: 0,
   reviews_count: 0, stock: 0, weight: "", sku: "", meta_title: "", meta_description: "",
   is_active: true, is_featured: false, sort_order: 0,
+  barcode: null, length_cm: null, width_cm: null, height_cm: null,
+  is_digital: false, digital_file_url: null, digital_max_downloads: 5,
 };
 
 const PAGE_SIZE = 25;

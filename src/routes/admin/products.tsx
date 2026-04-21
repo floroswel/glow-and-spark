@@ -142,12 +142,14 @@ function AdminProducts() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [pRes, cRes] = await Promise.all([
+    const [pRes, cRes, tRes] = await Promise.all([
       supabase.from("products").select("*").order("sort_order"),
       supabase.from("categories").select("*").order("sort_order"),
+      supabase.from("product_tags").select("*").order("name"),
     ]);
     setProducts((pRes.data as any) || []);
     setCategories(cRes.data || []);
+    setAllTags((tRes.data as any) || []);
     setLoading(false);
   }, []);
 

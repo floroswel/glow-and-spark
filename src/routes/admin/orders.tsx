@@ -8,11 +8,12 @@ export const Route = createFileRoute("/admin/orders")({
 });
 
 const statusColors: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-800",
-  processing: "bg-blue-100 text-blue-800",
-  shipped: "bg-purple-100 text-purple-800",
-  delivered: "bg-green-100 text-green-800",
-  cancelled: "bg-red-100 text-red-800",
+  pending: "bg-accent/15 text-accent",
+  processing: "bg-chart-1/15 text-chart-1",
+  shipped: "bg-chart-4/15 text-chart-4",
+  delivered: "bg-chart-2/15 text-chart-2",
+  completed: "bg-chart-2/15 text-chart-2",
+  cancelled: "bg-destructive/15 text-destructive",
 };
 
 const statusLabels: Record<string, string> = {
@@ -20,6 +21,7 @@ const statusLabels: Record<string, string> = {
   processing: "În procesare",
   shipped: "Expediată",
   delivered: "Livrată",
+  completed: "Finalizată",
   cancelled: "Anulată",
 };
 
@@ -49,7 +51,7 @@ function AdminOrders() {
     total: orders.length,
     pending: orders.filter((o) => o.status === "pending").length,
     processing: orders.filter((o) => o.status === "processing").length,
-    delivered: orders.filter((o) => o.status === "delivered").length,
+    delivered: orders.filter((o) => o.status === "delivered" || o.status === "completed").length,
     revenue: orders.filter((o) => o.status !== "cancelled").reduce((s: number, o: any) => s + Number(o.total), 0),
   };
 
@@ -61,9 +63,9 @@ function AdminOrders() {
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
         {[
           { label: "Total", value: stats.total, color: "text-foreground" },
-          { label: "În așteptare", value: stats.pending, color: "text-yellow-600" },
-          { label: "Procesare", value: stats.processing, color: "text-blue-600" },
-          { label: "Livrate", value: stats.delivered, color: "text-green-600" },
+          { label: "În așteptare", value: stats.pending, color: "text-accent" },
+          { label: "Procesare", value: stats.processing, color: "text-chart-1" },
+          { label: "Livrate", value: stats.delivered, color: "text-chart-2" },
           { label: "Venituri", value: `${stats.revenue.toFixed(0)} RON`, color: "text-accent" },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-border bg-card p-3 text-center">
@@ -90,7 +92,7 @@ function AdminOrders() {
       <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-secondary">
+            <tr className="border-b border-border bg-secondary/50">
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Nr. Comandă</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Client</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Total</th>
@@ -102,7 +104,7 @@ function AdminOrders() {
           </thead>
           <tbody>
             {orders.map((o) => (
-              <tr key={o.id} className="border-b border-border last:border-0">
+              <tr key={o.id} className="border-b border-border last:border-0 hover:bg-secondary/30 transition">
                 <td className="px-4 py-3 font-medium text-foreground">{o.order_number}</td>
                 <td className="px-4 py-3">
                   <p className="text-foreground">{o.customer_name}</p>
@@ -110,14 +112,14 @@ function AdminOrders() {
                 </td>
                 <td className="px-4 py-3 font-medium text-foreground">{o.total} RON</td>
                 <td className="px-4 py-3">
-                  <select value={o.status} onChange={(e) => updateStatus(o.id, e.target.value)} className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusColors[o.status] || "bg-muted text-muted-foreground"}`}>
+                  <select value={o.status} onChange={(e) => updateStatus(o.id, e.target.value)} className={`rounded-full px-2.5 py-1 text-xs font-medium border-0 cursor-pointer ${statusColors[o.status] || "bg-muted text-muted-foreground"}`}>
                     {Object.entries(statusLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                   </select>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground capitalize">{o.payment_method}</td>
                 <td className="px-4 py-3 text-muted-foreground">{new Date(o.created_at).toLocaleDateString("ro-RO")}</td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => setViewing(o)} className="text-muted-foreground hover:text-accent"><Eye className="h-4 w-4" /></button>
+                  <button onClick={() => setViewing(o)} className="p-1.5 rounded-lg text-muted-foreground hover:bg-secondary hover:text-accent transition"><Eye className="h-4 w-4" /></button>
                 </td>
               </tr>
             ))}
@@ -132,48 +134,48 @@ function AdminOrders() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm" onClick={() => setViewing(null)}>
           <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-card p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-heading text-lg font-bold">Comandă #{viewing.order_number}</h2>
-              <button onClick={() => setViewing(null)}><X className="h-5 w-5 text-muted-foreground" /></button>
+              <h2 className="font-heading text-lg font-bold text-foreground">Comandă #{viewing.order_number}</h2>
+              <button onClick={() => setViewing(null)}><X className="h-5 w-5 text-muted-foreground hover:text-foreground" /></button>
             </div>
             <div className="space-y-3 text-sm">
               <div className="grid grid-cols-2 gap-2">
-                <div><span className="text-muted-foreground">Client:</span> <strong>{viewing.customer_name}</strong></div>
-                <div><span className="text-muted-foreground">Email:</span> {viewing.customer_email}</div>
-                <div><span className="text-muted-foreground">Telefon:</span> {viewing.customer_phone || "-"}</div>
-                <div><span className="text-muted-foreground">Plată:</span> {viewing.payment_method}</div>
+                <div><span className="text-muted-foreground">Client:</span> <strong className="text-foreground">{viewing.customer_name}</strong></div>
+                <div><span className="text-muted-foreground">Email:</span> <span className="text-foreground">{viewing.customer_email}</span></div>
+                <div><span className="text-muted-foreground">Telefon:</span> <span className="text-foreground">{viewing.customer_phone || "—"}</span></div>
+                <div><span className="text-muted-foreground">Plată:</span> <span className="text-foreground capitalize">{viewing.payment_method}</span></div>
                 {viewing.billing_type === "company" && (
                   <>
-                    <div><span className="text-muted-foreground">Firmă:</span> {viewing.company_name}</div>
-                    <div><span className="text-muted-foreground">CUI:</span> {viewing.company_cui}</div>
+                    <div><span className="text-muted-foreground">Firmă:</span> <span className="text-foreground">{viewing.company_name}</span></div>
+                    <div><span className="text-muted-foreground">CUI:</span> <span className="text-foreground">{viewing.company_cui}</span></div>
                   </>
                 )}
               </div>
               <div className="rounded-lg bg-secondary p-3">
                 <p className="text-muted-foreground mb-1">Adresa:</p>
-                <p>{viewing.shipping_address}, {viewing.city}, {viewing.county} {viewing.postal_code}</p>
+                <p className="text-foreground">{viewing.shipping_address}, {viewing.city}, {viewing.county} {viewing.postal_code}</p>
               </div>
               <div className="rounded-lg bg-secondary p-3">
                 <p className="text-muted-foreground mb-2">Produse:</p>
                 {(viewing.items as any[])?.map((item: any, i: number) => (
-                  <div key={i} className="flex justify-between py-1">
-                    <span>{item.name} × {item.qty}</span>
-                    <span>{(item.price * item.qty).toFixed(2)} RON</span>
+                  <div key={i} className="flex justify-between py-1 text-foreground">
+                    <span>{item.name} × {item.qty || item.quantity || 1}</span>
+                    <span>{(Number(item.price) * Number(item.qty || item.quantity || 1)).toFixed(2)} RON</span>
                   </div>
                 ))}
               </div>
               <div className="space-y-1 pt-2 border-t border-border">
-                <div className="flex justify-between"><span>Subtotal</span><span>{viewing.subtotal} RON</span></div>
-                <div className="flex justify-between"><span>Livrare</span><span>{Number(viewing.shipping_cost) === 0 ? "GRATUITĂ" : `${viewing.shipping_cost} RON`}</span></div>
+                <div className="flex justify-between text-foreground"><span>Subtotal</span><span>{viewing.subtotal} RON</span></div>
+                <div className="flex justify-between text-foreground"><span>Livrare</span><span>{Number(viewing.shipping_cost) === 0 ? "GRATUITĂ" : `${viewing.shipping_cost} RON`}</span></div>
                 {Number(viewing.discount_amount) > 0 && (
-                  <div className="flex justify-between text-chart-2"><span>Reducere ({viewing.discount_code})</span><span>-{viewing.discount_amount} RON</span></div>
+                  <div className="flex justify-between text-accent"><span>Reducere ({viewing.discount_code})</span><span>-{viewing.discount_amount} RON</span></div>
                 )}
-                <div className="flex justify-between font-bold text-base">
+                <div className="flex justify-between font-bold text-base text-foreground">
                   <span>Total</span><span>{viewing.total} RON</span>
                 </div>
               </div>
               <div className="pt-2">
                 <label className="text-xs text-muted-foreground">Schimbă status:</label>
-                <select value={viewing.status} onChange={(e) => updateStatus(viewing.id, e.target.value)} className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm">
+                <select value={viewing.status} onChange={(e) => updateStatus(viewing.id, e.target.value)} className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-accent focus:outline-none">
                   {Object.entries(statusLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                 </select>
               </div>

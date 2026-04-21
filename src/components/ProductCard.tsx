@@ -39,14 +39,14 @@ export function ProductCard({
 
   return (
     <div className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition hover:shadow-md">
-      <div className="relative overflow-hidden">
+      <Link to="/produs/$slug" params={{ slug }} className="block relative overflow-hidden">
         {badge && (
           <span className={`absolute left-3 top-3 z-10 rounded-md px-2.5 py-1 text-xs font-bold uppercase ${badgeColors[badgeType]}`}>
             {badge}
           </span>
         )}
         <img src={image} alt={title} className="img-zoom aspect-square w-full object-cover" loading="lazy" width={640} height={640} />
-      </div>
+      </Link>
       <div className="p-4">
         <h3 className="font-heading text-sm font-semibold leading-snug text-foreground">{title}</h3>
         <p className="mt-1 text-xs text-muted-foreground">{description}</p>

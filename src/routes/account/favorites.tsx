@@ -11,7 +11,7 @@ export const Route = createFileRoute("/account/favorites")({
 
 function AccountFavorites() {
   const { ids, toggle } = useFavorites();
-  const { addToCart } = useCart();
+  const { addItem } = useCart();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -67,7 +67,7 @@ function AccountFavorites() {
               </div>
               <div className="flex gap-2 mt-3">
                 <button
-                  onClick={() => addToCart({ id: p.id, name: p.name, price: p.price, image_url: p.image_url, slug: p.slug, quantity: 1 })}
+                  onClick={() => addItem({ id: p.id, name: p.name, price: p.price, image_url: p.image_url, slug: p.slug })}
                   className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-accent py-2 text-xs font-semibold text-accent-foreground hover:bg-accent/90 transition"
                 >
                   <ShoppingCart className="h-3.5 w-3.5" /> Adaugă în coș

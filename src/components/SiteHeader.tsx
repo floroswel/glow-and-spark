@@ -5,6 +5,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package, X } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
+import { HighlightText } from "@/components/HighlightText";
 
 function useProductSearch() {
   const [query, setQuery] = useState("");
@@ -201,7 +202,10 @@ export function SiteHeader() {
                                     <img src={p.image_url} alt={p.name} className="h-12 w-12 rounded-lg object-cover bg-muted" />
                                   )}
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                                    <HighlightText text={p.name} query={desktopSearch.query} className="text-sm font-medium text-foreground truncate block" />
+                                    {p.short_description && (
+                                      <HighlightText text={p.short_description} query={desktopSearch.query} className="text-xs text-muted-foreground truncate block mt-0.5" />
+                                    )}
                                     <div className="flex items-center gap-2 mt-0.5">
                                       <span className="text-sm font-bold text-accent">{p.price} RON</span>
                                       {p.old_price && (
@@ -473,7 +477,10 @@ export function SiteHeader() {
                                   <img src={p.image_url} alt={p.name} className="h-10 w-10 rounded-lg object-cover bg-muted" />
                                 )}
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                                  <HighlightText text={p.name} query={mobileSearch.query} className="text-sm font-medium text-foreground truncate block" />
+                                  {p.short_description && (
+                                    <HighlightText text={p.short_description} query={mobileSearch.query} className="text-xs text-muted-foreground truncate block mt-0.5" />
+                                  )}
                                   <span className="text-xs font-bold text-accent">{p.price} RON</span>
                                 </div>
                               </Link>

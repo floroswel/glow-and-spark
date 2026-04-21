@@ -1,5 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { SiteSettingsProvider } from "@/hooks/useSiteSettings";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { CartProvider } from "@/hooks/useCart";
 import { AuthProvider } from "@/hooks/useAuth";
 import { FavoritesProvider } from "@/hooks/useFavorites";
@@ -79,7 +80,10 @@ function RootComponent() {
         <CartProvider>
           <FavoritesProvider>
             <CompareProvider>
-              <Outlet />
+              <div className="pb-14 md:pb-0">
+                <Outlet />
+              </div>
+              <MobileBottomNav />
             </CompareProvider>
           </FavoritesProvider>
         </CartProvider>

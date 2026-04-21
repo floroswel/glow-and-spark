@@ -78,7 +78,7 @@ function AccountSettings() {
             className="flex items-center gap-2 rounded-lg bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition disabled:opacity-50">
             <Save className="h-4 w-4" /> {saving ? "Se salvează..." : "Salvează"}
           </button>
-          {saved && <span className="text-sm text-green-600 font-medium">✓ Salvat cu succes</span>}
+          {saved && <span className="text-sm text-accent font-medium">✓ Salvat cu succes</span>}
         </div>
       </form>
 
@@ -88,7 +88,7 @@ function AccountSettings() {
           <Lock className="h-4.5 w-4.5" /> Schimbă Parola
         </h2>
         {pwError && <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{pwError}</div>}
-        {pwSuccess && <div className="rounded-lg bg-green-50 p-3 text-sm text-green-700">Parola a fost schimbată cu succes.</div>}
+        {pwSuccess && <div className="rounded-lg bg-accent/10 p-3 text-sm text-accent">Parola a fost schimbată cu succes.</div>}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <input type="password" placeholder="Parola nouă *" required value={newPw} onChange={(e) => setNewPw(e.target.value)}
             className="rounded-lg border border-border px-4 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30" />

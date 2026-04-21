@@ -140,32 +140,34 @@ function CatalogPage() {
           </span>
         </nav>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <h1 className="font-heading text-3xl font-bold text-foreground">
-            {q ? `Rezultate pentru „${q}"` : activeCat ? activeCat.name : "Toate Produsele"}
-          </h1>
-          <div className="flex items-center gap-3">
-            {q && (
+        <div className="sticky top-0 z-30 -mx-4 mb-8 border-b border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
+              {q ? `Rezultate pentru „${q}"` : activeCat ? activeCat.name : "Toate Produsele"}
+            </h1>
+            <div className="flex items-center gap-3">
+              {q && (
+                <button
+                  onClick={() => updateSearch({ q: "", page: 1 })}
+                  className="text-sm text-accent hover:underline"
+                >
+                  ✕ Șterge căutarea
+                </button>
+              )}
               <button
-                onClick={() => updateSearch({ q: "", page: 1 })}
-                className="text-sm text-accent hover:underline"
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                    toast.success("Link copiat în clipboard!", { duration: 2000 });
+                  });
+                }}
+                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
               >
-                ✕ Șterge căutarea
+                {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                {copied ? "Copiat!" : "Copiază link"}
               </button>
-            )}
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(window.location.href).then(() => {
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                  toast.success("Link copiat în clipboard!", { duration: 2000 });
-                });
-              }}
-              className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
-            >
-              {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-              {copied ? "Copiat!" : "Copiază link"}
-            </button>
+            </div>
           </div>
         </div>
 

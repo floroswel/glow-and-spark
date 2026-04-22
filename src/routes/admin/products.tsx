@@ -1004,6 +1004,7 @@ function AdminProducts() {
                   { key: "logistics", label: "📐 Logistică" },
                   { key: "seo", label: "🔍 SEO" },
                   { key: "badges", label: "⭐ Badge" },
+                  { key: "advanced", label: "⚙️ Avansat" },
                 ].map((tab) => (
                   <button key={tab.key} onClick={() => setActiveTab(tab.key)}
                     className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-[1px] transition whitespace-nowrap ${activeTab === tab.key ? "border-accent text-accent" : "border-transparent text-muted-foreground hover:text-foreground"}`}>

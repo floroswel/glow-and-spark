@@ -551,6 +551,8 @@ export type Database = {
       }
       orders: {
         Row: {
+          awb_carrier: string | null
+          awb_number: string | null
           billing_type: string | null
           city: string | null
           company_cui: string | null
@@ -581,6 +583,8 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          awb_carrier?: string | null
+          awb_number?: string | null
           billing_type?: string | null
           city?: string | null
           company_cui?: string | null
@@ -611,6 +615,8 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          awb_carrier?: string | null
+          awb_number?: string | null
           billing_type?: string | null
           city?: string | null
           company_cui?: string | null

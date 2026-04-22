@@ -71,6 +71,7 @@ const menuSections: MenuSection[] = [
           { to: "/admin/customers", label: "Toți Clienții" },
           { to: "/admin/crm", label: "Segmente & Grupuri" },
           { to: "/admin/tickets", label: "Tichete Support" },
+          { to: "/admin/complaints", label: "Reclamații" },
         ],
       },
     ],

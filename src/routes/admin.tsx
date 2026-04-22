@@ -34,6 +34,7 @@ const menuSections: MenuSection[] = [
         icon: ShoppingCart, label: "Comenzi",
         children: [
           { to: "/admin/orders", label: "Toate Comenzile" },
+          { to: "/admin/returns", label: "Retururi" },
           { to: "/admin/abandoned-carts", label: "Coșuri Abandonate" },
         ],
       },

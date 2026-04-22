@@ -42,6 +42,7 @@ import { Route as AdminSocialProofRouteImport } from './routes/admin/social-proo
 import { Route as AdminShippingRouteImport } from './routes/admin/shipping'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminReviewsRouteImport } from './routes/admin/reviews'
+import { Route as AdminReturnsRouteImport } from './routes/admin/returns'
 import { Route as AdminReportsRouteImport } from './routes/admin/reports'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as AdminPopupRouteImport } from './routes/admin/popup'
@@ -60,6 +61,7 @@ import { Route as AdminContentRouteImport } from './routes/admin/content'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminBlogRouteImport } from './routes/admin/blog'
 import { Route as AdminAiRouteImport } from './routes/admin/ai'
+import { Route as AdminActivityRouteImport } from './routes/admin/activity'
 import { Route as AdminAbandonedCartsRouteImport } from './routes/admin/abandoned-carts'
 import { Route as AccountSettingsRouteImport } from './routes/account/settings'
 import { Route as AccountOrdersRouteImport } from './routes/account/orders'
@@ -248,6 +250,11 @@ const AdminReviewsRoute = AdminReviewsRouteImport.update({
   path: '/reviews',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminReturnsRoute = AdminReturnsRouteImport.update({
+  id: '/returns',
+  path: '/returns',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminReportsRoute = AdminReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
@@ -336,6 +343,11 @@ const AdminBlogRoute = AdminBlogRouteImport.update({
 const AdminAiRoute = AdminAiRouteImport.update({
   id: '/ai',
   path: '/ai',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminActivityRoute = AdminActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminAbandonedCartsRoute = AdminAbandonedCartsRouteImport.update({
@@ -470,6 +482,7 @@ export interface FileRoutesByFullPath {
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
+  '/admin/activity': typeof AdminActivityRoute
   '/admin/ai': typeof AdminAiRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -488,6 +501,7 @@ export interface FileRoutesByFullPath {
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reports': typeof AdminReportsRouteWithChildren
+  '/admin/returns': typeof AdminReturnsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/admin/shipping': typeof AdminShippingRoute
@@ -543,6 +557,7 @@ export interface FileRoutesByTo {
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
+  '/admin/activity': typeof AdminActivityRoute
   '/admin/ai': typeof AdminAiRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -561,6 +576,7 @@ export interface FileRoutesByTo {
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reports': typeof AdminReportsRouteWithChildren
+  '/admin/returns': typeof AdminReturnsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/admin/shipping': typeof AdminShippingRoute
@@ -619,6 +635,7 @@ export interface FileRoutesById {
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
+  '/admin/activity': typeof AdminActivityRoute
   '/admin/ai': typeof AdminAiRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -637,6 +654,7 @@ export interface FileRoutesById {
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reports': typeof AdminReportsRouteWithChildren
+  '/admin/returns': typeof AdminReturnsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/admin/shipping': typeof AdminShippingRoute
@@ -696,6 +714,7 @@ export interface FileRouteTypes {
     | '/account/orders'
     | '/account/settings'
     | '/admin/abandoned-carts'
+    | '/admin/activity'
     | '/admin/ai'
     | '/admin/blog'
     | '/admin/categories'
@@ -714,6 +733,7 @@ export interface FileRouteTypes {
     | '/admin/popup'
     | '/admin/products'
     | '/admin/reports'
+    | '/admin/returns'
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/shipping'
@@ -769,6 +789,7 @@ export interface FileRouteTypes {
     | '/account/orders'
     | '/account/settings'
     | '/admin/abandoned-carts'
+    | '/admin/activity'
     | '/admin/ai'
     | '/admin/blog'
     | '/admin/categories'
@@ -787,6 +808,7 @@ export interface FileRouteTypes {
     | '/admin/popup'
     | '/admin/products'
     | '/admin/reports'
+    | '/admin/returns'
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/shipping'
@@ -844,6 +866,7 @@ export interface FileRouteTypes {
     | '/account/orders'
     | '/account/settings'
     | '/admin/abandoned-carts'
+    | '/admin/activity'
     | '/admin/ai'
     | '/admin/blog'
     | '/admin/categories'
@@ -862,6 +885,7 @@ export interface FileRouteTypes {
     | '/admin/popup'
     | '/admin/products'
     | '/admin/reports'
+    | '/admin/returns'
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/shipping'
@@ -1154,6 +1178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminReviewsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/returns': {
+      id: '/admin/returns'
+      path: '/returns'
+      fullPath: '/admin/returns'
+      preLoaderRoute: typeof AdminReturnsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/reports': {
       id: '/admin/reports'
       path: '/reports'
@@ -1278,6 +1309,13 @@ declare module '@tanstack/react-router' {
       path: '/ai'
       fullPath: '/admin/ai'
       preLoaderRoute: typeof AdminAiRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/activity': {
+      id: '/admin/activity'
+      path: '/activity'
+      fullPath: '/admin/activity'
+      preLoaderRoute: typeof AdminActivityRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/abandoned-carts': {
@@ -1532,6 +1570,7 @@ const AdminStockRouteWithChildren = AdminStockRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminAbandonedCartsRoute: typeof AdminAbandonedCartsRoute
+  AdminActivityRoute: typeof AdminActivityRoute
   AdminAiRoute: typeof AdminAiRoute
   AdminBlogRoute: typeof AdminBlogRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
@@ -1550,6 +1589,7 @@ interface AdminRouteChildren {
   AdminPopupRoute: typeof AdminPopupRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminReportsRoute: typeof AdminReportsRouteWithChildren
+  AdminReturnsRoute: typeof AdminReturnsRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSettingsRoute: typeof AdminSettingsRouteWithChildren
   AdminShippingRoute: typeof AdminShippingRoute
@@ -1568,6 +1608,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAbandonedCartsRoute: AdminAbandonedCartsRoute,
+  AdminActivityRoute: AdminActivityRoute,
   AdminAiRoute: AdminAiRoute,
   AdminBlogRoute: AdminBlogRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
@@ -1586,6 +1627,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPopupRoute: AdminPopupRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminReportsRoute: AdminReportsRouteWithChildren,
+  AdminReturnsRoute: AdminReturnsRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSettingsRoute: AdminSettingsRouteWithChildren,
   AdminShippingRoute: AdminShippingRoute,

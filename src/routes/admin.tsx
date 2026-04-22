@@ -163,6 +163,7 @@ const menuSections: MenuSection[] = [
         icon: Server, label: "Sistem",
         children: [
           { to: "/admin/system", label: "System Health" },
+          { to: "/admin/activity", label: "Jurnal Activitate" },
           { to: "/admin/settings", label: "Setări Generale" },
           { to: "/admin/settings/checkout", label: "Checkout Config" },
         ],

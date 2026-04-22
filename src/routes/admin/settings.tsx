@@ -48,6 +48,13 @@ const defaults = {
   invoice_iban: "",
   smtp_from_name: "Glow & Spark",
   smtp_from_email: "comenzi@glowandspark.ro",
+  // Social Media
+  social_facebook: "",
+  social_instagram: "",
+  social_tiktok: "",
+  social_youtube: "",
+  social_pinterest: "",
+  social_twitter: "",
 };
 
 function AdminSettings() {

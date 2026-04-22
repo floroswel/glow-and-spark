@@ -46,6 +46,13 @@ interface Product {
   is_digital: boolean;
   digital_file_url: string | null;
   digital_max_downloads: number | null;
+  brand: string | null;
+  cost_price: number;
+  min_stock_alert: number;
+  allow_backorder: boolean;
+  internal_notes: string | null;
+  promo_start: string | null;
+  promo_end: string | null;
 }
 
 interface ProductVariant {
@@ -83,6 +90,8 @@ const emptyProduct: Omit<Product, "id" | "created_at" | "updated_at"> = {
   is_active: true, is_featured: false, sort_order: 0,
   barcode: null, length_cm: null, width_cm: null, height_cm: null,
   is_digital: false, digital_file_url: null, digital_max_downloads: 5,
+  brand: null, cost_price: 0, min_stock_alert: 5, allow_backorder: false,
+  internal_notes: null, promo_start: null, promo_end: null,
 };
 
 const PAGE_SIZE = 25;

@@ -65,6 +65,7 @@ function CatalogPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [mobileFilters, setMobileFilters] = useState(false);
 
   // Helper to update search params
   const updateSearch = (updates: Partial<z.infer<typeof catalogSearchSchema>>) => {

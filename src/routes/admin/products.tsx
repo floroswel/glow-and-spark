@@ -1034,6 +1034,10 @@ function AdminProducts() {
                       {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                   </div>
+                  <div>
+                    <label className={labelClass}>Brand</label>
+                    <input value={editing.brand || ""} onChange={(e) => updateField("brand", e.target.value)} className={inputClass} placeholder="Glow & Spark" />
+                  </div>
                   <div className="col-span-2">
                     <label className={labelClass}>Descriere scurtă</label>
                     <input value={editing.short_description || ""} onChange={(e) => updateField("short_description", e.target.value)} className={inputClass} placeholder="Notă caldă de vanilie și lemn de santal" />
@@ -1053,6 +1057,7 @@ function AdminProducts() {
                     <label className={labelClass}>Preț (RON) *</label>
                     <input type="number" step="0.01" value={editing.price} onChange={(e) => updateField("price", Number(e.target.value))} className={inputClass} />
                     {editing.price <= 0 && <p className="mt-1 text-xs text-destructive">Prețul trebuie să fie pozitiv</p>}
+                    {editing.price > 0 && <p className="mt-1 text-xs text-muted-foreground">Cu TVA (19%): {(editing.price * 1.19).toFixed(2)} RON</p>}
                   </div>
                   <div>
                     <label className={labelClass}>Preț vechi (RON)</label>
@@ -1062,18 +1067,50 @@ function AdminProducts() {
                     )}
                   </div>
                   <div>
-                    <label className={labelClass}>Stoc *</label>
-                    <input type="number" value={editing.stock} onChange={(e) => updateField("stock", Number(e.target.value))} className={inputClass} />
-                    <div className="mt-1 flex items-center gap-2">
-                      <div className={`h-2 w-2 rounded-full ${editing.stock > 10 ? "bg-chart-2" : editing.stock > 0 ? "bg-amber-500" : "bg-destructive"}`} />
-                      <p className={`text-xs font-medium ${editing.stock > 10 ? "text-chart-2" : editing.stock > 0 ? "text-amber-500" : "text-destructive"}`}>
-                        {editing.stock > 10 ? "În stoc" : editing.stock > 0 ? `Stoc limitat (${editing.stock} buc.)` : "Epuizat"}
+                    <label className={labelClass}>Cost achiziție (RON)</label>
+                    <input type="number" step="0.01" value={editing.cost_price || ""} onChange={(e) => updateField("cost_price", Number(e.target.value))} className={inputClass} placeholder="Preț de achiziție" />
+                    {editing.cost_price > 0 && editing.price > 0 && (
+                      <p className="mt-1 text-xs text-chart-2 font-medium">
+                        Profit: {(editing.price - editing.cost_price).toFixed(2)} RON ({((1 - editing.cost_price / editing.price) * 100).toFixed(0)}% marjă)
                       </p>
-                    </div>
+                    )}
                   </div>
                   <div>
                     <label className={labelClass}>SKU (Cod produs)</label>
                     <input value={editing.sku || ""} onChange={(e) => updateField("sku", e.target.value)} className={inputClass} placeholder="GS-VAN-001" />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Stoc *</label>
+                    <input type="number" value={editing.stock} onChange={(e) => updateField("stock", Number(e.target.value))} className={inputClass} />
+                    <div className="mt-1 flex items-center gap-2">
+                      <div className={`h-2 w-2 rounded-full ${editing.stock > (editing.min_stock_alert || 5) ? "bg-chart-2" : editing.stock > 0 ? "bg-amber-500" : "bg-destructive"}`} />
+                      <p className={`text-xs font-medium ${editing.stock > (editing.min_stock_alert || 5) ? "text-chart-2" : editing.stock > 0 ? "text-amber-500" : "text-destructive"}`}>
+                        {editing.stock > (editing.min_stock_alert || 5) ? "În stoc" : editing.stock > 0 ? `Stoc limitat (${editing.stock} buc.)` : "Epuizat"}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Prag alertă stoc minim</label>
+                    <input type="number" value={editing.min_stock_alert ?? 5} onChange={(e) => updateField("min_stock_alert", Number(e.target.value))} className={inputClass} />
+                    <p className="mt-1 text-xs text-muted-foreground">Alertă când stocul scade sub {editing.min_stock_alert ?? 5} buc.</p>
+                  </div>
+                  <div className="col-span-2 border-t border-border pt-4">
+                    <label className={labelClass}>Promoție programată</label>
+                    <div className="grid grid-cols-2 gap-4 mt-2">
+                      <div>
+                        <label className="text-xs text-muted-foreground">Start promoție</label>
+                        <input type="datetime-local" value={editing.promo_start?.slice(0, 16) || ""} onChange={(e) => updateField("promo_start", e.target.value ? new Date(e.target.value).toISOString() : null)} className={inputClass} />
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground">Sfârșit promoție</label>
+                        <input type="datetime-local" value={editing.promo_end?.slice(0, 16) || ""} onChange={(e) => updateField("promo_end", e.target.value ? new Date(e.target.value).toISOString() : null)} className={inputClass} />
+                      </div>
+                    </div>
+                    {editing.promo_start && editing.promo_end && (
+                      <p className="mt-1 text-xs text-accent font-medium">
+                        📅 Promoție activă: {new Date(editing.promo_start).toLocaleDateString("ro-RO")} — {new Date(editing.promo_end).toLocaleDateString("ro-RO")}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className={labelClass}>Greutate</label>
@@ -1091,6 +1128,10 @@ function AdminProducts() {
                     <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
                       <input type="checkbox" checked={editing.is_featured} onChange={(e) => updateField("is_featured", e.target.checked)} className="rounded border-border accent-accent h-4 w-4" />
                       <span className="flex items-center gap-1"><Star className={`h-4 w-4 ${editing.is_featured ? "text-accent fill-accent" : "text-muted-foreground"}`} /> Produs recomandat</span>
+                    </label>
+                    <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
+                      <input type="checkbox" checked={editing.allow_backorder || false} onChange={(e) => updateField("allow_backorder", e.target.checked)} className="rounded border-border accent-accent h-4 w-4" />
+                      <span>Permite comandă dacă epuizat</span>
                     </label>
                   </div>
                 </div>

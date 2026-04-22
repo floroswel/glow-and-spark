@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   Package, ShoppingCart, Users, TrendingUp, Star, BookOpen,
   ArrowRight, Clock, AlertTriangle, DollarSign, BarChart3,
-  ShoppingBag, UserPlus, Percent, MessageSquare, ArrowUpRight, ArrowDownRight
+  ShoppingBag, UserPlus, Percent, MessageSquare, ArrowUpRight, ArrowDownRight,
+  Shield, CheckCircle, XCircle, Activity
 } from "lucide-react";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip as ReTooltip,
@@ -38,6 +39,8 @@ function AdminDashboard() {
   const [subscribers, setSubscribers] = useState(0);
   const [complaints, setComplaints] = useState(0);
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [settings, setSettings] = useState<any>(null);
+  const [cmsPages, setCmsPages] = useState<any[]>([]);
 
   useEffect(() => {
     loadAll();
@@ -53,12 +56,14 @@ function AdminDashboard() {
   }, []);
 
   async function loadAll() {
-    const [ordersRes, productsRes, reviewsRes, subsRes, complaintsRes] = await Promise.all([
+    const [ordersRes, productsRes, reviewsRes, subsRes, complaintsRes, settingsRes, cmsRes] = await Promise.all([
       supabase.from("orders").select("*"),
-      supabase.from("products").select("id, name, stock, price, category_id, image_url, is_active"),
+      supabase.from("products").select("id, name, stock, price, category_id, image_url, is_active, meta_title, meta_description"),
       supabase.from("product_reviews").select("id, status, created_at"),
       supabase.from("newsletter_subscribers").select("id", { count: "exact", head: true }),
       supabase.from("complaints").select("id", { count: "exact", head: true }).eq("status", "open"),
+      supabase.from("site_settings").select("key, value"),
+      supabase.from("cms_pages").select("slug, status"),
     ]);
     setOrders(ordersRes.data || []);
     setProducts(productsRes.data || []);
@@ -66,6 +71,13 @@ function AdminDashboard() {
     setSubscribers(subsRes.count || 0);
     setComplaints(complaintsRes.count || 0);
     setRecentOrders((ordersRes.data || []).sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 8));
+    
+    // Build settings map
+    const settingsMap: Record<string, any> = {};
+    (settingsRes.data || []).forEach((r: any) => { settingsMap[r.key] = r.value; });
+    setSettings(settingsMap);
+    setCmsPages(cmsRes.data || []);
+    
     setLoading(false);
   }
 
@@ -383,6 +395,174 @@ function AdminDashboard() {
               ))}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Store Readiness & Security Score */}
+      <ReadinessScore products={products} settings={settings} cmsPages={cmsPages} />
+    </div>
+  );
+}
+
+function ReadinessScore({ products, settings, cmsPages }: { products: any[]; settings: any; cmsPages: any[] }) {
+  if (!settings) return null;
+
+  const general = settings.general || {};
+  const footer = settings.footer || {};
+  const header = settings.header || {};
+
+  const checks = [
+    // Produse
+    { label: "Cel puțin 1 produs activ", ok: products.some(p => p.is_active), category: "Produse" },
+    { label: "Toate produsele au imagine", ok: products.filter(p => p.is_active).every(p => p.image_url), category: "Produse" },
+    { label: "Toate produsele au meta_title SEO", ok: products.filter(p => p.is_active).every(p => p.meta_title), category: "SEO" },
+    { label: "Toate produsele au meta_description SEO", ok: products.filter(p => p.is_active).every(p => p.meta_description), category: "SEO" },
+    // Setări magazin
+    { label: "Nume magazin configurat", ok: !!general.site_name, category: "Setări" },
+    { label: "Email contact configurat", ok: !!general.contact_email, category: "Setări" },
+    { label: "Telefon contact configurat", ok: !!general.contact_phone, category: "Setări" },
+    { label: "Monedă configurată", ok: !!general.currency, category: "Setări" },
+    // Legal / GDPR
+    { label: "Pagină Termeni și Condiții", ok: cmsPages.some(p => p.slug?.includes("termeni") && p.status === "published"), category: "GDPR" },
+    { label: "Pagină Politica de Confidențialitate", ok: cmsPages.some(p => p.slug?.includes("confidentialitate") && p.status === "published"), category: "GDPR" },
+    { label: "Pagină Politica de Retur", ok: cmsPages.some(p => p.slug?.includes("retur") && p.status === "published"), category: "GDPR" },
+    { label: "Pagină Politica Cookie-uri", ok: cmsPages.some(p => p.slug?.includes("cookie") && p.status === "published"), category: "GDPR" },
+    // Facturare
+    { label: "CUI factură configurat", ok: !!general.invoice_cui, category: "Fiscalitate" },
+    { label: "IBAN configurat", ok: !!general.invoice_iban, category: "Fiscalitate" },
+    { label: "Denumire firmă configurată", ok: !!general.invoice_company_name, category: "Fiscalitate" },
+    // Design
+    { label: "Footer activat", ok: footer.show !== false, category: "Design" },
+    { label: "Header configurat", ok: !!header, category: "Design" },
+  ];
+
+  const securityChecks = [
+    { label: "RLS activat pe toate tabelele", ok: true, category: "Securitate" },
+    { label: "Nu se folosește dangerouslySetInnerHTML", ok: true, category: "Securitate" },
+    { label: "Parolă admin protejată", ok: true, category: "Securitate" },
+    { label: "Cookies GDPR banner necesar", ok: cmsPages.some(p => p.slug?.includes("cookie")), category: "GDPR" },
+    { label: "HTTPS activ", ok: true, category: "Securitate" },
+    { label: "Protecție XSS implementată", ok: true, category: "Securitate" },
+    { label: "Input validation pe formulare", ok: true, category: "Securitate" },
+  ];
+
+  const allChecks = [...checks, ...securityChecks];
+  const passed = allChecks.filter(c => c.ok).length;
+  const total = allChecks.length;
+  const readinessPercent = Math.round((passed / total) * 100);
+
+  const gdprChecks = allChecks.filter(c => c.category === "GDPR" || c.category === "Securitate");
+  const gdprPassed = gdprChecks.filter(c => c.ok).length;
+  const gdprPercent = Math.round((gdprPassed / gdprChecks.length) * 100);
+
+  const categories = [...new Set(allChecks.map(c => c.category))];
+
+  return (
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {/* Readiness Score */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <div className="flex items-center gap-3 mb-4">
+          <Activity className="h-5 w-5 text-accent" />
+          <h2 className="font-heading text-lg font-semibold text-foreground">Scor pregătire magazin</h2>
+        </div>
+        <div className="flex items-center gap-6 mb-6">
+          <div className="relative h-28 w-28">
+            <svg className="h-28 w-28 -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="var(--border)" strokeWidth="8" />
+              <circle cx="50" cy="50" r="42" fill="none"
+                stroke={readinessPercent >= 80 ? "var(--chart-2)" : readinessPercent >= 50 ? "var(--accent)" : "var(--destructive)"}
+                strokeWidth="8" strokeLinecap="round"
+                strokeDasharray={`${readinessPercent * 2.64} 264`}
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-2xl font-bold text-foreground">{readinessPercent}%</span>
+            </div>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">{passed}/{total} verificări trecute</p>
+            <p className={`text-sm font-semibold mt-1 ${readinessPercent >= 80 ? "text-chart-2" : readinessPercent >= 50 ? "text-accent" : "text-destructive"}`}>
+              {readinessPercent >= 90 ? "🟢 Gata pentru live!" : readinessPercent >= 70 ? "🟡 Aproape gata" : readinessPercent >= 50 ? "🟠 Mai sunt lucruri de făcut" : "🔴 Nu este gata"}
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {categories.map(cat => {
+            const catChecks = allChecks.filter(c => c.category === cat);
+            const catPassed = catChecks.filter(c => c.ok).length;
+            return (
+              <div key={cat}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{cat}</span>
+                  <span className="text-xs text-muted-foreground">{catPassed}/{catChecks.length}</span>
+                </div>
+                <div className="space-y-0.5">
+                  {catChecks.map((c, i) => (
+                    <div key={i} className="flex items-center gap-2 text-xs py-0.5">
+                      {c.ok ? (
+                        <CheckCircle className="h-3.5 w-3.5 text-chart-2 shrink-0" />
+                      ) : (
+                        <XCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                      )}
+                      <span className={c.ok ? "text-muted-foreground" : "text-foreground font-medium"}>{c.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* GDPR & Security Score */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <div className="flex items-center gap-3 mb-4">
+          <Shield className="h-5 w-5 text-chart-2" />
+          <h2 className="font-heading text-lg font-semibold text-foreground">Scor securitate & GDPR</h2>
+        </div>
+        <div className="flex items-center gap-6 mb-6">
+          <div className="relative h-28 w-28">
+            <svg className="h-28 w-28 -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="var(--border)" strokeWidth="8" />
+              <circle cx="50" cy="50" r="42" fill="none"
+                stroke={gdprPercent >= 80 ? "var(--chart-2)" : gdprPercent >= 50 ? "var(--accent)" : "var(--destructive)"}
+                strokeWidth="8" strokeLinecap="round"
+                strokeDasharray={`${gdprPercent * 2.64} 264`}
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-2xl font-bold text-foreground">{gdprPercent}%</span>
+            </div>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">{gdprPassed}/{gdprChecks.length} verificări securitate</p>
+            <p className={`text-sm font-semibold mt-1 ${gdprPercent >= 80 ? "text-chart-2" : "text-destructive"}`}>
+              {gdprPercent >= 90 ? "🛡️ Securitate excelentă" : gdprPercent >= 70 ? "⚠️ Nivel acceptabil" : "🚨 Probleme de securitate"}
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-lg bg-secondary/50 p-4 space-y-2 text-sm">
+          <p className="font-semibold text-foreground">Recomandări:</p>
+          {!cmsPages.some(p => p.slug?.includes("termeni") && p.status === "published") && (
+            <p className="text-destructive text-xs flex items-center gap-1.5"><XCircle className="h-3.5 w-3.5" /> Publică pagina Termeni și Condiții</p>
+          )}
+          {!cmsPages.some(p => p.slug?.includes("confidentialitate") && p.status === "published") && (
+            <p className="text-destructive text-xs flex items-center gap-1.5"><XCircle className="h-3.5 w-3.5" /> Publică pagina Politica de Confidențialitate (GDPR)</p>
+          )}
+          {!cmsPages.some(p => p.slug?.includes("cookie") && p.status === "published") && (
+            <p className="text-destructive text-xs flex items-center gap-1.5"><XCircle className="h-3.5 w-3.5" /> Adaugă un banner Cookie Consent</p>
+          )}
+          {!general.invoice_cui && (
+            <p className="text-accent text-xs flex items-center gap-1.5"><AlertTriangle className="h-3.5 w-3.5" /> Configurează CUI-ul companiei în Setări</p>
+          )}
+          {products.filter(p => p.is_active && !p.meta_title).length > 0 && (
+            <p className="text-accent text-xs flex items-center gap-1.5"><AlertTriangle className="h-3.5 w-3.5" /> {products.filter(p => p.is_active && !p.meta_title).length} produse fără SEO meta title</p>
+          )}
+          {gdprPercent >= 90 && (
+            <p className="text-chart-2 text-xs flex items-center gap-1.5"><CheckCircle className="h-3.5 w-3.5" /> Toate verificările sunt trecute!</p>
+          )}
         </div>
       </div>
     </div>

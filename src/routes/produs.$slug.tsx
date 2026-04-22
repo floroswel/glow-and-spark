@@ -298,7 +298,15 @@ function ProductPage() {
           </div>
           <div className="py-6 text-sm text-muted-foreground leading-relaxed">
             {activeTab === "descriere" && (
-              <div dangerouslySetInnerHTML={{ __html: product.description || "Nicio descriere disponibilă." }} />
+              <div className="prose prose-sm max-w-none">
+                {product.description ? (
+                  product.description.split('\n').map((paragraph: string, i: number) => (
+                    <p key={i}>{paragraph}</p>
+                  ))
+                ) : (
+                  <p>Nicio descriere disponibilă.</p>
+                )}
+              </div>
             )}
             {activeTab === "ingrediente" && (
               <p>Ceară de soia pură, uleiuri esențiale premium, fitil din lemn natural. Fără parafină, fără coloranți artificiali.</p>

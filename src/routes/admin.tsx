@@ -1,12 +1,14 @@
 import { createFileRoute, Outlet, Link, useLocation } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import AdminGlobalSearch from "@/components/admin/AdminGlobalSearch";
+import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Package, ShoppingCart, Users, Settings,
   Palette, LogOut, Menu, X, Tag, FileText, BarChart3,
   CreditCard, Truck, Brain, Server, ChevronDown, ChevronRight,
-  Link2, UserCog, Warehouse, Search, Command
+  Link2, UserCog, Warehouse, Search, Command, Bell, Moon, Sun,
+  RotateCcw, Activity, User
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({

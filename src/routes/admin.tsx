@@ -87,6 +87,27 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
+    title: "STOC & DEPOZIT",
+    items: [
+      {
+        icon: Package, label: "Stoc",
+        children: [
+          { to: "/admin/stock", label: "Dashboard Stoc" },
+          { to: "/admin/stock/manager", label: "Manager Stoc" },
+          { to: "/admin/stock/warehouses", label: "Depozite" },
+          { to: "/admin/stock/movements", label: "Mișcări Stoc" },
+          { to: "/admin/stock/transfers", label: "Transferuri" },
+          { to: "/admin/stock/adjustments", label: "Ajustări" },
+          { to: "/admin/stock/suppliers", label: "Furnizori" },
+          { to: "/admin/stock/purchase-orders", label: "Comenzi Furnizori" },
+          { to: "/admin/stock/batches", label: "Loturi & Expirare" },
+          { to: "/admin/stock/alerts", label: "Alerte Stoc" },
+          { to: "/admin/stock/inventory", label: "Inventar" },
+        ],
+      },
+    ],
+  },
+  {
     title: "CONȚINUT",
     items: [
       {

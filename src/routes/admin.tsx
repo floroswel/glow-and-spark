@@ -8,7 +8,8 @@ import {
   Palette, LogOut, Menu, X, Tag, FileText, BarChart3,
   CreditCard, Truck, Brain, Server, ChevronDown, ChevronRight,
   Link2, UserCog, Warehouse, Search, Command, Bell, Moon, Sun,
-  RotateCcw, Activity, User
+  RotateCcw, Activity, User, Gift, Crown, Percent, FileSpreadsheet,
+  Zap, Receipt, Calculator
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -83,9 +84,12 @@ const menuSections: MenuSection[] = [
         icon: Tag, label: "Marketing",
         children: [
           { to: "/admin/coupons", label: "Cupoane" },
+          { to: "/admin/promotions", label: "Promoții & Campanii" },
           { to: "/admin/subscribers", label: "Abonați Newsletter" },
           { to: "/admin/social-proof", label: "Social Proof" },
           { to: "/admin/popup", label: "Popup" },
+          { to: "/admin/gift-cards", label: "Carduri Cadou" },
+          { to: "/admin/loyalty", label: "Program Fidelitate" },
         ],
       },
     ],
@@ -125,6 +129,8 @@ const menuSections: MenuSection[] = [
         children: [
           { to: "/admin/payments", label: "Metode de Plată" },
           { to: "/admin/transactions", label: "Tranzacții" },
+          { to: "/admin/invoices", label: "Facturi" },
+          { to: "/admin/tax-settings", label: "Setări Fiscale & TVA" },
         ],
       },
       {
@@ -154,6 +160,7 @@ const menuSections: MenuSection[] = [
         icon: Brain, label: "AI & Automatizări",
         children: [
           { to: "/admin/ai", label: "AI Generator Hub" },
+          { to: "/admin/automations", label: "Automatizări" },
         ],
       },
     ],
@@ -172,6 +179,7 @@ const menuSections: MenuSection[] = [
       },
       { icon: Link2, label: "Integrări", to: "/admin/integrations" },
       { icon: UserCog, label: "Utilizatori", to: "/admin/users" },
+      { icon: FileSpreadsheet, label: "Import / Export", to: "/admin/import-export" },
     ],
   },
 ];

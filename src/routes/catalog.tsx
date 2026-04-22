@@ -148,6 +148,13 @@ function CatalogPage() {
               {q ? `Rezultate pentru „${q}"` : activeCat ? activeCat.name : "Toate Produsele"}
             </h1>
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => setMobileFilters(true)}
+                className="flex lg:hidden items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Filtre
+              </button>
               {q && (
                 <button
                   onClick={() => updateSearch({ q: "", page: 1 })}
@@ -164,7 +171,7 @@ function CatalogPage() {
                     toast.success("Link copiat în clipboard!", { duration: 2000 });
                   });
                 }}
-                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+                className="hidden sm:flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
               >
                 {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                 {copied ? "Copiat!" : "Copiază link"}

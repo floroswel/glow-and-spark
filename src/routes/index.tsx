@@ -11,6 +11,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { SocialProofToast } from "@/components/SocialProofToast";
+import { CookieConsent } from "@/components/CookieConsent";
+import { BackToTop } from "@/components/BackToTop";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -40,6 +42,8 @@ function Index() {
       <NewsletterPopup />
       <WhatsAppButton />
       <SocialProofToast />
+      <CookieConsent />
+      <BackToTop />
     </div>
   );
 }

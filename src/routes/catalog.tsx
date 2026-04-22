@@ -7,7 +7,8 @@ import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
-import { ChevronRight, Copy, Check } from "lucide-react";
+import { ChevronRight, Copy, Check, SlidersHorizontal, X } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
@@ -55,6 +56,59 @@ export const Route = createFileRoute("/catalog")({
 
 const ITEMS_PER_PAGE = 12;
 
+function FilterSidebar({ categories, category, sort, minPrice, maxPrice, updateSearch }: {
+  categories: any[]; category: string; sort: string; minPrice: number; maxPrice: number;
+  updateSearch: (updates: any) => void;
+}) {
+  return (
+    <>
+      <div>
+        <h3 className="font-semibold text-foreground mb-3">Categorii</h3>
+        <div className="space-y-1">
+          <button
+            onClick={() => updateSearch({ category: "", page: 1 })}
+            className={`block w-full text-left rounded-lg px-3 py-2 text-sm transition ${!category ? "bg-accent/15 text-accent font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}
+          >
+            Toate produsele
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => updateSearch({ category: cat.slug, page: 1 })}
+              className={`block w-full text-left rounded-lg px-3 py-2 text-sm transition ${category === cat.slug ? "bg-accent/15 text-accent font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3 className="font-semibold text-foreground mb-3">Preț</h3>
+        <div className="flex items-center gap-2">
+          <input type="number" value={minPrice} onChange={(e) => updateSearch({ minPrice: Number(e.target.value), page: 1 })} className="w-full rounded-lg border border-border px-3 py-2 text-sm" placeholder="Min" min={0} />
+          <span className="text-muted-foreground">-</span>
+          <input type="number" value={maxPrice} onChange={(e) => updateSearch({ maxPrice: Number(e.target.value), page: 1 })} className="w-full rounded-lg border border-border px-3 py-2 text-sm" placeholder="Max" min={0} />
+        </div>
+      </div>
+      <div>
+        <h3 className="font-semibold text-foreground mb-3">Sortare</h3>
+        <select value={sort} onChange={(e) => updateSearch({ sort: e.target.value, page: 1 })} className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card">
+          <option value="newest">Cele mai noi</option>
+          <option value="price_asc">Preț crescător</option>
+          <option value="price_desc">Preț descrescător</option>
+          <option value="popular">Populare</option>
+        </select>
+      </div>
+      <button
+        onClick={() => updateSearch({ category: "", minPrice: 0, maxPrice: 1000, q: "", page: 1, sort: "newest" })}
+        className="w-full rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary transition"
+      >
+        Resetează filtrele
+      </button>
+    </>
+  );
+}
+
 function CatalogPage() {
   const { q, category, sort, page, minPrice, maxPrice } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
@@ -64,6 +118,7 @@ function CatalogPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [mobileFilters, setMobileFilters] = useState(false);
 
   // Helper to update search params
   const updateSearch = (updates: Partial<z.infer<typeof catalogSearchSchema>>) => {
@@ -146,6 +201,13 @@ function CatalogPage() {
               {q ? `Rezultate pentru „${q}"` : activeCat ? activeCat.name : "Toate Produsele"}
             </h1>
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => setMobileFilters(true)}
+                className="flex lg:hidden items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Filtre
+              </button>
               {q && (
                 <button
                   onClick={() => updateSearch({ q: "", page: 1 })}
@@ -162,7 +224,7 @@ function CatalogPage() {
                     toast.success("Link copiat în clipboard!", { duration: 2000 });
                   });
                 }}
-                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+                className="hidden sm:flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
               >
                 {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                 {copied ? "Copiat!" : "Copiază link"}
@@ -171,69 +233,22 @@ function CatalogPage() {
           </div>
         </div>
 
+        {/* Mobile filter drawer */}
+        <Sheet open={mobileFilters} onOpenChange={setMobileFilters}>
+          <SheetContent side="left" className="w-80 overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>Filtre</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-6">
+              <FilterSidebar categories={categories} category={category} sort={sort} minPrice={minPrice} maxPrice={maxPrice} updateSearch={(u) => { updateSearch(u); setMobileFilters(false); }} />
+            </div>
+          </SheetContent>
+        </Sheet>
+
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar filters */}
-          <aside className="w-full lg:w-64 shrink-0 space-y-6">
-            {/* Categories */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-3">Categorii</h3>
-              <div className="space-y-1">
-                <button
-                  onClick={() => updateSearch({ category: "", page: 1 })}
-                  className={`block w-full text-left rounded-lg px-3 py-2 text-sm transition ${!category ? "bg-accent/15 text-accent font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}
-                >
-                  Toate produsele
-                </button>
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => updateSearch({ category: cat.slug, page: 1 })}
-                    className={`block w-full text-left rounded-lg px-3 py-2 text-sm transition ${category === cat.slug ? "bg-accent/15 text-accent font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Price filter */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-3">Preț</h3>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  value={minPrice}
-                  onChange={(e) => updateSearch({ minPrice: Number(e.target.value), page: 1 })}
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm"
-                  placeholder="Min"
-                  min={0}
-                />
-                <span className="text-muted-foreground">-</span>
-                <input
-                  type="number"
-                  value={maxPrice}
-                  onChange={(e) => updateSearch({ maxPrice: Number(e.target.value), page: 1 })}
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm"
-                  placeholder="Max"
-                  min={0}
-                />
-              </div>
-            </div>
-
-            {/* Sort */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-3">Sortare</h3>
-              <select
-                value={sort}
-                onChange={(e) => updateSearch({ sort: e.target.value as any, page: 1 })}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card"
-              >
-                <option value="newest">Cele mai noi</option>
-                <option value="price_asc">Preț crescător</option>
-                <option value="price_desc">Preț descrescător</option>
-                <option value="popular">Populare</option>
-              </select>
-            </div>
+          {/* Desktop sidebar filters */}
+          <aside className="hidden lg:block w-64 shrink-0 space-y-6">
+            <FilterSidebar categories={categories} category={category} sort={sort} minPrice={minPrice} maxPrice={maxPrice} updateSearch={updateSearch} />
           </aside>
 
           {/* Product grid */}

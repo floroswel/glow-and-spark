@@ -147,6 +147,7 @@ const menuSections: MenuSection[] = [
           { to: "/admin/reports/profit", label: "Profit & Costuri" },
           { to: "/admin/reports/customers", label: "Rapoarte Clienți" },
           { to: "/admin/reports/conversion", label: "Conversie & Funnel" },
+          { to: "/admin/reports/inventory", label: "Inventar & Valoare Stoc" },
         ],
       },
       {

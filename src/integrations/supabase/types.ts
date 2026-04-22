@@ -62,6 +62,45 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_name: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Relationships: []
+      }
       addresses: {
         Row: {
           address: string
@@ -101,6 +140,39 @@ export type Database = {
           phone?: string | null
           postal_code?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      admin_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean | null
+          link: string | null
+          message: string | null
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message?: string | null
+          title: string
+          type?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message?: string | null
+          title?: string
+          type?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -506,6 +578,7 @@ export type Database = {
           subtotal: number
           total: number
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           billing_type?: string | null
@@ -535,6 +608,7 @@ export type Database = {
           subtotal?: number
           total?: number
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           billing_type?: string | null
@@ -564,6 +638,7 @@ export type Database = {
           subtotal?: number
           total?: number
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

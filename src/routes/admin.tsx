@@ -1,12 +1,14 @@
 import { createFileRoute, Outlet, Link, useLocation } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import AdminGlobalSearch from "@/components/admin/AdminGlobalSearch";
+import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Package, ShoppingCart, Users, Settings,
   Palette, LogOut, Menu, X, Tag, FileText, BarChart3,
   CreditCard, Truck, Brain, Server, ChevronDown, ChevronRight,
-  Link2, UserCog, Warehouse, Search, Command
+  Link2, UserCog, Warehouse, Search, Command, Bell, Moon, Sun,
+  RotateCcw, Activity, User
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -32,6 +34,7 @@ const menuSections: MenuSection[] = [
         icon: ShoppingCart, label: "Comenzi",
         children: [
           { to: "/admin/orders", label: "Toate Comenzile" },
+          { to: "/admin/returns", label: "Retururi" },
           { to: "/admin/abandoned-carts", label: "Coșuri Abandonate" },
         ],
       },
@@ -160,6 +163,7 @@ const menuSections: MenuSection[] = [
         icon: Server, label: "Sistem",
         children: [
           { to: "/admin/system", label: "System Health" },
+          { to: "/admin/activity", label: "Jurnal Activitate" },
           { to: "/admin/settings", label: "Setări Generale" },
           { to: "/admin/settings/checkout", label: "Checkout Config" },
         ],
@@ -252,9 +256,48 @@ function CollapsibleMenu({ item, sidebarOpen, pathname }: { item: MenuItem; side
 }
 
 function AdminLayout() {
-  const { user, loading, isAdmin, signOut } = useAuth();
+  const { user, loading, isAdmin, signOut, profile } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== "undefined") return document.documentElement.classList.contains("dark");
+    return false;
+  });
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifs, setShowNotifs] = useState(false);
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+
+  useEffect(() => {
+    if (!user || !isAdmin) return;
+    supabase.from("admin_notifications").select("*").eq("is_read", false).order("created_at", { ascending: false }).limit(20)
+      .then(({ data }) => setNotifications(data || []));
+
+    const channel = supabase.channel("admin-notifs")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "admin_notifications" }, (payload) => {
+        setNotifications(prev => [payload.new as any, ...prev]);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, isAdmin]);
+
+  const toggleDark = () => {
+    const next = !darkMode;
+    setDarkMode(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+  };
+
+  const markRead = async (id: string) => {
+    await supabase.from("admin_notifications").update({ is_read: true }).eq("id", id);
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+  };
+
+  const markAllRead = async () => {
+    const ids = notifications.filter(n => !n.is_read).map(n => n.id);
+    if (ids.length === 0) return;
+    for (const id of ids) await supabase.from("admin_notifications").update({ is_read: true }).eq("id", id);
+    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+  };
 
   if (loading) {
     return (
@@ -267,6 +310,13 @@ function AdminLayout() {
   if (!user || !isAdmin) {
     return <AdminLoginForm />;
   }
+
+  // Breadcrumbs
+  const pathParts = location.pathname.replace("/admin", "").split("/").filter(Boolean);
+  const breadcrumbs = pathParts.map((part, i) => ({
+    label: part.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
+    to: "/admin/" + pathParts.slice(0, i + 1).join("/"),
+  }));
 
   return (
     <div className="flex min-h-screen bg-secondary">
@@ -323,15 +373,81 @@ function AdminLayout() {
 
       <main className={`flex-1 ${sidebarOpen ? "ml-60" : "ml-14"} transition-all duration-300`}>
         <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-card/80 backdrop-blur-sm px-6 py-2">
-          <div />
-          <button
-            onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
-            className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground hover:border-accent/50 hover:text-foreground transition"
-          >
-            <Search className="h-3.5 w-3.5" />
-            <span>Caută...</span>
-            <kbd className="ml-2 rounded border border-border px-1 text-[10px]">⌘K</kbd>
-          </button>
+          {/* Breadcrumbs */}
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Link to="/admin" className="hover:text-foreground transition">Dashboard</Link>
+            {breadcrumbs.map((b, i) => (
+              <span key={i} className="flex items-center gap-1.5">
+                <ChevronRight className="h-3 w-3" />
+                <Link to={b.to as any} className="hover:text-foreground transition">{b.label}</Link>
+              </span>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Search */}
+            <button
+              onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
+              className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground hover:border-accent/50 hover:text-foreground transition"
+            >
+              <Search className="h-3.5 w-3.5" />
+              <span>Caută...</span>
+              <kbd className="ml-2 rounded border border-border px-1 text-[10px]">⌘K</kbd>
+            </button>
+
+            {/* Dark mode toggle */}
+            <button onClick={toggleDark} className="rounded-lg p-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition" title="Schimbă tema">
+              {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+
+            {/* Notifications */}
+            <div className="relative">
+              <button onClick={() => setShowNotifs(!showNotifs)} className="relative rounded-lg p-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition">
+                <Bell className="h-4 w-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-white">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </button>
+              {showNotifs && (
+                <div className="absolute right-0 top-full mt-1 w-80 rounded-xl border border-border bg-card shadow-xl z-50">
+                  <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+                    <span className="text-sm font-semibold text-foreground">Notificări</span>
+                    {unreadCount > 0 && (
+                      <button onClick={markAllRead} className="text-[10px] text-accent hover:underline">Marchează toate citite</button>
+                    )}
+                  </div>
+                  <div className="max-h-72 overflow-y-auto divide-y divide-border">
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-6 text-center text-xs text-muted-foreground">Nicio notificare</div>
+                    ) : notifications.slice(0, 10).map(n => (
+                      <div key={n.id} className={`px-4 py-2.5 hover:bg-muted/30 transition cursor-pointer ${!n.is_read ? "bg-accent/5" : ""}`}
+                        onClick={() => { markRead(n.id); if (n.link) window.location.href = n.link; }}>
+                        <p className="text-xs font-medium text-foreground">{n.title}</p>
+                        {n.message && <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{n.message}</p>}
+                        <span className="text-[9px] text-muted-foreground">{new Date(n.created_at).toLocaleString("ro-RO")}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* User avatar */}
+            <div className="flex items-center gap-2 rounded-lg px-2 py-1 border border-border bg-secondary/50">
+              <div className="h-6 w-6 rounded-full bg-accent/20 flex items-center justify-center overflow-hidden">
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <User className="h-3.5 w-3.5 text-accent" />
+                )}
+              </div>
+              <span className="text-xs font-medium text-foreground max-w-[100px] truncate">
+                {profile?.full_name || user.email?.split("@")[0] || "Admin"}
+              </span>
+            </div>
+          </div>
         </div>
         <div className="p-6">
           <Outlet />

@@ -37,6 +37,7 @@ import { Route as AdminTickerRouteImport } from './routes/admin/ticker'
 import { Route as AdminThemeRouteImport } from './routes/admin/theme'
 import { Route as AdminSystemRouteImport } from './routes/admin/system'
 import { Route as AdminSubscribersRouteImport } from './routes/admin/subscribers'
+import { Route as AdminStockRouteImport } from './routes/admin/stock'
 import { Route as AdminSocialProofRouteImport } from './routes/admin/social-proof'
 import { Route as AdminShippingRouteImport } from './routes/admin/shipping'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
@@ -64,6 +65,8 @@ import { Route as AccountSettingsRouteImport } from './routes/account/settings'
 import { Route as AccountOrdersRouteImport } from './routes/account/orders'
 import { Route as AccountFavoritesRouteImport } from './routes/account/favorites'
 import { Route as AccountAddressesRouteImport } from './routes/account/addresses'
+import { Route as AdminStockWarehousesRouteImport } from './routes/admin/stock.warehouses'
+import { Route as AdminStockManagerRouteImport } from './routes/admin/stock.manager'
 import { Route as AdminSettingsCheckoutRouteImport } from './routes/admin/settings.checkout'
 import { Route as AdminReportsTopProductsRouteImport } from './routes/admin/reports.top-products'
 import { Route as AdminReportsProfitRouteImport } from './routes/admin/reports.profit'
@@ -214,6 +217,11 @@ const AdminSubscribersRoute = AdminSubscribersRouteImport.update({
   path: '/subscribers',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminStockRoute = AdminStockRouteImport.update({
+  id: '/stock',
+  path: '/stock',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSocialProofRoute = AdminSocialProofRouteImport.update({
   id: '/social-proof',
   path: '/social-proof',
@@ -349,6 +357,16 @@ const AccountAddressesRoute = AccountAddressesRouteImport.update({
   path: '/addresses',
   getParentRoute: () => AccountRoute,
 } as any)
+const AdminStockWarehousesRoute = AdminStockWarehousesRouteImport.update({
+  id: '/warehouses',
+  path: '/warehouses',
+  getParentRoute: () => AdminStockRoute,
+} as any)
+const AdminStockManagerRoute = AdminStockManagerRouteImport.update({
+  id: '/manager',
+  path: '/manager',
+  getParentRoute: () => AdminStockRoute,
+} as any)
 const AdminSettingsCheckoutRoute = AdminSettingsCheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -437,6 +455,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/admin/shipping': typeof AdminShippingRoute
   '/admin/social-proof': typeof AdminSocialProofRoute
+  '/admin/stock': typeof AdminStockRouteWithChildren
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/system': typeof AdminSystemRoute
   '/admin/theme': typeof AdminThemeRoute
@@ -461,6 +480,8 @@ export interface FileRoutesByFullPath {
   '/admin/reports/profit': typeof AdminReportsProfitRoute
   '/admin/reports/top-products': typeof AdminReportsTopProductsRoute
   '/admin/settings/checkout': typeof AdminSettingsCheckoutRoute
+  '/admin/stock/manager': typeof AdminStockManagerRoute
+  '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -501,6 +522,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/admin/shipping': typeof AdminShippingRoute
   '/admin/social-proof': typeof AdminSocialProofRoute
+  '/admin/stock': typeof AdminStockRouteWithChildren
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/system': typeof AdminSystemRoute
   '/admin/theme': typeof AdminThemeRoute
@@ -525,6 +547,8 @@ export interface FileRoutesByTo {
   '/admin/reports/profit': typeof AdminReportsProfitRoute
   '/admin/reports/top-products': typeof AdminReportsTopProductsRoute
   '/admin/settings/checkout': typeof AdminSettingsCheckoutRoute
+  '/admin/stock/manager': typeof AdminStockManagerRoute
+  '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -568,6 +592,7 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/admin/shipping': typeof AdminShippingRoute
   '/admin/social-proof': typeof AdminSocialProofRoute
+  '/admin/stock': typeof AdminStockRouteWithChildren
   '/admin/subscribers': typeof AdminSubscribersRoute
   '/admin/system': typeof AdminSystemRoute
   '/admin/theme': typeof AdminThemeRoute
@@ -592,6 +617,8 @@ export interface FileRoutesById {
   '/admin/reports/profit': typeof AdminReportsProfitRoute
   '/admin/reports/top-products': typeof AdminReportsTopProductsRoute
   '/admin/settings/checkout': typeof AdminSettingsCheckoutRoute
+  '/admin/stock/manager': typeof AdminStockManagerRoute
+  '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -636,6 +663,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/shipping'
     | '/admin/social-proof'
+    | '/admin/stock'
     | '/admin/subscribers'
     | '/admin/system'
     | '/admin/theme'
@@ -660,6 +688,8 @@ export interface FileRouteTypes {
     | '/admin/reports/profit'
     | '/admin/reports/top-products'
     | '/admin/settings/checkout'
+    | '/admin/stock/manager'
+    | '/admin/stock/warehouses'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -700,6 +730,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/shipping'
     | '/admin/social-proof'
+    | '/admin/stock'
     | '/admin/subscribers'
     | '/admin/system'
     | '/admin/theme'
@@ -724,6 +755,8 @@ export interface FileRouteTypes {
     | '/admin/reports/profit'
     | '/admin/reports/top-products'
     | '/admin/settings/checkout'
+    | '/admin/stock/manager'
+    | '/admin/stock/warehouses'
   id:
     | '__root__'
     | '/'
@@ -766,6 +799,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/shipping'
     | '/admin/social-proof'
+    | '/admin/stock'
     | '/admin/subscribers'
     | '/admin/system'
     | '/admin/theme'
@@ -790,6 +824,8 @@ export interface FileRouteTypes {
     | '/admin/reports/profit'
     | '/admin/reports/top-products'
     | '/admin/settings/checkout'
+    | '/admin/stock/manager'
+    | '/admin/stock/warehouses'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1010,6 +1046,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSubscribersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/stock': {
+      id: '/admin/stock'
+      path: '/stock'
+      fullPath: '/admin/stock'
+      preLoaderRoute: typeof AdminStockRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/social-proof': {
       id: '/admin/social-proof'
       path: '/social-proof'
@@ -1199,6 +1242,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountAddressesRouteImport
       parentRoute: typeof AccountRoute
     }
+    '/admin/stock/warehouses': {
+      id: '/admin/stock/warehouses'
+      path: '/warehouses'
+      fullPath: '/admin/stock/warehouses'
+      preLoaderRoute: typeof AdminStockWarehousesRouteImport
+      parentRoute: typeof AdminStockRoute
+    }
+    '/admin/stock/manager': {
+      id: '/admin/stock/manager'
+      path: '/manager'
+      fullPath: '/admin/stock/manager'
+      preLoaderRoute: typeof AdminStockManagerRouteImport
+      parentRoute: typeof AdminStockRoute
+    }
     '/admin/settings/checkout': {
       id: '/admin/settings/checkout'
       path: '/checkout'
@@ -1332,6 +1389,20 @@ const AdminSettingsRouteWithChildren = AdminSettingsRoute._addFileChildren(
   AdminSettingsRouteChildren,
 )
 
+interface AdminStockRouteChildren {
+  AdminStockManagerRoute: typeof AdminStockManagerRoute
+  AdminStockWarehousesRoute: typeof AdminStockWarehousesRoute
+}
+
+const AdminStockRouteChildren: AdminStockRouteChildren = {
+  AdminStockManagerRoute: AdminStockManagerRoute,
+  AdminStockWarehousesRoute: AdminStockWarehousesRoute,
+}
+
+const AdminStockRouteWithChildren = AdminStockRoute._addFileChildren(
+  AdminStockRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminAbandonedCartsRoute: typeof AdminAbandonedCartsRoute
   AdminAiRoute: typeof AdminAiRoute
@@ -1356,6 +1427,7 @@ interface AdminRouteChildren {
   AdminSettingsRoute: typeof AdminSettingsRouteWithChildren
   AdminShippingRoute: typeof AdminShippingRoute
   AdminSocialProofRoute: typeof AdminSocialProofRoute
+  AdminStockRoute: typeof AdminStockRouteWithChildren
   AdminSubscribersRoute: typeof AdminSubscribersRoute
   AdminSystemRoute: typeof AdminSystemRoute
   AdminThemeRoute: typeof AdminThemeRoute
@@ -1391,6 +1463,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSettingsRoute: AdminSettingsRouteWithChildren,
   AdminShippingRoute: AdminShippingRoute,
   AdminSocialProofRoute: AdminSocialProofRoute,
+  AdminStockRoute: AdminStockRouteWithChildren,
   AdminSubscribersRoute: AdminSubscribersRoute,
   AdminSystemRoute: AdminSystemRoute,
   AdminThemeRoute: AdminThemeRoute,

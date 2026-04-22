@@ -56,12 +56,14 @@ function AdminDashboard() {
   }, []);
 
   async function loadAll() {
-    const [ordersRes, productsRes, reviewsRes, subsRes, complaintsRes] = await Promise.all([
+    const [ordersRes, productsRes, reviewsRes, subsRes, complaintsRes, settingsRes, cmsRes] = await Promise.all([
       supabase.from("orders").select("*"),
-      supabase.from("products").select("id, name, stock, price, category_id, image_url, is_active"),
+      supabase.from("products").select("id, name, stock, price, category_id, image_url, is_active, meta_title, meta_description"),
       supabase.from("product_reviews").select("id, status, created_at"),
       supabase.from("newsletter_subscribers").select("id", { count: "exact", head: true }),
       supabase.from("complaints").select("id", { count: "exact", head: true }).eq("status", "open"),
+      supabase.from("site_settings").select("key, value"),
+      supabase.from("cms_pages").select("slug, status"),
     ]);
     setOrders(ordersRes.data || []);
     setProducts(productsRes.data || []);

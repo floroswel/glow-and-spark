@@ -29,24 +29,33 @@ import { Route as PageSlugRouteImport } from './routes/page.$slug'
 import { Route as OrderConfirmedOrderIdRouteImport } from './routes/order-confirmed.$orderId'
 import { Route as CategorieSlugRouteImport } from './routes/categorie.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AdminTransactionsRouteImport } from './routes/admin/transactions'
+import { Route as AdminTrackingRouteImport } from './routes/admin/tracking'
+import { Route as AdminTicketsRouteImport } from './routes/admin/tickets'
 import { Route as AdminTickerRouteImport } from './routes/admin/ticker'
 import { Route as AdminThemeRouteImport } from './routes/admin/theme'
+import { Route as AdminSystemRouteImport } from './routes/admin/system'
 import { Route as AdminSubscribersRouteImport } from './routes/admin/subscribers'
 import { Route as AdminSocialProofRouteImport } from './routes/admin/social-proof'
+import { Route as AdminShippingRouteImport } from './routes/admin/shipping'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminReviewsRouteImport } from './routes/admin/reviews'
 import { Route as AdminReportsRouteImport } from './routes/admin/reports'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as AdminPopupRouteImport } from './routes/admin/popup'
+import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
 import { Route as AdminPagesRouteImport } from './routes/admin/pages'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
+import { Route as AdminMediaRouteImport } from './routes/admin/media'
 import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
 import { Route as AdminHeaderRouteImport } from './routes/admin/header'
 import { Route as AdminFooterRouteImport } from './routes/admin/footer'
 import { Route as AdminCustomersRouteImport } from './routes/admin/customers'
+import { Route as AdminCrmRouteImport } from './routes/admin/crm'
 import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminBlogRouteImport } from './routes/admin/blog'
+import { Route as AdminAiRouteImport } from './routes/admin/ai'
 import { Route as AdminAbandonedCartsRouteImport } from './routes/admin/abandoned-carts'
 import { Route as AccountSettingsRouteImport } from './routes/account/settings'
 import { Route as AccountOrdersRouteImport } from './routes/account/orders'
@@ -153,6 +162,21 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTrackingRoute = AdminTrackingRouteImport.update({
+  id: '/tracking',
+  path: '/tracking',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTicketsRoute = AdminTicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminTickerRoute = AdminTickerRouteImport.update({
   id: '/ticker',
   path: '/ticker',
@@ -163,6 +187,11 @@ const AdminThemeRoute = AdminThemeRouteImport.update({
   path: '/theme',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSystemRoute = AdminSystemRouteImport.update({
+  id: '/system',
+  path: '/system',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSubscribersRoute = AdminSubscribersRouteImport.update({
   id: '/subscribers',
   path: '/subscribers',
@@ -171,6 +200,11 @@ const AdminSubscribersRoute = AdminSubscribersRouteImport.update({
 const AdminSocialProofRoute = AdminSocialProofRouteImport.update({
   id: '/social-proof',
   path: '/social-proof',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminShippingRoute = AdminShippingRouteImport.update({
+  id: '/shipping',
+  path: '/shipping',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
@@ -198,6 +232,11 @@ const AdminPopupRoute = AdminPopupRouteImport.update({
   path: '/popup',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPagesRoute = AdminPagesRouteImport.update({
   id: '/pages',
   path: '/pages',
@@ -206,6 +245,11 @@ const AdminPagesRoute = AdminPagesRouteImport.update({
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMediaRoute = AdminMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminHomepageRoute = AdminHomepageRouteImport.update({
@@ -228,6 +272,11 @@ const AdminCustomersRoute = AdminCustomersRouteImport.update({
   path: '/customers',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCrmRoute = AdminCrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCouponsRoute = AdminCouponsRouteImport.update({
   id: '/coupons',
   path: '/coupons',
@@ -241,6 +290,11 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
 const AdminBlogRoute = AdminBlogRouteImport.update({
   id: '/blog',
   path: '/blog',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAiRoute = AdminAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminAbandonedCartsRoute = AdminAbandonedCartsRouteImport.update({
@@ -288,24 +342,33 @@ export interface FileRoutesByFullPath {
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
+  '/admin/ai': typeof AdminAiRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
+  '/admin/crm': typeof AdminCrmRoute
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/header': typeof AdminHeaderRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/shipping': typeof AdminShippingRoute
   '/admin/social-proof': typeof AdminSocialProofRoute
   '/admin/subscribers': typeof AdminSubscribersRoute
+  '/admin/system': typeof AdminSystemRoute
   '/admin/theme': typeof AdminThemeRoute
   '/admin/ticker': typeof AdminTickerRoute
+  '/admin/tickets': typeof AdminTicketsRoute
+  '/admin/tracking': typeof AdminTrackingRoute
+  '/admin/transactions': typeof AdminTransactionsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/categorie/$slug': typeof CategorieSlugRoute
   '/order-confirmed/$orderId': typeof OrderConfirmedOrderIdRoute
@@ -331,24 +394,33 @@ export interface FileRoutesByTo {
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
+  '/admin/ai': typeof AdminAiRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
+  '/admin/crm': typeof AdminCrmRoute
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/header': typeof AdminHeaderRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/shipping': typeof AdminShippingRoute
   '/admin/social-proof': typeof AdminSocialProofRoute
   '/admin/subscribers': typeof AdminSubscribersRoute
+  '/admin/system': typeof AdminSystemRoute
   '/admin/theme': typeof AdminThemeRoute
   '/admin/ticker': typeof AdminTickerRoute
+  '/admin/tickets': typeof AdminTicketsRoute
+  '/admin/tracking': typeof AdminTrackingRoute
+  '/admin/transactions': typeof AdminTransactionsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/categorie/$slug': typeof CategorieSlugRoute
   '/order-confirmed/$orderId': typeof OrderConfirmedOrderIdRoute
@@ -377,24 +449,33 @@ export interface FileRoutesById {
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
+  '/admin/ai': typeof AdminAiRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
+  '/admin/crm': typeof AdminCrmRoute
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/header': typeof AdminHeaderRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/shipping': typeof AdminShippingRoute
   '/admin/social-proof': typeof AdminSocialProofRoute
   '/admin/subscribers': typeof AdminSubscribersRoute
+  '/admin/system': typeof AdminSystemRoute
   '/admin/theme': typeof AdminThemeRoute
   '/admin/ticker': typeof AdminTickerRoute
+  '/admin/tickets': typeof AdminTicketsRoute
+  '/admin/tracking': typeof AdminTrackingRoute
+  '/admin/transactions': typeof AdminTransactionsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/categorie/$slug': typeof CategorieSlugRoute
   '/order-confirmed/$orderId': typeof OrderConfirmedOrderIdRoute
@@ -424,24 +505,33 @@ export interface FileRouteTypes {
     | '/account/orders'
     | '/account/settings'
     | '/admin/abandoned-carts'
+    | '/admin/ai'
     | '/admin/blog'
     | '/admin/categories'
     | '/admin/coupons'
+    | '/admin/crm'
     | '/admin/customers'
     | '/admin/footer'
     | '/admin/header'
     | '/admin/homepage'
+    | '/admin/media'
     | '/admin/orders'
     | '/admin/pages'
+    | '/admin/payments'
     | '/admin/popup'
     | '/admin/products'
     | '/admin/reports'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/shipping'
     | '/admin/social-proof'
     | '/admin/subscribers'
+    | '/admin/system'
     | '/admin/theme'
     | '/admin/ticker'
+    | '/admin/tickets'
+    | '/admin/tracking'
+    | '/admin/transactions'
     | '/blog/$slug'
     | '/categorie/$slug'
     | '/order-confirmed/$orderId'
@@ -467,24 +557,33 @@ export interface FileRouteTypes {
     | '/account/orders'
     | '/account/settings'
     | '/admin/abandoned-carts'
+    | '/admin/ai'
     | '/admin/blog'
     | '/admin/categories'
     | '/admin/coupons'
+    | '/admin/crm'
     | '/admin/customers'
     | '/admin/footer'
     | '/admin/header'
     | '/admin/homepage'
+    | '/admin/media'
     | '/admin/orders'
     | '/admin/pages'
+    | '/admin/payments'
     | '/admin/popup'
     | '/admin/products'
     | '/admin/reports'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/shipping'
     | '/admin/social-proof'
     | '/admin/subscribers'
+    | '/admin/system'
     | '/admin/theme'
     | '/admin/ticker'
+    | '/admin/tickets'
+    | '/admin/tracking'
+    | '/admin/transactions'
     | '/blog/$slug'
     | '/categorie/$slug'
     | '/order-confirmed/$orderId'
@@ -512,24 +611,33 @@ export interface FileRouteTypes {
     | '/account/orders'
     | '/account/settings'
     | '/admin/abandoned-carts'
+    | '/admin/ai'
     | '/admin/blog'
     | '/admin/categories'
     | '/admin/coupons'
+    | '/admin/crm'
     | '/admin/customers'
     | '/admin/footer'
     | '/admin/header'
     | '/admin/homepage'
+    | '/admin/media'
     | '/admin/orders'
     | '/admin/pages'
+    | '/admin/payments'
     | '/admin/popup'
     | '/admin/products'
     | '/admin/reports'
     | '/admin/reviews'
     | '/admin/settings'
+    | '/admin/shipping'
     | '/admin/social-proof'
     | '/admin/subscribers'
+    | '/admin/system'
     | '/admin/theme'
     | '/admin/ticker'
+    | '/admin/tickets'
+    | '/admin/tracking'
+    | '/admin/transactions'
     | '/blog/$slug'
     | '/categorie/$slug'
     | '/order-confirmed/$orderId'
@@ -701,6 +809,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/admin/transactions': {
+      id: '/admin/transactions'
+      path: '/transactions'
+      fullPath: '/admin/transactions'
+      preLoaderRoute: typeof AdminTransactionsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/tracking': {
+      id: '/admin/tracking'
+      path: '/tracking'
+      fullPath: '/admin/tracking'
+      preLoaderRoute: typeof AdminTrackingRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/tickets': {
+      id: '/admin/tickets'
+      path: '/tickets'
+      fullPath: '/admin/tickets'
+      preLoaderRoute: typeof AdminTicketsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/ticker': {
       id: '/admin/ticker'
       path: '/ticker'
@@ -715,6 +844,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminThemeRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/system': {
+      id: '/admin/system'
+      path: '/system'
+      fullPath: '/admin/system'
+      preLoaderRoute: typeof AdminSystemRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/subscribers': {
       id: '/admin/subscribers'
       path: '/subscribers'
@@ -727,6 +863,13 @@ declare module '@tanstack/react-router' {
       path: '/social-proof'
       fullPath: '/admin/social-proof'
       preLoaderRoute: typeof AdminSocialProofRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/shipping': {
+      id: '/admin/shipping'
+      path: '/shipping'
+      fullPath: '/admin/shipping'
+      preLoaderRoute: typeof AdminShippingRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/settings': {
@@ -764,6 +907,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPopupRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/payments': {
+      id: '/admin/payments'
+      path: '/payments'
+      fullPath: '/admin/payments'
+      preLoaderRoute: typeof AdminPaymentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/pages': {
       id: '/admin/pages'
       path: '/pages'
@@ -776,6 +926,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/admin/orders'
       preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/media': {
+      id: '/admin/media'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AdminMediaRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/homepage': {
@@ -806,6 +963,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCustomersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/crm': {
+      id: '/admin/crm'
+      path: '/crm'
+      fullPath: '/admin/crm'
+      preLoaderRoute: typeof AdminCrmRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/coupons': {
       id: '/admin/coupons'
       path: '/coupons'
@@ -825,6 +989,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/admin/blog'
       preLoaderRoute: typeof AdminBlogRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ai': {
+      id: '/admin/ai'
+      path: '/ai'
+      fullPath: '/admin/ai'
+      preLoaderRoute: typeof AdminAiRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/abandoned-carts': {
@@ -886,47 +1057,65 @@ const AccountRouteWithChildren =
 
 interface AdminRouteChildren {
   AdminAbandonedCartsRoute: typeof AdminAbandonedCartsRoute
+  AdminAiRoute: typeof AdminAiRoute
   AdminBlogRoute: typeof AdminBlogRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminCouponsRoute: typeof AdminCouponsRoute
+  AdminCrmRoute: typeof AdminCrmRoute
   AdminCustomersRoute: typeof AdminCustomersRoute
   AdminFooterRoute: typeof AdminFooterRoute
   AdminHeaderRoute: typeof AdminHeaderRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
+  AdminMediaRoute: typeof AdminMediaRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPagesRoute: typeof AdminPagesRoute
+  AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminPopupRoute: typeof AdminPopupRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminShippingRoute: typeof AdminShippingRoute
   AdminSocialProofRoute: typeof AdminSocialProofRoute
   AdminSubscribersRoute: typeof AdminSubscribersRoute
+  AdminSystemRoute: typeof AdminSystemRoute
   AdminThemeRoute: typeof AdminThemeRoute
   AdminTickerRoute: typeof AdminTickerRoute
+  AdminTicketsRoute: typeof AdminTicketsRoute
+  AdminTrackingRoute: typeof AdminTrackingRoute
+  AdminTransactionsRoute: typeof AdminTransactionsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAbandonedCartsRoute: AdminAbandonedCartsRoute,
+  AdminAiRoute: AdminAiRoute,
   AdminBlogRoute: AdminBlogRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminCouponsRoute: AdminCouponsRoute,
+  AdminCrmRoute: AdminCrmRoute,
   AdminCustomersRoute: AdminCustomersRoute,
   AdminFooterRoute: AdminFooterRoute,
   AdminHeaderRoute: AdminHeaderRoute,
   AdminHomepageRoute: AdminHomepageRoute,
+  AdminMediaRoute: AdminMediaRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPagesRoute: AdminPagesRoute,
+  AdminPaymentsRoute: AdminPaymentsRoute,
   AdminPopupRoute: AdminPopupRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
+  AdminShippingRoute: AdminShippingRoute,
   AdminSocialProofRoute: AdminSocialProofRoute,
   AdminSubscribersRoute: AdminSubscribersRoute,
+  AdminSystemRoute: AdminSystemRoute,
   AdminThemeRoute: AdminThemeRoute,
   AdminTickerRoute: AdminTickerRoute,
+  AdminTicketsRoute: AdminTicketsRoute,
+  AdminTrackingRoute: AdminTrackingRoute,
+  AdminTransactionsRoute: AdminTransactionsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 

@@ -87,7 +87,7 @@ function AdminCustomers() {
       const validOrders = userOrders.filter((o: any) => o.status !== "cancelled");
       const totalSpent = validOrders.reduce((s: number, o: any) => s + Number(o.total || 0), 0);
       const lastOrder = userOrders[0];
-      const daysSinceOrder = lastOrder ? Math.floor((Date.now() - new Date(lastOrder.created_at).getTime()) / 86400000) : 999;
+      const daysSinceOrder = lastOrder?.created_at ? Math.floor((Date.now() - new Date(lastOrder.created_at as string).getTime()) / 86400000) : 999;
 
       return {
         ...p,

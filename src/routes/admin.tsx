@@ -32,7 +32,6 @@ const menuSections: MenuSection[] = [
         icon: ShoppingCart, label: "Comenzi",
         children: [
           { to: "/admin/orders", label: "Toate Comenzile" },
-          { to: "/admin/abandoned-carts", label: "Coșuri Abandonate" },
         ],
       },
       {
@@ -57,9 +56,15 @@ const menuSections: MenuSection[] = [
     title: "MARKETING",
     items: [
       {
-        icon: Tag, label: "Marketing",
+        icon: Tag, label: "Cupoane & Promoții",
         children: [
           { to: "/admin/coupons", label: "Cupoane" },
+          { to: "/admin/abandoned-carts", label: "Coșuri Abandonate" },
+        ],
+      },
+      {
+        icon: Bell, label: "Comunicare",
+        children: [
           { to: "/admin/subscribers", label: "Abonați Newsletter" },
           { to: "/admin/social-proof", label: "Social Proof" },
           { to: "/admin/popup", label: "Popup" },

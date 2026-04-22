@@ -39,6 +39,8 @@ function AdminDashboard() {
   const [subscribers, setSubscribers] = useState(0);
   const [complaints, setComplaints] = useState(0);
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [settings, setSettings] = useState<any>(null);
+  const [cmsPages, setCmsPages] = useState<any[]>([]);
 
   useEffect(() => {
     loadAll();

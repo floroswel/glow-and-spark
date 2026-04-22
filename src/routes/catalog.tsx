@@ -109,7 +109,7 @@ function FilterSidebar({ categories, category, sort, minPrice, maxPrice, updateS
   );
 }
 
-
+function CatalogPage() {
   const { q, category, sort, page, minPrice, maxPrice } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
 

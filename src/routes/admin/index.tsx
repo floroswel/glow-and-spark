@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   Package, ShoppingCart, Users, TrendingUp, Star, BookOpen,
   ArrowRight, Clock, AlertTriangle, DollarSign, BarChart3,
-  ShoppingBag, UserPlus, Percent, MessageSquare, ArrowUpRight, ArrowDownRight
+  ShoppingBag, UserPlus, Percent, MessageSquare, ArrowUpRight, ArrowDownRight,
+  Shield, CheckCircle, XCircle, Activity
 } from "lucide-react";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip as ReTooltip,

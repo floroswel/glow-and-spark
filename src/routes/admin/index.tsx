@@ -71,6 +71,13 @@ function AdminDashboard() {
     setSubscribers(subsRes.count || 0);
     setComplaints(complaintsRes.count || 0);
     setRecentOrders((ordersRes.data || []).sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 8));
+    
+    // Build settings map
+    const settingsMap: Record<string, any> = {};
+    (settingsRes.data || []).forEach((r: any) => { settingsMap[r.key] = r.value; });
+    setSettings(settingsMap);
+    setCmsPages(cmsRes.data || []);
+    
     setLoading(false);
   }
 

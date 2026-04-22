@@ -2,11 +2,10 @@ import { createFileRoute, Outlet, Link, useLocation } from "@tanstack/react-rout
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import {
-  LayoutDashboard, Package, FolderOpen, ShoppingCart, Users, Settings,
-  Palette, LogOut, Menu, X, Type, TicketPercent, Home, PanelBottom, MessageSquare,
-  Tag, Star, FileText, BookOpen, BarChart3, Bell, ShoppingBag, CreditCard,
-  Truck, Brain, Headphones, Image, Server, ChevronDown, ChevronRight,
-  Search
+  LayoutDashboard, Package, ShoppingCart, Users, Settings,
+  Palette, LogOut, Menu, X, Tag, FileText, BarChart3,
+  CreditCard, Truck, Brain, Server, ChevronDown, ChevronRight,
+  Link2, UserCog, Warehouse
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -32,6 +31,7 @@ const menuSections: MenuSection[] = [
         icon: ShoppingCart, label: "Comenzi",
         children: [
           { to: "/admin/orders", label: "Toate Comenzile" },
+          { to: "/admin/abandoned-carts", label: "Coșuri Abandonate" },
         ],
       },
       {
@@ -43,7 +43,26 @@ const menuSections: MenuSection[] = [
         ],
       },
       {
-        icon: Users, label: "CRM",
+        icon: Warehouse, label: "Stoc & Depozit",
+        children: [
+          { to: "/admin/stock", label: "Dashboard Stoc" },
+          { to: "/admin/stock/manager", label: "Manager Stoc" },
+          { to: "/admin/stock/warehouses", label: "Depozite" },
+          { to: "/admin/stock/movements", label: "Mișcări" },
+          { to: "/admin/stock/transfers", label: "Transferuri" },
+          { to: "/admin/stock/suppliers", label: "Furnizori" },
+          { to: "/admin/stock/purchase-orders", label: "Comenzi Furnizori" },
+          { to: "/admin/stock/batches", label: "Loturi" },
+          { to: "/admin/stock/alerts", label: "Alerte Stoc" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "CRM & CLIENȚI",
+    items: [
+      {
+        icon: Users, label: "Clienți",
         children: [
           { to: "/admin/customers", label: "Toți Clienții" },
           { to: "/admin/crm", label: "Segmente & Grupuri" },
@@ -56,18 +75,39 @@ const menuSections: MenuSection[] = [
     title: "MARKETING",
     items: [
       {
-        icon: Tag, label: "Cupoane & Promoții",
+        icon: Tag, label: "Marketing",
         children: [
           { to: "/admin/coupons", label: "Cupoane" },
-          { to: "/admin/abandoned-carts", label: "Coșuri Abandonate" },
-        ],
-      },
-      {
-        icon: Bell, label: "Comunicare",
-        children: [
           { to: "/admin/subscribers", label: "Abonați Newsletter" },
           { to: "/admin/social-proof", label: "Social Proof" },
           { to: "/admin/popup", label: "Popup" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "CONȚINUT",
+    items: [
+      {
+        icon: FileText, label: "Conținut",
+        children: [
+          { to: "/admin/blog", label: "Blog" },
+          { to: "/admin/pages", label: "Pagini CMS" },
+          { to: "/admin/content/faq", label: "FAQ" },
+          { to: "/admin/content/seo", label: "SEO Global" },
+          { to: "/admin/content/email-templates", label: "Șabloane Email" },
+          { to: "/admin/media", label: "Media Library" },
+          { to: "/admin/content/redirects", label: "Redirecturi" },
+        ],
+      },
+      {
+        icon: Palette, label: "Design",
+        children: [
+          { to: "/admin/theme", label: "Temă & Culori" },
+          { to: "/admin/header", label: "Header" },
+          { to: "/admin/ticker", label: "Ticker Banner" },
+          { to: "/admin/homepage", label: "Homepage" },
+          { to: "/admin/footer", label: "Footer" },
         ],
       },
     ],
@@ -92,53 +132,18 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
-    title: "STOC & DEPOZIT",
+    title: "RAPOARTE & AI",
     items: [
       {
-        icon: Package, label: "Stoc",
+        icon: BarChart3, label: "Rapoarte",
         children: [
-          { to: "/admin/stock", label: "Dashboard Stoc" },
-          { to: "/admin/stock/manager", label: "Manager Stoc" },
-          { to: "/admin/stock/warehouses", label: "Depozite" },
-          { to: "/admin/stock/movements", label: "Mișcări Stoc" },
-          { to: "/admin/stock/transfers", label: "Transferuri" },
-          { to: "/admin/stock/adjustments", label: "Ajustări" },
-          { to: "/admin/stock/suppliers", label: "Furnizori" },
-          { to: "/admin/stock/purchase-orders", label: "Comenzi Furnizori" },
-          { to: "/admin/stock/batches", label: "Loturi & Expirare" },
-          { to: "/admin/stock/alerts", label: "Alerte Stoc" },
-          { to: "/admin/stock/inventory", label: "Inventar" },
+          { to: "/admin/reports", label: "Overview" },
+          { to: "/admin/reports/top-products", label: "Top Produse" },
+          { to: "/admin/reports/profit", label: "Profit & Costuri" },
+          { to: "/admin/reports/customers", label: "Rapoarte Clienți" },
+          { to: "/admin/reports/conversion", label: "Conversie & Funnel" },
         ],
       },
-    ],
-  },
-  {
-    title: "CONȚINUT",
-    items: [
-      {
-        icon: FileText, label: "Conținut",
-        children: [
-          { to: "/admin/blog", label: "Blog" },
-          { to: "/admin/pages", label: "Pagini CMS" },
-          { to: "/admin/media", label: "Media Library" },
-        ],
-      },
-      {
-        icon: Palette, label: "Design",
-        children: [
-          { to: "/admin/theme", label: "Temă & Culori" },
-          { to: "/admin/header", label: "Header" },
-          { to: "/admin/ticker", label: "Ticker Banner" },
-          { to: "/admin/homepage", label: "Homepage" },
-          { to: "/admin/footer", label: "Footer" },
-        ],
-      },
-    ],
-  },
-  {
-    title: "ANALIZĂ & AI",
-    items: [
-      { icon: BarChart3, label: "Rapoarte", to: "/admin/reports" },
       {
         icon: Brain, label: "AI & Automatizări",
         children: [
@@ -155,8 +160,11 @@ const menuSections: MenuSection[] = [
         children: [
           { to: "/admin/system", label: "System Health" },
           { to: "/admin/settings", label: "Setări Generale" },
+          { to: "/admin/settings/checkout", label: "Checkout Config" },
         ],
       },
+      { icon: Link2, label: "Integrări", to: "/admin/integrations" },
+      { icon: UserCog, label: "Utilizatori", to: "/admin/users" },
     ],
   },
 ];

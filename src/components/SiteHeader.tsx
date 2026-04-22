@@ -92,13 +92,6 @@ export function SiteHeader() {
   return (
     <>
       <header className="sticky top-0 z-50 bg-card shadow-sm">
-        {/* Sub-header bar - compact on mobile */}
-        <div className="border-b border-border bg-secondary">
-          <div className="mx-auto flex max-w-7xl items-center justify-center md:justify-between px-4 py-1 md:py-2 text-[10px] md:text-xs text-muted-foreground">
-            <span>🚚 Livrare gratuită peste 150 RON</span>
-            <span className="hidden md:inline">Suport: {general?.contact_phone || "0800 123 456"}</span>
-          </div>
-        </div>
 
         {/* Main header */}
         <div className="border-b border-border">

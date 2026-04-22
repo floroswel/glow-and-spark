@@ -71,8 +71,9 @@ export function SiteFooter() {
                   <>
                     <li><Link to="/catalog" className="hover:opacity-80 transition" style={{ color: textColor }}>Catalog</Link></li>
                     <li><Link to="/blog" className="hover:opacity-80 transition" style={{ color: textColor }}>Blog</Link></li>
+                    <li><Link to="/contact" className="hover:opacity-80 transition" style={{ color: textColor }}>Contact</Link></li>
+                    <li><Link to="/faq" className="hover:opacity-80 transition" style={{ color: textColor }}>Întrebări Frecvente</Link></li>
                     <li><a href="/page/despre-noi" className="hover:opacity-80 transition" style={{ color: textColor }}>Despre Noi</a></li>
-                    <li><a href="/page/contact" className="hover:opacity-80 transition" style={{ color: textColor }}>Contact</a></li>
                   </>
                 )}
               </ul>
@@ -138,7 +139,7 @@ export function SiteFooter() {
       {/* ANPC & Legal - obligatoriu România */}
       <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-4 px-4 py-3 text-xs" style={{ color: textColor }}>
-          <a href="https://anpc.ro/ce-ستهلکatorul/pentru-consumatori/informatii-utile/reclamatii/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:opacity-80 transition" style={{ color: textColor }}>
+          <a href="https://anpc.ro/ce-este-anpc/pentru-consumatori/informatii-utile/reclamatii/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:opacity-80 transition" style={{ color: textColor }}>
             🛡️ ANPC – Reclamații
           </a>
           <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:opacity-80 transition" style={{ color: textColor }}>

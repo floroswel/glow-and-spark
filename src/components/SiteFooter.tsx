@@ -171,10 +171,10 @@ export function SiteFooter() {
   const accentColor = "#00bcd4";
 
   const socialLinks = [
-    { key: "social_facebook", icon: Facebook, label: "Facebook" },
-    { key: "social_instagram", icon: Instagram, label: "Instagram" },
-    { key: "social_youtube", icon: Youtube, label: "YouTube" },
-    { key: "social_tiktok", label: "TikTok", icon: null },
+    { key: "social_facebook", Icon: FacebookIcon, label: "Facebook" },
+    { key: "social_instagram", Icon: InstagramIcon, label: "Instagram" },
+    { key: "social_youtube", Icon: YoutubeIcon, label: "YouTube" },
+    { key: "social_tiktok", Icon: TikTokIcon, label: "TikTok" },
   ].filter(s => general?.[s.key]);
 
   const renderLink = (url: string, label: string, i: number) => {

@@ -42,6 +42,8 @@ function Index() {
       <NewsletterPopup />
       <WhatsAppButton />
       <SocialProofToast />
+      <CookieConsent />
+      <BackToTop />
     </div>
   );
 }

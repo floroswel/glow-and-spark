@@ -4,7 +4,9 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   LayoutDashboard, Package, FolderOpen, ShoppingCart, Users, Settings,
   Palette, LogOut, Menu, X, Type, TicketPercent, Home, PanelBottom, MessageSquare,
-  Tag, Star, FileText, BookOpen, BarChart3, Bell, ShoppingBag
+  Tag, Star, FileText, BookOpen, BarChart3, Bell, ShoppingBag, CreditCard,
+  Truck, Brain, Headphones, Image, Server, ChevronDown, ChevronRight,
+  Search
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -17,27 +19,120 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
-const navItems = [
-  { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
-  { to: "/admin/products", icon: Package, label: "Produse" },
-  { to: "/admin/categories", icon: FolderOpen, label: "Categorii" },
-  { to: "/admin/orders", icon: ShoppingCart, label: "Comenzi" },
-  { to: "/admin/customers", icon: Users, label: "Clienți" },
-  { to: "/admin/coupons", icon: Tag, label: "Cupoane" },
-  { to: "/admin/reviews", icon: Star, label: "Recenzii" },
-  { to: "/admin/blog", icon: BookOpen, label: "Blog" },
-  { to: "/admin/pages", icon: FileText, label: "Pagini CMS" },
-  { to: "/admin/reports", icon: BarChart3, label: "Rapoarte" },
-  { to: "/admin/subscribers", icon: Users, label: "Abonați" },
-  { to: "/admin/theme", icon: Palette, label: "Temă & Culori" },
-  { to: "/admin/header", icon: Type, label: "Header" },
-  { to: "/admin/ticker", icon: TicketPercent, label: "Ticker Banner" },
-  { to: "/admin/homepage", icon: Home, label: "Homepage" },
-  { to: "/admin/footer", icon: PanelBottom, label: "Footer" },
-  { to: "/admin/popup", icon: MessageSquare, label: "Popup" },
-  { to: "/admin/social-proof", icon: Bell, label: "Social Proof" },
-  { to: "/admin/abandoned-carts", icon: ShoppingBag, label: "Coșuri Abandonate" },
-  { to: "/admin/settings", icon: Settings, label: "Setări Generale" },
+interface SubItem { to: string; label: string }
+interface MenuItem { icon: any; label: string; to?: string; end?: boolean; children?: SubItem[] }
+interface MenuSection { title: string; items: MenuItem[] }
+
+const menuSections: MenuSection[] = [
+  {
+    title: "PRINCIPAL",
+    items: [
+      { icon: LayoutDashboard, label: "Dashboard", to: "/admin", end: true },
+      {
+        icon: ShoppingCart, label: "Comenzi",
+        children: [
+          { to: "/admin/orders", label: "Toate Comenzile" },
+          { to: "/admin/abandoned-carts", label: "Coșuri Abandonate" },
+        ],
+      },
+      {
+        icon: Package, label: "Produse",
+        children: [
+          { to: "/admin/products", label: "Toate Produsele" },
+          { to: "/admin/categories", label: "Categorii" },
+          { to: "/admin/reviews", label: "Recenzii" },
+        ],
+      },
+      {
+        icon: Users, label: "CRM",
+        children: [
+          { to: "/admin/customers", label: "Toți Clienții" },
+          { to: "/admin/crm", label: "Segmente & Grupuri" },
+          { to: "/admin/tickets", label: "Tichete Support" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "MARKETING",
+    items: [
+      {
+        icon: Tag, label: "Marketing",
+        children: [
+          { to: "/admin/coupons", label: "Cupoane" },
+          { to: "/admin/subscribers", label: "Abonați Newsletter" },
+          { to: "/admin/social-proof", label: "Social Proof" },
+          { to: "/admin/popup", label: "Popup" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "FINANȚE & LIVRARE",
+    items: [
+      {
+        icon: CreditCard, label: "Plăți",
+        children: [
+          { to: "/admin/payments", label: "Metode de Plată" },
+          { to: "/admin/transactions", label: "Tranzacții" },
+        ],
+      },
+      {
+        icon: Truck, label: "Livrare",
+        children: [
+          { to: "/admin/shipping", label: "Curieri & Tarife" },
+          { to: "/admin/tracking", label: "Tracking Colete" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "CONȚINUT",
+    items: [
+      {
+        icon: FileText, label: "Conținut",
+        children: [
+          { to: "/admin/blog", label: "Blog" },
+          { to: "/admin/pages", label: "Pagini CMS" },
+          { to: "/admin/media", label: "Media Library" },
+        ],
+      },
+      {
+        icon: Palette, label: "Design",
+        children: [
+          { to: "/admin/theme", label: "Temă & Culori" },
+          { to: "/admin/header", label: "Header" },
+          { to: "/admin/ticker", label: "Ticker Banner" },
+          { to: "/admin/homepage", label: "Homepage" },
+          { to: "/admin/footer", label: "Footer" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "ANALIZĂ & AI",
+    items: [
+      { icon: BarChart3, label: "Rapoarte", to: "/admin/reports" },
+      {
+        icon: Brain, label: "AI & Automatizări",
+        children: [
+          { to: "/admin/ai", label: "AI Generator Hub" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "SISTEM",
+    items: [
+      {
+        icon: Server, label: "Sistem",
+        children: [
+          { to: "/admin/system", label: "System Health" },
+          { to: "/admin/settings", label: "Setări Generale" },
+        ],
+      },
+    ],
+  },
 ];
 
 function AdminLoginForm() {
@@ -75,6 +170,52 @@ function AdminLoginForm() {
   );
 }
 
+function CollapsibleMenu({ item, sidebarOpen, pathname }: { item: MenuItem; sidebarOpen: boolean; pathname: string }) {
+  const isChildActive = item.children?.some(c => pathname.startsWith(c.to)) ?? false;
+  const [open, setOpen] = useState(isChildActive);
+
+  if (!item.children) return null;
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+          isChildActive ? "text-accent" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+        }`}
+      >
+        <item.icon className="h-4 w-4 shrink-0" />
+        {sidebarOpen && (
+          <>
+            <span className="flex-1 text-left">{item.label}</span>
+            {open ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+          </>
+        )}
+      </button>
+      {open && sidebarOpen && (
+        <div className="ml-7 mt-0.5 space-y-0.5 border-l border-border pl-3">
+          {item.children.map(child => {
+            const active = child.to === "/admin"
+              ? pathname === "/admin" || pathname === "/admin/"
+              : pathname.startsWith(child.to) && child.to !== "/admin";
+            return (
+              <Link
+                key={child.to}
+                to={child.to as any}
+                className={`block rounded-md px-2.5 py-1.5 text-xs font-medium transition ${
+                  active ? "bg-accent/10 text-accent" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {child.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AdminLayout() {
   const { user, loading, isAdmin, signOut } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -94,48 +235,58 @@ function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-secondary">
-      {/* Sidebar */}
-      <aside className={`${sidebarOpen ? "w-64" : "w-16"} fixed inset-y-0 left-0 z-30 flex flex-col border-r border-border bg-card transition-all duration-300`}>
-        <div className="flex h-14 items-center justify-between border-b border-border px-4">
-          {sidebarOpen && <span className="font-heading text-lg font-bold text-foreground">LUMINI<span className="text-accent">.RO</span></span>}
+      <aside className={`${sidebarOpen ? "w-60" : "w-14"} fixed inset-y-0 left-0 z-30 flex flex-col border-r border-border bg-card transition-all duration-300`}>
+        <div className="flex h-12 items-center justify-between border-b border-border px-3">
+          {sidebarOpen && <span className="font-heading text-base font-bold text-foreground">LUMINI<span className="text-accent">.RO</span></span>}
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-muted-foreground hover:text-foreground">
-            {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
         </div>
-        <nav className="flex-1 space-y-1 overflow-y-auto p-2">
-          {navItems.map((item) => {
-            const isActive = item.end
-              ? location.pathname === "/admin" || location.pathname === "/admin/"
-              : location.pathname.startsWith(item.to) && item.to !== "/admin";
-            return (
-              <Link
-                key={item.to}
-                to={item.to as any}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                  isActive
-                    ? "bg-accent/15 text-accent"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                }`}
-              >
-                <item.icon className="h-5 w-5 shrink-0" />
-                {sidebarOpen && <span>{item.label}</span>}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 overflow-y-auto p-2 space-y-3">
+          {menuSections.map((section, si) => (
+            <div key={si}>
+              {sidebarOpen && (
+                <div className="px-3 pb-1 pt-2 text-[10px] font-bold tracking-widest text-muted-foreground/60">
+                  {section.title}
+                </div>
+              )}
+              <div className="space-y-0.5">
+                {section.items.map((item) => {
+                  if (item.children) {
+                    return <CollapsibleMenu key={item.label} item={item} sidebarOpen={sidebarOpen} pathname={location.pathname} />;
+                  }
+                  const isActive = item.end
+                    ? location.pathname === "/admin" || location.pathname === "/admin/"
+                    : location.pathname.startsWith(item.to!) && item.to !== "/admin";
+                  return (
+                    <Link
+                      key={item.to}
+                      to={item.to as any}
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                        isActive ? "bg-accent/15 text-accent" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                      }`}
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      {sidebarOpen && <span>{item.label}</span>}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
         <div className="border-t border-border p-2">
           <button
             onClick={signOut}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-destructive transition"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-destructive transition"
           >
-            <LogOut className="h-5 w-5 shrink-0" />
+            <LogOut className="h-4 w-4 shrink-0" />
             {sidebarOpen && <span>Deconectare</span>}
           </button>
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className={`flex-1 ${sidebarOpen ? "ml-64" : "ml-16"} transition-all duration-300`}>
+      <main className={`flex-1 ${sidebarOpen ? "ml-60" : "ml-14"} transition-all duration-300`}>
         <div className="p-6">
           <Outlet />
         </div>

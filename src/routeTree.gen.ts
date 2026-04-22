@@ -53,6 +53,7 @@ import { Route as AdminFooterRouteImport } from './routes/admin/footer'
 import { Route as AdminCustomersRouteImport } from './routes/admin/customers'
 import { Route as AdminCrmRouteImport } from './routes/admin/crm'
 import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
+import { Route as AdminContentRouteImport } from './routes/admin/content'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminBlogRouteImport } from './routes/admin/blog'
 import { Route as AdminAiRouteImport } from './routes/admin/ai'
@@ -61,6 +62,13 @@ import { Route as AccountSettingsRouteImport } from './routes/account/settings'
 import { Route as AccountOrdersRouteImport } from './routes/account/orders'
 import { Route as AccountFavoritesRouteImport } from './routes/account/favorites'
 import { Route as AccountAddressesRouteImport } from './routes/account/addresses'
+import { Route as AdminReportsTopProductsRouteImport } from './routes/admin/reports.top-products'
+import { Route as AdminReportsCustomersRouteImport } from './routes/admin/reports.customers'
+import { Route as AdminReportsConversionRouteImport } from './routes/admin/reports.conversion'
+import { Route as AdminContentSeoRouteImport } from './routes/admin/content.seo'
+import { Route as AdminContentRedirectsRouteImport } from './routes/admin/content.redirects'
+import { Route as AdminContentFaqRouteImport } from './routes/admin/content.faq'
+import { Route as AdminContentEmailTemplatesRouteImport } from './routes/admin/content.email-templates'
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -282,6 +290,11 @@ const AdminCouponsRoute = AdminCouponsRouteImport.update({
   path: '/coupons',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminContentRoute = AdminContentRouteImport.update({
+  id: '/content',
+  path: '/content',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
@@ -322,6 +335,42 @@ const AccountAddressesRoute = AccountAddressesRouteImport.update({
   path: '/addresses',
   getParentRoute: () => AccountRoute,
 } as any)
+const AdminReportsTopProductsRoute = AdminReportsTopProductsRouteImport.update({
+  id: '/top-products',
+  path: '/top-products',
+  getParentRoute: () => AdminReportsRoute,
+} as any)
+const AdminReportsCustomersRoute = AdminReportsCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => AdminReportsRoute,
+} as any)
+const AdminReportsConversionRoute = AdminReportsConversionRouteImport.update({
+  id: '/conversion',
+  path: '/conversion',
+  getParentRoute: () => AdminReportsRoute,
+} as any)
+const AdminContentSeoRoute = AdminContentSeoRouteImport.update({
+  id: '/seo',
+  path: '/seo',
+  getParentRoute: () => AdminContentRoute,
+} as any)
+const AdminContentRedirectsRoute = AdminContentRedirectsRouteImport.update({
+  id: '/redirects',
+  path: '/redirects',
+  getParentRoute: () => AdminContentRoute,
+} as any)
+const AdminContentFaqRoute = AdminContentFaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => AdminContentRoute,
+} as any)
+const AdminContentEmailTemplatesRoute =
+  AdminContentEmailTemplatesRouteImport.update({
+    id: '/email-templates',
+    path: '/email-templates',
+    getParentRoute: () => AdminContentRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -345,6 +394,7 @@ export interface FileRoutesByFullPath {
   '/admin/ai': typeof AdminAiRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/crm': typeof AdminCrmRoute
   '/admin/customers': typeof AdminCustomersRoute
@@ -357,7 +407,7 @@ export interface FileRoutesByFullPath {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
-  '/admin/reports': typeof AdminReportsRoute
+  '/admin/reports': typeof AdminReportsRouteWithChildren
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/shipping': typeof AdminShippingRoute
@@ -376,6 +426,13 @@ export interface FileRoutesByFullPath {
   '/produs/$slug': typeof ProdusSlugRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/content/email-templates': typeof AdminContentEmailTemplatesRoute
+  '/admin/content/faq': typeof AdminContentFaqRoute
+  '/admin/content/redirects': typeof AdminContentRedirectsRoute
+  '/admin/content/seo': typeof AdminContentSeoRoute
+  '/admin/reports/conversion': typeof AdminReportsConversionRoute
+  '/admin/reports/customers': typeof AdminReportsCustomersRoute
+  '/admin/reports/top-products': typeof AdminReportsTopProductsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -397,6 +454,7 @@ export interface FileRoutesByTo {
   '/admin/ai': typeof AdminAiRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/crm': typeof AdminCrmRoute
   '/admin/customers': typeof AdminCustomersRoute
@@ -409,7 +467,7 @@ export interface FileRoutesByTo {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
-  '/admin/reports': typeof AdminReportsRoute
+  '/admin/reports': typeof AdminReportsRouteWithChildren
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/shipping': typeof AdminShippingRoute
@@ -428,6 +486,13 @@ export interface FileRoutesByTo {
   '/produs/$slug': typeof ProdusSlugRoute
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/content/email-templates': typeof AdminContentEmailTemplatesRoute
+  '/admin/content/faq': typeof AdminContentFaqRoute
+  '/admin/content/redirects': typeof AdminContentRedirectsRoute
+  '/admin/content/seo': typeof AdminContentSeoRoute
+  '/admin/reports/conversion': typeof AdminReportsConversionRoute
+  '/admin/reports/customers': typeof AdminReportsCustomersRoute
+  '/admin/reports/top-products': typeof AdminReportsTopProductsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -452,6 +517,7 @@ export interface FileRoutesById {
   '/admin/ai': typeof AdminAiRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/crm': typeof AdminCrmRoute
   '/admin/customers': typeof AdminCustomersRoute
@@ -464,7 +530,7 @@ export interface FileRoutesById {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
-  '/admin/reports': typeof AdminReportsRoute
+  '/admin/reports': typeof AdminReportsRouteWithChildren
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/shipping': typeof AdminShippingRoute
@@ -483,6 +549,13 @@ export interface FileRoutesById {
   '/produs/$slug': typeof ProdusSlugRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/content/email-templates': typeof AdminContentEmailTemplatesRoute
+  '/admin/content/faq': typeof AdminContentFaqRoute
+  '/admin/content/redirects': typeof AdminContentRedirectsRoute
+  '/admin/content/seo': typeof AdminContentSeoRoute
+  '/admin/reports/conversion': typeof AdminReportsConversionRoute
+  '/admin/reports/customers': typeof AdminReportsCustomersRoute
+  '/admin/reports/top-products': typeof AdminReportsTopProductsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -508,6 +581,7 @@ export interface FileRouteTypes {
     | '/admin/ai'
     | '/admin/blog'
     | '/admin/categories'
+    | '/admin/content'
     | '/admin/coupons'
     | '/admin/crm'
     | '/admin/customers'
@@ -539,6 +613,13 @@ export interface FileRouteTypes {
     | '/produs/$slug'
     | '/account/'
     | '/admin/'
+    | '/admin/content/email-templates'
+    | '/admin/content/faq'
+    | '/admin/content/redirects'
+    | '/admin/content/seo'
+    | '/admin/reports/conversion'
+    | '/admin/reports/customers'
+    | '/admin/reports/top-products'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -560,6 +641,7 @@ export interface FileRouteTypes {
     | '/admin/ai'
     | '/admin/blog'
     | '/admin/categories'
+    | '/admin/content'
     | '/admin/coupons'
     | '/admin/crm'
     | '/admin/customers'
@@ -591,6 +673,13 @@ export interface FileRouteTypes {
     | '/produs/$slug'
     | '/account'
     | '/admin'
+    | '/admin/content/email-templates'
+    | '/admin/content/faq'
+    | '/admin/content/redirects'
+    | '/admin/content/seo'
+    | '/admin/reports/conversion'
+    | '/admin/reports/customers'
+    | '/admin/reports/top-products'
   id:
     | '__root__'
     | '/'
@@ -614,6 +703,7 @@ export interface FileRouteTypes {
     | '/admin/ai'
     | '/admin/blog'
     | '/admin/categories'
+    | '/admin/content'
     | '/admin/coupons'
     | '/admin/crm'
     | '/admin/customers'
@@ -645,6 +735,13 @@ export interface FileRouteTypes {
     | '/produs/$slug'
     | '/account/'
     | '/admin/'
+    | '/admin/content/email-templates'
+    | '/admin/content/faq'
+    | '/admin/content/redirects'
+    | '/admin/content/seo'
+    | '/admin/reports/conversion'
+    | '/admin/reports/customers'
+    | '/admin/reports/top-products'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -977,6 +1074,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCouponsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/content': {
+      id: '/admin/content'
+      path: '/content'
+      fullPath: '/admin/content'
+      preLoaderRoute: typeof AdminContentRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/categories': {
       id: '/admin/categories'
       path: '/categories'
@@ -1033,6 +1137,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountAddressesRouteImport
       parentRoute: typeof AccountRoute
     }
+    '/admin/reports/top-products': {
+      id: '/admin/reports/top-products'
+      path: '/top-products'
+      fullPath: '/admin/reports/top-products'
+      preLoaderRoute: typeof AdminReportsTopProductsRouteImport
+      parentRoute: typeof AdminReportsRoute
+    }
+    '/admin/reports/customers': {
+      id: '/admin/reports/customers'
+      path: '/customers'
+      fullPath: '/admin/reports/customers'
+      preLoaderRoute: typeof AdminReportsCustomersRouteImport
+      parentRoute: typeof AdminReportsRoute
+    }
+    '/admin/reports/conversion': {
+      id: '/admin/reports/conversion'
+      path: '/conversion'
+      fullPath: '/admin/reports/conversion'
+      preLoaderRoute: typeof AdminReportsConversionRouteImport
+      parentRoute: typeof AdminReportsRoute
+    }
+    '/admin/content/seo': {
+      id: '/admin/content/seo'
+      path: '/seo'
+      fullPath: '/admin/content/seo'
+      preLoaderRoute: typeof AdminContentSeoRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
+    '/admin/content/redirects': {
+      id: '/admin/content/redirects'
+      path: '/redirects'
+      fullPath: '/admin/content/redirects'
+      preLoaderRoute: typeof AdminContentRedirectsRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
+    '/admin/content/faq': {
+      id: '/admin/content/faq'
+      path: '/faq'
+      fullPath: '/admin/content/faq'
+      preLoaderRoute: typeof AdminContentFaqRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
+    '/admin/content/email-templates': {
+      id: '/admin/content/email-templates'
+      path: '/email-templates'
+      fullPath: '/admin/content/email-templates'
+      preLoaderRoute: typeof AdminContentEmailTemplatesRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
   }
 }
 
@@ -1055,11 +1208,46 @@ const AccountRouteChildren: AccountRouteChildren = {
 const AccountRouteWithChildren =
   AccountRoute._addFileChildren(AccountRouteChildren)
 
+interface AdminContentRouteChildren {
+  AdminContentEmailTemplatesRoute: typeof AdminContentEmailTemplatesRoute
+  AdminContentFaqRoute: typeof AdminContentFaqRoute
+  AdminContentRedirectsRoute: typeof AdminContentRedirectsRoute
+  AdminContentSeoRoute: typeof AdminContentSeoRoute
+}
+
+const AdminContentRouteChildren: AdminContentRouteChildren = {
+  AdminContentEmailTemplatesRoute: AdminContentEmailTemplatesRoute,
+  AdminContentFaqRoute: AdminContentFaqRoute,
+  AdminContentRedirectsRoute: AdminContentRedirectsRoute,
+  AdminContentSeoRoute: AdminContentSeoRoute,
+}
+
+const AdminContentRouteWithChildren = AdminContentRoute._addFileChildren(
+  AdminContentRouteChildren,
+)
+
+interface AdminReportsRouteChildren {
+  AdminReportsConversionRoute: typeof AdminReportsConversionRoute
+  AdminReportsCustomersRoute: typeof AdminReportsCustomersRoute
+  AdminReportsTopProductsRoute: typeof AdminReportsTopProductsRoute
+}
+
+const AdminReportsRouteChildren: AdminReportsRouteChildren = {
+  AdminReportsConversionRoute: AdminReportsConversionRoute,
+  AdminReportsCustomersRoute: AdminReportsCustomersRoute,
+  AdminReportsTopProductsRoute: AdminReportsTopProductsRoute,
+}
+
+const AdminReportsRouteWithChildren = AdminReportsRoute._addFileChildren(
+  AdminReportsRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminAbandonedCartsRoute: typeof AdminAbandonedCartsRoute
   AdminAiRoute: typeof AdminAiRoute
   AdminBlogRoute: typeof AdminBlogRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminContentRoute: typeof AdminContentRouteWithChildren
   AdminCouponsRoute: typeof AdminCouponsRoute
   AdminCrmRoute: typeof AdminCrmRoute
   AdminCustomersRoute: typeof AdminCustomersRoute
@@ -1072,7 +1260,7 @@ interface AdminRouteChildren {
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminPopupRoute: typeof AdminPopupRoute
   AdminProductsRoute: typeof AdminProductsRoute
-  AdminReportsRoute: typeof AdminReportsRoute
+  AdminReportsRoute: typeof AdminReportsRouteWithChildren
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminShippingRoute: typeof AdminShippingRoute
@@ -1092,6 +1280,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAiRoute: AdminAiRoute,
   AdminBlogRoute: AdminBlogRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminContentRoute: AdminContentRouteWithChildren,
   AdminCouponsRoute: AdminCouponsRoute,
   AdminCrmRoute: AdminCrmRoute,
   AdminCustomersRoute: AdminCustomersRoute,
@@ -1104,7 +1293,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminPopupRoute: AdminPopupRoute,
   AdminProductsRoute: AdminProductsRoute,
-  AdminReportsRoute: AdminReportsRoute,
+  AdminReportsRoute: AdminReportsRouteWithChildren,
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminShippingRoute: AdminShippingRoute,

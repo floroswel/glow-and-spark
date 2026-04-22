@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
@@ -28,6 +29,7 @@ const JUDETE = [
 
 function CheckoutPage() {
   const { items, cartSubtotal, shippingCost, discountAmount, discountCode, cartTotal, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [billingType, setBillingType] = useState<"individual" | "company">("individual");
@@ -90,7 +92,7 @@ function CheckoutPage() {
       company_name: billingType === "company" ? form.companyName : null,
       company_cui: billingType === "company" ? form.companyCui : null,
       company_reg: billingType === "company" ? form.companyReg : null,
-      items: items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.quantity, image: i.image_url })),
+      items: items.map((i) => ({ id: i.id, product_id: i.id, name: i.name, price: i.price, quantity: i.quantity, qty: i.quantity, image: i.image_url })),
       subtotal: cartSubtotal,
       shipping_cost: shippingCost,
       discount_amount: discountAmount,
@@ -100,6 +102,7 @@ function CheckoutPage() {
       notes: form.observatii || null,
       status: "pending",
       payment_status: "pending",
+      user_id: user?.id || null,
     };
 
     const { data, error: dbError } = await supabase.from("orders").insert(orderData).select("id").single();

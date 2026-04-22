@@ -71,6 +71,7 @@ const menuSections: MenuSection[] = [
           { to: "/admin/customers", label: "Toți Clienții" },
           { to: "/admin/crm", label: "Segmente & Grupuri" },
           { to: "/admin/tickets", label: "Tichete Support" },
+          { to: "/admin/complaints", label: "Reclamații" },
         ],
       },
     ],
@@ -146,6 +147,7 @@ const menuSections: MenuSection[] = [
           { to: "/admin/reports/profit", label: "Profit & Costuri" },
           { to: "/admin/reports/customers", label: "Rapoarte Clienți" },
           { to: "/admin/reports/conversion", label: "Conversie & Funnel" },
+          { to: "/admin/reports/inventory", label: "Inventar & Valoare Stoc" },
         ],
       },
       {

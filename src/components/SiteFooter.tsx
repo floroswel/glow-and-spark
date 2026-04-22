@@ -220,11 +220,11 @@ export function SiteFooter() {
     { label: "Harta Site", url: "/sitemap" },
   ];
 
-  const companyName = footer?.company_name || general?.company_name || "";
-  const regCom = footer?.reg_com || general?.reg_com || "";
-  const cui = footer?.cui || general?.invoice_cui || general?.cui || "";
-  const address = footer?.company_address || general?.contact_address || "";
-  const city = footer?.company_city || general?.contact_city || "";
+  const companyName = general?.company_name || footer?.company_name || "";
+  const regCom = general?.reg_com || footer?.reg_com || "";
+  const cui = general?.company_cui || general?.invoice_cui || footer?.cui || "";
+  const address = general?.company_address || general?.invoice_address || general?.contact_address || "";
+  const city = general?.company_city || footer?.company_city || "";
 
   const phone = general?.contact_phone || "";
   const email = general?.contact_email || "";

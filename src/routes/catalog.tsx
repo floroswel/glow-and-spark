@@ -56,7 +56,60 @@ export const Route = createFileRoute("/catalog")({
 
 const ITEMS_PER_PAGE = 12;
 
-function CatalogPage() {
+function FilterSidebar({ categories, category, sort, minPrice, maxPrice, updateSearch }: {
+  categories: any[]; category: string; sort: string; minPrice: number; maxPrice: number;
+  updateSearch: (updates: any) => void;
+}) {
+  return (
+    <>
+      <div>
+        <h3 className="font-semibold text-foreground mb-3">Categorii</h3>
+        <div className="space-y-1">
+          <button
+            onClick={() => updateSearch({ category: "", page: 1 })}
+            className={`block w-full text-left rounded-lg px-3 py-2 text-sm transition ${!category ? "bg-accent/15 text-accent font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}
+          >
+            Toate produsele
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => updateSearch({ category: cat.slug, page: 1 })}
+              className={`block w-full text-left rounded-lg px-3 py-2 text-sm transition ${category === cat.slug ? "bg-accent/15 text-accent font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3 className="font-semibold text-foreground mb-3">Preț</h3>
+        <div className="flex items-center gap-2">
+          <input type="number" value={minPrice} onChange={(e) => updateSearch({ minPrice: Number(e.target.value), page: 1 })} className="w-full rounded-lg border border-border px-3 py-2 text-sm" placeholder="Min" min={0} />
+          <span className="text-muted-foreground">-</span>
+          <input type="number" value={maxPrice} onChange={(e) => updateSearch({ maxPrice: Number(e.target.value), page: 1 })} className="w-full rounded-lg border border-border px-3 py-2 text-sm" placeholder="Max" min={0} />
+        </div>
+      </div>
+      <div>
+        <h3 className="font-semibold text-foreground mb-3">Sortare</h3>
+        <select value={sort} onChange={(e) => updateSearch({ sort: e.target.value, page: 1 })} className="w-full rounded-lg border border-border px-3 py-2 text-sm bg-card">
+          <option value="newest">Cele mai noi</option>
+          <option value="price_asc">Preț crescător</option>
+          <option value="price_desc">Preț descrescător</option>
+          <option value="popular">Populare</option>
+        </select>
+      </div>
+      <button
+        onClick={() => updateSearch({ category: "", minPrice: 0, maxPrice: 1000, q: "", page: 1, sort: "newest" })}
+        className="w-full rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary transition"
+      >
+        Resetează filtrele
+      </button>
+    </>
+  );
+}
+
+
   const { q, category, sort, page, minPrice, maxPrice } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
 

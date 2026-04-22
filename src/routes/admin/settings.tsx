@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminSettingsEditor, Section, Field, TextInput, Toggle, NumberInput, TextArea } from "@/components/admin/AdminSettingsEditor";
 import { useState } from "react";
-import { Store, Phone, MessageCircle, Truck, Globe, CreditCard, Bell, Shield, FileText, Mail, Share2 } from "lucide-react";
+import { Store, Phone, MessageCircle, Truck, Globe, CreditCard, Bell, Shield, FileText, Mail, Share2, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,
@@ -37,6 +37,16 @@ const defaults = {
   robots_txt: "User-agent: *\nAllow: /",
   maintenance_mode: false,
   maintenance_message: "Revenim în curând cu o experiență nouă!",
+  // Site Alert
+  site_alert_enabled: false,
+  site_alert_text: "",
+  site_alert_type: "info",
+  site_alert_dismissible: true,
+  // Footer company data
+  company_name: "",
+  reg_com: "",
+  free_shipping_threshold: "150",
+  // Legal pages
   terms_page_slug: "termeni-si-conditii",
   privacy_page_slug: "politica-confidentialitate",
   return_policy_slug: "politica-retur",
@@ -72,6 +82,7 @@ function AdminSettings() {
     { key: "invoicing", label: "Facturare", icon: CreditCard },
     { key: "email", label: "Email", icon: Mail },
     { key: "social", label: "Social Media", icon: Share2 },
+    { key: "alert", label: "Alertă Site", icon: AlertTriangle },
   ];
 
   return (
@@ -267,6 +278,30 @@ function AdminSettings() {
                   <Field label="YouTube"><TextInput value={s.social_youtube} onChange={(v) => u("social_youtube", v)} /></Field>
                   <Field label="Pinterest"><TextInput value={s.social_pinterest} onChange={(v) => u("social_pinterest", v)} /></Field>
                   <Field label="Twitter / X"><TextInput value={s.social_twitter} onChange={(v) => u("social_twitter", v)} /></Field>
+                </div>
+              </Section>
+            )}
+
+            {activeSection === "alert" && (
+              <Section title="⚠️ Alertă Site">
+                <div className="space-y-4">
+                  <Toggle value={s.site_alert_enabled} onChange={(v) => u("site_alert_enabled", v)} label="Activează alerta" />
+                  <Field label="Textul alertei"><TextInput value={s.site_alert_text} onChange={(v) => u("site_alert_text", v)} /></Field>
+                  <Field label="Tip alertă">
+                    <select value={s.site_alert_type} onChange={(e) => u("site_alert_type", e.target.value)} className="w-full rounded border border-border px-3 py-2 text-sm">
+                      <option value="info">Info (albastru)</option>
+                      <option value="warning">Avertisment (galben)</option>
+                      <option value="success">Succes (verde)</option>
+                      <option value="error">Eroare (roșu)</option>
+                    </select>
+                  </Field>
+                  <Toggle value={s.site_alert_dismissible} onChange={(v) => u("site_alert_dismissible", v)} label="Poate fi închisă de utilizator" />
+                  <div className="border-t border-border pt-4 space-y-4">
+                    <h4 className="font-semibold text-sm">Date Firmă (Footer)</h4>
+                    <Field label="Nume companie"><TextInput value={s.company_name} onChange={(v) => u("company_name", v)} /></Field>
+                    <Field label="Reg. Comerțului"><TextInput value={s.reg_com} onChange={(v) => u("reg_com", v)} /></Field>
+                    <Field label="Prag livrare gratuită (RON)"><TextInput value={s.free_shipping_threshold} onChange={(v) => u("free_shipping_threshold", v)} /></Field>
+                  </div>
                 </div>
               </Section>
             )}

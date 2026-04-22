@@ -35,6 +35,21 @@ const defaults = {
   step1: "Alege produsele",
   step2: "Finalizează comanda",
   step3: "Primește comanda",
+  // Why Us
+  show_why_us: true,
+  why_us_title: "De ce să alegi Lumini.ro?",
+  why_us_1_icon: "🕯️",
+  why_us_1_title: "100% Handmade",
+  why_us_1_desc: "Fiecare lumânare este turnată manual cu grijă",
+  why_us_2_icon: "🌿",
+  why_us_2_title: "Ceară Naturală",
+  why_us_2_desc: "Doar ceară de soia, fără parafină",
+  why_us_3_icon: "🚚",
+  why_us_3_title: "Livrare Rapidă",
+  why_us_3_desc: "Comandă azi, primești în 24-48h",
+  why_us_4_icon: "🛡️",
+  why_us_4_title: "Garanție Calitate",
+  why_us_4_desc: "Returnare gratuită în 30 de zile",
 };
 
 function AdminHomepage() {
@@ -108,6 +123,20 @@ function AdminHomepage() {
                 <Field label="Pas 2"><TextInput value={s.step2} onChange={(v) => u("step2", v)} /></Field>
                 <Field label="Pas 3"><TextInput value={s.step3} onChange={(v) => u("step3", v)} /></Field>
               </div>
+            </div>
+          </Section>
+
+          <Section title="De Ce Noi (Why Us)">
+            <div className="space-y-4">
+              <Toggle value={s.show_why_us} onChange={(v) => u("show_why_us", v)} label="Afișează secțiunea" />
+              <Field label="Titlu secțiune"><TextInput value={s.why_us_title} onChange={(v) => u("why_us_title", v)} /></Field>
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="grid grid-cols-1 gap-3 md:grid-cols-3 border-t border-border pt-3">
+                  <Field label={`Element ${i} — Emoji`}><TextInput value={s[`why_us_${i}_icon`]} onChange={(v) => u(`why_us_${i}_icon`, v)} /></Field>
+                  <Field label={`Titlu ${i}`}><TextInput value={s[`why_us_${i}_title`]} onChange={(v) => u(`why_us_${i}_title`, v)} /></Field>
+                  <Field label={`Descriere ${i}`}><TextInput value={s[`why_us_${i}_desc`]} onChange={(v) => u(`why_us_${i}_desc`, v)} /></Field>
+                </div>
+              ))}
             </div>
           </Section>
         </>

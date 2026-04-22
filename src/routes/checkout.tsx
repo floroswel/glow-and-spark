@@ -104,16 +104,6 @@ function CheckoutPage() {
       payment_status: "pending",
       user_id: user?.id || null,
     };
-      subtotal: cartSubtotal,
-      shipping_cost: shippingCost,
-      discount_amount: discountAmount,
-      discount_code: discountCode,
-      total: cartTotal,
-      payment_method: form.paymentMethod,
-      notes: form.observatii || null,
-      status: "pending",
-      payment_status: "pending",
-    };
 
     const { data, error: dbError } = await supabase.from("orders").insert(orderData).select("id").single();
     if (dbError || !data) {

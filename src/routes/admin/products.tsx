@@ -1540,6 +1540,7 @@ function AdminProducts() {
                   </div>
                 </div>
               )}
+            </div>
 
             <div className="sticky bottom-0 flex items-center justify-between border-t border-border bg-card px-6 py-4 rounded-b-xl">
               <div className="text-xs text-muted-foreground space-y-0.5">

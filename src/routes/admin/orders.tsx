@@ -489,6 +489,23 @@ function AdminOrders() {
                     </div>
                   </div>
 
+                  {/* AWB / Tracking */}
+                  <div className="rounded-lg border border-border p-4 space-y-2">
+                    <h3 className="text-sm font-semibold text-foreground">AWB & Tracking</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input placeholder="Număr AWB" defaultValue={viewing.awb_number || ""} className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm"
+                        onBlur={async (e) => { if (e.target.value !== (viewing.awb_number || "")) { await supabase.from("orders").update({ awb_number: e.target.value }).eq("id", viewing.id); setViewing({...viewing, awb_number: e.target.value}); }}} />
+                      <select defaultValue={viewing.awb_carrier || ""} className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm"
+                        onChange={async (e) => { await supabase.from("orders").update({ awb_carrier: e.target.value }).eq("id", viewing.id); setViewing({...viewing, awb_carrier: e.target.value}); }}>
+                        <option value="">Curier...</option>
+                        <option value="fan">Fan Courier</option>
+                        <option value="sameday">Sameday</option>
+                        <option value="gls">GLS</option>
+                        <option value="cargus">Cargus</option>
+                      </select>
+                    </div>
+                  </div>
+
                   {/* Actions */}
                   <div className="space-y-2">
                     <h3 className="text-sm font-semibold text-foreground">Schimbă status</h3>
@@ -505,6 +522,27 @@ function AdminOrders() {
                           className="text-xs rounded-full px-3 py-1 font-medium border border-border hover:bg-secondary transition disabled:opacity-30">{v}</button>
                       ))}
                     </div>
+                    {/* Print Invoice */}
+                    <button onClick={() => {
+                      const w = window.open("", "_blank");
+                      if (!w) return;
+                      const items = Array.isArray(viewing.items) ? viewing.items : [];
+                      w.document.write(`<html><head><title>Factură ${viewing.order_number}</title><style>body{font-family:sans-serif;padding:40px;max-width:800px;margin:auto}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f5f5f5}.header{display:flex;justify-content:space-between}.total{font-size:18px;font-weight:bold;text-align:right}@media print{button{display:none}}</style></head><body>
+                        <div class="header"><div><h1>FACTURĂ PROFORMĂ</h1><p>${viewing.order_number}</p><p>Data: ${new Date(viewing.created_at).toLocaleDateString("ro-RO")}</p></div></div>
+                        <h3>Client</h3><p>${viewing.customer_name}<br>${viewing.customer_email}<br>${viewing.customer_phone || ""}<br>${viewing.shipping_address || ""}, ${viewing.city || ""}, ${viewing.county || ""}</p>
+                        ${viewing.billing_type === "company" ? `<p>Firmă: ${viewing.company_name || ""} | CUI: ${viewing.company_cui || ""} | Reg: ${viewing.company_reg || ""}</p>` : ""}
+                        <table><thead><tr><th>#</th><th>Produs</th><th>Cant.</th><th>Preț</th><th>Total</th></tr></thead><tbody>
+                        ${items.map((it: any, i: number) => `<tr><td>${i+1}</td><td>${it.name||it.product_name||"Produs"}</td><td>${it.quantity||it.qty||1}</td><td>${Number(it.price||0).toFixed(2)} RON</td><td>${(Number(it.price||0)*Number(it.quantity||it.qty||1)).toFixed(2)} RON</td></tr>`).join("")}
+                        </tbody></table>
+                        <p>Subtotal: ${Number(viewing.subtotal).toFixed(2)} RON</p>
+                        <p>Livrare: ${Number(viewing.shipping_cost||0).toFixed(2)} RON</p>
+                        ${Number(viewing.discount_amount)>0?`<p>Discount: -${Number(viewing.discount_amount).toFixed(2)} RON</p>`:""}
+                        <p class="total">TOTAL: ${Number(viewing.total).toFixed(2)} RON</p>
+                        <button onclick="window.print()">🖨️ Printează</button></body></html>`);
+                      w.document.close();
+                    }} className="mt-3 w-full rounded-lg border border-border py-2 text-sm font-medium hover:bg-secondary transition flex items-center justify-center gap-2">
+                      <Printer className="h-4 w-4" /> Printează Factură
+                    </button>
                   </div>
                 </>
               )}

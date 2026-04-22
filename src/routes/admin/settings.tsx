@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminSettingsEditor, Section, Field, TextInput, Toggle, NumberInput, TextArea } from "@/components/admin/AdminSettingsEditor";
 import { useState } from "react";
-import { Store, Phone, MessageCircle, Truck, Globe, CreditCard, Bell, Shield, FileText, Mail } from "lucide-react";
+import { Store, Phone, MessageCircle, Truck, Globe, CreditCard, Bell, Shield, FileText, Mail, Share2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,
@@ -71,6 +71,7 @@ function AdminSettings() {
     { key: "legal", label: "Legal", icon: Shield },
     { key: "invoicing", label: "Facturare", icon: CreditCard },
     { key: "email", label: "Email", icon: Mail },
+    { key: "social", label: "Social Media", icon: Share2 },
   ];
 
   return (
@@ -252,6 +253,20 @@ function AdminSettings() {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <Field label="Nume expeditor"><TextInput value={s.smtp_from_name} onChange={(v) => u("smtp_from_name", v)} /></Field>
                   <Field label="Email expeditor"><TextInput value={s.smtp_from_email} onChange={(v) => u("smtp_from_email", v)} /></Field>
+                </div>
+              </Section>
+            )}
+
+            {activeSection === "social" && (
+              <Section title="🔗 Social Media">
+                <p className="text-sm text-muted-foreground mb-4">Linkurile vor apărea în footer și în alte secțiuni ale site-ului</p>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Field label="Facebook"><TextInput value={s.social_facebook} onChange={(v) => u("social_facebook", v)} /></Field>
+                  <Field label="Instagram"><TextInput value={s.social_instagram} onChange={(v) => u("social_instagram", v)} /></Field>
+                  <Field label="TikTok"><TextInput value={s.social_tiktok} onChange={(v) => u("social_tiktok", v)} /></Field>
+                  <Field label="YouTube"><TextInput value={s.social_youtube} onChange={(v) => u("social_youtube", v)} /></Field>
+                  <Field label="Pinterest"><TextInput value={s.social_pinterest} onChange={(v) => u("social_pinterest", v)} /></Field>
+                  <Field label="Twitter / X"><TextInput value={s.social_twitter} onChange={(v) => u("social_twitter", v)} /></Field>
                 </div>
               </Section>
             )}

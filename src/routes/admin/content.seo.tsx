@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminSettingsEditor, Section, Field, TextInput, TextArea, Toggle } from "@/components/admin/AdminSettingsEditor";
-import { Search, Globe, FileText } from "lucide-react";
 
 export const Route = createFileRoute("/admin/content/seo")({
   component: AdminSeo,
@@ -29,33 +28,71 @@ const defaults = {
 
 function AdminSeo() {
   return (
-    <AdminSettingsEditor settingsKey="seo_global" defaults={defaults} title="🔍 SEO Global" description="Configurare SEO la nivel de site">
-      <Section title="Meta Tags Globale" icon={<Globe className="h-4 w-4" />}>
-        <Field label="Template titlu pagină" description="Folosește {page} ca placeholder">
-          <TextInput name="title_template" />
-        </Field>
-        <Field label="Meta description global"><TextArea name="meta_description" rows={3} /></Field>
-        <Field label="OG Site Name"><TextInput name="og_site_name" /></Field>
-        <Field label="OG Image URL default"><TextInput name="og_default_image" /></Field>
-        <Field label="URL canonic principal"><TextInput name="canonical_url" /></Field>
-      </Section>
-      <Section title="Schema.org (JSON-LD)" icon={<FileText className="h-4 w-4" />}>
-        <Field label="Nume organizație"><TextInput name="schema_org_name" /></Field>
-        <Field label="Tip"><TextInput name="schema_org_type" /></Field>
-        <Field label="Logo URL"><TextInput name="schema_org_logo" /></Field>
-        <Field label="Telefon"><TextInput name="schema_org_phone" /></Field>
-        <Field label="Email"><TextInput name="schema_org_email" /></Field>
-        <Field label="Adresă"><TextInput name="schema_org_address" /></Field>
-      </Section>
-      <Section title="Verificări & Robots" icon={<Search className="h-4 w-4" />}>
-        <Field label="Google Verification"><TextInput name="google_verification" /></Field>
-        <Field label="Bing Verification"><TextInput name="bing_verification" /></Field>
-        <Field label="Pinterest Verification"><TextInput name="pinterest_verification" /></Field>
-        <Field label="robots.txt"><TextArea name="robots_txt" rows={6} /></Field>
-        <Field label="Noindex categorii"><Toggle name="noindex_categories" /></Field>
-        <Field label="Noindex tag-uri"><Toggle name="noindex_tags" /></Field>
-        <Field label="Generare sitemap automată"><Toggle name="auto_sitemap" /></Field>
-      </Section>
+    <AdminSettingsEditor settingsKey="seo_global" defaults={defaults} title="🔍 SEO Global">
+      {(settings, update) => (
+        <>
+          <Section title="Meta Tags Globale">
+            <Field label="Template titlu pagină">
+              <TextInput value={settings.title_template} onChange={v => update("title_template", v)} />
+            </Field>
+            <Field label="Meta description global">
+              <TextArea value={settings.meta_description} onChange={v => update("meta_description", v)} rows={3} />
+            </Field>
+            <Field label="OG Site Name">
+              <TextInput value={settings.og_site_name} onChange={v => update("og_site_name", v)} />
+            </Field>
+            <Field label="OG Image URL default">
+              <TextInput value={settings.og_default_image} onChange={v => update("og_default_image", v)} />
+            </Field>
+            <Field label="URL canonic principal">
+              <TextInput value={settings.canonical_url} onChange={v => update("canonical_url", v)} />
+            </Field>
+          </Section>
+          <Section title="Schema.org (JSON-LD)">
+            <Field label="Nume organizație">
+              <TextInput value={settings.schema_org_name} onChange={v => update("schema_org_name", v)} />
+            </Field>
+            <Field label="Tip">
+              <TextInput value={settings.schema_org_type} onChange={v => update("schema_org_type", v)} />
+            </Field>
+            <Field label="Logo URL">
+              <TextInput value={settings.schema_org_logo} onChange={v => update("schema_org_logo", v)} />
+            </Field>
+            <Field label="Telefon">
+              <TextInput value={settings.schema_org_phone} onChange={v => update("schema_org_phone", v)} />
+            </Field>
+            <Field label="Email">
+              <TextInput value={settings.schema_org_email} onChange={v => update("schema_org_email", v)} />
+            </Field>
+            <Field label="Adresă">
+              <TextInput value={settings.schema_org_address} onChange={v => update("schema_org_address", v)} />
+            </Field>
+          </Section>
+          <Section title="Verificări & Robots">
+            <Field label="Google Verification">
+              <TextInput value={settings.google_verification} onChange={v => update("google_verification", v)} />
+            </Field>
+            <Field label="Bing Verification">
+              <TextInput value={settings.bing_verification} onChange={v => update("bing_verification", v)} />
+            </Field>
+            <Field label="Pinterest Verification">
+              <TextInput value={settings.pinterest_verification} onChange={v => update("pinterest_verification", v)} />
+            </Field>
+            <Field label="robots.txt">
+              <TextArea value={settings.robots_txt} onChange={v => update("robots_txt", v)} rows={6} />
+            </Field>
+            <Field label="Noindex categorii">
+              <Toggle value={settings.noindex_categories} onChange={v => update("noindex_categories", v)} label="Nu indexa categoriile" />
+            </Field>
+            <Field label="Noindex tag-uri">
+              <Toggle value={settings.noindex_tags} onChange={v => update("noindex_tags", v)} label="Nu indexa tag-urile" />
+            </Field>
+            <Field label="Generare sitemap automată">
+              <Toggle value={settings.auto_sitemap} onChange={v => update("auto_sitemap", v)} label="Generare automată" />
+            </Field>
+          </Section>
+        </>
+      )}
     </AdminSettingsEditor>
   );
 }

@@ -42,9 +42,12 @@ const defaults = {
   site_alert_text: "",
   site_alert_type: "info",
   site_alert_dismissible: true,
-  // Footer company data
+  // Company data (used in footer + invoices)
   company_name: "",
   reg_com: "",
+  company_cui: "",
+  company_address: "",
+  company_city: "",
   free_shipping_threshold: "150",
   // Legal pages
   terms_page_slug: "termeni-si-conditii",
@@ -82,6 +85,7 @@ function AdminSettings() {
     { key: "invoicing", label: "Facturare", icon: CreditCard },
     { key: "email", label: "Email", icon: Mail },
     { key: "social", label: "Social Media", icon: Share2 },
+    { key: "company", label: "Date Firmă", icon: FileText },
     { key: "alert", label: "Alertă Site", icon: AlertTriangle },
   ];
 
@@ -282,6 +286,20 @@ function AdminSettings() {
               </Section>
             )}
 
+            {activeSection === "company" && (
+              <Section title="🏢 Date Firmă">
+                <p className="text-sm text-muted-foreground mb-4">Aceste date apar automat în footer-ul site-ului și pe facturile generate</p>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Field label="Nume companie"><TextInput value={s.company_name} onChange={(v) => u("company_name", v)} /></Field>
+                  <Field label="CUI"><TextInput value={s.company_cui} onChange={(v) => u("company_cui", v)} /></Field>
+                  <Field label="Nr. Reg. Comerțului"><TextInput value={s.reg_com} onChange={(v) => u("reg_com", v)} /></Field>
+                  <Field label="Adresă sediu"><TextInput value={s.company_address} onChange={(v) => u("company_address", v)} /></Field>
+                  <Field label="Oraș / Județ"><TextInput value={s.company_city} onChange={(v) => u("company_city", v)} /></Field>
+                  <Field label="Prag livrare gratuită (RON)"><TextInput value={s.free_shipping_threshold} onChange={(v) => u("free_shipping_threshold", v)} /></Field>
+                </div>
+              </Section>
+            )}
+
             {activeSection === "alert" && (
               <Section title="⚠️ Alertă Site">
                 <div className="space-y-4">
@@ -296,12 +314,6 @@ function AdminSettings() {
                     </select>
                   </Field>
                   <Toggle value={s.site_alert_dismissible} onChange={(v) => u("site_alert_dismissible", v)} label="Poate fi închisă de utilizator" />
-                  <div className="border-t border-border pt-4 space-y-4">
-                    <h4 className="font-semibold text-sm">Date Firmă (Footer)</h4>
-                    <Field label="Nume companie"><TextInput value={s.company_name} onChange={(v) => u("company_name", v)} /></Field>
-                    <Field label="Reg. Comerțului"><TextInput value={s.reg_com} onChange={(v) => u("reg_com", v)} /></Field>
-                    <Field label="Prag livrare gratuită (RON)"><TextInput value={s.free_shipping_threshold} onChange={(v) => u("free_shipping_threshold", v)} /></Field>
-                  </div>
                 </div>
               </Section>
             )}

@@ -1496,7 +1496,50 @@ function AdminProducts() {
                   </div>
                 </div>
               )}
-            </div>
+
+              {activeTab === "advanced" && (
+                <div className="space-y-6">
+                  <div>
+                    <label className={labelClass}>Note interne (vizibile doar admin)</label>
+                    <textarea value={editing.internal_notes || ""} onChange={(e) => updateField("internal_notes", e.target.value)} rows={4} className={inputClass} placeholder="Note interne despre acest produs..." />
+                    <p className="mt-1 text-xs text-muted-foreground">Aceste note nu sunt vizibile pe site.</p>
+                  </div>
+                  <div className="border-t border-border pt-6">
+                    <label className={labelClass}>Setări stoc avansate</label>
+                    <div className="grid grid-cols-2 gap-4 mt-2">
+                      <div>
+                        <label className="text-xs text-muted-foreground">Prag alertă stoc minim</label>
+                        <input type="number" value={editing.min_stock_alert ?? 5} onChange={(e) => updateField("min_stock_alert", Number(e.target.value))} className={inputClass} />
+                      </div>
+                      <div className="flex items-end pb-1">
+                        <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
+                          <input type="checkbox" checked={editing.allow_backorder || false} onChange={(e) => updateField("allow_backorder", e.target.checked)} className="rounded border-border accent-accent h-4 w-4" />
+                          Permite comandă dacă epuizat (backorder)
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-t border-border pt-6">
+                    <label className={labelClass}>Brand</label>
+                    <input value={editing.brand || ""} onChange={(e) => updateField("brand", e.target.value)} className={inputClass} placeholder="Glow & Spark" />
+                  </div>
+                  <div className="border-t border-border pt-6">
+                    <label className={labelClass}>Informații financiare</label>
+                    <div className="grid grid-cols-2 gap-4 mt-2">
+                      <div>
+                        <label className="text-xs text-muted-foreground">Cost achiziție (RON)</label>
+                        <input type="number" step="0.01" value={editing.cost_price || ""} onChange={(e) => updateField("cost_price", Number(e.target.value))} className={inputClass} />
+                      </div>
+                      {editing.cost_price > 0 && editing.price > 0 && (
+                        <div className="rounded-lg bg-chart-2/10 p-4 flex flex-col justify-center">
+                          <p className="text-sm font-semibold text-chart-2">Profit: {(editing.price - editing.cost_price).toFixed(2)} RON</p>
+                          <p className="text-xs text-muted-foreground">Marjă: {((1 - editing.cost_price / editing.price) * 100).toFixed(1)}%</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
             <div className="sticky bottom-0 flex items-center justify-between border-t border-border bg-card px-6 py-4 rounded-b-xl">
               <div className="text-xs text-muted-foreground space-y-0.5">

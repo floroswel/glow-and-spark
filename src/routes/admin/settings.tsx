@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminSettingsEditor, Section, Field, TextInput, Toggle, NumberInput, TextArea } from "@/components/admin/AdminSettingsEditor";
 import { useState } from "react";
-import { Store, Phone, MessageCircle, Truck, Globe, CreditCard, Bell, Shield, FileText, Mail, Share2 } from "lucide-react";
+import { Store, Phone, MessageCircle, Truck, Globe, CreditCard, Bell, Shield, FileText, Mail, Share2, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,
@@ -82,6 +82,7 @@ function AdminSettings() {
     { key: "invoicing", label: "Facturare", icon: CreditCard },
     { key: "email", label: "Email", icon: Mail },
     { key: "social", label: "Social Media", icon: Share2 },
+    { key: "alert", label: "Alertă Site", icon: AlertTriangle },
   ];
 
   return (

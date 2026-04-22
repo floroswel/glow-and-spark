@@ -8,7 +8,8 @@ import {
   Palette, LogOut, Menu, X, Tag, FileText, BarChart3,
   CreditCard, Truck, Brain, Server, ChevronDown, ChevronRight,
   Link2, UserCog, Warehouse, Search, Command, Bell, Moon, Sun,
-  RotateCcw, Activity, User
+  RotateCcw, Activity, User, Gift, Crown, Percent, FileSpreadsheet,
+  Zap, Receipt, Calculator
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({

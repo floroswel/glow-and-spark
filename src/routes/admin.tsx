@@ -1,11 +1,12 @@
 import { createFileRoute, Outlet, Link, useLocation } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import AdminGlobalSearch from "@/components/admin/AdminGlobalSearch";
 import {
   LayoutDashboard, Package, ShoppingCart, Users, Settings,
   Palette, LogOut, Menu, X, Tag, FileText, BarChart3,
   CreditCard, Truck, Brain, Server, ChevronDown, ChevronRight,
-  Link2, UserCog, Warehouse
+  Link2, UserCog, Warehouse, Search, Command
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -321,10 +322,22 @@ function AdminLayout() {
       </aside>
 
       <main className={`flex-1 ${sidebarOpen ? "ml-60" : "ml-14"} transition-all duration-300`}>
+        <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-card/80 backdrop-blur-sm px-6 py-2">
+          <div />
+          <button
+            onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
+            className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground hover:border-accent/50 hover:text-foreground transition"
+          >
+            <Search className="h-3.5 w-3.5" />
+            <span>Caută...</span>
+            <kbd className="ml-2 rounded border border-border px-1 text-[10px]">⌘K</kbd>
+          </button>
+        </div>
         <div className="p-6">
           <Outlet />
         </div>
       </main>
+      <AdminGlobalSearch />
     </div>
   );
 }

@@ -47,6 +47,7 @@ import { Route as AdminCustomersRouteImport } from './routes/admin/customers'
 import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminBlogRouteImport } from './routes/admin/blog'
+import { Route as AdminAbandonedCartsRouteImport } from './routes/admin/abandoned-carts'
 import { Route as AccountSettingsRouteImport } from './routes/account/settings'
 import { Route as AccountOrdersRouteImport } from './routes/account/orders'
 import { Route as AccountFavoritesRouteImport } from './routes/account/favorites'
@@ -242,6 +243,11 @@ const AdminBlogRoute = AdminBlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAbandonedCartsRoute = AdminAbandonedCartsRouteImport.update({
+  id: '/abandoned-carts',
+  path: '/abandoned-carts',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AccountSettingsRoute = AccountSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -281,6 +287,7 @@ export interface FileRoutesByFullPath {
   '/account/favorites': typeof AccountFavoritesRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
+  '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -323,6 +330,7 @@ export interface FileRoutesByTo {
   '/account/favorites': typeof AccountFavoritesRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
+  '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -368,6 +376,7 @@ export interface FileRoutesById {
   '/account/favorites': typeof AccountFavoritesRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
+  '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/coupons': typeof AdminCouponsRoute
@@ -414,6 +423,7 @@ export interface FileRouteTypes {
     | '/account/favorites'
     | '/account/orders'
     | '/account/settings'
+    | '/admin/abandoned-carts'
     | '/admin/blog'
     | '/admin/categories'
     | '/admin/coupons'
@@ -456,6 +466,7 @@ export interface FileRouteTypes {
     | '/account/favorites'
     | '/account/orders'
     | '/account/settings'
+    | '/admin/abandoned-carts'
     | '/admin/blog'
     | '/admin/categories'
     | '/admin/coupons'
@@ -500,6 +511,7 @@ export interface FileRouteTypes {
     | '/account/favorites'
     | '/account/orders'
     | '/account/settings'
+    | '/admin/abandoned-carts'
     | '/admin/blog'
     | '/admin/categories'
     | '/admin/coupons'
@@ -815,6 +827,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/abandoned-carts': {
+      id: '/admin/abandoned-carts'
+      path: '/abandoned-carts'
+      fullPath: '/admin/abandoned-carts'
+      preLoaderRoute: typeof AdminAbandonedCartsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/account/settings': {
       id: '/account/settings'
       path: '/settings'
@@ -866,6 +885,7 @@ const AccountRouteWithChildren =
   AccountRoute._addFileChildren(AccountRouteChildren)
 
 interface AdminRouteChildren {
+  AdminAbandonedCartsRoute: typeof AdminAbandonedCartsRoute
   AdminBlogRoute: typeof AdminBlogRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminCouponsRoute: typeof AdminCouponsRoute
@@ -888,6 +908,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAbandonedCartsRoute: AdminAbandonedCartsRoute,
   AdminBlogRoute: AdminBlogRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminCouponsRoute: AdminCouponsRoute,

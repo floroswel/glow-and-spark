@@ -39,10 +39,10 @@ export function SiteFooter() {
                 {/* Default legal links for Romania if no links configured */}
                 {(!footer?.col1_links || footer.col1_links.length === 0) && (
                   <>
-                    <li><Link to="/page/termeni-si-conditii" className="hover:opacity-80 transition" style={{ color: textColor }}>Termeni și Condiții</Link></li>
-                    <li><Link to="/page/politica-confidentialitate" className="hover:opacity-80 transition" style={{ color: textColor }}>Politica de Confidențialitate</Link></li>
-                    <li><Link to="/page/politica-retur" className="hover:opacity-80 transition" style={{ color: textColor }}>Politica de Retur</Link></li>
-                    <li><Link to="/page/politica-cookies" className="hover:opacity-80 transition" style={{ color: textColor }}>Politica Cookie-uri</Link></li>
+                    <li><a href="/page/termeni-si-conditii" className="hover:opacity-80 transition" style={{ color: textColor }}>Termeni și Condiții</a></li>
+                    <li><a href="/page/politica-confidentialitate" className="hover:opacity-80 transition" style={{ color: textColor }}>Politica de Confidențialitate</a></li>
+                    <li><a href="/page/politica-retur" className="hover:opacity-80 transition" style={{ color: textColor }}>Politica de Retur</a></li>
+                    <li><a href="/page/politica-cookies" className="hover:opacity-80 transition" style={{ color: textColor }}>Politica Cookie-uri</a></li>
                   </>
                 )}
               </ul>
@@ -71,7 +71,7 @@ export function SiteFooter() {
                   <>
                     <li><Link to="/catalog" className="hover:opacity-80 transition" style={{ color: textColor }}>Catalog</Link></li>
                     <li><Link to="/blog" className="hover:opacity-80 transition" style={{ color: textColor }}>Blog</Link></li>
-                    <li><Link to="/page/despre-noi" className="hover:opacity-80 transition" style={{ color: textColor }}>Despre Noi</Link></li>
+                    <li><a href="/page/despre-noi" className="hover:opacity-80 transition" style={{ color: textColor }}>Despre Noi</a></li>
                     <li><a href="/page/contact" className="hover:opacity-80 transition" style={{ color: textColor }}>Contact</a></li>
                   </>
                 )}
@@ -145,15 +145,15 @@ export function SiteFooter() {
             🇪🇺 SOL – Soluționare Online Litigii
           </a>
           <span>|</span>
-          <Link to="/page/termeni-si-conditii" className="hover:opacity-80 transition" style={{ color: textColor }}>
+          <a href="/page/termeni-si-conditii" className="hover:opacity-80 transition" style={{ color: textColor }}>
             Termeni
-          </Link>
-          <Link to="/page/politica-confidentialitate" className="hover:opacity-80 transition" style={{ color: textColor }}>
+          </a>
+          <a href="/page/politica-confidentialitate" className="hover:opacity-80 transition" style={{ color: textColor }}>
             GDPR
-          </Link>
-          <Link to="/page/politica-cookies" className="hover:opacity-80 transition" style={{ color: textColor }}>
+          </a>
+          <a href="/page/politica-cookies" className="hover:opacity-80 transition" style={{ color: textColor }}>
             Cookie-uri
-          </Link>
+          </a>
         </div>
       </div>
 

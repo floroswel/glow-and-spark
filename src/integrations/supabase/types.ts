@@ -696,10 +696,13 @@ export type Database = {
       }
       products: {
         Row: {
+          allow_backorder: boolean | null
           badge: string | null
           badge_type: string | null
           barcode: string | null
+          brand: string | null
           category_id: string | null
+          cost_price: number | null
           created_at: string | null
           description: string | null
           digital_file_url: string | null
@@ -708,15 +711,19 @@ export type Database = {
           height_cm: number | null
           id: string
           image_url: string | null
+          internal_notes: string | null
           is_active: boolean | null
           is_digital: boolean | null
           is_featured: boolean | null
           length_cm: number | null
           meta_description: string | null
           meta_title: string | null
+          min_stock_alert: number | null
           name: string
           old_price: number | null
           price: number
+          promo_end: string | null
+          promo_start: string | null
           rating: number | null
           reviews_count: number | null
           short_description: string | null
@@ -729,10 +736,13 @@ export type Database = {
           width_cm: number | null
         }
         Insert: {
+          allow_backorder?: boolean | null
           badge?: string | null
           badge_type?: string | null
           barcode?: string | null
+          brand?: string | null
           category_id?: string | null
+          cost_price?: number | null
           created_at?: string | null
           description?: string | null
           digital_file_url?: string | null
@@ -741,15 +751,19 @@ export type Database = {
           height_cm?: number | null
           id?: string
           image_url?: string | null
+          internal_notes?: string | null
           is_active?: boolean | null
           is_digital?: boolean | null
           is_featured?: boolean | null
           length_cm?: number | null
           meta_description?: string | null
           meta_title?: string | null
+          min_stock_alert?: number | null
           name: string
           old_price?: number | null
           price: number
+          promo_end?: string | null
+          promo_start?: string | null
           rating?: number | null
           reviews_count?: number | null
           short_description?: string | null
@@ -762,10 +776,13 @@ export type Database = {
           width_cm?: number | null
         }
         Update: {
+          allow_backorder?: boolean | null
           badge?: string | null
           badge_type?: string | null
           barcode?: string | null
+          brand?: string | null
           category_id?: string | null
+          cost_price?: number | null
           created_at?: string | null
           description?: string | null
           digital_file_url?: string | null
@@ -774,15 +791,19 @@ export type Database = {
           height_cm?: number | null
           id?: string
           image_url?: string | null
+          internal_notes?: string | null
           is_active?: boolean | null
           is_digital?: boolean | null
           is_featured?: boolean | null
           length_cm?: number | null
           meta_description?: string | null
           meta_title?: string | null
+          min_stock_alert?: number | null
           name?: string
           old_price?: number | null
           price?: number
+          promo_end?: string | null
+          promo_start?: string | null
           rating?: number | null
           reviews_count?: number | null
           short_description?: string | null
@@ -998,10 +1019,13 @@ export type Database = {
       search_products_unaccent: {
         Args: { lim?: number; term: string }
         Returns: {
+          allow_backorder: boolean | null
           badge: string | null
           badge_type: string | null
           barcode: string | null
+          brand: string | null
           category_id: string | null
+          cost_price: number | null
           created_at: string | null
           description: string | null
           digital_file_url: string | null
@@ -1010,15 +1034,19 @@ export type Database = {
           height_cm: number | null
           id: string
           image_url: string | null
+          internal_notes: string | null
           is_active: boolean | null
           is_digital: boolean | null
           is_featured: boolean | null
           length_cm: number | null
           meta_description: string | null
           meta_title: string | null
+          min_stock_alert: number | null
           name: string
           old_price: number | null
           price: number
+          promo_end: string | null
+          promo_start: string | null
           rating: number | null
           reviews_count: number | null
           short_description: string | null

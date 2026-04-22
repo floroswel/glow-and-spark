@@ -89,6 +89,7 @@ const menuSections: MenuSection[] = [
           { to: "/admin/social-proof", label: "Social Proof" },
           { to: "/admin/popup", label: "Popup" },
           { to: "/admin/gift-cards", label: "Carduri Cadou" },
+          { to: "/admin/gift-cards/history", label: "Istoric Carduri Cadou" },
           { to: "/admin/loyalty", label: "Program Fidelitate" },
         ],
       },

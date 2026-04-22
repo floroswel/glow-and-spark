@@ -37,6 +37,16 @@ const defaults = {
   robots_txt: "User-agent: *\nAllow: /",
   maintenance_mode: false,
   maintenance_message: "Revenim în curând cu o experiență nouă!",
+  // Site Alert
+  site_alert_enabled: false,
+  site_alert_text: "",
+  site_alert_type: "info",
+  site_alert_dismissible: true,
+  // Footer company data
+  company_name: "",
+  reg_com: "",
+  free_shipping_threshold: "150",
+  // Legal pages
   terms_page_slug: "termeni-si-conditii",
   privacy_page_slug: "politica-confidentialitate",
   return_policy_slug: "politica-retur",

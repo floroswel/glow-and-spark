@@ -547,6 +547,7 @@ function ProductPage() {
                 </button>
               </div>
               <button
+                ref={addToCartRef}
                 onClick={handleAddToCart}
                 disabled={activeStock === 0}
                 className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-3 text-sm font-semibold transition disabled:opacity-50 ${

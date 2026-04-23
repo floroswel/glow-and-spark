@@ -55,6 +55,36 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items]);
 
+  // Debounced abandoned cart sync
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      let sessionId = sessionStorage.getItem("cart_session_id");
+      if (!sessionId) {
+        sessionId = crypto.randomUUID();
+        sessionStorage.setItem("cart_session_id", sessionId);
+      }
+      if (items.length === 0) return;
+      const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
+      supabase.from("abandoned_carts").upsert(
+        {
+          session_id: sessionId,
+          items: items as any,
+          subtotal,
+          total: subtotal,
+          updated_at: new Date().toISOString(),
+          last_activity_at: new Date().toISOString(),
+        },
+        { onConflict: "session_id" }
+      ).then(() => {});
+    }, 500);
+
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [items]);
+
   const addItem = useCallback((product: Omit<CartItem, "quantity">, quantity = 1) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.id === product.id);

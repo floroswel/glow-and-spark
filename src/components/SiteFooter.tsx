@@ -3,7 +3,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ChevronDown, Phone, Mail, Clock, MessageCircle } from "lucide-react";
+import { ChevronDown, Phone, Mail, Clock, MessageCircle, MapPin, FileText, Building2, Shield } from "lucide-react";
 
 /* Inline social SVG icons */
 const FacebookIcon = ({ className }: { className?: string }) => (
@@ -203,48 +203,59 @@ export function SiteFooter() {
 
   const col1Links = footer?.col1_links?.length > 0 ? footer.col1_links : [
     { label: "Despre noi", url: "/page/despre-noi" },
-    { label: "Termeni si conditii", url: "/page/termeni-si-conditii" },
-    { label: "Regulament Carduri Cadou", url: "/page/regulament-carduri-cadou" },
-    { label: "Politica de Confidentialitate", url: "/page/politica-confidentialitate" },
-    { label: "Politica Cookies", url: "/page/politica-cookies" },
+    { label: "Termeni și condiții", url: "/page/termeni-si-conditii" },
+    { label: "Politica de Confidențialitate", url: "/page/politica-confidentialitate" },
+    { label: "Politica Cookie-uri", url: "/politica-cookies" },
     { label: "Contact", url: "/contact" },
   ];
 
   const col2Links = footer?.col2_links?.length > 0 ? footer.col2_links : [
-    { label: "Transport si Livrare", url: "/page/transport-livrare" },
-    { label: "Metode de plata", url: "/page/metode-plata" },
+    { label: "Transport și Livrare", url: "/page/transport-livrare" },
+    { label: "Metode de plată", url: "/page/metode-plata" },
     { label: "Politica de Retur", url: "/page/politica-retur" },
-    { label: "Garantia Produselor", url: "/page/garantie" },
-    { label: "Solutionarea online a litigiilor", url: "https://ec.europa.eu/consumers/odr" },
+    { label: "Garanția Produselor", url: "/page/garantie" },
     { label: "ANPC", url: "https://anpc.ro/ce-este-anpc/" },
-    { label: "Harta Site", url: "/sitemap" },
+    { label: "SOL (Soluționare Online Litigii)", url: "https://ec.europa.eu/consumers/odr" },
   ];
 
+  /* Company info - from general or footer settings */
   const companyName = general?.company_name || footer?.company_name || "";
   const regCom = general?.reg_com || footer?.reg_com || "";
-  const cui = general?.company_cui || general?.invoice_cui || footer?.cui || "";
-  const address = general?.company_address || general?.invoice_address || general?.contact_address || "";
-  const city = general?.company_city || footer?.company_city || "";
+  const cui = general?.company_cui || footer?.cui || "";
+  const companyAddress = general?.company_address || footer?.company_address || "";
+  const companyCity = general?.company_city || footer?.company_city || "";
+  const companyCounty = general?.company_county || footer?.company_county || "";
+  const companyPostalCode = general?.company_postal_code || footer?.company_postal_code || "";
+  const companyIban = general?.invoice_iban || footer?.company_iban || "";
+  const companyBank = general?.invoice_bank || footer?.company_bank || "";
 
   const phone = general?.contact_phone || "";
-  const email = general?.contact_email || "";
-  const schedule = general?.contact_schedule || "De Luni pana Vineri in intervalul orar 09:00 - 17:30";
+  const emailAddr = general?.contact_email || "";
+  const schedule = general?.contact_schedule || "Luni-Vineri 09:00-17:00";
+  const whatsappNumber = general?.whatsapp_number || "";
+  const showWhatsapp = general?.whatsapp_show !== false && whatsappNumber;
 
-  const deliveryBadges = footer?.delivery_badges || ["DPD", "Fan Courier", "Cargus", "Sameday"];
-  const paymentIcons = footer?.payment_icons || ["NETOPIA", "MASTERCARD", "VISA", "TBI", "RAMBURS"];
+  const paymentIcons = footer?.payment_icons || ["VISA", "MASTERCARD", "RAMBURS"];
+
+  /* Company documents */
+  const companyDocs: { label: string; url: string }[] = footer?.company_documents || [];
+  const showDocs = footer?.show_company_documents !== false && companyDocs.length > 0;
+
+  /* Full formatted address */
+  const fullAddress = [companyAddress, companyCity, companyCounty, companyPostalCode].filter(Boolean).join(", ");
 
   return (
     <footer className="mt-0">
       {/* NEWSLETTER SECTION */}
-      <FooterNewsletter accentColor={accentColor} />
+      {footer?.show_newsletter !== false && <FooterNewsletter accentColor={accentColor} />}
 
       {/* MAIN FOOTER */}
       <div style={{ background: mainBg, color: textColor }}>
         <div className="mx-auto max-w-7xl px-4 py-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 
-          {/* COL 1 — Magazin */}
+          {/* COL 1 — Informații utile */}
           {footer?.col1_show !== false && (
-            <FooterColumn title={footer?.col1_title || "Magazin"} titleColor={titleColor}>
+            <FooterColumn title={footer?.col1_title || "Informații utile"} titleColor={titleColor}>
               <ul className="space-y-2">
                 {col1Links.map((l: any, i: number) => renderLink(l.url, l.label, i))}
               </ul>
@@ -253,7 +264,7 @@ export function SiteFooter() {
 
           {/* COL 2 — Clienți */}
           {footer?.col2_show !== false && (
-            <FooterColumn title={footer?.col2_title || "Clienti"} titleColor={titleColor}>
+            <FooterColumn title={footer?.col2_title || "Clienți"} titleColor={titleColor}>
               <ul className="space-y-2">
                 {col2Links.map((l: any, i: number) => renderLink(l.url, l.label, i))}
               </ul>
@@ -263,29 +274,64 @@ export function SiteFooter() {
           {/* COL 3 — Date comerciale */}
           {footer?.col3_show !== false && (
             <FooterColumn title={footer?.col3_title || "Date comerciale"} titleColor={titleColor}>
-              <div className="space-y-1.5 text-sm" style={{ color: textColor }}>
-                {companyName && <p className="font-semibold text-white">{companyName}</p>}
-                {regCom && <p>{regCom}</p>}
-                {cui && <p>CUI: {cui}</p>}
-                {address && <p>{address}</p>}
-                {city && <p>{city}</p>}
+              <div className="space-y-2 text-sm" style={{ color: textColor }}>
+                {companyName && (
+                  <div className="flex items-start gap-2">
+                    <Building2 className="h-4 w-4 mt-0.5 shrink-0 text-white/60" />
+                    <span className="font-semibold text-white">{companyName}</span>
+                  </div>
+                )}
+                {regCom && <p className="pl-6">Reg. Com.: {regCom}</p>}
+                {cui && <p className="pl-6">CUI: {cui}</p>}
+                {fullAddress && (
+                  <div className="flex items-start gap-2">
+                    <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-white/60" />
+                    <span>{fullAddress}</span>
+                  </div>
+                )}
+                {companyIban && <p className="pl-6">IBAN: {companyIban}</p>}
+                {companyBank && <p className="pl-6">Banca: {companyBank}</p>}
               </div>
 
-              {/* Messenger / Contact button */}
+              {/* Company documents */}
+              {showDocs && (
+                <div className="mt-4 space-y-1.5">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-white/60 flex items-center gap-1.5">
+                    <FileText className="h-3.5 w-3.5" /> Documente
+                  </p>
+                  {companyDocs.map((doc, i) => (
+                    <a
+                      key={i}
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm hover:text-white transition-colors block py-0.5 flex items-center gap-1.5"
+                      style={{ color: linkColor }}
+                      onMouseEnter={e => (e.target as HTMLElement).style.color = linkHover}
+                      onMouseLeave={e => (e.target as HTMLElement).style.color = linkColor}
+                    >
+                      <FileText className="h-3.5 w-3.5 shrink-0" />
+                      {doc.label}
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              {/* Contact button */}
               <a
                 href="/contact"
                 className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-full text-white text-sm font-semibold hover:opacity-90 transition-opacity"
                 style={{ background: "#0084FF" }}
               >
                 <MessageCircle className="h-4 w-4" />
-                Contacteaza-ne
+                Contactează-ne
               </a>
             </FooterColumn>
           )}
 
           {/* COL 4 — Suport clienți */}
           {footer?.col4_show !== false && (
-            <FooterColumn title={footer?.col4_title || "Suport clienti"} titleColor={titleColor}>
+            <FooterColumn title={footer?.col4_title || "Suport clienți"} titleColor={titleColor}>
               <div className="space-y-3 text-sm">
                 {schedule && (
                   <div className="flex items-start gap-2">
@@ -301,11 +347,25 @@ export function SiteFooter() {
                     </a>
                   </div>
                 )}
-                {email && (
+                {emailAddr && (
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4 shrink-0 text-white/60" />
-                    <a href={`mailto:${email}`} className="hover:text-white transition-colors break-all" style={{ color: linkColor }}>
-                      {email}
+                    <a href={`mailto:${emailAddr}`} className="hover:text-white transition-colors break-all" style={{ color: linkColor }}>
+                      {emailAddr}
+                    </a>
+                  </div>
+                )}
+                {showWhatsapp && (
+                  <div className="flex items-center gap-2">
+                    <MessageCircle className="h-4 w-4 shrink-0 text-white/60" />
+                    <a
+                      href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(general?.whatsapp_message || "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-white transition-colors"
+                      style={{ color: linkColor }}
+                    >
+                      WhatsApp
                     </a>
                   </div>
                 )}
@@ -341,44 +401,55 @@ export function SiteFooter() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             {/* Copyright */}
             <p className="text-xs" style={{ color: textColor }}>
-              {footer?.copyright_text || `© ${new Date().getFullYear()} Lumini.ro — Toate drepturile rezervate`}
+              {footer?.copyright_text || `© ${new Date().getFullYear()} SC Vomix Genius SRL — Toate drepturile rezervate`}
             </p>
 
             {/* Payment + Badges */}
             <div className="flex items-center gap-3 flex-wrap justify-center">
-              <PaymentIcons icons={paymentIcons} />
+              {footer?.show_payment_icons !== false && <PaymentIcons icons={paymentIcons} />}
 
-              {/* ANPC */}
-              <a
-                href="https://anpc.ro/ce-este-sal/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block bg-white rounded px-2 py-1 hover:opacity-90"
-              >
-                <img
-                  src="https://etamade-com.github.io/anpc-sal-sol-logo/anpc-sal.svg"
-                  alt="ANPC SAL"
-                  className="h-7"
-                  loading="lazy"
-                />
-              </a>
+              {/* ANPC SAL */}
+              {footer?.show_anpc_badges !== false && (
+                <a
+                  href="https://anpc.ro/ce-este-sal/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block bg-white rounded px-2 py-1 hover:opacity-90"
+                >
+                  <img
+                    src="https://etamade-com.github.io/anpc-sal-sol-logo/anpc-sal.svg"
+                    alt="ANPC SAL"
+                    className="h-7"
+                    loading="lazy"
+                  />
+                </a>
+              )}
 
               {/* SOL */}
-              <a
-                href="https://ec.europa.eu/consumers/odr"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block bg-white rounded px-2 py-1 hover:opacity-90"
-              >
-                <img
-                  src="https://etamade-com.github.io/anpc-sal-sol-logo/anpc-sol.svg"
-                  alt="Soluționarea Online a Litigiilor"
-                  className="h-7"
-                  loading="lazy"
-                />
-              </a>
+              {footer?.show_sol_badge !== false && (
+                <a
+                  href="https://ec.europa.eu/consumers/odr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block bg-white rounded px-2 py-1 hover:opacity-90"
+                >
+                  <img
+                    src="https://etamade-com.github.io/anpc-sal-sol-logo/anpc-sol.svg"
+                    alt="Soluționarea Online a Litigiilor"
+                    className="h-7"
+                    loading="lazy"
+                  />
+                </a>
+              )}
             </div>
           </div>
+
+          {/* Disclaimer fiscal / legal */}
+          {footer?.show_legal_disclaimer !== false && (
+            <p className="text-[10px] text-center mt-3 opacity-50" style={{ color: textColor }}>
+              {footer?.legal_disclaimer || "Prețurile includ TVA. Imaginile produselor sunt cu titlu informativ și pot diferi de realitate."}
+            </p>
+          )}
         </div>
       </div>
     </footer>

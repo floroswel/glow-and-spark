@@ -3,10 +3,10 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/politica-cookies")({
   head: () => ({
     meta: [
-      { title: "Politica de Cookie-uri — Glow & Spark" },
-      { name: "description", content: "Informații despre cookie-urile utilizate pe site-ul Glow & Spark: necesare, analitice și de marketing." },
-      { property: "og:title", content: "Politica de Cookie-uri — Glow & Spark" },
-      { property: "og:description", content: "Informații despre cookie-urile utilizate pe site-ul Glow & Spark." },
+      { title: "Politica de Cookie-uri — Mama Lucica" },
+      { name: "description", content: "Informații despre cookie-urile utilizate pe site-ul Mama Lucica: necesare, analitice și de marketing." },
+      { property: "og:title", content: "Politica de Cookie-uri — Mama Lucica" },
+      { property: "og:description", content: "Informații despre cookie-urile utilizate pe site-ul Mama Lucica." },
     ],
   }),
   component: CookiePolicyPage,

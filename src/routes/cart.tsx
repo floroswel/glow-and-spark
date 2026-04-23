@@ -200,6 +200,25 @@ function CartPage() {
                 </div>
               )}
 
+              {/* Gift Card */}
+              {!giftCardCode ? (
+                <div>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">Card Cadou</label>
+                  <div className="flex gap-2">
+                    <input value={giftCardInput} onChange={(e) => setGiftCardInput(e.target.value)} placeholder="Cod card cadou" className="flex-1 rounded-lg border border-border px-3 py-2 text-sm focus:border-accent focus:outline-none" />
+                    <button onClick={handleApplyGiftCard} disabled={giftCardLoading} className="rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-accent hover:text-accent-foreground transition disabled:opacity-50">
+                      Aplică
+                    </button>
+                  </div>
+                  {giftCardError && <p className="mt-1 text-xs text-destructive">{giftCardError}</p>}
+                </div>
+              ) : (
+                <div className="flex items-center justify-between rounded-lg bg-chart-2/10 px-3 py-2">
+                  <span className="text-sm font-medium text-chart-2">🎁 {giftCardSuccess}</span>
+                  <button onClick={() => { setGiftCardCode(""); setGiftCardSuccess(""); clearDiscount(); try { sessionStorage.removeItem("gift_card_code"); sessionStorage.removeItem("gift_card_amount"); } catch {} }} className="text-xs text-muted-foreground hover:text-destructive">Șterge</button>
+                </div>
+              )}
+
               <div className="space-y-2 border-t border-border pt-4 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>

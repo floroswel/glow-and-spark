@@ -256,9 +256,13 @@ function ProductPage() {
 
   useEffect(() => {
     if (product) {
-      document.title = `${product.meta_title || product.name} — Lumini.ro`;
-      const metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) metaDesc.setAttribute("content", product.meta_description || product.short_description || "");
+      setPageMeta({
+        title: product.meta_title || product.name,
+        description: product.meta_description || product.short_description || "",
+        image: product.image_url || undefined,
+        price: product.price,
+        type: "product",
+      });
     }
   }, [product]);
 

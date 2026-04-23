@@ -36,7 +36,7 @@ function CategoryPage() {
       .then(({ data: cat }) => {
         if (cat) {
           setCategory(cat);
-          document.title = `${cat.name} — Lumini.ro`;
+          setPageMeta({ title: cat.name, description: cat.description || `Produse din categoria ${cat.name}`, image: cat.image_url || undefined });
           supabase
             .from("products")
             .select("*")

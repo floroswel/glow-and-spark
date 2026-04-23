@@ -39,6 +39,38 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
   const [authorName, setAuthorName] = useState(profile?.full_name || "");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const valid: File[] = [];
+    for (const f of files) {
+      if (!f.type.startsWith("image/")) { toast.error(`${f.name} nu este o imagine.`); continue; }
+      if (f.size > 2 * 1024 * 1024) { toast.error(`${f.name} depășește 2MB.`); continue; }
+      valid.push(f);
+    }
+    const combined = [...photoFiles, ...valid].slice(0, 3);
+    setPhotoFiles(combined);
+    setPhotoPreviews(combined.map((f) => URL.createObjectURL(f)));
+    if (e.target) e.target.value = "";
+  };
+
+  const removePhoto = (idx: number) => {
+    const next = photoFiles.filter((_, i) => i !== idx);
+    setPhotoFiles(next);
+    setPhotoPreviews(next.map((f) => URL.createObjectURL(f)));
+  };
+
+  const openLightbox = (images: string[], idx: number) => {
+    setLightboxImages(images);
+    setLightboxIndex(idx);
+    setLightboxOpen(true);
+  };
 
   useEffect(() => {
     if (profile?.full_name && !authorName) setAuthorName(profile.full_name);

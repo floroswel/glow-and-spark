@@ -219,9 +219,20 @@ function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-bold text-foreground">Dashboard</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Panoul de control LUMINI.RO — date în timp real</p>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="font-heading text-2xl font-bold text-foreground">Dashboard</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Panoul de control LUMINI.RO — date în timp real</p>
+        </div>
+        {notifPermission === "default" && (
+          <button
+            onClick={requestNotifPermission}
+            className="flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/10 px-4 py-2 text-sm font-medium text-accent hover:bg-accent/20 transition"
+          >
+            <Bell className="h-4 w-4" />
+            Activează notificările
+          </button>
+        )}
       </div>
 
       {/* KPI Cards */}

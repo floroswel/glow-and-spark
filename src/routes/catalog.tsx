@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { setPageMeta } from "@/lib/seo";
+import { setPageMeta, setCanonical, removeCanonical } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/ProductCard";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
@@ -130,9 +130,11 @@ function CatalogPage() {
   // Fetch categories
   useEffect(() => {
     setPageMeta({ title: "Catalog", description: "Descoperă colecția noastră de lumânări artizanale, parfumate și decorative." });
+    setCanonical(window.location.origin + "/catalog");
     supabase.from("categories").select("*").eq("visible", true).order("sort_order").then(({ data }) => {
       if (data) setCategories(data);
     });
+    return () => removeCanonical();
   }, []);
 
   // Fetch products

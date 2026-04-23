@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { setPageMeta } from "@/lib/seo";
+import { setPageMeta, setCanonical, removeCanonical } from "@/lib/seo";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -266,6 +266,11 @@ function ProductPage() {
       });
     }
   }, [product]);
+
+  useEffect(() => {
+    setCanonical(window.location.origin + "/produs/" + slug);
+    return () => removeCanonical();
+  }, [slug]);
 
   useEffect(() => {
     if (!product) return;

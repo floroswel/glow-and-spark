@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { setPageMeta } from "@/lib/seo";
+import { setPageMeta, setCanonical, removeCanonical } from "@/lib/seo";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/ProductCard";
@@ -28,6 +28,7 @@ function CategoryPage() {
 
   useEffect(() => {
     setLoading(true);
+    setCanonical(window.location.origin + "/categorie/" + slug);
     supabase
       .from("categories")
       .select("*")
@@ -52,6 +53,7 @@ function CategoryPage() {
           setLoading(false);
         }
       });
+    return () => removeCanonical();
   }, [slug]);
 
   return (

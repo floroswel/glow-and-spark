@@ -221,6 +221,7 @@ function ProductPage() {
   const [added, setAdded] = useState(false);
   const addToCartRef = useRef<HTMLButtonElement>(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
+  const [countdown, setCountdown] = useState<{ d: number; h: number; m: number; s: number } | null>(null);
 
   useEffect(() => {
     const el = addToCartRef.current;
@@ -232,6 +233,29 @@ function ProductPage() {
     observer.observe(el);
     return () => observer.disconnect();
   }, [product]);
+
+  // Countdown timer
+  useEffect(() => {
+    if (!product?.countdown_end) { setCountdown(null); return; }
+    const end = new Date(product.countdown_end).getTime();
+    const tick = () => {
+      const diff = end - Date.now();
+      if (diff <= 0) {
+        setCountdown(null);
+        // Reload product data when countdown expires
+        supabase.from("products").select("*, categories!products_category_id_fkey(id, name, slug)").eq("slug", slug).eq("is_active", true).single().then(({ data }) => {
+          if (data) setProduct(data);
+        });
+        return false;
+      }
+      const s = Math.floor(diff / 1000);
+      setCountdown({ d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60 });
+      return true;
+    };
+    if (!tick()) return;
+    const id = setInterval(() => { if (!tick()) clearInterval(id); }, 1000);
+    return () => clearInterval(id);
+  }, [product?.countdown_end, slug]);
 
   useEffect(() => {
     setLoading(true);
@@ -489,10 +513,41 @@ function ProductPage() {
               <span className="text-3xl font-bold text-foreground">{activePrice} RON</span>
             </div>
 
+            {/* Countdown timer */}
+            {countdown && (
+              <div className="mt-3 flex items-center gap-1.5">
+                <span className="text-xs font-semibold text-destructive uppercase tracking-wide">Ofertă expiră în:</span>
+                <div className="flex gap-1">
+                  {[
+                    { val: countdown.d, label: "Z" },
+                    { val: countdown.h, label: "O" },
+                    { val: countdown.m, label: "M" },
+                    { val: countdown.s, label: "S" },
+                  ].map(({ val, label }) => (
+                    <div key={label} className="flex flex-col items-center rounded-md bg-destructive/10 px-2 py-1 min-w-[36px]">
+                      <span className="text-sm font-bold tabular-nums text-destructive">{String(val).padStart(2, "0")}</span>
+                      <span className="text-[9px] text-destructive/70 font-medium">{label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Stock */}
-            <p className={`mt-3 text-sm font-medium ${stockColor}`}>
-              {activeStock > 0 ? "●" : "○"} {stockText}
-            </p>
+            <div className="mt-3 flex items-center gap-2">
+              <p className={`text-sm font-medium ${stockColor}`}>
+                {activeStock > 0 ? "●" : "○"} {stockText}
+              </p>
+              {activeStock > 0 && activeStock <= 5 && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-destructive" />
+                  </span>
+                  Doar {activeStock} {activeStock === 1 ? "bucată rămasă" : "bucăți rămase"}!
+                </span>
+              )}
+            </div>
 
             {/* SKU & Brand */}
             <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">

@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN countdown_end timestamptz DEFAULT NULL;

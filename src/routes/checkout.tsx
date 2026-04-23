@@ -111,6 +111,27 @@ function CheckoutPage() {
       setSubmitting(false);
       return;
     }
+
+    // Fire-and-forget email notification
+    supabase.functions.invoke('send-email', {
+      body: {
+        type: 'order_confirmation',
+        orderNumber: orderData.order_number,
+        customer_name: orderData.customer_name,
+        customer_email: orderData.customer_email,
+        items: orderData.items,
+        subtotal: orderData.subtotal,
+        shipping_cost: orderData.shipping_cost,
+        discount_amount: orderData.discount_amount,
+        total: orderData.total,
+        shipping_address: orderData.shipping_address,
+        city: orderData.city,
+        county: orderData.county,
+        postal_code: orderData.postal_code,
+        customer_phone: orderData.customer_phone,
+      },
+    }).catch(() => {});
+
     clearCart();
     navigate({ to: "/order-confirmed/$orderId", params: { orderId: data.id } });
   };

@@ -9,8 +9,8 @@ import { ArrowLeft } from "lucide-react";
 export const Route = createFileRoute("/page/$slug")({
   head: () => ({
     meta: [
-      { title: "Glow & Spark" },
-      { name: "description", content: "Pagină informativă Glow & Spark" },
+      { title: "Mama Lucica" },
+      { name: "description", content: "Pagină informativă Mama Lucica" },
     ],
   }),
   component: CmsPage,

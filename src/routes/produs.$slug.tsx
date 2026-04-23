@@ -246,6 +246,29 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
               <p className="mt-1 text-xs text-muted-foreground text-right">{content.length}/500</p>
             </div>
 
+            {/* Photo upload */}
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Fotografii (max 3, 2MB fiecare)</label>
+              <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileChange} className="hidden" />
+              <button type="button" onClick={() => fileInputRef.current?.click()} disabled={photoFiles.length >= 3}
+                className="flex items-center gap-2 rounded-lg border border-dashed border-border px-4 py-2.5 text-sm text-muted-foreground hover:border-accent hover:text-foreground transition disabled:opacity-40">
+                <ImageIcon className="h-4 w-4" /> Adaugă fotografii
+              </button>
+              {photoPreviews.length > 0 && (
+                <div className="mt-2 flex gap-2">
+                  {photoPreviews.map((src, idx) => (
+                    <div key={idx} className="relative group">
+                      <img src={src} alt={`Preview ${idx + 1}`} className="h-[60px] w-[60px] rounded-md object-cover border border-border" />
+                      <button type="button" onClick={() => removePhoto(idx)}
+                        className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button
               onClick={handleSubmitReview}
               disabled={submitting}
@@ -256,6 +279,30 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
           </div>
         )}
       </div>
+
+      {/* Lightbox dialog */}
+      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+        <DialogContent className="max-w-2xl p-2 bg-black/95 border-none">
+          {lightboxImages.length > 0 && (
+            <div className="relative flex items-center justify-center min-h-[300px]">
+              <img src={lightboxImages[lightboxIndex]} alt="" className="max-h-[70vh] max-w-full object-contain rounded" />
+              {lightboxImages.length > 1 && (
+                <>
+                  <button onClick={() => setLightboxIndex((i) => (i - 1 + lightboxImages.length) % lightboxImages.length)}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/40 transition">
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button onClick={() => setLightboxIndex((i) => (i + 1) % lightboxImages.length)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/40 transition">
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </>
+              )}
+              <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-white/70">{lightboxIndex + 1} / {lightboxImages.length}</p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

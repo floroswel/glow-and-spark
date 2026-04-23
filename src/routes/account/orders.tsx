@@ -46,13 +46,13 @@ function AccountOrders() {
         .select("id, name, slug, price, old_price, image_url, stock, is_active")
         .in("id", productIds);
 
-      const available = (products || []).filter((p) => p.is_active && p.stock > 0);
+      const available = (products || []).filter((p) => p.is_active && (p.stock ?? 0) > 0);
       const skipped = productIds.length - available.length;
 
       for (const p of available) {
         const origItem = items.find((i: any) => (i.product_id || i.id) === p.id);
         addItem(
-          { id: p.id, name: p.name, slug: p.slug, price: p.price, old_price: p.old_price, image_url: p.image_url },
+          { id: p.id, name: p.name, slug: p.slug, price: p.price, old_price: p.old_price, image_url: p.image_url ?? undefined },
           origItem?.quantity || origItem?.qty || 1
         );
       }

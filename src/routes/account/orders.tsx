@@ -19,6 +19,8 @@ const RETURN_REASONS = [
 
 function AccountOrders() {
   const { user } = useAuth();
+  const { addItem } = useCart();
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);

@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminSettingsEditor, Section, Field, TextInput, Toggle, ColorInput } from "@/components/admin/AdminSettingsEditor";
-import { Plus, Trash2, Upload } from "lucide-react";
-import { useState } from "react";
+import { Plus, Trash2, Upload, CheckCircle2, XCircle, AlertTriangle, RefreshCw, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export const Route = createFileRoute("/admin/footer")({
   component: AdminFooter,
@@ -132,11 +133,192 @@ function DocumentsEditor({ docs, onChange }: { docs: { label: string; url: strin
   );
 }
 
+type CheckResult = { label: string; status: "ok" | "warning" | "error"; detail: string };
+
+function FooterHealthCheck({ settings }: { settings: any }) {
+  const { general } = useSiteSettings();
+  const [checks, setChecks] = useState<CheckResult[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const runChecks = useCallback(async () => {
+    setLoading(true);
+    const results: CheckResult[] = [];
+    const s = settings;
+    const g = general || {};
+
+    // 1. Company data completeness
+    const companyFields: [string, string][] = [
+      [s.company_name || g.company_name, "Denumire societate"],
+      [s.cui || g.company_cui, "CUI"],
+      [s.reg_com || g.reg_com, "Nr. Reg. Comerțului"],
+      [s.company_address || g.company_address, "Adresă sediu"],
+      [s.company_city || g.company_city, "Localitate"],
+      [s.company_county || g.company_county, "Județ"],
+    ];
+    for (const [val, label] of companyFields) {
+      results.push(val
+        ? { label: `Date firmă: ${label}`, status: "ok", detail: "Completat" }
+        : { label: `Date firmă: ${label}`, status: "error", detail: "Lipsește — obligatoriu legal" }
+      );
+    }
+
+    // 2. Contact data
+    const contactFields: [string, string][] = [
+      [g.contact_phone, "Telefon"],
+      [g.contact_email, "Email"],
+      [g.contact_schedule, "Program lucru"],
+    ];
+    for (const [val, label] of contactFields) {
+      results.push(val
+        ? { label: `Contact: ${label}`, status: "ok", detail: "Completat" }
+        : { label: `Contact: ${label}`, status: "warning", detail: "Lipsește — recomandat" }
+      );
+    }
+
+    // 3. Verify CMS page links exist & are published
+    const allLinks: { label: string; url: string }[] = [
+      ...(s.col1_links || []),
+      ...(s.col2_links || []),
+    ];
+    const cmsLinks = allLinks.filter((l: any) => l.url?.startsWith("/page/"));
+    if (cmsLinks.length > 0) {
+      const slugs = cmsLinks.map((l: any) => l.url.replace("/page/", ""));
+      const { data: pages } = await supabase
+        .from("cms_pages")
+        .select("slug, status")
+        .in("slug", slugs);
+
+      for (const link of cmsLinks) {
+        const slug = link.url.replace("/page/", "");
+        const page = pages?.find((p: any) => p.slug === slug);
+        if (!page) {
+          results.push({ label: `Link: ${link.label}`, status: "error", detail: `Pagina CMS „${slug}" nu există` });
+        } else if (page.status !== "published") {
+          results.push({ label: `Link: ${link.label}`, status: "warning", detail: `Pagina „${slug}" nu e publicată (status: ${page.status})` });
+        } else {
+          results.push({ label: `Link: ${link.label}`, status: "ok", detail: "Pagină publicată ✓" });
+        }
+      }
+    }
+
+    // 4. Check static route links
+    const staticRoutes = ["/contact", "/politica-cookies", "/faq", "/blog", "/catalog"];
+    const staticLinks = allLinks.filter((l: any) => !l.url?.startsWith("/page/") && !l.url?.startsWith("http") && l.url);
+    for (const link of staticLinks) {
+      const known = staticRoutes.includes(link.url) || link.url === "/";
+      results.push(known
+        ? { label: `Link: ${link.label}`, status: "ok", detail: `Rută internă ${link.url}` }
+        : { label: `Link: ${link.label}`, status: "warning", detail: `Rută „${link.url}" — verifică manual dacă există` }
+      );
+    }
+
+    // 5. Check external links (just flag as info)
+    const extLinks = allLinks.filter((l: any) => l.url?.startsWith("http"));
+    for (const link of extLinks) {
+      results.push({ label: `Link extern: ${link.label}`, status: "ok", detail: link.url });
+    }
+
+    // 6. Company documents check
+    const docs: any[] = s.company_documents || [];
+    if (s.show_company_documents && docs.length === 0) {
+      results.push({ label: "Documente firmă", status: "warning", detail: "Secțiunea e activă dar nu ai niciun document adăugat" });
+    }
+    for (const doc of docs) {
+      if (!doc.url) {
+        results.push({ label: `Document: ${doc.label}`, status: "error", detail: "URL-ul documentului lipsește — încarcă un PDF" });
+      } else {
+        results.push({ label: `Document: ${doc.label}`, status: "ok", detail: "PDF atașat ✓" });
+      }
+    }
+
+    // 7. Legal badges
+    if (!s.show_anpc_badges) results.push({ label: "Badge ANPC", status: "error", detail: "Dezactivat — obligatoriu conform legii" });
+    else results.push({ label: "Badge ANPC", status: "ok", detail: "Activ ✓" });
+
+    if (!s.show_sol_badge) results.push({ label: "Badge SOL", status: "error", detail: "Dezactivat — obligatoriu conform legii" });
+    else results.push({ label: "Badge SOL", status: "ok", detail: "Activ ✓" });
+
+    // 8. Social media
+    const socials = ["social_facebook", "social_instagram", "social_tiktok", "social_youtube"];
+    const hasSocial = socials.some(k => g[k]);
+    results.push(hasSocial
+      ? { label: "Social Media", status: "ok", detail: "Cel puțin un link social configurat" }
+      : { label: "Social Media", status: "warning", detail: "Niciun link social media configurat" }
+    );
+
+    setChecks(results);
+    setLoading(false);
+  }, [settings, general]);
+
+  useEffect(() => { runChecks(); }, [runChecks]);
+
+  const errors = checks.filter(c => c.status === "error").length;
+  const warnings = checks.filter(c => c.status === "warning").length;
+  const oks = checks.filter(c => c.status === "ok").length;
+
+  const icon = (s: string) => {
+    if (s === "ok") return <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />;
+    if (s === "warning") return <AlertTriangle className="h-4 w-4 text-yellow-500 shrink-0" />;
+    return <XCircle className="h-4 w-4 text-destructive shrink-0" />;
+  };
+
+  return (
+    <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="font-heading text-base font-bold text-foreground">🩺 Verificare Footer</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">Verificare automată linkuri, date și conformitate legală</p>
+        </div>
+        <button onClick={runChecks} disabled={loading} className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition">
+          {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+          Reverific
+        </button>
+      </div>
+
+      {/* Summary badges */}
+      <div className="flex gap-3 flex-wrap">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/10 px-3 py-1 text-xs font-medium text-green-600">
+          <CheckCircle2 className="h-3.5 w-3.5" /> {oks} OK
+        </span>
+        {warnings > 0 && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-500/10 px-3 py-1 text-xs font-medium text-yellow-600">
+            <AlertTriangle className="h-3.5 w-3.5" /> {warnings} Atenționări
+          </span>
+        )}
+        {errors > 0 && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive">
+            <XCircle className="h-3.5 w-3.5" /> {errors} Probleme
+          </span>
+        )}
+      </div>
+
+      {/* Issues first, then warnings, then oks */}
+      <div className="space-y-1 max-h-72 overflow-y-auto">
+        {[...checks].sort((a, b) => {
+          const order = { error: 0, warning: 1, ok: 2 };
+          return (order[a.status] ?? 2) - (order[b.status] ?? 2);
+        }).map((c, i) => (
+          <div key={i} className={`flex items-start gap-2 rounded-lg px-3 py-2 text-xs ${c.status === "error" ? "bg-destructive/5" : c.status === "warning" ? "bg-yellow-500/5" : "bg-secondary/30"}`}>
+            {icon(c.status)}
+            <div className="min-w-0">
+              <span className="font-medium text-foreground">{c.label}</span>
+              <span className="text-muted-foreground ml-1.5">— {c.detail}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function AdminFooter() {
   return (
     <AdminSettingsEditor settingsKey="footer" defaults={defaults} title="Editor Footer">
       {(s, u) => (
         <>
+          {/* Health Check at the top */}
+          <FooterHealthCheck settings={s} />
+
           <Section title="General">
             <div className="space-y-4">
               <Toggle value={s.show} onChange={(v) => u("show", v)} label="Afișează footer" />

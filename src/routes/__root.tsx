@@ -78,9 +78,19 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+function upsertMeta(name: string, content: string) {
+  let el = document.querySelector(`meta[name="${name}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute("name", name);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("content", content);
+}
+
 function TrackingInit() {
   const router = useRouter();
-  const { general } = useSiteSettings();
+  const { general, seo_global } = useSiteSettings();
   const initialized = useRef(false);
 
   useEffect(() => {
@@ -96,6 +106,51 @@ function TrackingInit() {
 
     initialized.current = true;
   }, [general]);
+
+  // SEO: verification meta tags & Organization JSON-LD
+  useEffect(() => {
+    if (seo_global?.google_verification) {
+      upsertMeta("google-site-verification", seo_global.google_verification);
+    }
+    if (seo_global?.bing_verification) {
+      upsertMeta("msvalidate.01", seo_global.bing_verification);
+    }
+    if (seo_global?.pinterest_verification) {
+      upsertMeta("p:domain_verify", seo_global.pinterest_verification);
+    }
+
+    // Organization JSON-LD
+    const scriptId = "__org_jsonld";
+    const oldScript = document.getElementById(scriptId);
+    if (oldScript) oldScript.remove();
+
+    if (seo_global?.schema_org_name) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.type = "application/ld+json";
+      script.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: seo_global.schema_org_name,
+        ...(seo_global.schema_org_phone && { telephone: seo_global.schema_org_phone }),
+        ...(seo_global.schema_org_email && { email: seo_global.schema_org_email }),
+        ...(seo_global.schema_org_address && {
+          address: {
+            "@type": "PostalAddress",
+            addressCountry: "RO",
+            streetAddress: seo_global.schema_org_address,
+          },
+        }),
+        ...(seo_global.schema_org_logo && { logo: seo_global.schema_org_logo }),
+      });
+      document.head.appendChild(script);
+    }
+
+    return () => {
+      const s = document.getElementById(scriptId);
+      if (s) s.remove();
+    };
+  }, [seo_global]);
 
   useEffect(() => {
     const unsub = router.subscribe("onResolved", () => {

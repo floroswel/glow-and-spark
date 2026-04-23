@@ -25,6 +25,13 @@ function CartPage() {
   const [couponError, setCouponError] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
 
+  // Gift card
+  const [giftCardInput, setGiftCardInput] = useState("");
+  const [giftCardError, setGiftCardError] = useState("");
+  const [giftCardSuccess, setGiftCardSuccess] = useState("");
+  const [giftCardLoading, setGiftCardLoading] = useState(false);
+  const [giftCardCode, setGiftCardCode] = useState("");
+
   const remaining = Math.max(0, freeShippingMin - cartSubtotal);
   const progressPct = Math.min(100, (cartSubtotal / freeShippingMin) * 100);
 

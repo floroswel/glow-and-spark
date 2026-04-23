@@ -191,6 +191,7 @@ function RootComponent() {
           <FavoritesProvider>
             <CompareProvider>
               <TrackingInit />
+              <RedirectHandler />
               <div className="pb-14 md:pb-0">
                 <Outlet />
               </div>

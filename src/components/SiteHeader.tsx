@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useCart } from "@/hooks/useCart";
+import { useAuth } from "@/hooks/useAuth";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Menu, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package, X, Gift } from "lucide-react";
+import { Menu, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package, X, Gift, Star } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { HighlightText } from "@/components/HighlightText";
@@ -51,15 +52,24 @@ function useProductSearch() {
 export function SiteHeader() {
   const { header, general } = useSiteSettings();
   const { cartCount } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [userPoints, setUserPoints] = useState<number | null>(null);
   const desktopSearch = useProductSearch();
   const mobileSearch = useProductSearch();
   const desktopSearchRef = useRef<HTMLDivElement>(null);
   const mobileSearchRef = useRef<HTMLDivElement>(null);
+
+  // Fetch user points
+  useEffect(() => {
+    if (!user) { setUserPoints(null); return; }
+    supabase.from("user_points").select("balance").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => setUserPoints(data?.balance ?? null));
+  }, [user]);
 
   const navLinks = (header?.navbar_links || []).filter((link: any) => link.active);
 
@@ -238,6 +248,12 @@ export function SiteHeader() {
                 <Link to="/wishlist" className="hidden md:flex items-center gap-1 hover:text-foreground transition">
                   <Heart className="h-5 w-5" />
                   Favorite
+                </Link>
+              )}
+              {user && userPoints !== null && userPoints > 0 && (
+                <Link to="/account" className="hidden md:flex items-center gap-1 text-accent hover:text-foreground transition">
+                  <Star className="h-4 w-4 fill-accent" />
+                  <span className="text-xs font-semibold">{userPoints} pts</span>
                 </Link>
               )}
               {header?.show_cart !== false && (

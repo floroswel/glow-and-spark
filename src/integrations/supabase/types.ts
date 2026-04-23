@@ -1739,6 +1739,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_points: {
+        Row: {
+          balance: number
+          id: string
+          lifetime_points: number
+          tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          id?: string
+          lifetime_points?: number
+          tier?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          id?: string
+          lifetime_points?: number
+          tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -1810,6 +1837,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      compute_tier: { Args: { pts: number }; Returns: string }
       decrement_stock: {
         Args: { p_product_id: string; p_quantity: number }
         Returns: undefined

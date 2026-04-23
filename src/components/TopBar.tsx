@@ -10,7 +10,7 @@ export function TopBar() {
   if (!header?.show_topbar) return null;
 
   const phone = general?.contact_phone;
-  const freeShippingThreshold = general?.free_shipping_threshold || "150";
+  const freeShippingThreshold = general?.free_shipping_min || "150";
   const welcomeText = header?.topbar_text || "Bine ai venit pe";
   const siteName = general?.site_name || "Lumini.ro";
 

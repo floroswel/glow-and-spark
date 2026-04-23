@@ -428,60 +428,7 @@ function ProductPage() {
               <p>Ceară de soia pură, uleiuri esențiale premium, fitil din lemn natural. Fără parafină, fără coloranți artificiali.</p>
             )}
             {activeTab === "recenzii" && (
-              <div className="space-y-6">
-                {reviews.length === 0 ? (
-                  <p className="text-center py-8 text-muted-foreground">Nu există recenzii încă. Fii primul care lasă o recenzie!</p>
-                ) : (
-                  <>
-                    {/* Rating summary */}
-                    <div className="flex items-center gap-6 rounded-xl border border-border bg-card p-5">
-                      <div className="text-center">
-                        <p className="text-4xl font-bold text-foreground">{avgRating.toFixed(1)}</p>
-                        <div className="flex mt-1">
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <Star key={s} className={`h-4 w-4 ${s <= Math.round(avgRating) ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"}`} />
-                          ))}
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">{reviews.length} recenzii</p>
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        {[5, 4, 3, 2, 1].map((star) => {
-                          const count = reviews.filter((r) => r.rating === star).length;
-                          const pct = reviews.length ? (count / reviews.length) * 100 : 0;
-                          return (
-                            <div key={star} className="flex items-center gap-2 text-xs">
-                              <span className="w-3 text-right">{star}</span>
-                              <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
-                              <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                                <div className="h-full rounded-full bg-yellow-500 transition-all" style={{ width: `${pct}%` }} />
-                              </div>
-                              <span className="w-6 text-right text-muted-foreground">{count}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Individual reviews */}
-                    {reviews.map((review) => (
-                      <div key={review.id} className="rounded-lg border border-border bg-card p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="flex">
-                            {[1, 2, 3, 4, 5].map((s) => (
-                              <Star key={s} className={`h-3.5 w-3.5 ${s <= review.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"}`} />
-                            ))}
-                          </div>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(review.created_at).toLocaleDateString("ro-RO")}
-                          </span>
-                        </div>
-                        {review.title && <p className="font-medium text-foreground text-sm">{review.title}</p>}
-                        {review.content && <p className="mt-1 text-sm text-muted-foreground">{review.content}</p>}
-                      </div>
-                    ))}
-                  </>
-                )}
-              </div>
+              <ReviewsTab product={product} reviews={reviews} setReviews={setReviews} avgRating={avgRating} />
             )}
             {activeTab === "livrare" && (
               <div className="space-y-3">

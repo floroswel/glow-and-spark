@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { setPageMeta, setCanonical, removeCanonical } from "@/lib/seo";
+import { trackViewItem, trackAddToCart } from "@/lib/gtm";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -397,6 +398,7 @@ function ProductPage() {
           addToRecentlyViewed(data.id);
           const cat = data.categories as any;
           setCategory(cat);
+          trackViewItem({ id: data.id, name: data.name, price: data.price, slug: data.slug, category: cat?.name });
           // Fetch related, variants, reviews in parallel
           Promise.all([
             cat?.id
@@ -469,14 +471,16 @@ function ProductPage() {
   const handleAddToCart = () => {
     if (!product) return;
     const v = selectedVariant;
-    addItem({
+    const cartItem = {
       id: product.id,
       slug: product.slug,
       name: v ? `${product.name} — ${v.name}` : product.name,
       price: v?.price || product.price,
       old_price: v?.old_price || product.old_price,
       image_url: v?.image_url || product.image_url,
-    }, quantity);
+    };
+    addItem(cartItem, quantity);
+    trackAddToCart({ id: product.id, name: cartItem.name, price: cartItem.price }, quantity);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };

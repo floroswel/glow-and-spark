@@ -46,7 +46,11 @@ function AdminReviews() {
   useEffect(() => { setPage(1); }, [search, filter]);
 
   const updateStatus = async (id: string, status: string) => {
+    const review = reviews.find(r => r.id === id);
     await supabase.from("product_reviews").update({ status }).eq("id", id);
+    if (review?.product_id) {
+      await supabase.rpc('update_reviews_count', { p_product_id: review.product_id });
+    }
     showToast(`Recenzie ${status === "approved" ? "aprobată" : "respinsă"}!`);
     load();
   };

@@ -28,6 +28,14 @@ interface MenuSection { title: string; items: MenuItem[] }
 
 const menuSections: MenuSection[] = [
   {
+    title: "ACCES RAPID",
+    items: [
+      { icon: Star, label: "Social Proof", to: "/admin/social-proof" },
+      { icon: Cookie, label: "Politica Cookies", to: "/admin/pages" },
+      { icon: Briefcase, label: "Date Comerciale", to: "/admin/footer" },
+    ],
+  },
+  {
     title: "PRINCIPAL",
     items: [
       { icon: LayoutDashboard, label: "Dashboard", to: "/admin", end: true },

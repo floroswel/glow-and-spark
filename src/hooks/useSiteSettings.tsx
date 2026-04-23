@@ -10,6 +10,10 @@ export interface SiteSettings {
   footer: Record<string, any>;
   popup: Record<string, any>;
   social_proof: Record<string, any>;
+  seo_global: Record<string, any>;
+  redirects: any[];
+  email_templates: any[];
+  automations: any[];
 }
 
 const defaultSettings: SiteSettings = {
@@ -21,6 +25,10 @@ const defaultSettings: SiteSettings = {
   footer: {},
   popup: {},
   social_proof: {},
+  seo_global: {},
+  redirects: [],
+  email_templates: [],
+  automations: [],
 };
 
 const CACHE_KEY = "site_settings_cache";

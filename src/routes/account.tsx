@@ -1,10 +1,12 @@
 import { createFileRoute, Outlet, Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import {
-  LayoutDashboard, ShoppingBag, Heart, MapPin, Settings, LogOut, ChevronRight,
+  LayoutDashboard, ShoppingBag, Heart, MapPin, Settings, LogOut, ChevronRight, Bell,
 } from "lucide-react";
 
 export const Route = createFileRoute("/account")({
@@ -20,6 +22,7 @@ export const Route = createFileRoute("/account")({
 const navItems = [
   { to: "/account", icon: LayoutDashboard, label: "Dashboard", end: true },
   { to: "/account/orders", icon: ShoppingBag, label: "Comenzile Mele" },
+  { to: "/account/notifications", icon: Bell, label: "Notificări", badge: true },
   { to: "/account/favorites", icon: Heart, label: "Favorite" },
   { to: "/account/addresses", icon: MapPin, label: "Adrese" },
   { to: "/account/settings", icon: Settings, label: "Setări Cont" },
@@ -29,6 +32,17 @@ function AccountLayout() {
   const { user, profile, loading, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("user_notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("is_read", false)
+      .then(({ count }) => setUnreadCount(count || 0));
+  }, [user, location.pathname]);
 
   if (loading) {
     return (
@@ -106,7 +120,12 @@ function AccountLayout() {
                       }`}
                     >
                       <item.icon className="h-4.5 w-4.5 shrink-0" />
-                      <span>{item.label}</span>
+                      <span className="flex-1">{item.label}</span>
+                      {(item as any).badge && unreadCount > 0 && (
+                        <span className="inline-flex items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground min-w-[20px]">
+                          {unreadCount}
+                        </span>
+                      )}
                     </Link>
                   );
                 })}
@@ -142,6 +161,11 @@ function AccountLayout() {
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
                     <span>{item.label}</span>
+                    {(item as any).badge && unreadCount > 0 && (
+                      <span className="inline-flex items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground min-w-[18px]">
+                        {unreadCount}
+                      </span>
+                    )}
                   </Link>
                 );
               })}

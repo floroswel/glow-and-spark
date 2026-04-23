@@ -15,6 +15,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { BackToTop } from "@/components/BackToTop";
+import { TrustBadges } from "@/components/TrustBadges";
 import { ChevronRight, Minus, Plus, ShoppingCart, Truck, RotateCcw, Heart, GitCompare, Share2, Star, Shield, Check } from "lucide-react";
 import { toast } from "sonner";
 
@@ -615,6 +616,8 @@ function ProductPage() {
                 {added ? "✓ Adăugat în coș" : "ADAUGĂ ÎN COȘ"}
               </button>
             </div>
+
+            <TrustBadges variant="compact" />
 
             {/* Action buttons */}
             <div className="mt-4 flex items-center gap-3">

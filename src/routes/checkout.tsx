@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Switch } from "@/components/ui/switch";
+import { TrustBadges } from "@/components/TrustBadges";
 import { MapPin, Gift } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
@@ -428,6 +429,7 @@ function CheckoutPage() {
               {giftWrapping && <div className="flex justify-between"><span className="text-muted-foreground">Ambalaj cadou</span><span>{giftWrappingPrice.toFixed(2)} RON</span></div>}
               <div className="flex justify-between border-t border-border pt-2 text-base font-bold"><span>Total</span><span>{finalTotal.toFixed(2)} RON</span></div>
             </div>
+            <TrustBadges variant="full" />
           </div>
         </div>
       </div>

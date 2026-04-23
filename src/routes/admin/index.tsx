@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Package, ShoppingCart, Users, TrendingUp, Star, BookOpen,
   ArrowRight, Clock, AlertTriangle, DollarSign, BarChart3,
   ShoppingBag, UserPlus, Percent, MessageSquare, ArrowUpRight, ArrowDownRight,
-  Shield, CheckCircle, XCircle, Activity
+  Shield, CheckCircle, XCircle, Activity, Bell
 } from "lucide-react";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip as ReTooltip,

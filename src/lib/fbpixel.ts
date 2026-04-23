@@ -8,7 +8,7 @@ declare global {
 export function initPixel() {
   const pixelId = import.meta.env.VITE_FB_PIXEL_ID;
   if (!pixelId || typeof document === "undefined") return;
-  if (window.fbq) return;
+  if (typeof window.fbq === "function") return;
 
   const f: any = (window.fbq = function (...args: any[]) {
     f.callMethod ? f.callMethod(...args) : f.queue.push(args);

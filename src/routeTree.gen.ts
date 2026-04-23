@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PoliticaCookiesRouteImport } from './routes/politica-cookies'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -111,6 +112,11 @@ const TrackOrderRoute = TrackOrderRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PoliticaCookiesRoute = PoliticaCookiesRouteImport.update({
+  id: '/politica-cookies',
+  path: '/politica-cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -554,6 +560,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/politica-cookies': typeof PoliticaCookiesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/track-order': typeof TrackOrderRoute
   '/wishlist': typeof WishlistRoute
@@ -642,6 +649,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/politica-cookies': typeof PoliticaCookiesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/track-order': typeof TrackOrderRoute
   '/wishlist': typeof WishlistRoute
@@ -733,6 +741,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/politica-cookies': typeof PoliticaCookiesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/track-order': typeof TrackOrderRoute
   '/wishlist': typeof WishlistRoute
@@ -825,6 +834,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/forgot-password'
+    | '/politica-cookies'
     | '/reset-password'
     | '/track-order'
     | '/wishlist'
@@ -913,6 +923,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/forgot-password'
+    | '/politica-cookies'
     | '/reset-password'
     | '/track-order'
     | '/wishlist'
@@ -1003,6 +1014,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/forgot-password'
+    | '/politica-cookies'
     | '/reset-password'
     | '/track-order'
     | '/wishlist'
@@ -1094,6 +1106,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  PoliticaCookiesRoute: typeof PoliticaCookiesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TrackOrderRoute: typeof TrackOrderRoute
   WishlistRoute: typeof WishlistRoute
@@ -1124,6 +1137,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/politica-cookies': {
+      id: '/politica-cookies'
+      path: '/politica-cookies'
+      fullPath: '/politica-cookies'
+      preLoaderRoute: typeof PoliticaCookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -1950,6 +1970,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  PoliticaCookiesRoute: PoliticaCookiesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TrackOrderRoute: TrackOrderRoute,
   WishlistRoute: WishlistRoute,

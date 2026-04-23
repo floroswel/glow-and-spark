@@ -202,7 +202,7 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
   );
 }
 
-
+function ProductPage() {
   const { slug } = Route.useParams();
   const { addItem } = useCart();
   const { isFav, toggle: toggleFav } = useFavorites();

@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Switch } from "@/components/ui/switch";
+import { TrustBadges } from "@/components/TrustBadges";
 import { MapPin, Gift } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({

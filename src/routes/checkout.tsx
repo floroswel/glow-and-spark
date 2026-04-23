@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useState, useEffect } from "react";
 import { trackBeginCheckout } from "@/lib/gtm";
+import { trackInitiateCheckout } from "@/lib/fbpixel";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -51,6 +52,7 @@ function CheckoutPage() {
   useEffect(() => {
     if (items.length > 0) {
       trackBeginCheckout(items, cartTotal);
+      trackInitiateCheckout(items, cartTotal);
     }
   }, []);
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);

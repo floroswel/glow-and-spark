@@ -1,4 +1,4 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { SiteSettingsProvider } from "@/hooks/useSiteSettings";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
@@ -8,6 +8,7 @@ import { FavoritesProvider } from "@/hooks/useFavorites";
 import { CompareProvider } from "@/hooks/useCompare";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { initGTM } from "@/lib/gtm";
+import { initPixel, trackPageView } from "@/lib/fbpixel";
 
 import appCss from "../styles.css?url";
 
@@ -77,10 +78,17 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const router = useRouter();
+
   useEffect(() => {
     const gtmId = import.meta.env.VITE_GTM_ID;
     if (gtmId) initGTM(gtmId);
-  }, []);
+    initPixel();
+    const unsub = router.subscribe("onResolved", () => {
+      trackPageView();
+    });
+    return unsub;
+  }, [router]);
 
   return (
     <SiteSettingsProvider>

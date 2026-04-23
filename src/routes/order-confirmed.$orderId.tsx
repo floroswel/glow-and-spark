@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackPurchase } from "@/lib/gtm";
+import { trackPurchase as fbTrackPurchase } from "@/lib/fbpixel";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -30,6 +31,7 @@ function OrderConfirmedPage() {
         if (!trackedRef.current) {
           trackedRef.current = true;
           trackPurchase({ id: data.id, order_number: data.order_number, total: data.total, items: data.items as any[] });
+          fbTrackPurchase({ id: data.id, total: data.total, items: data.items as any[] });
         }
       }
     });

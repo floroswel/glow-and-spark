@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { setPageMeta, setCanonical, removeCanonical } from "@/lib/seo";
 import { trackViewItem, trackAddToCart } from "@/lib/gtm";
+import { trackViewContent, trackAddToCart as fbTrackAddToCart } from "@/lib/fbpixel";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -399,6 +400,7 @@ function ProductPage() {
           const cat = data.categories as any;
           setCategory(cat);
           trackViewItem({ id: data.id, name: data.name, price: data.price, slug: data.slug, category: cat?.name });
+          trackViewContent({ id: data.id, name: data.name, price: data.price, category: cat?.name });
           // Fetch related, variants, reviews in parallel
           Promise.all([
             cat?.id
@@ -481,6 +483,7 @@ function ProductPage() {
     };
     addItem(cartItem, quantity);
     trackAddToCart({ id: product.id, name: cartItem.name, price: cartItem.price }, quantity);
+    fbTrackAddToCart({ id: product.id, name: cartItem.name, price: cartItem.price }, quantity);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };

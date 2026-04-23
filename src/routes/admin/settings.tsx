@@ -48,6 +48,7 @@ const defaults = {
   company_cui: "",
   company_address: "",
   company_city: "",
+  company_caen: "",
   free_shipping_threshold: "150",
   // Legal pages
   terms_page_slug: "termeni-si-conditii",
@@ -295,6 +296,7 @@ function AdminSettings() {
                   <Field label="Nr. Reg. Comerțului"><TextInput value={s.reg_com} onChange={(v) => u("reg_com", v)} /></Field>
                   <Field label="Adresă sediu"><TextInput value={s.company_address} onChange={(v) => u("company_address", v)} /></Field>
                   <Field label="Oraș / Județ"><TextInput value={s.company_city} onChange={(v) => u("company_city", v)} /></Field>
+                  <Field label="Coduri CAEN (separate prin virgulă)"><TextArea value={s.company_caen} onChange={(v) => u("company_caen", v)} /></Field>
                   <Field label="Prag livrare gratuită (RON)"><TextInput value={s.free_shipping_threshold} onChange={(v) => u("free_shipping_threshold", v)} /></Field>
                 </div>
               </Section>

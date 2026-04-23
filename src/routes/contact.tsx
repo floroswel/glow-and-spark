@@ -7,7 +7,7 @@ import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronRight, Mail, Phone, MapPin, Clock, Send } from "lucide-react";
+import { ChevronRight, Mail, Phone, MapPin, Clock, Send, Building2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/contact")({
@@ -181,6 +181,23 @@ function ContactPage() {
                   <p className="text-sm text-muted-foreground">Sâmbătă: 10:00 - 14:00</p>
                 </div>
               </div>
+              {(general?.company_name || general?.company_cui || general?.company_caen) && (
+                <div className="flex items-start gap-3">
+                  <Building2 className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Date firmă</p>
+                    {general?.company_name && <p className="text-sm text-muted-foreground">{general.company_name}</p>}
+                    {general?.company_cui && <p className="text-sm text-muted-foreground">CUI: {general.company_cui}</p>}
+                    {general?.reg_com && <p className="text-sm text-muted-foreground">Reg. Com.: {general.reg_com}</p>}
+                    {general?.company_caen && (
+                      <div className="mt-1">
+                        <p className="text-xs font-medium text-muted-foreground">Coduri CAEN:</p>
+                        <p className="text-sm text-muted-foreground">{general.company_caen}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="rounded-2xl border border-border bg-card p-6">

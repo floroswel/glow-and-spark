@@ -82,7 +82,39 @@ function CartPage() {
     setCouponLoading(false);
   };
 
-  return (
+  const handleApplyGiftCard = async () => {
+    if (!giftCardInput.trim()) return;
+    setGiftCardLoading(true);
+    setGiftCardError("");
+    setGiftCardSuccess("");
+
+    const { data: settingsRow } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "gift_cards")
+      .maybeSingle();
+
+    const cards: any[] = settingsRow?.value && Array.isArray(settingsRow.value) ? settingsRow.value : [];
+    const card = cards.find(
+      (c: any) => c.code?.toUpperCase() === giftCardInput.trim().toUpperCase() && c.status === "active" && Number(c.balance) > 0
+    );
+
+    if (!card) {
+      setGiftCardError("Cod invalid sau card cadou epuizat.");
+      setGiftCardLoading(false);
+      return;
+    }
+
+    const amount = Math.min(Number(card.balance), cartSubtotal);
+    applyDiscount(card.code, amount);
+    setGiftCardCode(card.code);
+    // Store in sessionStorage so checkout can read it
+    try { sessionStorage.setItem("gift_card_code", card.code); sessionStorage.setItem("gift_card_amount", String(amount)); } catch {}
+    setGiftCardSuccess(`Card cadou aplicat: -${amount.toFixed(2)} RON`);
+    setGiftCardLoading(false);
+  };
+
+
     <div className="min-h-screen">
       <MarqueeBanner />
       <TopBar />

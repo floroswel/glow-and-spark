@@ -7,7 +7,7 @@ import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronRight, Mail, Phone, MapPin, Clock, Send, Building2 } from "lucide-react";
+import { ChevronRight, Mail, Phone, MapPin, Clock, Send, Building2, FileText, ExternalLink, Shield } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/contact")({
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
-  const { general } = useSiteSettings();
+  const { general, footer } = useSiteSettings();
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
   const [sending, setSending] = useState(false);
 
@@ -52,6 +52,20 @@ function ContactPage() {
     }
   };
 
+  // Parse CAEN codes - support "code - description" format, one per line or comma-separated
+  const caenCodes: string[] = general?.company_caen
+    ? general.company_caen
+        .split(/[\n,]+/)
+        .map((c: string) => c.trim())
+        .filter(Boolean)
+    : [];
+
+  // Company documents from footer settings
+  const companyDocs: { name: string; url: string }[] = footer?.company_documents || [];
+  const showDocs = footer?.show_company_documents && companyDocs.length > 0;
+
+  const hasCompanyInfo = general?.company_name || general?.company_cui || general?.reg_com || caenCodes.length > 0 || showDocs;
+
   return (
     <div className="min-h-screen">
       <MarqueeBanner />
@@ -64,6 +78,64 @@ function ContactPage() {
           <ChevronRight className="h-3.5 w-3.5" />
           <span className="text-foreground font-medium">Contact</span>
         </nav>
+
+        {/* ANPC / Legal compliance section - inspired by bitmi.ro */}
+        {hasCompanyInfo && (
+          <div className="mb-10 rounded-2xl border border-border bg-card p-6 md:p-8">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Conform Ordinului ANPC 225/2023 privind informarea consumatorilor de către operatorii economici care desfășoară activitate în mediul online, vă punem la dispoziție următoarele documente și informații:
+            </p>
+
+            {/* Company documents - certificates */}
+            {showDocs && (
+              <div className="mt-5">
+                <ul className="space-y-2">
+                  {companyDocs.map((doc, i) => (
+                    <li key={i} className="flex items-center gap-2 text-sm">
+                      <FileText className="h-4 w-4 text-accent shrink-0" />
+                      <span className="text-foreground">{doc.name}, click</span>
+                      <a
+                        href={doc.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-accent hover:underline inline-flex items-center gap-1"
+                      >
+                        AICI
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* CAEN Codes */}
+            {caenCodes.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-sm font-semibold text-foreground mb-2">Coduri CAEN:</h3>
+                <ul className="space-y-1.5">
+                  {caenCodes.map((code, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
+                      {code}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Company data summary */}
+            {(general?.company_name || general?.company_cui) && (
+              <div className="mt-6 pt-4 border-t border-border flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
+                {general?.company_name && <span>{general.company_name}</span>}
+                {general?.company_cui && <span>CUI: {general.company_cui}</span>}
+                {general?.reg_com && <span>Reg. Com.: {general.reg_com}</span>}
+                {general?.company_address && <span>{general.company_address}</span>}
+                {general?.company_city && <span>{general.company_city}</span>}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
           {/* Form */}
@@ -148,57 +220,69 @@ function ContactPage() {
             </form>
           </div>
 
-          {/* Info */}
+          {/* Info sidebar */}
           <div className="space-y-6">
+            {/* Support info */}
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h2 className="font-heading text-lg font-bold text-foreground mb-1">Suport clienți</h2>
+              <p className="text-sm text-muted-foreground mb-5">
+                {general?.contact_schedule || "De Luni până Vineri în intervalul orar 09:00 - 17:30"}. Timp maxim de răspuns pentru email: 1 zi lucrătoare.
+              </p>
+            </div>
+
+            {/* Contact details */}
             <div className="rounded-2xl border border-border bg-card p-6 space-y-5">
               <h2 className="font-heading text-xl font-bold text-foreground">Informații de contact</h2>
               <div className="flex items-start gap-3">
                 <Mail className="h-5 w-5 text-accent mt-0.5 shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Email</p>
-                  <p className="text-sm text-muted-foreground">{general?.contact_email || "contact@lumini.ro"}</p>
+                  <a href={`mailto:${general?.contact_email || "contact@lumini.ro"}`} className="text-sm text-accent hover:underline">
+                    {general?.contact_email || "contact@lumini.ro"}
+                  </a>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <Phone className="h-5 w-5 text-accent mt-0.5 shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Telefon</p>
-                  <p className="text-sm text-muted-foreground">{general?.contact_phone || "0770 123 456"}</p>
+                  <a href={`tel:${general?.contact_phone || ""}`} className="text-sm text-accent hover:underline">
+                    {general?.contact_phone || "0770 123 456"}
+                  </a>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-accent mt-0.5 shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Adresă</p>
-                  <p className="text-sm text-muted-foreground">{general?.address || "București, România"}</p>
+                  <p className="text-sm text-muted-foreground">{general?.contact_address || "România"}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <Clock className="h-5 w-5 text-accent mt-0.5 shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Program</p>
-                  <p className="text-sm text-muted-foreground">Luni - Vineri: 09:00 - 18:00</p>
-                  <p className="text-sm text-muted-foreground">Sâmbătă: 10:00 - 14:00</p>
+                  <p className="text-sm text-muted-foreground">{general?.contact_schedule || "Luni - Vineri: 09:00 - 18:00"}</p>
                 </div>
               </div>
-              {(general?.company_name || general?.company_cui || general?.company_caen) && (
-                <div className="flex items-start gap-3">
-                  <Building2 className="h-5 w-5 text-accent mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Date firmă</p>
-                    {general?.company_name && <p className="text-sm text-muted-foreground">{general.company_name}</p>}
-                    {general?.company_cui && <p className="text-sm text-muted-foreground">CUI: {general.company_cui}</p>}
-                    {general?.reg_com && <p className="text-sm text-muted-foreground">Reg. Com.: {general.reg_com}</p>}
-                    {general?.company_caen && (
-                      <div className="mt-1">
-                        <p className="text-xs font-medium text-muted-foreground">Coduri CAEN:</p>
-                        <p className="text-sm text-muted-foreground">{general.company_caen}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
+
+            {/* Company info card */}
+            {(general?.company_name || general?.company_cui) && (
+              <div className="rounded-2xl border border-border bg-card p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Building2 className="h-5 w-5 text-accent" />
+                  <h3 className="font-semibold text-foreground">Date societate</h3>
+                </div>
+                <div className="space-y-1.5 text-sm text-muted-foreground">
+                  {general?.company_name && <p className="font-medium text-foreground">{general.company_name}</p>}
+                  {general?.company_cui && <p>CUI: {general.company_cui}</p>}
+                  {general?.reg_com && <p>Reg. Com.: {general.reg_com}</p>}
+                  {general?.company_address && <p>{general.company_address}</p>}
+                  {general?.company_city && <p>{general.company_city}</p>}
+                </div>
+              </div>
+            )}
 
             <div className="rounded-2xl border border-border bg-card p-6">
               <h3 className="font-semibold text-foreground mb-3">Întrebări frecvente</h3>

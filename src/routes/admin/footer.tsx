@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminSettingsEditor, Section, Field, TextInput, Toggle, ColorInput } from "@/components/admin/AdminSettingsEditor";
-import { Plus, Trash2, Upload } from "lucide-react";
-import { useState } from "react";
+import { Plus, Trash2, Upload, CheckCircle2, XCircle, AlertTriangle, RefreshCw, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export const Route = createFileRoute("/admin/footer")({
   component: AdminFooter,

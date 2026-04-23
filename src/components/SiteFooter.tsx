@@ -206,6 +206,7 @@ export function SiteFooter() {
     { label: "Termeni și condiții", url: "/page/termeni-si-conditii" },
     { label: "Politica de Confidențialitate", url: "/page/politica-confidentialitate" },
     { label: "Politica Cookie-uri", url: "/politica-cookies" },
+    { label: "Politică de returnare", url: "/politica-returnare" },
     { label: "Contact", url: "/contact" },
     { label: "Card Cadou", url: "/gift-card" },
   ];

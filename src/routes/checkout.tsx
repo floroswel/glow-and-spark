@@ -428,6 +428,7 @@ function CheckoutPage() {
               {giftWrapping && <div className="flex justify-between"><span className="text-muted-foreground">Ambalaj cadou</span><span>{giftWrappingPrice.toFixed(2)} RON</span></div>}
               <div className="flex justify-between border-t border-border pt-2 text-base font-bold"><span>Total</span><span>{finalTotal.toFixed(2)} RON</span></div>
             </div>
+            <TrustBadges variant="full" />
           </div>
         </div>
       </div>

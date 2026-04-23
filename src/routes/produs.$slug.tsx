@@ -616,6 +616,8 @@ function ProductPage() {
               </button>
             </div>
 
+            <TrustBadges variant="compact" />
+
             {/* Action buttons */}
             <div className="mt-4 flex items-center gap-3">
               <button

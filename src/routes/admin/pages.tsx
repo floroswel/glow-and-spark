@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { FileText, Plus, Trash2, Pencil, Eye, EyeOff } from "lucide-react";
+import { FileText, Plus, Trash2, Pencil, Eye, EyeOff, Download, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/pages")({
   component: AdminPages,

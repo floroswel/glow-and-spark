@@ -54,6 +54,16 @@ function CartPage() {
       setCouponLoading(false);
       return;
     }
+    if (data.expires_at && new Date(data.expires_at) < new Date()) {
+      setCouponError("Cuponul a expirat.");
+      setCouponLoading(false);
+      return;
+    }
+    if ((data as any).starts_at && new Date((data as any).starts_at) > new Date()) {
+      setCouponError("Cuponul nu este încă activ.");
+      setCouponLoading(false);
+      return;
+    }
     const amount = data.type === "percent" ? (cartSubtotal * Number(data.value)) / 100 : Number(data.value);
     applyDiscount(data.code, Math.min(amount, cartSubtotal));
 

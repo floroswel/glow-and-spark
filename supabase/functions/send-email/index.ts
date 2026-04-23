@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,10 +7,37 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
 };
 
-const SITE_NAME = "Lumini.ro";
-const SITE_URL = "https://glow-and-spark.lovable.app";
+interface SiteConfig {
+  SITE_NAME: string;
+  SITE_URL: string;
+  FROM_EMAIL: string;
+  CONTACT_EMAIL: string;
+  ORDER_EMAIL_NOTIFICATIONS: boolean;
+}
 
-function orderConfirmationTemplate(data: any): { subject: string; html: string } {
+async function fetchSiteConfig(): Promise<SiteConfig> {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
+
+  const { data: settingsRow } = await supabaseAdmin
+    .from("site_settings")
+    .select("value")
+    .eq("key", "general")
+    .single();
+
+  const v = settingsRow?.value as Record<string, any> | null;
+
+  return {
+    SITE_NAME: v?.site_name || "Glow & Spark",
+    SITE_URL: v?.site_url || "https://glow-and-spark.lovable.app",
+    FROM_EMAIL: v?.smtp_from_email || "comenzi@glowandspark.ro",
+    CONTACT_EMAIL: v?.contact_email || "",
+    ORDER_EMAIL_NOTIFICATIONS: v?.order_email_notifications === true,
+  };
+}
+
+function orderConfirmationTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
   const items = (data.items || [])
     .map((i: any) => `<tr><td style="padding:8px;border-bottom:1px solid #eee">${i.name}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center">${i.qty}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right">${(i.price * i.qty).toFixed(2)} RON</td></tr>`)
     .join("");
@@ -19,7 +47,7 @@ function orderConfirmationTemplate(data: any): { subject: string; html: string }
     html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
       <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
         <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center">
-          <h1 style="margin:0;font-size:22px">🕯️ ${SITE_NAME}</h1>
+          <h1 style="margin:0;font-size:22px">🕯️ ${cfg.SITE_NAME}</h1>
         </div>
         <div style="padding:24px">
           <h2 style="color:#1a1a1a;margin-top:0">Comanda #${data.orderNumber} a fost confirmată!</h2>
@@ -38,45 +66,45 @@ function orderConfirmationTemplate(data: any): { subject: string; html: string }
             <p style="margin:0;color:#555">${data.customer_name}<br>${data.shipping_address}<br>${data.city}, ${data.county} ${data.postal_code || ""}</p>
             <p style="margin:8px 0 0;color:#555">📞 ${data.customer_phone || "—"}<br>📧 ${data.customer_email}</p>
           </div>
-          <p style="color:#555;font-size:14px">Poți urmări comanda accesând <a href="${SITE_URL}/track-order" style="color:#c9a84c">pagina de urmărire</a>.</p>
+          <p style="color:#555;font-size:14px">Poți urmări comanda accesând <a href="${cfg.SITE_URL}/track-order" style="color:#c9a84c">pagina de urmărire</a>.</p>
         </div>
         <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
-          © ${new Date().getFullYear()} ${SITE_NAME}. Toate drepturile rezervate.
+          © ${new Date().getFullYear()} ${cfg.SITE_NAME}. Toate drepturile rezervate.
         </div>
       </div>
     </body></html>`,
   };
 }
 
-function welcomeTemplate(data: any): { subject: string; html: string } {
+function welcomeTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
   return {
-    subject: `Bun venit la ${SITE_NAME}! 🕯️`,
+    subject: `Bun venit la ${cfg.SITE_NAME}! 🕯️`,
     html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
       <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
         <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center">
-          <h1 style="margin:0;font-size:22px">🕯️ ${SITE_NAME}</h1>
+          <h1 style="margin:0;font-size:22px">🕯️ ${cfg.SITE_NAME}</h1>
         </div>
         <div style="padding:24px">
           <h2 style="color:#1a1a1a;margin-top:0">Bun venit${data.name ? `, ${data.name}` : ""}! 🎉</h2>
-          <p style="color:#555">Ne bucurăm că te-ai alăturat comunității ${SITE_NAME}.</p>
+          <p style="color:#555">Ne bucurăm că te-ai alăturat comunității ${cfg.SITE_NAME}.</p>
           ${data.discountCode ? `<div style="background:#fef9e7;border:2px dashed #c9a84c;border-radius:8px;padding:16px;text-align:center;margin:16px 0"><p style="margin:0 0 4px;color:#555">Cod reducere pentru prima comandă:</p><p style="margin:0;font-size:24px;font-weight:bold;color:#c9a84c;letter-spacing:2px">${data.discountCode}</p></div>` : ""}
-          <a href="${SITE_URL}" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:16px 0">Vizitează magazinul</a>
+          <a href="${cfg.SITE_URL}" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:16px 0">Vizitează magazinul</a>
         </div>
         <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
-          © ${new Date().getFullYear()} ${SITE_NAME}
+          © ${new Date().getFullYear()} ${cfg.SITE_NAME}
         </div>
       </div>
     </body></html>`,
   };
 }
 
-function passwordResetTemplate(data: any): { subject: string; html: string } {
+function passwordResetTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
   return {
-    subject: `Resetare parolă — ${SITE_NAME}`,
+    subject: `Resetare parolă — ${cfg.SITE_NAME}`,
     html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
       <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
         <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center">
-          <h1 style="margin:0;font-size:22px">🕯️ ${SITE_NAME}</h1>
+          <h1 style="margin:0;font-size:22px">🕯️ ${cfg.SITE_NAME}</h1>
         </div>
         <div style="padding:24px">
           <h2 style="color:#1a1a1a;margin-top:0">Resetare parolă</h2>
@@ -89,7 +117,7 @@ function passwordResetTemplate(data: any): { subject: string; html: string } {
   };
 }
 
-function orderStatusUpdateTemplate(data: any): { subject: string; html: string } {
+function orderStatusUpdateTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
   const statusMap: Record<string, string> = {
     processing: "În procesare",
     shipped: "Expediată",
@@ -101,7 +129,7 @@ function orderStatusUpdateTemplate(data: any): { subject: string; html: string }
     html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
       <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
         <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center">
-          <h1 style="margin:0;font-size:22px">🕯️ ${SITE_NAME}</h1>
+          <h1 style="margin:0;font-size:22px">🕯️ ${cfg.SITE_NAME}</h1>
         </div>
         <div style="padding:24px">
           <h2 style="color:#1a1a1a;margin-top:0">Actualizare comandă #${data.orderNumber}</h2>
@@ -109,20 +137,20 @@ function orderStatusUpdateTemplate(data: any): { subject: string; html: string }
             <p style="margin:0;font-size:18px;font-weight:bold;color:#1a1a1a">${statusMap[data.status] || data.status}</p>
           </div>
           ${data.trackingNumber ? `<p style="color:#555">Număr AWB: <strong>${data.trackingNumber}</strong></p>` : ""}
-          <a href="${SITE_URL}/track-order" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:16px 0">Urmărește comanda</a>
+          <a href="${cfg.SITE_URL}/track-order" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:16px 0">Urmărește comanda</a>
         </div>
       </div>
     </body></html>`,
   };
 }
 
-function orderShippedTemplate(data: any): { subject: string; html: string } {
+function orderShippedTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
   return {
     subject: `Comanda #${data.orderNumber} a fost expediată! 📦`,
     html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
       <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
         <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center">
-          <h1 style="margin:0;font-size:22px">🕯️ ${SITE_NAME}</h1>
+          <h1 style="margin:0;font-size:22px">🕯️ ${cfg.SITE_NAME}</h1>
         </div>
         <div style="padding:24px">
           <h2 style="color:#1a1a1a;margin-top:0">📦 Comanda ta a fost expediată!</h2>
@@ -135,23 +163,23 @@ function orderShippedTemplate(data: any): { subject: string; html: string } {
             <p style="margin:8px 0 0;color:#555;font-size:13px">Curierul te va contacta telefonic înainte de livrare.</p>
           </div>
           <p style="color:#555;font-size:14px;margin-top:16px"><strong>Total comandă:</strong> ${Number(data.total || 0).toFixed(2)} RON</p>
-          <a href="${SITE_URL}/track-order" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:16px 0">Urmărește comanda</a>
+          <a href="${cfg.SITE_URL}/track-order" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:16px 0">Urmărește comanda</a>
         </div>
         <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
-          © ${new Date().getFullYear()} ${SITE_NAME}. Toate drepturile rezervate.
+          © ${new Date().getFullYear()} ${cfg.SITE_NAME}. Toate drepturile rezervate.
         </div>
       </div>
     </body></html>`,
   };
 }
 
-function orderCompletedTemplate(data: any): { subject: string; html: string } {
+function orderCompletedTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
   return {
     subject: `Comanda #${data.orderNumber} a fost finalizată! ✨`,
     html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
       <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
         <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center">
-          <h1 style="margin:0;font-size:22px">🕯️ ${SITE_NAME}</h1>
+          <h1 style="margin:0;font-size:22px">🕯️ ${cfg.SITE_NAME}</h1>
         </div>
         <div style="padding:24px">
           <h2 style="color:#1a1a1a;margin-top:0">✨ Mulțumim pentru comanda ta!</h2>
@@ -161,20 +189,20 @@ function orderCompletedTemplate(data: any): { subject: string; html: string } {
           <div style="background:#fef9e7;border:2px dashed #c9a84c;border-radius:8px;padding:20px;text-align:center;margin:20px 0">
             <p style="margin:0 0 8px;color:#1a1a1a;font-size:16px;font-weight:bold">⭐ Lasă o recenzie!</p>
             <p style="margin:0 0 12px;color:#555;font-size:14px">Părerea ta ne ajută să ne îmbunătățim și ajută alți clienți să aleagă.</p>
-            <a href="${SITE_URL}" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:10px 28px;border-radius:8px;font-weight:bold;font-size:14px">Scrie o recenzie</a>
+            <a href="${cfg.SITE_URL}" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:10px 28px;border-radius:8px;font-weight:bold;font-size:14px">Scrie o recenzie</a>
           </div>
           <p style="color:#555;font-size:14px">Dacă ai nevoie de ajutor sau ai întrebări, nu ezita să ne contactezi.</p>
-          <a href="${SITE_URL}/contact" style="display:inline-block;background:#1a1a1a;color:#fff;text-decoration:none;padding:10px 28px;border-radius:8px;font-weight:bold;font-size:14px;margin:8px 0">Contactează-ne</a>
+          <a href="${cfg.SITE_URL}/contact" style="display:inline-block;background:#1a1a1a;color:#fff;text-decoration:none;padding:10px 28px;border-radius:8px;font-weight:bold;font-size:14px;margin:8px 0">Contactează-ne</a>
         </div>
         <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
-          © ${new Date().getFullYear()} ${SITE_NAME}. Toate drepturile rezervate.
+          © ${new Date().getFullYear()} ${cfg.SITE_NAME}. Toate drepturile rezervate.
         </div>
       </div>
     </body></html>`,
   };
 }
 
-function returnRequestTemplate(data: any): { subject: string; html: string } {
+function returnRequestTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
   const itemsList = (data.items || [])
     .map((i: any) => `<li style="padding:4px 0;color:#555">${i.name} × ${i.quantity || i.qty || 1}</li>`)
     .join("");
@@ -196,27 +224,27 @@ function returnRequestTemplate(data: any): { subject: string; html: string } {
           ${data.details ? `<p style="color:#555;margin:0 0 16px;background:#fef2f2;border-radius:8px;padding:12px">${data.details}</p>` : ""}
           <p style="color:#1a1a1a;font-weight:bold;margin:16px 0 4px">Produse solicitate:</p>
           <ul style="margin:0;padding-left:20px">${itemsList}</ul>
-          <a href="${SITE_URL}/admin/returns" style="display:inline-block;background:#dc2626;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:20px 0 0">Gestionează returul</a>
+          <a href="${cfg.SITE_URL}/admin/returns" style="display:inline-block;background:#dc2626;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:20px 0 0">Gestionează returul</a>
         </div>
         <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
-          © ${new Date().getFullYear()} ${SITE_NAME}
+          © ${new Date().getFullYear()} ${cfg.SITE_NAME}
         </div>
       </div>
     </body></html>`,
   };
 }
 
-function cartRecoveryTemplate(data: any): { subject: string; html: string } {
+function cartRecoveryTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
   const itemsList = (data.items || [])
     .map((i: any) => `<tr><td style="padding:8px;border-bottom:1px solid #eee">${i.name}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center">${i.quantity || 1}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right">${(i.price * (i.quantity || 1)).toFixed(2)} RON</td></tr>`)
     .join("");
 
   return {
-    subject: `Ai uitat ceva în coș! 🛒 — ${SITE_NAME}`,
+    subject: `Ai uitat ceva în coș! 🛒 — ${cfg.SITE_NAME}`,
     html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
       <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
         <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center">
-          <h1 style="margin:0;font-size:22px">🕯️ ${SITE_NAME}</h1>
+          <h1 style="margin:0;font-size:22px">🕯️ ${cfg.SITE_NAME}</h1>
         </div>
         <div style="padding:24px">
           <h2 style="color:#1a1a1a;margin-top:0">Ai uitat ceva în coș! 🛒</h2>
@@ -229,19 +257,41 @@ function cartRecoveryTemplate(data: any): { subject: string; html: string } {
             <p style="font-size:18px;font-weight:bold;color:#1a1a1a">Total: ${Number(data.total || 0).toFixed(2)} RON</p>
           </div>
           <div style="text-align:center;margin:24px 0">
-            <a href="${SITE_URL}/cart" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:14px 36px;border-radius:8px;font-weight:bold;font-size:16px">Finalizează comanda</a>
+            <a href="${cfg.SITE_URL}/cart" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:14px 36px;border-radius:8px;font-weight:bold;font-size:16px">Finalizează comanda</a>
           </div>
           <p style="color:#999;font-size:13px;text-align:center">Dacă ai finalizat deja comanda, ignoră acest email.</p>
         </div>
         <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
-          © ${new Date().getFullYear()} ${SITE_NAME}. Toate drepturile rezervate.
+          © ${new Date().getFullYear()} ${cfg.SITE_NAME}. Toate drepturile rezervate.
         </div>
       </div>
     </body></html>`,
   };
 }
 
-const templates: Record<string, (data: any) => { subject: string; html: string }> = {
+function accountDeletionRequestTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
+  return {
+    subject: `⚠️ Cerere ștergere cont — ${data.email}`,
+    html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+        <div style="background:#dc2626;color:#fff;padding:24px;text-align:center">
+          <h1 style="margin:0;font-size:22px">⚠️ Cerere Ștergere Cont</h1>
+        </div>
+        <div style="padding:24px">
+          <p style="color:#555"><strong>Email:</strong> ${data.email}</p>
+          <p style="color:#555"><strong>User ID:</strong> ${data.userId}</p>
+          <p style="color:#555"><strong>Data cererii:</strong> ${new Date().toLocaleString("ro-RO")}</p>
+          <p style="color:#dc2626;font-weight:bold;margin-top:16px">Contul trebuie șters în maximum 30 de zile conform GDPR.</p>
+        </div>
+        <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
+          © ${new Date().getFullYear()} ${cfg.SITE_NAME}
+        </div>
+      </div>
+    </body></html>`,
+  };
+}
+
+const templateMap: Record<string, (data: any, cfg: SiteConfig) => { subject: string; html: string }> = {
   order_confirmation: orderConfirmationTemplate,
   welcome: welcomeTemplate,
   password_reset: passwordResetTemplate,
@@ -250,6 +300,7 @@ const templates: Record<string, (data: any) => { subject: string; html: string }
   order_completed: orderCompletedTemplate,
   return_request: returnRequestTemplate,
   cart_recovery: cartRecoveryTemplate,
+  account_deletion_request: accountDeletionRequestTemplate,
 };
 
 serve(async (req) => {
@@ -263,6 +314,9 @@ serve(async (req) => {
       throw new Error("RESEND_API_KEY not configured");
     }
 
+    // Fetch site configuration from database
+    const cfg = await fetchSiteConfig();
+
     const { type, to, data } = await req.json();
     console.log(`[send-email] type=${type}, to=${to}`);
 
@@ -273,7 +327,7 @@ serve(async (req) => {
       });
     }
 
-    const templateFn = templates[type];
+    const templateFn = templateMap[type];
     if (!templateFn) {
       return new Response(JSON.stringify({ error: `Unknown template: ${type}` }), {
         status: 400,
@@ -281,8 +335,9 @@ serve(async (req) => {
       });
     }
 
-    const { subject, html } = templateFn(data || {});
+    const { subject, html } = templateFn(data || {}, cfg);
 
+    // Send the primary email
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -290,7 +345,7 @@ serve(async (req) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: `${SITE_NAME} <noreply@onboarding.resend.dev>`,
+        from: `${cfg.SITE_NAME} <${cfg.FROM_EMAIL}>`,
         to: [to],
         subject,
         html,
@@ -305,6 +360,28 @@ serve(async (req) => {
         status: res.status,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    // For order confirmations, send a notification copy to the admin contact email
+    if (type === "order_confirmation" && cfg.ORDER_EMAIL_NOTIFICATIONS && cfg.CONTACT_EMAIL) {
+      try {
+        await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${RESEND_API_KEY}`,
+          },
+          body: JSON.stringify({
+            from: `${cfg.SITE_NAME} <${cfg.FROM_EMAIL}>`,
+            to: [cfg.CONTACT_EMAIL],
+            subject: `[Admin] ${subject}`,
+            html,
+          }),
+        });
+        console.log(`[send-email] Admin notification sent to ${cfg.CONTACT_EMAIL}`);
+      } catch (err) {
+        console.error(`[send-email] Failed to send admin copy:`, err);
+      }
     }
 
     return new Response(JSON.stringify({ success: true, id: result.id }), {

@@ -207,6 +207,7 @@ export function SiteFooter() {
     { label: "Politica de Confidențialitate", url: "/page/politica-confidentialitate" },
     { label: "Politica Cookie-uri", url: "/politica-cookies" },
     { label: "Contact", url: "/contact" },
+    { label: "Card Cadou", url: "/gift-card" },
   ];
 
   const col2Links = footer?.col2_links?.length > 0 ? footer.col2_links : [

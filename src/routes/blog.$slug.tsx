@@ -23,6 +23,7 @@ function BlogPostPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setCanonical(window.location.origin + "/blog/" + slug);
     supabase
       .from("blog_posts")
       .select("*")
@@ -41,6 +42,7 @@ function BlogPostPage() {
           });
         }
       });
+    return () => removeCanonical();
   }, [slug]);
 
   if (loading) {

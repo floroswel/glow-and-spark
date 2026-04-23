@@ -28,6 +28,7 @@ function CategoryPage() {
 
   useEffect(() => {
     setLoading(true);
+    setCanonical(window.location.origin + "/categorie/" + slug);
     supabase
       .from("categories")
       .select("*")
@@ -52,6 +53,7 @@ function CategoryPage() {
           setLoading(false);
         }
       });
+    return () => removeCanonical();
   }, [slug]);
 
   return (

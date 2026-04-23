@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { setPageMeta } from "@/lib/seo";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { TopBar } from "@/components/TopBar";
@@ -35,7 +36,7 @@ function BlogPostPage() {
           setPageMeta({
             title: data.meta_title || data.title,
             description: data.meta_description || data.excerpt || "",
-            image: data.cover_image || undefined,
+            image: data.image_url || undefined,
             type: "article",
           });
         }

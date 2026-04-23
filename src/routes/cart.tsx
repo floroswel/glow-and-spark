@@ -114,7 +114,7 @@ function CartPage() {
     setGiftCardLoading(false);
   };
 
-
+  return (
     <div className="min-h-screen">
       <MarqueeBanner />
       <TopBar />

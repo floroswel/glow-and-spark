@@ -85,6 +85,7 @@ function RootComponent() {
                 <Outlet />
               </div>
               <MobileBottomNav />
+              <ExitIntentPopup />
             </CompareProvider>
           </FavoritesProvider>
         </CartProvider>

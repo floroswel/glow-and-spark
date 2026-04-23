@@ -174,6 +174,38 @@ function orderCompletedTemplate(data: any): { subject: string; html: string } {
   };
 }
 
+function returnRequestTemplate(data: any): { subject: string; html: string } {
+  const itemsList = (data.items || [])
+    .map((i: any) => `<li style="padding:4px 0;color:#555">${i.name} × ${i.quantity || i.qty || 1}</li>`)
+    .join("");
+
+  return {
+    subject: `⚠️ Cerere retur — Comanda #${data.orderNumber}`,
+    html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+        <div style="background:#dc2626;color:#fff;padding:24px;text-align:center">
+          <h1 style="margin:0;font-size:22px">↩️ Cerere de Retur</h1>
+        </div>
+        <div style="padding:24px">
+          <h2 style="color:#1a1a1a;margin-top:0">Comanda #${data.orderNumber}</h2>
+          <div style="background:#f9f9f9;border-radius:8px;padding:16px;margin:12px 0">
+            <p style="margin:0 0 4px;color:#555"><strong>Client:</strong> ${data.customer_name}</p>
+            <p style="margin:0;color:#555"><strong>Email:</strong> ${data.customer_email}</p>
+          </div>
+          <p style="color:#1a1a1a;font-weight:bold;margin:16px 0 8px">Motiv: ${data.reason}</p>
+          ${data.details ? `<p style="color:#555;margin:0 0 16px;background:#fef2f2;border-radius:8px;padding:12px">${data.details}</p>` : ""}
+          <p style="color:#1a1a1a;font-weight:bold;margin:16px 0 4px">Produse solicitate:</p>
+          <ul style="margin:0;padding-left:20px">${itemsList}</ul>
+          <a href="${SITE_URL}/admin/returns" style="display:inline-block;background:#dc2626;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:20px 0 0">Gestionează returul</a>
+        </div>
+        <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
+          © ${new Date().getFullYear()} ${SITE_NAME}
+        </div>
+      </div>
+    </body></html>`,
+  };
+}
+
 const templates: Record<string, (data: any) => { subject: string; html: string }> = {
   order_confirmation: orderConfirmationTemplate,
   welcome: welcomeTemplate,

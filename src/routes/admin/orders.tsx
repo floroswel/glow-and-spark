@@ -176,6 +176,25 @@ function AdminOrders() {
     if (user) {
       await supabase.from("order_timeline").insert({ order_id: id, action: `Status schimbat: ${statusLabels[status] || status}`, performed_by: user.id });
     }
+
+    // Send email notification for shipped/completed
+    const order = orders.find((o) => o.id === id);
+    if (order && (status === "shipped" || status === "completed")) {
+      supabase.functions.invoke("send-email", {
+        body: {
+          type: status === "shipped" ? "order_shipped" : "order_completed",
+          to: order.customer_email,
+          data: {
+            orderNumber: order.order_number,
+            customer_name: order.customer_name,
+            customer_email: order.customer_email,
+            tracking_number: order.awb_number || null,
+            total: order.total,
+          },
+        },
+      }).catch(() => {});
+    }
+
     load();
     if (viewing?.id === id) setViewing({ ...viewing, status });
   };

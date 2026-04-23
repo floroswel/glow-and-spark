@@ -116,11 +116,71 @@ function orderStatusUpdateTemplate(data: any): { subject: string; html: string }
   };
 }
 
+function orderShippedTemplate(data: any): { subject: string; html: string } {
+  return {
+    subject: `Comanda #${data.orderNumber} a fost expediată! 📦`,
+    html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+        <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center">
+          <h1 style="margin:0;font-size:22px">🕯️ ${SITE_NAME}</h1>
+        </div>
+        <div style="padding:24px">
+          <h2 style="color:#1a1a1a;margin-top:0">📦 Comanda ta a fost expediată!</h2>
+          <p style="color:#555">Dragă ${data.customer_name || "client"},</p>
+          <p style="color:#555">Comanda <strong>#${data.orderNumber}</strong> a fost expediată și este în drum spre tine.</p>
+          ${data.tracking_number ? `<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:16px;margin:16px 0;text-align:center"><p style="margin:0 0 4px;color:#555;font-size:13px">Număr AWB:</p><p style="margin:0;font-size:20px;font-weight:bold;color:#0369a1;letter-spacing:1px">${data.tracking_number}</p></div>` : ""}
+          <div style="background:#f9f9f9;border-radius:8px;padding:16px;margin:16px 0">
+            <h3 style="margin:0 0 8px;color:#1a1a1a;font-size:15px">⏱️ Livrare estimată</h3>
+            <p style="margin:0;color:#555">Coletul va ajunge în <strong>24-48 ore lucrătoare</strong> de la expediere.</p>
+            <p style="margin:8px 0 0;color:#555;font-size:13px">Curierul te va contacta telefonic înainte de livrare.</p>
+          </div>
+          <p style="color:#555;font-size:14px;margin-top:16px"><strong>Total comandă:</strong> ${Number(data.total || 0).toFixed(2)} RON</p>
+          <a href="${SITE_URL}/track-order" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:16px 0">Urmărește comanda</a>
+        </div>
+        <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
+          © ${new Date().getFullYear()} ${SITE_NAME}. Toate drepturile rezervate.
+        </div>
+      </div>
+    </body></html>`,
+  };
+}
+
+function orderCompletedTemplate(data: any): { subject: string; html: string } {
+  return {
+    subject: `Comanda #${data.orderNumber} a fost finalizată! ✨`,
+    html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+        <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center">
+          <h1 style="margin:0;font-size:22px">🕯️ ${SITE_NAME}</h1>
+        </div>
+        <div style="padding:24px">
+          <h2 style="color:#1a1a1a;margin-top:0">✨ Mulțumim pentru comanda ta!</h2>
+          <p style="color:#555">Dragă ${data.customer_name || "client"},</p>
+          <p style="color:#555">Comanda <strong>#${data.orderNumber}</strong> a fost finalizată cu succes. Sperăm că ești mulțumit(ă) de produsele noastre!</p>
+          <p style="color:#555;font-size:14px"><strong>Total comandă:</strong> ${Number(data.total || 0).toFixed(2)} RON</p>
+          <div style="background:#fef9e7;border:2px dashed #c9a84c;border-radius:8px;padding:20px;text-align:center;margin:20px 0">
+            <p style="margin:0 0 8px;color:#1a1a1a;font-size:16px;font-weight:bold">⭐ Lasă o recenzie!</p>
+            <p style="margin:0 0 12px;color:#555;font-size:14px">Părerea ta ne ajută să ne îmbunătățim și ajută alți clienți să aleagă.</p>
+            <a href="${SITE_URL}" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:10px 28px;border-radius:8px;font-weight:bold;font-size:14px">Scrie o recenzie</a>
+          </div>
+          <p style="color:#555;font-size:14px">Dacă ai nevoie de ajutor sau ai întrebări, nu ezita să ne contactezi.</p>
+          <a href="${SITE_URL}/contact" style="display:inline-block;background:#1a1a1a;color:#fff;text-decoration:none;padding:10px 28px;border-radius:8px;font-weight:bold;font-size:14px;margin:8px 0">Contactează-ne</a>
+        </div>
+        <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
+          © ${new Date().getFullYear()} ${SITE_NAME}. Toate drepturile rezervate.
+        </div>
+      </div>
+    </body></html>`,
+  };
+}
+
 const templates: Record<string, (data: any) => { subject: string; html: string }> = {
   order_confirmation: orderConfirmationTemplate,
   welcome: welcomeTemplate,
   password_reset: passwordResetTemplate,
   order_status_update: orderStatusUpdateTemplate,
+  order_shipped: orderShippedTemplate,
+  order_completed: orderCompletedTemplate,
 };
 
 serve(async (req) => {

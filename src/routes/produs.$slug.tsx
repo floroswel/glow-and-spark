@@ -326,6 +326,7 @@ function ProductPage() {
   const addToCartRef = useRef<HTMLButtonElement>(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [countdown, setCountdown] = useState<{ d: number; h: number; m: number; s: number } | null>(null);
+  const [viewerCount, setViewerCount] = useState(0);
 
   useEffect(() => {
     const el = addToCartRef.current;
@@ -360,6 +361,23 @@ function ProductPage() {
     const id = setInterval(() => { if (!tick()) clearInterval(id); }, 1000);
     return () => clearInterval(id);
   }, [product?.countdown_end, slug]);
+
+  // Real-time viewers presence
+  useEffect(() => {
+    if (!product?.id) return;
+    const channel = supabase.channel(`product:${product.id}`, { config: { presence: { key: crypto.randomUUID() } } });
+    channel
+      .on("presence", { event: "sync" }, () => {
+        const count = Object.keys(channel.presenceState()).length;
+        setViewerCount(Math.min(count, 12));
+      })
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          await channel.track({ online_at: new Date().toISOString() });
+        }
+      });
+    return () => { supabase.removeChannel(channel); };
+  }, [product?.id]);
 
   useEffect(() => {
     setLoading(true);
@@ -593,6 +611,19 @@ function ProductPage() {
           {/* Info */}
           <div>
             <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground">{product.name}</h1>
+            <div className="mt-1.5 flex flex-wrap items-center gap-3">
+              {product.sold_count > 10 && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-chart-2">
+                  <Check className="h-3.5 w-3.5" /> Vândut de {product.sold_count}+ ori
+                </span>
+              )}
+              {viewerCount >= 2 && (
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-accent">
+                  <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-accent" /></span>
+                  {viewerCount} persoane văd acest produs acum
+                </span>
+              )}
+            </div>
             {product.short_description && (
               <p className="mt-2 text-muted-foreground">{product.short_description}</p>
             )}

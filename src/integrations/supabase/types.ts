@@ -904,6 +904,7 @@ export type Database = {
           short_description: string | null
           sku: string | null
           slug: string
+          sold_count: number
           sort_order: number | null
           stock: number | null
           updated_at: string | null
@@ -945,6 +946,7 @@ export type Database = {
           short_description?: string | null
           sku?: string | null
           slug: string
+          sold_count?: number
           sort_order?: number | null
           stock?: number | null
           updated_at?: string | null
@@ -986,6 +988,7 @@ export type Database = {
           short_description?: string | null
           sku?: string | null
           slug?: string
+          sold_count?: number
           sort_order?: number | null
           stock?: number | null
           updated_at?: string | null
@@ -1882,6 +1885,7 @@ export type Database = {
           short_description: string | null
           sku: string | null
           slug: string
+          sold_count: number
           sort_order: number | null
           stock: number | null
           updated_at: string | null

@@ -326,6 +326,7 @@ function ProductPage() {
   const addToCartRef = useRef<HTMLButtonElement>(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [countdown, setCountdown] = useState<{ d: number; h: number; m: number; s: number } | null>(null);
+  const [viewerCount, setViewerCount] = useState(0);
 
   useEffect(() => {
     const el = addToCartRef.current;

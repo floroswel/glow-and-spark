@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { FileText, Plus, Trash2, Pencil, Eye, EyeOff } from "lucide-react";
+import { FileText, Plus, Trash2, Pencil, Eye, EyeOff, Download, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/pages")({
   component: AdminPages,
@@ -58,13 +59,147 @@ function AdminPages() {
 
   if (loading) return <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />)}</div>;
 
+  const [exporting, setExporting] = useState(false);
+
+  const legalSlugs = [
+    "termeni-si-conditii",
+    "politica-confidentialitate",
+    "politica-retur",
+    "transport-livrare",
+    "metode-plata",
+    "garantie",
+  ];
+
+  const stripHtml = (html: string) => {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  };
+
+  const exportLegalPdf = async () => {
+    setExporting(true);
+    try {
+      // Fetch legal CMS pages
+      const { data: legalPages } = await supabase
+        .from("cms_pages")
+        .select("title, slug, content, status")
+        .in("slug", legalSlugs)
+        .eq("status", "published")
+        .order("title");
+
+      if (!legalPages?.length) {
+        toast.error("Nu există pagini legale publicate pentru export.");
+        setExporting(false);
+        return;
+      }
+
+      const { default: jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const marginX = 20;
+      const contentW = pageW - marginX * 2;
+      let y = 0;
+
+      // Cover page
+      doc.setFontSize(28);
+      doc.setFont("helvetica", "bold");
+      doc.text("Pachet Documente Legale", pageW / 2, 80, { align: "center" });
+
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100);
+      doc.text("Mama Lucica — SC Vomix Genius SRL", pageW / 2, 95, { align: "center" });
+      doc.text(`Generat: ${new Date().toLocaleDateString("ro-RO")}`, pageW / 2, 105, { align: "center" });
+
+      // Table of contents
+      doc.setTextColor(60);
+      doc.setFontSize(11);
+      let tocY = 130;
+      doc.setFont("helvetica", "bold");
+      doc.text("Cuprins:", marginX, tocY);
+      tocY += 8;
+      doc.setFont("helvetica", "normal");
+      legalPages.forEach((p, i) => {
+        doc.text(`${i + 1}. ${p.title}`, marginX + 5, tocY);
+        tocY += 7;
+      });
+
+      // Each legal page
+      for (const page of legalPages) {
+        doc.addPage();
+        y = 25;
+
+        // Title
+        doc.setTextColor(0);
+        doc.setFontSize(20);
+        doc.setFont("helvetica", "bold");
+        doc.text(page.title, marginX, y);
+        y += 10;
+
+        // Divider
+        doc.setDrawColor(200);
+        doc.line(marginX, y, pageW - marginX, y);
+        y += 8;
+
+        // Content
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(40);
+
+        const plainText = stripHtml(page.content || "");
+        const lines = doc.splitTextToSize(plainText, contentW);
+
+        for (const line of lines) {
+          if (y > pageH - 20) {
+            doc.addPage();
+            y = 25;
+          }
+          doc.text(line, marginX, y);
+          y += 5;
+        }
+      }
+
+      // Footer on every page
+      const totalPages = doc.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text(
+          `Mama Lucica — Documente Legale — Pagina ${i} din ${totalPages}`,
+          pageW / 2, pageH - 10, { align: "center" }
+        );
+      }
+
+      doc.save("Pachet_Documente_Legale_MamaLucica.pdf");
+      toast.success("PDF generat și descărcat cu succes!");
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Eroare la generare PDF: " + err.message);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="font-heading text-2xl font-bold text-foreground">Pagini CMS ({pages.length})</h1>
-        <button onClick={() => { resetForm(); setEditing({}) }} className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition">
-          <Plus className="h-4 w-4" /> Pagină nouă
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={exportLegalPdf}
+            disabled={exporting}
+            className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition disabled:opacity-50"
+          >
+            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            Export PDF Legal
+          </button>
+          <button onClick={() => { resetForm(); setEditing({}) }} className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition">
+            <Plus className="h-4 w-4" /> Pagină nouă
+          </button>
+        </div>
       </div>
 
       {editing !== null && (

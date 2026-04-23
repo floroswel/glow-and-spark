@@ -32,6 +32,40 @@ function AccountOrders() {
   const [returnReason, setReturnReason] = useState(RETURN_REASONS[0]);
   const [returnDetails, setReturnDetails] = useState("");
   const [submittingReturn, setSubmittingReturn] = useState(false);
+  const [reorderingId, setReorderingId] = useState<string | null>(null);
+
+  const handleReorder = async (order: any) => {
+    const items = Array.isArray(order.items) ? order.items : [];
+    const productIds = items.map((i: any) => i.product_id || i.id).filter(Boolean);
+    if (!productIds.length) return;
+
+    setReorderingId(order.id);
+    try {
+      const { data: products } = await supabase
+        .from("products")
+        .select("id, name, slug, price, old_price, image_url, stock, is_active")
+        .in("id", productIds);
+
+      const available = (products || []).filter((p) => p.is_active && p.stock > 0);
+      const skipped = productIds.length - available.length;
+
+      for (const p of available) {
+        const origItem = items.find((i: any) => (i.product_id || i.id) === p.id);
+        addItem(
+          { id: p.id, name: p.name, slug: p.slug, price: p.price, old_price: p.old_price, image_url: p.image_url },
+          origItem?.quantity || origItem?.qty || 1
+        );
+      }
+
+      if (available.length > 0) toast.success(`${available.length} produse au fost adăugate în coș!`);
+      if (skipped > 0) toast(`${skipped} produse nu mai sunt disponibile.`);
+      if (available.length > 0) navigate({ to: "/cart" });
+    } catch {
+      toast.error("Eroare la verificarea produselor.");
+    } finally {
+      setReorderingId(null);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;

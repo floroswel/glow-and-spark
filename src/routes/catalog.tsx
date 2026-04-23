@@ -10,6 +10,7 @@ import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { ChevronRight, Copy, Check, SlidersHorizontal, X } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
+import { ForYouRecommendations } from "@/components/ForYouRecommendations";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 
@@ -353,6 +354,14 @@ function CatalogPage() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* For You Recommendations */}
+      <div className="mx-auto max-w-7xl px-4 pb-8">
+        <ForYouRecommendations
+          excludeIds={products.map((p) => p.id)}
+          categoryId={activeCat?.id}
+        />
       </div>
 
       <SiteFooter />

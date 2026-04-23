@@ -6,6 +6,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useCompare } from "@/hooks/useCompare";
 import { ProductCard } from "@/components/ProductCard";
 import { RecentlyViewed, addToRecentlyViewed } from "@/components/RecentlyViewed";
+import { ForYouRecommendations } from "@/components/ForYouRecommendations";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -515,6 +516,12 @@ function ProductPage() {
             </div>
           </div>
         )}
+
+        {/* For You Recommendations */}
+        <ForYouRecommendations
+          excludeIds={[product.id]}
+          categoryId={product.category_id}
+        />
 
         {/* Recently viewed */}
         <RecentlyViewed excludeId={product.id} />

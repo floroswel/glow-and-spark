@@ -594,10 +594,10 @@ export function SiteHeader() {
             <>
               <div className="mx-4 border-t border-border" />
               <div className="p-4 space-y-2">
-                {general?.phone && (
-                  <a href={`tel:${general.phone}`} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition">
+                {general?.contact_phone && (
+                  <a href={`tel:${general.contact_phone}`} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition">
                     <Phone className="h-4 w-4" />
-                    {general.phone}
+                    {general.contact_phone}
                   </a>
                 )}
               </div>

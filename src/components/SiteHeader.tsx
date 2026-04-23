@@ -364,6 +364,9 @@ export function SiteHeader() {
             <Link to="/blog" className="transition hover:text-foreground" activeProps={{ className: "text-accent font-semibold" }}>
               Blog
             </Link>
+            <Link to="/gift-card" className="transition hover:text-foreground" activeProps={{ className: "text-accent font-semibold" }}>
+              Card Cadou
+            </Link>
           </div>
         </nav>
       </header>
@@ -553,6 +556,7 @@ export function SiteHeader() {
             })}
 
             <MobileLink to="/blog" icon={<FileText className="h-5 w-5" />} label="Blog" onClick={() => setMobileOpen(false)} />
+            <MobileLink to="/gift-card" icon={<Gift className="h-5 w-5" />} label="Card Cadou" onClick={() => setMobileOpen(false)} />
           </div>
 
           <div className="mx-4 border-t border-border" />

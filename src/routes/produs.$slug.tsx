@@ -362,8 +362,24 @@ function ProductPage() {
     return () => clearInterval(id);
   }, [product?.countdown_end, slug]);
 
+  // Real-time viewers presence
   useEffect(() => {
-    setLoading(true);
+    if (!product?.id) return;
+    const channel = supabase.channel(`product:${product.id}`, { config: { presence: { key: crypto.randomUUID() } } });
+    channel
+      .on("presence", { event: "sync" }, () => {
+        const count = Object.keys(channel.presenceState()).length;
+        setViewerCount(Math.min(count, 12));
+      })
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          await channel.track({ online_at: new Date().toISOString() });
+        }
+      });
+    return () => { supabase.removeChannel(channel); };
+  }, [product?.id]);
+
+
     setQuantity(1);
     setActiveTab("descriere");
     setSelectedVariant(null);

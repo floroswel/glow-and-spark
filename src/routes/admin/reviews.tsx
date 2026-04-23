@@ -46,7 +46,11 @@ function AdminReviews() {
   useEffect(() => { setPage(1); }, [search, filter]);
 
   const updateStatus = async (id: string, status: string) => {
+    const review = reviews.find(r => r.id === id);
     await supabase.from("product_reviews").update({ status }).eq("id", id);
+    if (review?.product_id) {
+      await supabase.rpc('update_reviews_count', { p_product_id: review.product_id });
+    }
     showToast(`Recenzie ${status === "approved" ? "aprobată" : "respinsă"}!`);
     load();
   };
@@ -55,8 +59,13 @@ function AdminReviews() {
     const pending = reviews.filter(r => r.status === "pending");
     if (!pending.length) return;
     if (!confirm(`Aprob toate ${pending.length} recenziile în așteptare?`)) return;
+    const productIds = new Set<string>();
     for (const r of pending) {
       await supabase.from("product_reviews").update({ status: "approved" }).eq("id", r.id);
+      if (r.product_id) productIds.add(r.product_id);
+    }
+    for (const pid of productIds) {
+      await supabase.rpc('update_reviews_count', { p_product_id: pid });
     }
     showToast(`${pending.length} recenzii aprobate!`);
     load();

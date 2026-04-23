@@ -1930,6 +1930,10 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      update_reviews_count: {
+        Args: { p_product_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "user"

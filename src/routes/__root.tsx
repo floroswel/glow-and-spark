@@ -1,4 +1,4 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouter } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouter, useLocation } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { SiteSettingsProvider, useSiteSettings } from "@/hooks/useSiteSettings";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
@@ -158,6 +158,27 @@ function TrackingInit() {
     });
     return unsub;
   }, [router]);
+
+  return null;
+}
+
+function RedirectHandler() {
+  const router = useRouter();
+  const location = useLocation();
+  const { redirects } = useSiteSettings();
+
+  useEffect(() => {
+    if (!redirects || !redirects.length) return;
+    const match = redirects.find(
+      (r: any) => r.active && r.from === location.pathname
+    );
+    if (!match) return;
+    if (match.to.startsWith("http")) {
+      window.location.href = match.to;
+    } else {
+      router.navigate({ to: match.to, replace: true });
+    }
+  }, [location.pathname, redirects]);
 
   return null;
 }

@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ShoppingBag, ChevronDown, ChevronUp, RotateCcw, X } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
+import { ShoppingBag, ChevronDown, ChevronUp, RotateCcw, X, RefreshCw, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/account/orders")({
@@ -18,6 +19,8 @@ const RETURN_REASONS = [
 
 function AccountOrders() {
   const { user } = useAuth();
+  const { addItem } = useCart();
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -29,6 +32,40 @@ function AccountOrders() {
   const [returnReason, setReturnReason] = useState(RETURN_REASONS[0]);
   const [returnDetails, setReturnDetails] = useState("");
   const [submittingReturn, setSubmittingReturn] = useState(false);
+  const [reorderingId, setReorderingId] = useState<string | null>(null);
+
+  const handleReorder = async (order: any) => {
+    const items = Array.isArray(order.items) ? order.items : [];
+    const productIds = items.map((i: any) => i.product_id || i.id).filter(Boolean);
+    if (!productIds.length) return;
+
+    setReorderingId(order.id);
+    try {
+      const { data: products } = await supabase
+        .from("products")
+        .select("id, name, slug, price, old_price, image_url, stock, is_active")
+        .in("id", productIds);
+
+      const available = (products || []).filter((p) => p.is_active && (p.stock ?? 0) > 0);
+      const skipped = productIds.length - available.length;
+
+      for (const p of available) {
+        const origItem = items.find((i: any) => (i.product_id || i.id) === p.id);
+        addItem(
+          { id: p.id, name: p.name, slug: p.slug, price: p.price, old_price: p.old_price, image_url: p.image_url ?? undefined },
+          origItem?.quantity || origItem?.qty || 1
+        );
+      }
+
+      if (available.length > 0) toast.success(`${available.length} produse au fost adăugate în coș!`);
+      if (skipped > 0) toast(`${skipped} produse nu mai sunt disponibile.`);
+      if (available.length > 0) navigate({ to: "/cart" });
+    } catch {
+      toast.error("Eroare la verificarea produselor.");
+    } finally {
+      setReorderingId(null);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -195,15 +232,25 @@ function AccountOrders() {
                     {Number(order.subtotal).toFixed(2)} / {Number(order.shipping_cost || 0).toFixed(2)} / {Number(order.total).toFixed(2)} lei
                   </span>
                 </div>
-                {canReturn && (
-                  <div className="border-t border-border pt-3">
+                {(order.status === "completed" || order.status === "shipped") && (
+                  <div className="border-t border-border pt-3 flex flex-wrap items-center gap-2">
                     <button
-                      onClick={(e) => { e.stopPropagation(); openReturnModal(order); }}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition"
+                      onClick={(e) => { e.stopPropagation(); handleReorder(order); }}
+                      disabled={reorderingId === order.id}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:opacity-90 transition disabled:opacity-50"
                     >
-                      <RotateCcw className="h-4 w-4" />
-                      Solicită retur
+                      {reorderingId === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                      Recomandă
                     </button>
+                    {canReturn && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openReturnModal(order); }}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition"
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                        Solicită retur
+                      </button>
+                    )}
                   </div>
                 )}
                 {existingReturns.has(order.id) && (

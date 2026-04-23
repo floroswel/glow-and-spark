@@ -80,6 +80,19 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
     if (rating === 0) { toast.error("Selectează un rating (1-5 stele)."); return; }
     if (!authorName.trim()) { toast.error("Completează numele."); return; }
     setSubmitting(true);
+
+    // Upload photos
+    let photo_urls: string[] = [];
+    if (photoFiles.length > 0) {
+      for (const file of photoFiles) {
+        const path = `${product.id}/${Date.now()}-${file.name}`;
+        const { error: upErr } = await supabase.storage.from("review-photos").upload(path, file);
+        if (upErr) { console.error(upErr); continue; }
+        const { data: pubData } = supabase.storage.from("review-photos").getPublicUrl(path);
+        if (pubData?.publicUrl) photo_urls.push(pubData.publicUrl);
+      }
+    }
+
     const { error } = await supabase.from("product_reviews").insert({
       product_id: product.id,
       user_id: user?.id || null,
@@ -89,7 +102,8 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
       content: content.trim() || null,
       status: "pending",
       verified_purchase: false,
-    });
+      photo_urls,
+    } as any);
     setSubmitting(false);
     if (error) {
       toast.error("Eroare la trimiterea recenziei.");
@@ -97,7 +111,7 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
     }
     toast.success("Recenzia ta a fost trimisă și va fi publicată după moderare.");
     setSubmitted(true);
-    setRating(0); setTitle(""); setContent("");
+    setRating(0); setTitle(""); setContent(""); setPhotoFiles([]); setPhotoPreviews([]);
   };
 
   return (

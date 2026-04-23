@@ -31,6 +31,22 @@ const CHART_COLORS = [
   "var(--chart-4)", "var(--chart-5)", "var(--accent)"
 ];
 
+function playBeep() {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = 440;
+    osc.type = "sine";
+    gain.gain.value = 0.3;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.2);
+    osc.onended = () => ctx.close();
+  } catch {}
+}
+
 function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState<any[]>([]);
@@ -41,15 +57,38 @@ function AdminDashboard() {
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
   const [cmsPages, setCmsPages] = useState<any[]>([]);
+  const [notifPermission, setNotifPermission] = useState<NotificationPermission>(
+    typeof Notification !== "undefined" ? Notification.permission : "default"
+  );
+
+  const requestNotifPermission = useCallback(async () => {
+    if (typeof Notification === "undefined") return;
+    const perm = await Notification.requestPermission();
+    setNotifPermission(perm);
+  }, []);
+
+  useEffect(() => {
+    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+      // Don't auto-request, let the user click the button
+    }
+  }, []);
 
   useEffect(() => {
     loadAll();
-    // Realtime orders subscription
+    // Realtime orders subscription with browser notifications
     const channel = supabase
       .channel("admin-dashboard-orders")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "orders" }, (payload) => {
         setRecentOrders((prev) => [payload.new, ...prev].slice(0, 8));
         setOrders((prev) => [payload.new, ...prev]);
+        // Browser push notification
+        if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+          new Notification("Comandă nouă!", {
+            body: `#${payload.new.order_number} — ${payload.new.total} RON`,
+            icon: "/favicon.ico",
+          });
+          playBeep();
+        }
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };

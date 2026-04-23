@@ -868,6 +868,7 @@ export type Database = {
           brand: string | null
           category_id: string | null
           cost_price: number | null
+          countdown_end: string | null
           created_at: string | null
           description: string | null
           digital_file_url: string | null
@@ -908,6 +909,7 @@ export type Database = {
           brand?: string | null
           category_id?: string | null
           cost_price?: number | null
+          countdown_end?: string | null
           created_at?: string | null
           description?: string | null
           digital_file_url?: string | null
@@ -948,6 +950,7 @@ export type Database = {
           brand?: string | null
           category_id?: string | null
           cost_price?: number | null
+          countdown_end?: string | null
           created_at?: string | null
           description?: string | null
           digital_file_url?: string | null
@@ -1843,6 +1846,7 @@ export type Database = {
           brand: string | null
           category_id: string | null
           cost_price: number | null
+          countdown_end: string | null
           created_at: string | null
           description: string | null
           digital_file_url: string | null

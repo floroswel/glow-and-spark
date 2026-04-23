@@ -7,7 +7,9 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { MapPin } from "lucide-react";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { Switch } from "@/components/ui/switch";
+import { MapPin, Gift } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,

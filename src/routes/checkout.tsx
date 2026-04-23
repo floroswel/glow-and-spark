@@ -132,6 +132,13 @@ function CheckoutPage() {
       },
     }).catch(() => {});
 
+    // Decrement stock for each item
+    for (const item of items) {
+      try {
+        await supabase.rpc('decrement_stock', { p_product_id: item.id, p_quantity: item.quantity });
+      } catch {}
+    }
+
     clearCart();
     navigate({ to: "/order-confirmed/$orderId", params: { orderId: data.id } });
   };

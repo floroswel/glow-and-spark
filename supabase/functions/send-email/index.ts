@@ -206,6 +206,41 @@ function returnRequestTemplate(data: any): { subject: string; html: string } {
   };
 }
 
+function cartRecoveryTemplate(data: any): { subject: string; html: string } {
+  const itemsList = (data.items || [])
+    .map((i: any) => `<tr><td style="padding:8px;border-bottom:1px solid #eee">${i.name}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center">${i.quantity || 1}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right">${(i.price * (i.quantity || 1)).toFixed(2)} RON</td></tr>`)
+    .join("");
+
+  return {
+    subject: `Ai uitat ceva în coș! 🛒 — ${SITE_NAME}`,
+    html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+        <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center">
+          <h1 style="margin:0;font-size:22px">🕯️ ${SITE_NAME}</h1>
+        </div>
+        <div style="padding:24px">
+          <h2 style="color:#1a1a1a;margin-top:0">Ai uitat ceva în coș! 🛒</h2>
+          <p style="color:#555">Produsele tale te așteaptă. Finalizează comanda înainte ca stocul să se epuizeze!</p>
+          <table style="width:100%;border-collapse:collapse;margin:16px 0">
+            <thead><tr style="background:#f5f5f5"><th style="padding:8px;text-align:left">Produs</th><th style="padding:8px;text-align:center">Cant.</th><th style="padding:8px;text-align:right">Preț</th></tr></thead>
+            <tbody>${itemsList}</tbody>
+          </table>
+          <div style="text-align:right;margin:16px 0">
+            <p style="font-size:18px;font-weight:bold;color:#1a1a1a">Total: ${Number(data.total || 0).toFixed(2)} RON</p>
+          </div>
+          <div style="text-align:center;margin:24px 0">
+            <a href="${SITE_URL}/cart" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:14px 36px;border-radius:8px;font-weight:bold;font-size:16px">Finalizează comanda</a>
+          </div>
+          <p style="color:#999;font-size:13px;text-align:center">Dacă ai finalizat deja comanda, ignoră acest email.</p>
+        </div>
+        <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
+          © ${new Date().getFullYear()} ${SITE_NAME}. Toate drepturile rezervate.
+        </div>
+      </div>
+    </body></html>`,
+  };
+}
+
 const templates: Record<string, (data: any) => { subject: string; html: string }> = {
   order_confirmation: orderConfirmationTemplate,
   welcome: welcomeTemplate,
@@ -214,6 +249,7 @@ const templates: Record<string, (data: any) => { subject: string; html: string }
   order_shipped: orderShippedTemplate,
   order_completed: orderCompletedTemplate,
   return_request: returnRequestTemplate,
+  cart_recovery: cartRecoveryTemplate,
 };
 
 serve(async (req) => {

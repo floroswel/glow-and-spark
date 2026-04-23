@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useCart } from "@/hooks/useCart";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Menu, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package, X } from "lucide-react";
+import { Menu, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package, X, Gift } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { HighlightText } from "@/components/HighlightText";
@@ -364,6 +364,9 @@ export function SiteHeader() {
             <Link to="/blog" className="transition hover:text-foreground" activeProps={{ className: "text-accent font-semibold" }}>
               Blog
             </Link>
+            <Link to="/gift-card" className="transition hover:text-foreground" activeProps={{ className: "text-accent font-semibold" }}>
+              Card Cadou
+            </Link>
           </div>
         </nav>
       </header>
@@ -553,6 +556,7 @@ export function SiteHeader() {
             })}
 
             <MobileLink to="/blog" icon={<FileText className="h-5 w-5" />} label="Blog" onClick={() => setMobileOpen(false)} />
+            <MobileLink to="/gift-card" icon={<Gift className="h-5 w-5" />} label="Card Cadou" onClick={() => setMobileOpen(false)} />
           </div>
 
           <div className="mx-4 border-t border-border" />

@@ -181,6 +181,7 @@ const templates: Record<string, (data: any) => { subject: string; html: string }
   order_status_update: orderStatusUpdateTemplate,
   order_shipped: orderShippedTemplate,
   order_completed: orderCompletedTemplate,
+  return_request: returnRequestTemplate,
 };
 
 serve(async (req) => {

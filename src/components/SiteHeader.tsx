@@ -250,6 +250,12 @@ export function SiteHeader() {
                   Favorite
                 </Link>
               )}
+              {user && userPoints !== null && userPoints > 0 && (
+                <Link to="/account" className="hidden md:flex items-center gap-1 text-accent hover:text-foreground transition">
+                  <Star className="h-4 w-4 fill-accent" />
+                  <span className="text-xs font-semibold">{userPoints} pts</span>
+                </Link>
+              )}
               {header?.show_cart !== false && (
                 <Link to="/cart" className="relative flex items-center gap-1 hover:text-foreground transition">
                   <ShoppingBag className="h-5 w-5" />

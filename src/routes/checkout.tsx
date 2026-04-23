@@ -5,6 +5,7 @@ import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { useState, useEffect } from "react";
+import { trackBeginCheckout } from "@/lib/gtm";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -47,6 +48,11 @@ function CheckoutPage() {
   const finalTotal = cartTotal + (giftWrapping ? giftWrappingPrice : 0);
 
   // Saved addresses
+  useEffect(() => {
+    if (items.length > 0) {
+      trackBeginCheckout(items, cartTotal);
+    }
+  }, []);
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [saveAddress, setSaveAddress] = useState(!!user);

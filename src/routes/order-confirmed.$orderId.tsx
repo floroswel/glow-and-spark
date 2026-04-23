@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { trackPurchase } from "@/lib/gtm";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -20,10 +21,17 @@ export const Route = createFileRoute("/order-confirmed/$orderId")({
 function OrderConfirmedPage() {
   const { orderId } = Route.useParams();
   const [order, setOrder] = useState<any>(null);
+  const trackedRef = useRef(false);
 
   useEffect(() => {
     supabase.from("orders").select("*").eq("id", orderId).single().then(({ data }) => {
-      if (data) setOrder(data);
+      if (data) {
+        setOrder(data);
+        if (!trackedRef.current) {
+          trackedRef.current = true;
+          trackPurchase({ id: data.id, order_number: data.order_number, total: data.total, items: data.items as any[] });
+        }
+      }
     });
   }, [orderId]);
 

@@ -9,7 +9,7 @@ import {
   CreditCard, Truck, Brain, Server, ChevronDown, ChevronRight,
   Link2, UserCog, Warehouse, Search, Command, Bell, Moon, Sun,
   RotateCcw, Activity, User, Gift, Crown, Percent, FileSpreadsheet,
-  Zap, Receipt, Calculator
+  Zap, Receipt, Calculator, Cookie, Star, Briefcase
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({

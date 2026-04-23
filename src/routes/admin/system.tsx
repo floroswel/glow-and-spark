@@ -309,9 +309,9 @@ function AdminSystem() {
     });
 
     // Invoice / fiscal data
-    const hasCompany = !!general.invoice_company_name;
-    const hasCui = !!general.invoice_cui;
-    const hasReg = !!general.invoice_reg;
+    const hasCompany = !!general.company_name;
+    const hasCui = !!general.company_cui;
+    const hasReg = !!general.reg_com;
     results.push({
       name: "GDPR — Date Fiscale Facturare", category: "gdpr",
       status: hasCompany && hasCui ? "healthy" : "warning",

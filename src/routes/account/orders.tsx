@@ -2,27 +2,50 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ShoppingBag, ChevronDown, ChevronUp } from "lucide-react";
+import { ShoppingBag, ChevronDown, ChevronUp, RotateCcw, X } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/account/orders")({
   component: AccountOrders,
 });
+
+const RETURN_REASONS = [
+  "Produs defect",
+  "Nu corespunde descrierii",
+  "Am comandat greșit",
+  "Alta",
+];
 
 function AccountOrders() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [existingReturns, setExistingReturns] = useState<Set<string>>(new Set());
+
+  // Return modal state
+  const [returnOrder, setReturnOrder] = useState<any>(null);
+  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+  const [returnReason, setReturnReason] = useState(RETURN_REASONS[0]);
+  const [returnDetails, setReturnDetails] = useState("");
+  const [submittingReturn, setSubmittingReturn] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("customer_email", user.email!)
-        .order("created_at", { ascending: false });
-      setOrders(data || []);
+      const [ordersRes, returnsRes] = await Promise.all([
+        supabase
+          .from("orders")
+          .select("*")
+          .eq("customer_email", user.email!)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("returns")
+          .select("order_id")
+          .eq("user_id", user.id),
+      ]);
+      setOrders(ordersRes.data || []);
+      setExistingReturns(new Set((returnsRes.data || []).map((r: any) => r.order_id)));
       setLoading(false);
     })();
   }, [user]);
@@ -46,6 +69,68 @@ function AccountOrders() {
     return map[s] || "bg-muted text-muted-foreground";
   };
 
+  const openReturnModal = (order: any) => {
+    setReturnOrder(order);
+    setSelectedItems(new Set());
+    setReturnReason(RETURN_REASONS[0]);
+    setReturnDetails("");
+  };
+
+  const toggleItem = (idx: number) => {
+    setSelectedItems((prev) => {
+      const next = new Set(prev);
+      next.has(idx) ? next.delete(idx) : next.add(idx);
+      return next;
+    });
+  };
+
+  const handleSubmitReturn = async () => {
+    if (!returnOrder || !user) return;
+    if (selectedItems.size === 0) {
+      toast.error("Selectează cel puțin un produs pentru retur.");
+      return;
+    }
+    setSubmittingReturn(true);
+    const items = Array.isArray(returnOrder.items) ? returnOrder.items : [];
+    const returnItems = Array.from(selectedItems).map((idx) => items[idx]);
+
+    const { error } = await supabase.from("returns").insert({
+      order_id: returnOrder.id,
+      user_id: user.id,
+      items: returnItems,
+      reason: returnReason,
+      notes: returnDetails.trim() || null,
+      status: "pending",
+    });
+
+    if (error) {
+      toast.error("Eroare la trimiterea cererii de retur.");
+      setSubmittingReturn(false);
+      return;
+    }
+
+    // Fire-and-forget admin notification email
+    supabase.functions.invoke("send-email", {
+      body: {
+        type: "return_request",
+        to: "admin@mamalucica.ro",
+        data: {
+          orderNumber: returnOrder.order_number,
+          customer_name: returnOrder.customer_name,
+          customer_email: returnOrder.customer_email,
+          reason: returnReason,
+          details: returnDetails.trim(),
+          items: returnItems,
+        },
+      },
+    }).catch(() => {});
+
+    setExistingReturns((prev) => new Set(prev).add(returnOrder.id));
+    toast.success("Cererea de retur a fost trimisă! Vei fi contactat(ă) în curând.");
+    setReturnOrder(null);
+    setSubmittingReturn(false);
+  };
+
   if (loading) {
     return <div className="space-y-4">{[1,2,3].map(i => <div key={i} className="h-20 rounded-xl bg-muted animate-pulse" />)}</div>;
   }
@@ -66,6 +151,7 @@ function AccountOrders() {
       {orders.map((order) => {
         const expanded = expandedId === order.id;
         const items = Array.isArray(order.items) ? order.items : [];
+        const canReturn = (order.status === "completed" || order.status === "shipped") && !existingReturns.has(order.id);
         return (
           <div key={order.id} className="rounded-xl border border-border bg-card overflow-hidden">
             <button
@@ -103,17 +189,109 @@ function AccountOrders() {
                     ))}
                   </div>
                 )}
-                <div className="border-t border-border pt-3 flex justify-between text-sm">
+                <div className="border-t border-border pt-3 flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal / Livrare / Total</span>
                   <span className="font-bold text-foreground">
                     {Number(order.subtotal).toFixed(2)} / {Number(order.shipping_cost || 0).toFixed(2)} / {Number(order.total).toFixed(2)} lei
                   </span>
                 </div>
+                {canReturn && (
+                  <div className="border-t border-border pt-3">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); openReturnModal(order); }}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      Solicită retur
+                    </button>
+                  </div>
+                )}
+                {existingReturns.has(order.id) && (
+                  <div className="border-t border-border pt-3">
+                    <p className="text-xs text-accent font-medium">↩ Cerere de retur trimisă</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
         );
       })}
+
+      {/* Return Modal */}
+      {returnOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setReturnOrder(null)}>
+          <div className="w-full max-w-lg rounded-xl bg-card border border-border shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
+              <h2 className="font-heading text-lg font-bold text-foreground">Solicită retur — #{returnOrder.order_number}</h2>
+              <button onClick={() => setReturnOrder(null)} className="text-muted-foreground hover:text-foreground">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="px-5 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
+              {/* Item selection */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-foreground">Selectează produsele pentru retur *</label>
+                <div className="space-y-2">
+                  {(Array.isArray(returnOrder.items) ? returnOrder.items : []).map((item: any, idx: number) => (
+                    <label key={idx} className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition ${selectedItems.has(idx) ? "border-accent bg-accent/5" : "border-border"}`}>
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.has(idx)}
+                        onChange={() => toggleItem(idx)}
+                        className="accent-accent"
+                      />
+                      <div className="flex-1 text-sm">
+                        <span className="font-medium text-foreground">{item.name}</span>
+                        <span className="text-muted-foreground"> × {item.quantity}</span>
+                      </div>
+                      <span className="text-sm text-muted-foreground">{(Number(item.price) * Number(item.quantity)).toFixed(2)} lei</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Reason */}
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-foreground">Motivul returului *</label>
+                <select
+                  value={returnReason}
+                  onChange={(e) => setReturnReason(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground focus:border-accent focus:outline-none"
+                >
+                  {RETURN_REASONS.map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Details */}
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-foreground">Detalii suplimentare</label>
+                <textarea
+                  value={returnDetails}
+                  onChange={(e) => setReturnDetails(e.target.value)}
+                  rows={3}
+                  maxLength={500}
+                  placeholder="Descrie problema..."
+                  className="w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground focus:border-accent focus:outline-none resize-none"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 border-t border-border px-5 py-4">
+              <button onClick={() => setReturnOrder(null)} className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">
+                Anulează
+              </button>
+              <button
+                onClick={handleSubmitReturn}
+                disabled={submittingReturn || selectedItems.size === 0}
+                className="rounded-lg bg-accent px-5 py-2 text-sm font-semibold text-accent-foreground transition hover:opacity-90 disabled:opacity-50"
+              >
+                {submittingReturn ? "Se trimite..." : "Trimite cererea"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -120,7 +120,12 @@ function AccountLayout() {
                       }`}
                     >
                       <item.icon className="h-4.5 w-4.5 shrink-0" />
-                      <span>{item.label}</span>
+                      <span className="flex-1">{item.label}</span>
+                      {(item as any).badge && unreadCount > 0 && (
+                        <span className="inline-flex items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground min-w-[20px]">
+                          {unreadCount}
+                        </span>
+                      )}
                     </Link>
                   );
                 })}

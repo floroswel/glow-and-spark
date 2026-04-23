@@ -59,7 +59,7 @@ function CartPage() {
       setCouponLoading(false);
       return;
     }
-    if (data.starts_at && new Date(data.starts_at) > new Date()) {
+    if ((data as any).starts_at && new Date((data as any).starts_at) > new Date()) {
       setCouponError("Cuponul nu este încă activ.");
       setCouponLoading(false);
       return;

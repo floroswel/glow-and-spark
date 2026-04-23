@@ -704,6 +704,7 @@ export type Database = {
       }
       product_reviews: {
         Row: {
+          author_name: string | null
           content: string | null
           created_at: string | null
           id: string
@@ -711,9 +712,11 @@ export type Database = {
           rating: number
           status: string | null
           title: string | null
-          user_id: string
+          user_id: string | null
+          verified_purchase: boolean | null
         }
         Insert: {
+          author_name?: string | null
           content?: string | null
           created_at?: string | null
           id?: string
@@ -721,9 +724,11 @@ export type Database = {
           rating: number
           status?: string | null
           title?: string | null
-          user_id: string
+          user_id?: string | null
+          verified_purchase?: boolean | null
         }
         Update: {
+          author_name?: string | null
           content?: string | null
           created_at?: string | null
           id?: string
@@ -731,7 +736,8 @@ export type Database = {
           rating?: number
           status?: string | null
           title?: string | null
-          user_id?: string
+          user_id?: string | null
+          verified_purchase?: boolean | null
         }
         Relationships: [
           {

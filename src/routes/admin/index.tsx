@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Package, ShoppingCart, Users, TrendingUp, Star, BookOpen,
   ArrowRight, Clock, AlertTriangle, DollarSign, BarChart3,
   ShoppingBag, UserPlus, Percent, MessageSquare, ArrowUpRight, ArrowDownRight,
-  Shield, CheckCircle, XCircle, Activity
+  Shield, CheckCircle, XCircle, Activity, Bell
 } from "lucide-react";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip as ReTooltip,
@@ -31,6 +31,22 @@ const CHART_COLORS = [
   "var(--chart-4)", "var(--chart-5)", "var(--accent)"
 ];
 
+function playBeep() {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = 440;
+    osc.type = "sine";
+    gain.gain.value = 0.3;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.2);
+    osc.onended = () => ctx.close();
+  } catch {}
+}
+
 function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState<any[]>([]);
@@ -41,15 +57,38 @@ function AdminDashboard() {
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
   const [cmsPages, setCmsPages] = useState<any[]>([]);
+  const [notifPermission, setNotifPermission] = useState<NotificationPermission>(
+    typeof Notification !== "undefined" ? Notification.permission : "default"
+  );
+
+  const requestNotifPermission = useCallback(async () => {
+    if (typeof Notification === "undefined") return;
+    const perm = await Notification.requestPermission();
+    setNotifPermission(perm);
+  }, []);
+
+  useEffect(() => {
+    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+      // Don't auto-request, let the user click the button
+    }
+  }, []);
 
   useEffect(() => {
     loadAll();
-    // Realtime orders subscription
+    // Realtime orders subscription with browser notifications
     const channel = supabase
       .channel("admin-dashboard-orders")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "orders" }, (payload) => {
         setRecentOrders((prev) => [payload.new, ...prev].slice(0, 8));
         setOrders((prev) => [payload.new, ...prev]);
+        // Browser push notification
+        if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+          new Notification("Comandă nouă!", {
+            body: `#${payload.new.order_number} — ${payload.new.total} RON`,
+            icon: "/favicon.ico",
+          });
+          playBeep();
+        }
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
@@ -180,9 +219,20 @@ function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-bold text-foreground">Dashboard</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Panoul de control LUMINI.RO — date în timp real</p>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="font-heading text-2xl font-bold text-foreground">Dashboard</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Panoul de control LUMINI.RO — date în timp real</p>
+        </div>
+        {notifPermission === "default" && (
+          <button
+            onClick={requestNotifPermission}
+            className="flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/10 px-4 py-2 text-sm font-medium text-accent hover:bg-accent/20 transition"
+          >
+            <Bell className="h-4 w-4" />
+            Activează notificările
+          </button>
+        )}
       </div>
 
       {/* KPI Cards */}

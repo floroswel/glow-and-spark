@@ -55,9 +55,6 @@ const defaults = {
   terms_page_slug: "termeni-si-conditii",
   privacy_page_slug: "politica-confidentialitate",
   return_policy_slug: "politica-retur",
-  invoice_company_name: "",
-  invoice_cui: "",
-  invoice_reg: "",
   invoice_address: "",
   invoice_bank: "",
   invoice_iban: "",
@@ -84,10 +81,9 @@ function AdminSettings() {
     { key: "notifications", label: "Notificări", icon: Bell },
     { key: "seo", label: "SEO & Analytics", icon: Globe },
     { key: "legal", label: "Legal", icon: Shield },
-    { key: "invoicing", label: "Facturare", icon: CreditCard },
+    { key: "invoicing", label: "Firmă & Facturare", icon: CreditCard },
     { key: "email", label: "Email", icon: Mail },
     { key: "social", label: "Social Media", icon: Share2 },
-    { key: "company", label: "Date Firmă", icon: FileText },
     { key: "alert", label: "Alertă Site", icon: AlertTriangle },
   ];
 
@@ -253,13 +249,17 @@ function AdminSettings() {
             )}
 
             {activeSection === "invoicing" && (
-              <Section title="🧾 Date Facturare">
-                <p className="text-sm text-muted-foreground mb-4">Aceste date apar pe facturile generate</p>
+              <Section title="🏢 Firmă & Facturare">
+                <p className="text-sm text-muted-foreground mb-4">Aceste date apar automat în footer-ul site-ului și pe facturile generate</p>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <Field label="Denumire firmă"><TextInput value={s.invoice_company_name} onChange={(v) => u("invoice_company_name", v)} /></Field>
-                  <Field label="CUI"><TextInput value={s.invoice_cui} onChange={(v) => u("invoice_cui", v)} /></Field>
-                  <Field label="Nr. Reg. Comerțului"><TextInput value={s.invoice_reg} onChange={(v) => u("invoice_reg", v)} /></Field>
-                  <Field label="Adresă sediu"><TextInput value={s.invoice_address} onChange={(v) => u("invoice_address", v)} /></Field>
+                  <Field label="Nume companie"><TextInput value={s.company_name} onChange={(v) => u("company_name", v)} /></Field>
+                  <Field label="CUI"><TextInput value={s.company_cui} onChange={(v) => u("company_cui", v)} /></Field>
+                  <Field label="Nr. Reg. Comerțului"><TextInput value={s.reg_com} onChange={(v) => u("reg_com", v)} /></Field>
+                  <Field label="Adresă sediu"><TextInput value={s.company_address} onChange={(v) => u("company_address", v)} /></Field>
+                  <Field label="Oraș / Județ"><TextInput value={s.company_city} onChange={(v) => u("company_city", v)} /></Field>
+                  <Field label="Coduri CAEN (separate prin virgulă)"><TextArea value={s.company_caen} onChange={(v) => u("company_caen", v)} /></Field>
+                  <Field label="Prag livrare gratuită (RON)"><TextInput value={s.free_shipping_threshold} onChange={(v) => u("free_shipping_threshold", v)} /></Field>
+                  <Field label="Adresă facturare (dacă diferă)"><TextInput value={s.invoice_address} onChange={(v) => u("invoice_address", v)} /></Field>
                   <Field label="Bancă"><TextInput value={s.invoice_bank} onChange={(v) => u("invoice_bank", v)} /></Field>
                   <Field label="IBAN"><TextInput value={s.invoice_iban} onChange={(v) => u("invoice_iban", v)} /></Field>
                 </div>
@@ -289,20 +289,6 @@ function AdminSettings() {
               </Section>
             )}
 
-            {activeSection === "company" && (
-              <Section title="🏢 Date Firmă">
-                <p className="text-sm text-muted-foreground mb-4">Aceste date apar automat în footer-ul site-ului și pe facturile generate</p>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <Field label="Nume companie"><TextInput value={s.company_name} onChange={(v) => u("company_name", v)} /></Field>
-                  <Field label="CUI"><TextInput value={s.company_cui} onChange={(v) => u("company_cui", v)} /></Field>
-                  <Field label="Nr. Reg. Comerțului"><TextInput value={s.reg_com} onChange={(v) => u("reg_com", v)} /></Field>
-                  <Field label="Adresă sediu"><TextInput value={s.company_address} onChange={(v) => u("company_address", v)} /></Field>
-                  <Field label="Oraș / Județ"><TextInput value={s.company_city} onChange={(v) => u("company_city", v)} /></Field>
-                  <Field label="Coduri CAEN (separate prin virgulă)"><TextArea value={s.company_caen} onChange={(v) => u("company_caen", v)} /></Field>
-                  <Field label="Prag livrare gratuită (RON)"><TextInput value={s.free_shipping_threshold} onChange={(v) => u("free_shipping_threshold", v)} /></Field>
-                </div>
-              </Section>
-            )}
 
             {activeSection === "alert" && (
               <Section title="⚠️ Alertă Site">

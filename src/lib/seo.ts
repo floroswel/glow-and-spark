@@ -1,4 +1,8 @@
-const SITE_NAME = "Glow & Spark — Lumânări Artizanale";
+let SITE_NAME = "Glow & Spark — Lumânări Artizanale";
+
+export function updateSiteName(name: string) {
+  if (name) SITE_NAME = name + " — Lumânări Artizanale";
+}
 
 function setOrCreateMeta(attr: string, key: string, content: string) {
   let el = document.querySelector(`meta[${attr}="${key}"]`) as HTMLMetaElement | null;

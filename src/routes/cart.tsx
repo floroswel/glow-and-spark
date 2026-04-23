@@ -56,6 +56,12 @@ function CartPage() {
     }
     const amount = data.type === "percent" ? (cartSubtotal * Number(data.value)) / 100 : Number(data.value);
     applyDiscount(data.code, Math.min(amount, cartSubtotal));
+
+    // Increment uses count
+    try {
+      await supabase.from("coupons").update({ uses: (data.uses || 0) + 1 }).eq("id", data.id);
+    } catch {}
+
     setCouponLoading(false);
   };
 

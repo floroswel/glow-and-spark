@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { setPageMeta } from "@/lib/seo";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { TopBar } from "@/components/TopBar";
@@ -32,9 +33,12 @@ function BlogPostPage() {
         setPost(data);
         setLoading(false);
         if (data) {
-          document.title = data.meta_title || `${data.title} — Glow & Spark`;
-          const desc = document.querySelector('meta[name="description"]');
-          if (desc) desc.setAttribute("content", data.meta_description || data.excerpt || "");
+          setPageMeta({
+            title: data.meta_title || data.title,
+            description: data.meta_description || data.excerpt || "",
+            image: data.image_url || undefined,
+            type: "article",
+          });
         }
       });
   }, [slug]);

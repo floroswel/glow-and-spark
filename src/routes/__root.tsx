@@ -1,4 +1,5 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { SiteSettingsProvider } from "@/hooks/useSiteSettings";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { CartProvider } from "@/hooks/useCart";
@@ -6,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { FavoritesProvider } from "@/hooks/useFavorites";
 import { CompareProvider } from "@/hooks/useCompare";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
+import { initGTM } from "@/lib/gtm";
 
 import appCss from "../styles.css?url";
 
@@ -75,6 +77,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  useEffect(() => {
+    const gtmId = import.meta.env.VITE_GTM_ID;
+    if (gtmId) initGTM(gtmId);
+  }, []);
+
   return (
     <SiteSettingsProvider>
       <AuthProvider>

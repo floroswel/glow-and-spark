@@ -5,8 +5,8 @@ declare global {
   }
 }
 
-export function initPixel() {
-  const pixelId = import.meta.env.VITE_FB_PIXEL_ID;
+export function initPixel(overridePixelId?: string) {
+  const pixelId = overridePixelId || import.meta.env.VITE_FB_PIXEL_ID;
   if (!pixelId || typeof document === "undefined") return;
   if (typeof window.fbq === "function") return;
 

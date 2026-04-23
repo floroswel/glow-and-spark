@@ -1,6 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouter } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { SiteSettingsProvider } from "@/hooks/useSiteSettings";
+import { useEffect, useRef } from "react";
+import { SiteSettingsProvider, useSiteSettings } from "@/hooks/useSiteSettings";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { CartProvider } from "@/hooks/useCart";
 import { AuthProvider } from "@/hooks/useAuth";

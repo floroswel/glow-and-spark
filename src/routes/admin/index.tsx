@@ -478,9 +478,9 @@ function ReadinessScore({ products, settings, cmsPages }: { products: any[]; set
     { label: "Pagină Politica de Retur", ok: cmsPages.some(p => p.slug?.includes("retur") && p.status === "published"), category: "GDPR" },
     { label: "Pagină Politica Cookie-uri", ok: cmsPages.some(p => p.slug?.includes("cookie") && p.status === "published"), category: "GDPR" },
     // Facturare
-    { label: "CUI factură configurat", ok: !!general.invoice_cui, category: "Fiscalitate" },
+    { label: "CUI factură configurat", ok: !!general.company_cui, category: "Fiscalitate" },
     { label: "IBAN configurat", ok: !!general.invoice_iban, category: "Fiscalitate" },
-    { label: "Denumire firmă configurată", ok: !!general.invoice_company_name, category: "Fiscalitate" },
+    { label: "Denumire firmă configurată", ok: !!general.company_name, category: "Fiscalitate" },
     // Design
     { label: "Footer activat", ok: footer.show !== false, category: "Design" },
     { label: "Header configurat", ok: !!header, category: "Design" },
@@ -604,7 +604,7 @@ function ReadinessScore({ products, settings, cmsPages }: { products: any[]; set
           {!cmsPages.some(p => p.slug?.includes("cookie") && p.status === "published") && (
             <p className="text-destructive text-xs flex items-center gap-1.5"><XCircle className="h-3.5 w-3.5" /> Adaugă un banner Cookie Consent</p>
           )}
-          {!general.invoice_cui && (
+          {!general.company_cui && (
             <p className="text-accent text-xs flex items-center gap-1.5"><AlertTriangle className="h-3.5 w-3.5" /> Configurează CUI-ul companiei în Setări</p>
           )}
           {products.filter(p => p.is_active && !p.meta_title).length > 0 && (

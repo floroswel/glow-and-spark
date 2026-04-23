@@ -24,6 +24,7 @@ export type Database = {
           last_activity_at: string
           recovered: boolean | null
           recovered_order_id: string | null
+          recovery_email_sent: boolean
           session_id: string
           subtotal: number
           total: number
@@ -39,6 +40,7 @@ export type Database = {
           last_activity_at?: string
           recovered?: boolean | null
           recovered_order_id?: string | null
+          recovery_email_sent?: boolean
           session_id: string
           subtotal?: number
           total?: number
@@ -54,6 +56,7 @@ export type Database = {
           last_activity_at?: string
           recovered?: boolean | null
           recovered_order_id?: string | null
+          recovery_email_sent?: boolean
           session_id?: string
           subtotal?: number
           total?: number

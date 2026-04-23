@@ -206,6 +206,7 @@ export function SiteFooter() {
     { label: "Termeni și condiții", url: "/page/termeni-si-conditii" },
     { label: "Politica de Confidențialitate", url: "/page/politica-confidentialitate" },
     { label: "Politica Cookie-uri", url: "/politica-cookies" },
+    { label: "Politică de returnare", url: "/politica-returnare" },
     { label: "Contact", url: "/contact" },
     { label: "Card Cadou", url: "/gift-card" },
   ];
@@ -400,11 +401,6 @@ export function SiteFooter() {
       <div style={{ background: bottomBg, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
         <div className="mx-auto max-w-7xl px-4 py-4">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-            {/* Copyright */}
-            <p className="text-xs" style={{ color: textColor }}>
-              {footer?.copyright_text || `© ${new Date().getFullYear()} SC Vomix Genius SRL — Toate drepturile rezervate`}
-            </p>
-
             {/* Payment + Badges */}
             <div className="flex items-center gap-3 flex-wrap justify-center">
               {footer?.show_payment_icons !== false && <PaymentIcons icons={paymentIcons} />}
@@ -445,9 +441,37 @@ export function SiteFooter() {
             </div>
           </div>
 
+          {/* Legal compliance row */}
+          <div className="border-t border-white/10 mt-4 pt-3 flex flex-col sm:flex-row items-center justify-center gap-x-6 gap-y-1 text-[11px]" style={{ color: linkColor }}>
+            <a
+              href="https://anpc.ro/ce-este-sal/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors flex items-center gap-1"
+            >
+              <Shield className="h-3 w-3" />
+              ANPC — Soluționarea Alternativă a Litigiilor
+            </a>
+            <a
+              href="https://ec.europa.eu/consumers/odr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors flex items-center gap-1"
+            >
+              <Shield className="h-3 w-3" />
+              SOL — Platformă Online de Soluționare a Litigiilor
+            </a>
+            <span className="opacity-60">Conform OUG 34/2014 și Regulamentului UE 524/2013</span>
+          </div>
+
+          {/* Copyright */}
+          <p className="text-xs text-center mt-3" style={{ color: textColor }}>
+            {footer?.copyright_text || `© ${new Date().getFullYear()} SC Vomix Genius SRL — Toate drepturile rezervate`}
+          </p>
+
           {/* Disclaimer fiscal / legal */}
           {footer?.show_legal_disclaimer !== false && (
-            <p className="text-[10px] text-center mt-3 opacity-50" style={{ color: textColor }}>
+            <p className="text-[10px] text-center mt-2 opacity-50" style={{ color: textColor }}>
               {footer?.legal_disclaimer || "Prețurile includ TVA. Imaginile produselor sunt cu titlu informativ și pot diferi de realitate."}
             </p>
           )}

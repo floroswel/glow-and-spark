@@ -1,12 +1,13 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCart } from "@/hooks/useCart";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
@@ -36,6 +37,11 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  // Saved addresses
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>("");
+  const [saveAddress, setSaveAddress] = useState(!!user);
+
   const [form, setForm] = useState({
     name: "", email: "", phone: "", judet: "", localitate: "", adresa: "", codPostal: "", observatii: "",
     companyName: "", companyCui: "", companyReg: "",
@@ -44,6 +50,49 @@ function CheckoutPage() {
   });
 
   const u = (field: string, value: any) => setForm((p) => ({ ...p, [field]: value }));
+
+  // Fetch saved addresses for logged-in users
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("addresses")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("is_default", { ascending: false })
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setSavedAddresses(data);
+          // Auto-select default address
+          const defaultAddr = data.find((a) => a.is_default) || data[0];
+          if (defaultAddr) {
+            selectAddress(defaultAddr);
+            setSelectedAddressId(defaultAddr.id);
+          }
+        }
+      });
+    // Pre-fill email from auth
+    if (user.email) u("email", user.email);
+  }, [user]);
+
+  const selectAddress = (addr: any) => {
+    setForm((prev) => ({
+      ...prev,
+      name: addr.full_name || prev.name,
+      phone: addr.phone || prev.phone,
+      judet: addr.county || prev.judet,
+      localitate: addr.city || prev.localitate,
+      adresa: addr.address || prev.adresa,
+      codPostal: addr.postal_code || prev.codPostal,
+    }));
+  };
+
+  const handleAddressSelect = (addrId: string) => {
+    setSelectedAddressId(addrId);
+    if (addrId === "") return;
+    const addr = savedAddresses.find((a) => a.id === addrId);
+    if (addr) selectAddress(addr);
+  };
 
   if (items.length === 0) {
     return (
@@ -112,6 +161,21 @@ function CheckoutPage() {
       return;
     }
 
+    // Save address if checked
+    if (saveAddress && user) {
+      supabase.from("addresses").insert({
+        user_id: user.id,
+        full_name: form.name,
+        phone: form.phone,
+        county: form.judet,
+        city: form.localitate,
+        address: form.adresa,
+        postal_code: form.codPostal,
+        label: "Checkout",
+        is_default: savedAddresses.length === 0,
+      }).then(() => {});
+    }
+
     // Fire-and-forget email notification
     supabase.functions.invoke('send-email', {
       body: {
@@ -174,6 +238,33 @@ function CheckoutPage() {
             {/* Step 1 */}
             {step === 1 && (
               <div className="space-y-6 rounded-xl border border-border bg-card p-6">
+
+                {/* Saved addresses dropdown */}
+                {user && savedAddresses.length > 0 && (
+                  <div className="rounded-lg border border-accent/30 bg-accent/5 p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-accent" />
+                        <span className="text-sm font-semibold text-foreground">Adrese salvate</span>
+                      </div>
+                      <Link to="/account/addresses" className="text-xs text-accent hover:underline">Gestionează adresele →</Link>
+                    </div>
+                    <select
+                      value={selectedAddressId}
+                      onChange={(e) => handleAddressSelect(e.target.value)}
+                      className={inputClass}
+                    >
+                      <option value="">— Completează manual —</option>
+                      {savedAddresses.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.label ? `${a.label} — ` : ""}{a.full_name}, {a.address}, {a.city}, {a.county}
+                          {a.is_default ? " ★" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <div className="flex gap-3">
                   <button onClick={() => setBillingType("individual")} className={`rounded-lg px-4 py-2 text-sm font-medium transition ${billingType === "individual" ? "bg-foreground text-primary-foreground" : "bg-muted text-muted-foreground"}`}>Persoană Fizică</button>
                   <button onClick={() => setBillingType("company")} className={`rounded-lg px-4 py-2 text-sm font-medium transition ${billingType === "company" ? "bg-foreground text-primary-foreground" : "bg-muted text-muted-foreground"}`}>Persoană Juridică</button>
@@ -193,6 +284,19 @@ function CheckoutPage() {
                   <div className="sm:col-span-2"><label className="mb-1 block text-xs font-medium text-muted-foreground">Adresă (stradă, număr) *</label><input value={form.adresa} onChange={(e) => u("adresa", e.target.value)} className={inputClass} /></div>
                   <div><label className="mb-1 block text-xs font-medium text-muted-foreground">Cod poștal</label><input value={form.codPostal} onChange={(e) => u("codPostal", e.target.value)} className={inputClass} /></div>
                 </div>
+
+                {/* Save address checkbox */}
+                {user && (
+                  <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={saveAddress}
+                      onChange={(e) => setSaveAddress(e.target.checked)}
+                      className="accent-accent"
+                    />
+                    Salvează această adresă pentru comenzi viitoare
+                  </label>
+                )}
 
                 {billingType === "company" && (
                   <div className="grid gap-4 sm:grid-cols-2 border-t border-border pt-4">

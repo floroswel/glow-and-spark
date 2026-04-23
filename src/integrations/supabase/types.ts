@@ -566,6 +566,8 @@ export type Database = {
           discount: number | null
           discount_amount: number | null
           discount_code: string | null
+          gift_message: string | null
+          gift_wrapping: boolean | null
           id: string
           items: Json
           notes: string | null
@@ -598,6 +600,8 @@ export type Database = {
           discount?: number | null
           discount_amount?: number | null
           discount_code?: string | null
+          gift_message?: string | null
+          gift_wrapping?: boolean | null
           id?: string
           items?: Json
           notes?: string | null
@@ -630,6 +634,8 @@ export type Database = {
           discount?: number | null
           discount_amount?: number | null
           discount_code?: string | null
+          gift_message?: string | null
+          gift_wrapping?: boolean | null
           id?: string
           items?: Json
           notes?: string | null

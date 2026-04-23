@@ -5,6 +5,7 @@ import { CartProvider } from "@/hooks/useCart";
 import { AuthProvider } from "@/hooks/useAuth";
 import { FavoritesProvider } from "@/hooks/useFavorites";
 import { CompareProvider } from "@/hooks/useCompare";
+import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 
 import appCss from "../styles.css?url";
 

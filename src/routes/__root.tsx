@@ -9,6 +9,7 @@ import { CompareProvider } from "@/hooks/useCompare";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { initGTM } from "@/lib/gtm";
 import { initPixel, trackPageView } from "@/lib/fbpixel";
+import { updateSiteName } from "@/lib/seo";
 
 import appCss from "../styles.css?url";
 
@@ -84,6 +85,8 @@ function TrackingInit() {
 
   useEffect(() => {
     if (initialized.current) return;
+
+    if (general?.site_name) updateSiteName(general.site_name);
 
     const gtmId = import.meta.env.VITE_GTM_ID || general?.google_analytics_id;
     if (gtmId) initGTM(gtmId);

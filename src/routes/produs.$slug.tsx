@@ -379,7 +379,8 @@ function ProductPage() {
     return () => { supabase.removeChannel(channel); };
   }, [product?.id]);
 
-
+  useEffect(() => {
+    setLoading(true);
     setQuantity(1);
     setActiveTab("descriere");
     setSelectedVariant(null);

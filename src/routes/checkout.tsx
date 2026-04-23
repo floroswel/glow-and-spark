@@ -154,12 +154,14 @@ function CheckoutPage() {
       shipping_cost: shippingCost,
       discount_amount: discountAmount,
       discount_code: discountCode,
-      total: cartTotal,
+      total: finalTotal,
       payment_method: form.paymentMethod,
       notes: form.observatii || null,
       status: "pending",
       payment_status: "pending",
       user_id: user?.id || null,
+      gift_wrapping: giftWrapping,
+      gift_message: giftWrapping ? giftMessage || null : null,
     };
 
     const { data, error: dbError } = await supabase.from("orders").insert(orderData).select("id").single();
@@ -316,6 +318,28 @@ function CheckoutPage() {
 
                 <div><label className="mb-1 block text-xs font-medium text-muted-foreground">Observații</label><textarea value={form.observatii} onChange={(e) => u("observatii", e.target.value)} rows={2} className={inputClass} /></div>
 
+                {/* Gift wrapping */}
+                <div className="rounded-lg border border-border bg-secondary/50 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Gift className="h-4 w-4 text-accent" />
+                      <span className="text-sm font-medium text-foreground">Ambalaj cadou</span>
+                      <span className="text-xs text-muted-foreground">(+{giftWrappingPrice} RON)</span>
+                    </div>
+                    <Switch checked={giftWrapping} onCheckedChange={setGiftWrapping} />
+                  </div>
+                  {giftWrapping && (
+                    <textarea
+                      value={giftMessage}
+                      onChange={(e) => setGiftMessage(e.target.value.slice(0, 150))}
+                      maxLength={150}
+                      rows={2}
+                      placeholder="Mesaj pentru card cadou..."
+                      className={inputClass}
+                    />
+                  )}
+                </div>
+
                 <button onClick={() => { if (validateStep1()) setStep(2); }} className="w-full rounded-lg bg-accent py-3 font-bold text-accent-foreground transition hover:opacity-90">
                   Continuă → Metodă de plată
                 </button>
@@ -401,7 +425,8 @@ function CheckoutPage() {
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{cartSubtotal.toFixed(2)} RON</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Livrare</span><span>{shippingCost === 0 ? "GRATUITĂ" : `${shippingCost} RON`}</span></div>
               {discountAmount > 0 && <div className="flex justify-between text-chart-2"><span>Reducere</span><span>-{discountAmount.toFixed(2)} RON</span></div>}
-              <div className="flex justify-between border-t border-border pt-2 text-base font-bold"><span>Total</span><span>{cartTotal.toFixed(2)} RON</span></div>
+              {giftWrapping && <div className="flex justify-between"><span className="text-muted-foreground">Ambalaj cadou</span><span>{giftWrappingPrice.toFixed(2)} RON</span></div>}
+              <div className="flex justify-between border-t border-border pt-2 text-base font-bold"><span>Total</span><span>{finalTotal.toFixed(2)} RON</span></div>
             </div>
           </div>
         </div>

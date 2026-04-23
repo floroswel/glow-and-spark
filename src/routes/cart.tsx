@@ -25,6 +25,13 @@ function CartPage() {
   const [couponError, setCouponError] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
 
+  // Gift card
+  const [giftCardInput, setGiftCardInput] = useState("");
+  const [giftCardError, setGiftCardError] = useState("");
+  const [giftCardSuccess, setGiftCardSuccess] = useState("");
+  const [giftCardLoading, setGiftCardLoading] = useState(false);
+  const [giftCardCode, setGiftCardCode] = useState("");
+
   const remaining = Math.max(0, freeShippingMin - cartSubtotal);
   const progressPct = Math.min(100, (cartSubtotal / freeShippingMin) * 100);
 
@@ -73,6 +80,38 @@ function CartPage() {
     } catch {}
 
     setCouponLoading(false);
+  };
+
+  const handleApplyGiftCard = async () => {
+    if (!giftCardInput.trim()) return;
+    setGiftCardLoading(true);
+    setGiftCardError("");
+    setGiftCardSuccess("");
+
+    const { data: settingsRow } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "gift_cards")
+      .maybeSingle();
+
+    const cards: any[] = settingsRow?.value && Array.isArray(settingsRow.value) ? settingsRow.value : [];
+    const card = cards.find(
+      (c: any) => c.code?.toUpperCase() === giftCardInput.trim().toUpperCase() && c.status === "active" && Number(c.balance) > 0
+    );
+
+    if (!card) {
+      setGiftCardError("Cod invalid sau card cadou epuizat.");
+      setGiftCardLoading(false);
+      return;
+    }
+
+    const amount = Math.min(Number(card.balance), cartSubtotal);
+    applyDiscount(card.code, amount);
+    setGiftCardCode(card.code);
+    // Store in sessionStorage so checkout can read it
+    try { sessionStorage.setItem("gift_card_code", card.code); sessionStorage.setItem("gift_card_amount", String(amount)); } catch {}
+    setGiftCardSuccess(`Card cadou aplicat: -${amount.toFixed(2)} RON`);
+    setGiftCardLoading(false);
   };
 
   return (
@@ -158,6 +197,25 @@ function CartPage() {
                     </button>
                   </div>
                   {couponError && <p className="mt-1 text-xs text-destructive">{couponError}</p>}
+                </div>
+              )}
+
+              {/* Gift Card */}
+              {!giftCardCode ? (
+                <div>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">Card Cadou</label>
+                  <div className="flex gap-2">
+                    <input value={giftCardInput} onChange={(e) => setGiftCardInput(e.target.value)} placeholder="Cod card cadou" className="flex-1 rounded-lg border border-border px-3 py-2 text-sm focus:border-accent focus:outline-none" />
+                    <button onClick={handleApplyGiftCard} disabled={giftCardLoading} className="rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-accent hover:text-accent-foreground transition disabled:opacity-50">
+                      Aplică
+                    </button>
+                  </div>
+                  {giftCardError && <p className="mt-1 text-xs text-destructive">{giftCardError}</p>}
+                </div>
+              ) : (
+                <div className="flex items-center justify-between rounded-lg bg-chart-2/10 px-3 py-2">
+                  <span className="text-sm font-medium text-chart-2">🎁 {giftCardSuccess}</span>
+                  <button onClick={() => { setGiftCardCode(""); setGiftCardSuccess(""); clearDiscount(); try { sessionStorage.removeItem("gift_card_code"); sessionStorage.removeItem("gift_card_amount"); } catch {} }} className="text-xs text-muted-foreground hover:text-destructive">Șterge</button>
                 </div>
               )}
 

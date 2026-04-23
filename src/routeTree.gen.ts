@@ -14,6 +14,7 @@ import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PoliticaReturnareRouteImport } from './routes/politica-returnare'
 import { Route as PoliticaCookiesRouteImport } from './routes/politica-cookies'
 import { Route as GiftCardRouteImport } from './routes/gift-card'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -125,6 +126,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PoliticaReturnareRoute = PoliticaReturnareRouteImport.update({
+  id: '/politica-returnare',
+  path: '/politica-returnare',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PoliticaCookiesRoute = PoliticaCookiesRouteImport.update({
@@ -580,6 +586,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/gift-card': typeof GiftCardRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
+  '/politica-returnare': typeof PoliticaReturnareRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -672,6 +679,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/gift-card': typeof GiftCardRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
+  '/politica-returnare': typeof PoliticaReturnareRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -767,6 +775,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/gift-card': typeof GiftCardRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
+  '/politica-returnare': typeof PoliticaReturnareRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -863,6 +872,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/gift-card'
     | '/politica-cookies'
+    | '/politica-returnare'
     | '/reset-password'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -955,6 +965,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/gift-card'
     | '/politica-cookies'
+    | '/politica-returnare'
     | '/reset-password'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -1049,6 +1060,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/gift-card'
     | '/politica-cookies'
+    | '/politica-returnare'
     | '/reset-password'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -1144,6 +1156,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   GiftCardRoute: typeof GiftCardRoute
   PoliticaCookiesRoute: typeof PoliticaCookiesRoute
+  PoliticaReturnareRoute: typeof PoliticaReturnareRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -1190,6 +1203,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/politica-returnare': {
+      id: '/politica-returnare'
+      path: '/politica-returnare'
+      fullPath: '/politica-returnare'
+      preLoaderRoute: typeof PoliticaReturnareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/politica-cookies': {
@@ -2032,6 +2052,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   GiftCardRoute: GiftCardRoute,
   PoliticaCookiesRoute: PoliticaCookiesRoute,
+  PoliticaReturnareRoute: PoliticaReturnareRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

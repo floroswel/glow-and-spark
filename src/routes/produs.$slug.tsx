@@ -262,6 +262,41 @@ function ProductPage() {
     }
   }, [product]);
 
+  useEffect(() => {
+    if (!product) return;
+    const galleryImages: string[] = Array.isArray(product.gallery) ? (product.gallery as string[]) : [];
+    const images = [product.image_url, ...galleryImages].filter(Boolean);
+    const avg = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) : 0;
+    const jsonLd: Record<string, any> = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      description: product.short_description,
+      image: images,
+      sku: product.sku || product.id,
+      brand: { '@type': 'Brand', name: 'Glow & Spark' },
+      offers: {
+        '@type': 'Offer',
+        url: window.location.href,
+        priceCurrency: 'RON',
+        price: product.price,
+        availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      },
+    };
+    if (reviews.length > 0) {
+      jsonLd.aggregateRating = {
+        '@type': 'AggregateRating',
+        ratingValue: avg.toFixed(1),
+        reviewCount: reviews.length,
+      };
+    }
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(jsonLd);
+    document.head.appendChild(script);
+    return () => { document.head.removeChild(script); };
+  }, [product, reviews]);
+
   const handleAddToCart = () => {
     if (!product) return;
     const v = selectedVariant;

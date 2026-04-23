@@ -77,25 +77,41 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function RootComponent() {
+function TrackingInit() {
   const router = useRouter();
+  const { general } = useSiteSettings();
+  const initialized = useRef(false);
 
   useEffect(() => {
-    const gtmId = import.meta.env.VITE_GTM_ID;
+    if (initialized.current) return;
+
+    const gtmId = import.meta.env.VITE_GTM_ID || general?.google_analytics_id;
     if (gtmId) initGTM(gtmId);
-    initPixel();
+
+    const pixelId = import.meta.env.VITE_FB_PIXEL_ID || general?.facebook_pixel_id;
+    if (pixelId) initPixel(pixelId);
+
+    initialized.current = true;
+  }, [general]);
+
+  useEffect(() => {
     const unsub = router.subscribe("onResolved", () => {
       trackPageView();
     });
     return unsub;
   }, [router]);
 
+  return null;
+}
+
+function RootComponent() {
   return (
     <SiteSettingsProvider>
       <AuthProvider>
         <CartProvider>
           <FavoritesProvider>
             <CompareProvider>
+              <TrackingInit />
               <div className="pb-14 md:pb-0">
                 <Outlet />
               </div>

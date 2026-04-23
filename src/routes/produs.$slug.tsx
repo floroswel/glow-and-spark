@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
 import { useFavorites } from "@/hooks/useFavorites";
@@ -25,6 +26,181 @@ export const Route = createFileRoute("/produs/$slug")({
   }),
   component: ProductPage,
 });
+
+function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any; reviews: any[]; setReviews: (r: any[]) => void; avgRating: number }) {
+  const { user, profile } = useAuth();
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [authorName, setAuthorName] = useState(profile?.full_name || "");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (profile?.full_name && !authorName) setAuthorName(profile.full_name);
+  }, [profile]);
+
+  const handleSubmitReview = async () => {
+    if (rating === 0) { toast.error("Selectează un rating (1-5 stele)."); return; }
+    if (!authorName.trim()) { toast.error("Completează numele."); return; }
+    setSubmitting(true);
+    const { error } = await supabase.from("product_reviews").insert({
+      product_id: product.id,
+      user_id: user?.id || null,
+      author_name: authorName.trim(),
+      rating,
+      title: title.trim() || null,
+      content: content.trim() || null,
+      status: "pending",
+      verified_purchase: false,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error("Eroare la trimiterea recenziei.");
+      return;
+    }
+    toast.success("Recenzia ta a fost trimisă și va fi publicată după moderare.");
+    setSubmitted(true);
+    setRating(0); setTitle(""); setContent("");
+  };
+
+  return (
+    <div className="space-y-6">
+      {reviews.length === 0 ? (
+        <p className="text-center py-8 text-muted-foreground">Nu există recenzii încă. Fii primul care lasă o recenzie!</p>
+      ) : (
+        <>
+          {/* Rating summary */}
+          <div className="flex items-center gap-6 rounded-xl border border-border bg-card p-5">
+            <div className="text-center">
+              <p className="text-4xl font-bold text-foreground">{avgRating.toFixed(1)}</p>
+              <div className="flex mt-1">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star key={s} className={`h-4 w-4 ${s <= Math.round(avgRating) ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"}`} />
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">{reviews.length} recenzii</p>
+            </div>
+            <div className="flex-1 space-y-1">
+              {[5, 4, 3, 2, 1].map((star) => {
+                const count = reviews.filter((r) => r.rating === star).length;
+                const pct = reviews.length ? (count / reviews.length) * 100 : 0;
+                return (
+                  <div key={star} className="flex items-center gap-2 text-xs">
+                    <span className="w-3 text-right">{star}</span>
+                    <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                    <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                      <div className="h-full rounded-full bg-yellow-500 transition-all" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="w-6 text-right text-muted-foreground">{count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Individual reviews */}
+          {reviews.map((review) => (
+            <div key={review.id} className="rounded-lg border border-border bg-card p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} className={`h-3.5 w-3.5 ${s <= review.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"}`} />
+                  ))}
+                </div>
+                {review.author_name && <span className="text-xs font-medium text-foreground">{review.author_name}</span>}
+                <span className="text-xs text-muted-foreground">
+                  {new Date(review.created_at).toLocaleDateString("ro-RO")}
+                </span>
+              </div>
+              {review.title && <p className="font-medium text-foreground text-sm">{review.title}</p>}
+              {review.content && <p className="mt-1 text-sm text-muted-foreground">{review.content}</p>}
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* Review form */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h3 className="font-heading text-lg font-bold text-foreground mb-4">Lasă o recenzie</h3>
+        {!user ? (
+          <div className="text-center py-4">
+            <p className="text-muted-foreground mb-3">Loghează-te pentru a lăsa o recenzie.</p>
+            <Link to="/auth" className="inline-block rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition hover:opacity-90">
+              Autentificare
+            </Link>
+          </div>
+        ) : submitted ? (
+          <p className="text-center py-4 text-chart-2 font-medium">✓ Recenzia ta a fost trimisă și va fi publicată după moderare.</p>
+        ) : (
+          <div className="space-y-4">
+            {/* Star selector */}
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Rating *</label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onMouseEnter={() => setHoverRating(s)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    onClick={() => setRating(s)}
+                    className="p-0.5 transition"
+                  >
+                    <Star className={`h-7 w-7 transition ${s <= (hoverRating || rating) ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"}`} />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Numele tău *</label>
+              <input
+                value={authorName}
+                onChange={(e) => setAuthorName(e.target.value)}
+                maxLength={100}
+                className="w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground focus:border-accent focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Titlu recenzie</label>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                maxLength={100}
+                placeholder="Rezumat scurt..."
+                className="w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground focus:border-accent focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Recenzie</label>
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                maxLength={500}
+                rows={3}
+                placeholder="Spune-ne părerea ta despre produs..."
+                className="w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground focus:border-accent focus:outline-none resize-none"
+              />
+              <p className="mt-1 text-xs text-muted-foreground text-right">{content.length}/500</p>
+            </div>
+
+            <button
+              onClick={handleSubmitReview}
+              disabled={submitting}
+              className="rounded-lg bg-accent px-6 py-2.5 text-sm font-semibold text-accent-foreground transition hover:opacity-90 disabled:opacity-50"
+            >
+              {submitting ? "Se trimite..." : "Trimite recenzia"}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function ProductPage() {
   const { slug } = Route.useParams();
@@ -427,60 +603,7 @@ function ProductPage() {
               <p>Ceară de soia pură, uleiuri esențiale premium, fitil din lemn natural. Fără parafină, fără coloranți artificiali.</p>
             )}
             {activeTab === "recenzii" && (
-              <div className="space-y-6">
-                {reviews.length === 0 ? (
-                  <p className="text-center py-8 text-muted-foreground">Nu există recenzii încă. Fii primul care lasă o recenzie!</p>
-                ) : (
-                  <>
-                    {/* Rating summary */}
-                    <div className="flex items-center gap-6 rounded-xl border border-border bg-card p-5">
-                      <div className="text-center">
-                        <p className="text-4xl font-bold text-foreground">{avgRating.toFixed(1)}</p>
-                        <div className="flex mt-1">
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <Star key={s} className={`h-4 w-4 ${s <= Math.round(avgRating) ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"}`} />
-                          ))}
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">{reviews.length} recenzii</p>
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        {[5, 4, 3, 2, 1].map((star) => {
-                          const count = reviews.filter((r) => r.rating === star).length;
-                          const pct = reviews.length ? (count / reviews.length) * 100 : 0;
-                          return (
-                            <div key={star} className="flex items-center gap-2 text-xs">
-                              <span className="w-3 text-right">{star}</span>
-                              <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
-                              <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                                <div className="h-full rounded-full bg-yellow-500 transition-all" style={{ width: `${pct}%` }} />
-                              </div>
-                              <span className="w-6 text-right text-muted-foreground">{count}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Individual reviews */}
-                    {reviews.map((review) => (
-                      <div key={review.id} className="rounded-lg border border-border bg-card p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="flex">
-                            {[1, 2, 3, 4, 5].map((s) => (
-                              <Star key={s} className={`h-3.5 w-3.5 ${s <= review.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"}`} />
-                            ))}
-                          </div>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(review.created_at).toLocaleDateString("ro-RO")}
-                          </span>
-                        </div>
-                        {review.title && <p className="font-medium text-foreground text-sm">{review.title}</p>}
-                        {review.content && <p className="mt-1 text-sm text-muted-foreground">{review.content}</p>}
-                      </div>
-                    ))}
-                  </>
-                )}
-              </div>
+              <ReviewsTab product={product} reviews={reviews} setReviews={setReviews} avgRating={avgRating} />
             )}
             {activeTab === "livrare" && (
               <div className="space-y-3">

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { setPageMeta, setCanonical, removeCanonical } from "@/lib/seo";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
@@ -219,6 +219,19 @@ function ProductPage() {
   const [activeTab, setActiveTab] = useState("descriere");
   const [selectedImage, setSelectedImage] = useState("");
   const [added, setAdded] = useState(false);
+  const addToCartRef = useRef<HTMLButtonElement>(null);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+
+  useEffect(() => {
+    const el = addToCartRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyBar(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [product]);
 
   useEffect(() => {
     setLoading(true);
@@ -534,6 +547,7 @@ function ProductPage() {
                 </button>
               </div>
               <button
+                ref={addToCartRef}
                 onClick={handleAddToCart}
                 disabled={activeStock === 0}
                 className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-3 text-sm font-semibold transition disabled:opacity-50 ${
@@ -698,6 +712,38 @@ function ProductPage() {
       <SiteFooter />
       <WhatsAppButton />
       <BackToTop />
+
+      {/* Sticky bottom bar */}
+      {activeStock > 0 && (
+        <div
+          className="fixed bottom-0 left-0 right-0 z-40 transition-transform duration-300 ease-in-out"
+          style={{ transform: showStickyBar ? "translateY(0)" : "translateY(100%)" }}
+        >
+          <div className="mx-auto w-full max-w-[680px] border-t border-border bg-card/95 backdrop-blur-sm px-4 py-3 shadow-lg">
+            <div className="flex items-center gap-3">
+              <img
+                src={selectedImage || product.image_url || "/placeholder.svg"}
+                alt={product.name}
+                className="h-10 w-10 rounded-md object-cover flex-shrink-0"
+                width={40}
+                height={40}
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-foreground">{product.name}</p>
+                <p className="text-sm font-bold text-foreground">{activePrice} RON</p>
+              </div>
+              <button
+                onClick={handleAddToCart}
+                className="flex-shrink-0 flex items-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-accent hover:text-accent-foreground transition"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                <span className="hidden sm:inline">Adaugă în coș</span>
+                <span className="sm:hidden">Adaugă</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

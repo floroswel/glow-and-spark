@@ -9,7 +9,7 @@ import {
   CreditCard, Truck, Brain, Server, ChevronDown, ChevronRight,
   Link2, UserCog, Warehouse, Search, Command, Bell, Moon, Sun,
   RotateCcw, Activity, User, Gift, Crown, Percent, FileSpreadsheet,
-  Zap, Receipt, Calculator
+  Zap, Receipt, Calculator, Cookie, Star, Briefcase
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -27,6 +27,14 @@ interface MenuItem { icon: any; label: string; to?: string; end?: boolean; child
 interface MenuSection { title: string; items: MenuItem[] }
 
 const menuSections: MenuSection[] = [
+  {
+    title: "ACCES RAPID",
+    items: [
+      { icon: Star, label: "Social Proof", to: "/admin/social-proof" },
+      { icon: Cookie, label: "Politica Cookies", to: "/admin/pages" },
+      { icon: Briefcase, label: "Date Comerciale", to: "/admin/footer" },
+    ],
+  },
   {
     title: "PRINCIPAL",
     items: [

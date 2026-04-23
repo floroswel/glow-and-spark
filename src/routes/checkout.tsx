@@ -398,6 +398,10 @@ function CheckoutPage() {
                     <input type="checkbox" checked={form.acceptGdpr} onChange={(e) => u("acceptGdpr", e.target.checked)} className="mt-0.5 accent-accent" />
                     <span>Accept <a href="/page/gdpr" className="text-accent underline">politica de confidențialitate</a> *</span>
                   </label>
+                  <p className="text-xs text-muted-foreground mt-2 pl-1">
+                    🔒 Ai dreptul de retragere în <strong>14 zile calendaristice</strong> de la primirea produsului, conform{" "}
+                    <a href="/politica-returnare" className="text-accent underline hover:opacity-80">OUG 34/2014</a>.
+                  </p>
                 </div>
                 <div className="flex gap-3 pt-2">
                   <button onClick={() => setStep(2)} className="rounded-lg border border-border px-6 py-3 font-medium text-muted-foreground transition hover:bg-secondary">← Înapoi</button>

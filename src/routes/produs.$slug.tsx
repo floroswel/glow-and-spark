@@ -611,6 +611,19 @@ function ProductPage() {
           {/* Info */}
           <div>
             <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground">{product.name}</h1>
+            <div className="mt-1.5 flex flex-wrap items-center gap-3">
+              {product.sold_count > 10 && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-chart-2">
+                  <Check className="h-3.5 w-3.5" /> Vândut de {product.sold_count}+ ori
+                </span>
+              )}
+              {viewerCount >= 2 && (
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-accent">
+                  <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-accent" /></span>
+                  {viewerCount} persoane văd acest produs acum
+                </span>
+              )}
+            </div>
             {product.short_description && (
               <p className="mt-2 text-muted-foreground">{product.short_description}</p>
             )}

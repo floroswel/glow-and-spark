@@ -161,6 +161,11 @@ function AccountLayout() {
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
                     <span>{item.label}</span>
+                    {(item as any).badge && unreadCount > 0 && (
+                      <span className="inline-flex items-center justify-center rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground min-w-[18px]">
+                        {unreadCount}
+                      </span>
+                    )}
                   </Link>
                 );
               })}

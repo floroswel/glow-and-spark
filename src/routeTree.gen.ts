@@ -15,6 +15,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PoliticaCookiesRouteImport } from './routes/politica-cookies'
+import { Route as GiftCardRouteImport } from './routes/gift-card'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -129,6 +130,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const PoliticaCookiesRoute = PoliticaCookiesRouteImport.update({
   id: '/politica-cookies',
   path: '/politica-cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GiftCardRoute = GiftCardRouteImport.update({
+  id: '/gift-card',
+  path: '/gift-card',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -572,6 +578,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/gift-card': typeof GiftCardRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -663,6 +670,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/gift-card': typeof GiftCardRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -757,6 +765,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/gift-card': typeof GiftCardRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -852,6 +861,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/forgot-password'
+    | '/gift-card'
     | '/politica-cookies'
     | '/reset-password'
     | '/robots.txt'
@@ -943,6 +953,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/forgot-password'
+    | '/gift-card'
     | '/politica-cookies'
     | '/reset-password'
     | '/robots.txt'
@@ -1036,6 +1047,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/forgot-password'
+    | '/gift-card'
     | '/politica-cookies'
     | '/reset-password'
     | '/robots.txt'
@@ -1130,6 +1142,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  GiftCardRoute: typeof GiftCardRoute
   PoliticaCookiesRoute: typeof PoliticaCookiesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
@@ -1184,6 +1197,13 @@ declare module '@tanstack/react-router' {
       path: '/politica-cookies'
       fullPath: '/politica-cookies'
       preLoaderRoute: typeof PoliticaCookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gift-card': {
+      id: '/gift-card'
+      path: '/gift-card'
+      fullPath: '/gift-card'
+      preLoaderRoute: typeof GiftCardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -2010,6 +2030,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  GiftCardRoute: GiftCardRoute,
   PoliticaCookiesRoute: PoliticaCookiesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,

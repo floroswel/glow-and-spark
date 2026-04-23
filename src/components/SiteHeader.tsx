@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useCart } from "@/hooks/useCart";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Menu, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package, X } from "lucide-react";
+import { Menu, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package, X, Gift } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { HighlightText } from "@/components/HighlightText";

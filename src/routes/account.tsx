@@ -32,6 +32,17 @@ function AccountLayout() {
   const { user, profile, loading, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("user_notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("is_read", false)
+      .then(({ count }) => setUnreadCount(count || 0));
+  }, [user, location.pathname]);
 
   if (loading) {
     return (

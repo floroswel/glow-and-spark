@@ -714,6 +714,7 @@ export type Database = {
           content: string | null
           created_at: string | null
           id: string
+          photo_urls: string[] | null
           product_id: string
           rating: number
           status: string | null
@@ -726,6 +727,7 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          photo_urls?: string[] | null
           product_id: string
           rating: number
           status?: string | null
@@ -738,6 +740,7 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          photo_urls?: string[] | null
           product_id?: string
           rating?: number
           status?: string | null

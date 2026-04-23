@@ -16,8 +16,9 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { BackToTop } from "@/components/BackToTop";
 import { TrustBadges } from "@/components/TrustBadges";
-import { ChevronRight, Minus, Plus, ShoppingCart, Truck, RotateCcw, Heart, GitCompare, Share2, Star, Shield, Check } from "lucide-react";
+import { ChevronRight, Minus, Plus, ShoppingCart, Truck, RotateCcw, Heart, GitCompare, Share2, Star, Shield, Check, X, ChevronLeft, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/produs/$slug")({
   head: () => ({
@@ -38,6 +39,38 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
   const [authorName, setAuthorName] = useState(profile?.full_name || "");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const valid: File[] = [];
+    for (const f of files) {
+      if (!f.type.startsWith("image/")) { toast.error(`${f.name} nu este o imagine.`); continue; }
+      if (f.size > 2 * 1024 * 1024) { toast.error(`${f.name} depășește 2MB.`); continue; }
+      valid.push(f);
+    }
+    const combined = [...photoFiles, ...valid].slice(0, 3);
+    setPhotoFiles(combined);
+    setPhotoPreviews(combined.map((f) => URL.createObjectURL(f)));
+    if (e.target) e.target.value = "";
+  };
+
+  const removePhoto = (idx: number) => {
+    const next = photoFiles.filter((_, i) => i !== idx);
+    setPhotoFiles(next);
+    setPhotoPreviews(next.map((f) => URL.createObjectURL(f)));
+  };
+
+  const openLightbox = (images: string[], idx: number) => {
+    setLightboxImages(images);
+    setLightboxIndex(idx);
+    setLightboxOpen(true);
+  };
 
   useEffect(() => {
     if (profile?.full_name && !authorName) setAuthorName(profile.full_name);
@@ -47,6 +80,19 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
     if (rating === 0) { toast.error("Selectează un rating (1-5 stele)."); return; }
     if (!authorName.trim()) { toast.error("Completează numele."); return; }
     setSubmitting(true);
+
+    // Upload photos
+    let photo_urls: string[] = [];
+    if (photoFiles.length > 0) {
+      for (const file of photoFiles) {
+        const path = `${product.id}/${Date.now()}-${file.name}`;
+        const { error: upErr } = await supabase.storage.from("review-photos").upload(path, file);
+        if (upErr) { console.error(upErr); continue; }
+        const { data: pubData } = supabase.storage.from("review-photos").getPublicUrl(path);
+        if (pubData?.publicUrl) photo_urls.push(pubData.publicUrl);
+      }
+    }
+
     const { error } = await supabase.from("product_reviews").insert({
       product_id: product.id,
       user_id: user?.id || null,
@@ -56,7 +102,8 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
       content: content.trim() || null,
       status: "pending",
       verified_purchase: false,
-    });
+      photo_urls,
+    } as any);
     setSubmitting(false);
     if (error) {
       toast.error("Eroare la trimiterea recenziei.");
@@ -64,7 +111,7 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
     }
     toast.success("Recenzia ta a fost trimisă și va fi publicată după moderare.");
     setSubmitted(true);
-    setRating(0); setTitle(""); setContent("");
+    setRating(0); setTitle(""); setContent(""); setPhotoFiles([]); setPhotoPreviews([]);
   };
 
   return (
@@ -118,6 +165,15 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
               </div>
               {review.title && <p className="font-medium text-foreground text-sm">{review.title}</p>}
               {review.content && <p className="mt-1 text-sm text-muted-foreground">{review.content}</p>}
+              {review.photo_urls && (review.photo_urls as string[]).length > 0 && (
+                <div className="mt-2 flex gap-2">
+                  {(review.photo_urls as string[]).map((url: string, idx: number) => (
+                    <button key={idx} onClick={() => openLightbox(review.photo_urls as string[], idx)} className="rounded-md overflow-hidden border border-border hover:border-accent transition">
+                      <img src={url} alt={`Foto ${idx + 1}`} className="h-[60px] w-[60px] object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </>
@@ -190,6 +246,29 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
               <p className="mt-1 text-xs text-muted-foreground text-right">{content.length}/500</p>
             </div>
 
+            {/* Photo upload */}
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Fotografii (max 3, 2MB fiecare)</label>
+              <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileChange} className="hidden" />
+              <button type="button" onClick={() => fileInputRef.current?.click()} disabled={photoFiles.length >= 3}
+                className="flex items-center gap-2 rounded-lg border border-dashed border-border px-4 py-2.5 text-sm text-muted-foreground hover:border-accent hover:text-foreground transition disabled:opacity-40">
+                <ImageIcon className="h-4 w-4" /> Adaugă fotografii
+              </button>
+              {photoPreviews.length > 0 && (
+                <div className="mt-2 flex gap-2">
+                  {photoPreviews.map((src, idx) => (
+                    <div key={idx} className="relative group">
+                      <img src={src} alt={`Preview ${idx + 1}`} className="h-[60px] w-[60px] rounded-md object-cover border border-border" />
+                      <button type="button" onClick={() => removePhoto(idx)}
+                        className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button
               onClick={handleSubmitReview}
               disabled={submitting}
@@ -200,6 +279,30 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
           </div>
         )}
       </div>
+
+      {/* Lightbox dialog */}
+      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+        <DialogContent className="max-w-2xl p-2 bg-black/95 border-none">
+          {lightboxImages.length > 0 && (
+            <div className="relative flex items-center justify-center min-h-[300px]">
+              <img src={lightboxImages[lightboxIndex]} alt="" className="max-h-[70vh] max-w-full object-contain rounded" />
+              {lightboxImages.length > 1 && (
+                <>
+                  <button onClick={() => setLightboxIndex((i) => (i - 1 + lightboxImages.length) % lightboxImages.length)}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/40 transition">
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button onClick={() => setLightboxIndex((i) => (i + 1) % lightboxImages.length)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/40 transition">
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </>
+              )}
+              <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-white/70">{lightboxIndex + 1} / {lightboxImages.length}</p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

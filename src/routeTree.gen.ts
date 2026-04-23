@@ -75,6 +75,7 @@ import { Route as AdminActivityRouteImport } from './routes/admin/activity'
 import { Route as AdminAbandonedCartsRouteImport } from './routes/admin/abandoned-carts'
 import { Route as AccountSettingsRouteImport } from './routes/account/settings'
 import { Route as AccountOrdersRouteImport } from './routes/account/orders'
+import { Route as AccountNotificationsRouteImport } from './routes/account/notifications'
 import { Route as AccountFavoritesRouteImport } from './routes/account/favorites'
 import { Route as AccountAddressesRouteImport } from './routes/account/addresses'
 import { Route as AdminStockWarehousesRouteImport } from './routes/admin/stock.warehouses'
@@ -427,6 +428,11 @@ const AccountOrdersRoute = AccountOrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => AccountRoute,
 } as any)
+const AccountNotificationsRoute = AccountNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => AccountRoute,
+} as any)
 const AccountFavoritesRoute = AccountFavoritesRouteImport.update({
   id: '/favorites',
   path: '/favorites',
@@ -553,6 +559,7 @@ export interface FileRoutesByFullPath {
   '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/favorites': typeof AccountFavoritesRoute
+  '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
@@ -640,6 +647,7 @@ export interface FileRoutesByTo {
   '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/favorites': typeof AccountFavoritesRoute
+  '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
@@ -730,6 +738,7 @@ export interface FileRoutesById {
   '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/favorites': typeof AccountFavoritesRoute
+  '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
@@ -821,6 +830,7 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/account/addresses'
     | '/account/favorites'
+    | '/account/notifications'
     | '/account/orders'
     | '/account/settings'
     | '/admin/abandoned-carts'
@@ -908,6 +918,7 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/account/addresses'
     | '/account/favorites'
+    | '/account/notifications'
     | '/account/orders'
     | '/account/settings'
     | '/admin/abandoned-carts'
@@ -997,6 +1008,7 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/account/addresses'
     | '/account/favorites'
+    | '/account/notifications'
     | '/account/orders'
     | '/account/settings'
     | '/admin/abandoned-carts'
@@ -1555,6 +1567,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountOrdersRouteImport
       parentRoute: typeof AccountRoute
     }
+    '/account/notifications': {
+      id: '/account/notifications'
+      path: '/notifications'
+      fullPath: '/account/notifications'
+      preLoaderRoute: typeof AccountNotificationsRouteImport
+      parentRoute: typeof AccountRoute
+    }
     '/account/favorites': {
       id: '/account/favorites'
       path: '/favorites'
@@ -1708,6 +1727,7 @@ declare module '@tanstack/react-router' {
 interface AccountRouteChildren {
   AccountAddressesRoute: typeof AccountAddressesRoute
   AccountFavoritesRoute: typeof AccountFavoritesRoute
+  AccountNotificationsRoute: typeof AccountNotificationsRoute
   AccountOrdersRoute: typeof AccountOrdersRoute
   AccountSettingsRoute: typeof AccountSettingsRoute
   AccountIndexRoute: typeof AccountIndexRoute
@@ -1716,6 +1736,7 @@ interface AccountRouteChildren {
 const AccountRouteChildren: AccountRouteChildren = {
   AccountAddressesRoute: AccountAddressesRoute,
   AccountFavoritesRoute: AccountFavoritesRoute,
+  AccountNotificationsRoute: AccountNotificationsRoute,
   AccountOrdersRoute: AccountOrdersRoute,
   AccountSettingsRoute: AccountSettingsRoute,
   AccountIndexRoute: AccountIndexRoute,

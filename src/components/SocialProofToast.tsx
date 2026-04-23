@@ -68,16 +68,31 @@ export function SocialProofToast() {
   useEffect(() => { setMounted(true); }, []);
 
   const show = social_proof?.show !== false;
-  const interval = (social_proof?.interval_seconds || 20) * 1000;
+  const delayFirst = ((social_proof?.delay_first ?? 8) * 1000);
+  const interval = ((social_proof?.interval ?? 30) * 1000);
+  const displayDuration = ((social_proof?.display_duration ?? 5) * 1000);
+  const emoji = social_proof?.emoji || "🕯️";
+  const badgeText = social_proof?.badge_text || "✔ Verificat";
+  const useReal = social_proof?.use_real_orders === true;
+  const customNames = social_proof?.names as string[] | undefined;
+  const customProducts = social_proof?.products as string[] | undefined;
 
   const buildQueue = useCallback((): ProofEntry[] => {
-    const entries: ProofEntry[] = Array.from({ length: 30 }, () => ({
-      name: pick(ALL_NAMES),
-      city: pick(CITIES),
-      product: pick(PRODUCTS),
-    }));
+    const namePool = (!useReal && customNames?.length) ? customNames : ALL_NAMES.map((n) => n);
+    const productPool = (!useReal && customProducts?.length) ? customProducts : PRODUCTS;
+
+    const entries: ProofEntry[] = Array.from({ length: 30 }, () => {
+      const rawName = pick(namePool);
+      // If custom name already includes city (e.g. "Ana din București"), split it
+      const hasDin = rawName.includes(" din ");
+      return {
+        name: hasDin ? rawName.split(" din ")[0] : rawName,
+        city: hasDin ? rawName.split(" din ")[1] : pick(CITIES),
+        product: pick(productPool),
+      };
+    });
     return shuffleArray(entries);
-  }, []);
+  }, [useReal, customNames, customProducts]);
 
   const showNext = useCallback(() => {
     if (queueRef.current.length === 0) queueRef.current = buildQueue();
@@ -92,15 +107,15 @@ export function SocialProofToast() {
     lastRef.current = entry.name;
     setCurrent(entry);
     setVisible(true);
-    setTimeout(() => setVisible(false), 6000);
-  }, [buildQueue]);
+    setTimeout(() => setVisible(false), displayDuration);
+  }, [buildQueue, displayDuration]);
 
   useEffect(() => {
     if (!show || !mounted) return;
-    const t1 = setTimeout(showNext, 8000);
-    const t2 = setInterval(showNext, interval + 6000);
+    const t1 = setTimeout(showNext, delayFirst);
+    const t2 = setInterval(showNext, interval + displayDuration);
     return () => { clearTimeout(t1); clearInterval(t2); };
-  }, [show, interval, showNext, mounted]);
+  }, [show, delayFirst, interval, displayDuration, showNext, mounted]);
 
   if (!mounted || !show || !visible || !current) return null;
 
@@ -108,7 +123,7 @@ export function SocialProofToast() {
     <div className="fixed bottom-6 left-6 z-[90] animate-in slide-in-from-bottom-4 duration-300">
       <div className="flex w-[320px] items-center gap-3 rounded-lg border border-border bg-card p-3 shadow-2xl">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-2xl">
-          🕯️
+          {emoji}
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-xs text-muted-foreground">Acum {Math.floor(Math.random() * 15) + 1} minute</p>
@@ -117,7 +132,7 @@ export function SocialProofToast() {
           </p>
           <p className="text-xs text-muted-foreground truncate">a cumpărat: {current.product}</p>
         </div>
-        <span className="shrink-0 text-green-600 text-xs font-bold">✔ Verificat</span>
+        <span className="shrink-0 rounded bg-accent/15 px-2 py-0.5 text-[10px] font-semibold text-accent">{badgeText}</span>
       </div>
     </div>
   );

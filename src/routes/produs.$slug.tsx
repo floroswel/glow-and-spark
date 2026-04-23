@@ -712,6 +712,38 @@ function ProductPage() {
       <SiteFooter />
       <WhatsAppButton />
       <BackToTop />
+
+      {/* Sticky bottom bar */}
+      {activeStock > 0 && (
+        <div
+          className="fixed bottom-0 left-0 right-0 z-40 transition-transform duration-300 ease-in-out"
+          style={{ transform: showStickyBar ? "translateY(0)" : "translateY(100%)" }}
+        >
+          <div className="mx-auto w-full max-w-[680px] border-t border-border bg-card/95 backdrop-blur-sm px-4 py-3 shadow-lg">
+            <div className="flex items-center gap-3">
+              <img
+                src={selectedImage || product.image_url || "/placeholder.svg"}
+                alt={product.name}
+                className="h-10 w-10 rounded-md object-cover flex-shrink-0"
+                width={40}
+                height={40}
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-foreground">{product.name}</p>
+                <p className="text-sm font-bold text-foreground">{activePrice} RON</p>
+              </div>
+              <button
+                onClick={handleAddToCart}
+                className="flex-shrink-0 flex items-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-accent hover:text-accent-foreground transition"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                <span className="hidden sm:inline">Adaugă în coș</span>
+                <span className="sm:hidden">Adaugă</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

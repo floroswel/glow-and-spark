@@ -12,6 +12,7 @@ import { initGTM } from "@/lib/gtm";
 import { initPixel, trackPageView } from "@/lib/fbpixel";
 import { updateSiteName } from "@/lib/seo";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { getConsent } from "@/components/CookieConsent";
 
 import appCss from "../styles.css?url";
 
@@ -102,20 +103,36 @@ function upsertMeta(name: string, content: string) {
 function TrackingInit() {
   const router = useRouter();
   const { general, seo_global } = useSiteSettings();
-  const initialized = useRef(false);
+  const gtmInitialized = useRef(false);
+  const pixelInitialized = useRef(false);
 
   useEffect(() => {
-    if (initialized.current) return;
-
     if (general?.site_name) updateSiteName(general.site_name);
 
-    const gtmId = import.meta.env.VITE_GTM_ID || general?.google_analytics_id;
-    if (gtmId) initGTM(gtmId);
+    const applyConsent = () => {
+      const consent = getConsent();
+      const gtmId = import.meta.env.VITE_GTM_ID || general?.google_analytics_id;
+      const pixelId = import.meta.env.VITE_FB_PIXEL_ID || general?.facebook_pixel_id;
 
-    const pixelId = import.meta.env.VITE_FB_PIXEL_ID || general?.facebook_pixel_id;
-    if (pixelId) initPixel(pixelId);
+      if (consent?.analytics && gtmId && !gtmInitialized.current) {
+        initGTM(gtmId);
+        gtmInitialized.current = true;
+      }
+      if (consent?.marketing && pixelId && !pixelInitialized.current) {
+        initPixel(pixelId);
+        pixelInitialized.current = true;
+      }
+    };
 
-    initialized.current = true;
+    applyConsent();
+
+    const onChange = () => applyConsent();
+    window.addEventListener("cookie-consent-changed", onChange);
+    window.addEventListener("storage", onChange);
+    return () => {
+      window.removeEventListener("cookie-consent-changed", onChange);
+      window.removeEventListener("storage", onChange);
+    };
   }, [general]);
 
   // SEO: verification meta tags & Organization JSON-LD

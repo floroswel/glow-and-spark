@@ -122,7 +122,7 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error("[netopia-ipn] Error:", error);
-    return new Response(JSON.stringify({ errorCode: 0x03, errorMessage: error.message }), {
+    return new Response(JSON.stringify({ errorCode: 0x03, errorMessage: (error instanceof Error ? error.message : String(error)) }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

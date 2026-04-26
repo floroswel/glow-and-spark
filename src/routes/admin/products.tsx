@@ -927,7 +927,7 @@ function AdminProducts() {
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} din {filtered.length} produse
+            {totalCount === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, totalCount)} din {totalCount} produse
           </p>
           <div className="flex items-center gap-1">
             <button onClick={() => setPage(1)} disabled={page === 1} className="rounded-lg border border-border px-2 py-1.5 text-xs disabled:opacity-40 hover:bg-secondary transition">Prima</button>

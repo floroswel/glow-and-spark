@@ -470,7 +470,9 @@ function AdminLayout() {
           </div>
         </div>
         <div className="p-6">
-          <Outlet />
+          <ErrorBoundary variant="admin">
+            <Outlet />
+          </ErrorBoundary>
         </div>
       </main>
       <AdminGlobalSearch />

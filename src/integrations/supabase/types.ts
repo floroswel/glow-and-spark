@@ -1327,6 +1327,30 @@ export type Database = {
           },
         ]
       }
+      stock_alert_log: {
+        Row: {
+          alerted_at: string
+          id: string
+          product_id: string
+          stock_at_alert: number
+          threshold: number | null
+        }
+        Insert: {
+          alerted_at?: string
+          id?: string
+          product_id: string
+          stock_at_alert?: number
+          threshold?: number | null
+        }
+        Update: {
+          alerted_at?: string
+          id?: string
+          product_id?: string
+          stock_at_alert?: number
+          threshold?: number | null
+        }
+        Relationships: []
+      }
       stock_alerts: {
         Row: {
           category_id: string | null

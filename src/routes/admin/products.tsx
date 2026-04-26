@@ -826,7 +826,7 @@ function AdminProducts() {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     {p.image_url ? (
-                      <img src={p.image_url} alt="" className="h-12 w-12 rounded-lg object-cover border border-border shrink-0" />
+                      <img src={p.image_url} alt={p.name} loading="lazy" className="h-12 w-12 rounded-lg object-cover border border-border shrink-0" />
                     ) : (
                       <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0"><ImageIcon className="h-5 w-5" /></div>
                     )}

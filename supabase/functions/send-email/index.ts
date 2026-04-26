@@ -7,6 +7,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
 };
 
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
 interface SiteConfig {
   SITE_NAME: string;
   SITE_URL: string;

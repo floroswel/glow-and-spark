@@ -32,6 +32,7 @@ const defaults = {
   order_prefix: "GS",
   order_email_notifications: true,
   low_stock_threshold: "5",
+  stock_alert_threshold: "5",
   google_analytics_id: "",
   facebook_pixel_id: "",
   meta_title_suffix: " — Glow & Spark",

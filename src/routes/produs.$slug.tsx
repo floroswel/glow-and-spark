@@ -99,10 +99,10 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
     const { error } = await supabase.from("product_reviews").insert({
       product_id: product.id,
       user_id: user?.id || null,
-      author_name: authorName.trim(),
+      author_name: sanitizeText(authorName.trim()),
       rating,
-      title: title.trim() || null,
-      content: content.trim() || null,
+      title: title.trim() ? sanitizeText(title.trim()) : null,
+      content: content.trim() ? sanitizeText(content.trim()) : null,
       status: "pending",
       verified_purchase: false,
       photo_urls,

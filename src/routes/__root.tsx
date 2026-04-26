@@ -186,22 +186,24 @@ function RedirectHandler() {
 
 function RootComponent() {
   return (
-    <SiteSettingsProvider>
-      <AuthProvider>
-        <CartProvider>
-          <FavoritesProvider>
-            <CompareProvider>
-              <TrackingInit />
-              <RedirectHandler />
-              <div className="pb-14 md:pb-0">
-                <Outlet />
-              </div>
-              <MobileBottomNav />
-              <ExitIntentPopup />
-            </CompareProvider>
-          </FavoritesProvider>
-        </CartProvider>
-      </AuthProvider>
-    </SiteSettingsProvider>
+    <ErrorBoundary variant="app">
+      <SiteSettingsProvider>
+        <AuthProvider>
+          <CartProvider>
+            <FavoritesProvider>
+              <CompareProvider>
+                <TrackingInit />
+                <RedirectHandler />
+                <div className="pb-14 md:pb-0">
+                  <Outlet />
+                </div>
+                <MobileBottomNav />
+                <ExitIntentPopup />
+              </CompareProvider>
+            </FavoritesProvider>
+          </CartProvider>
+        </AuthProvider>
+      </SiteSettingsProvider>
+    </ErrorBoundary>
   );
 }

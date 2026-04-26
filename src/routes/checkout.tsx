@@ -13,6 +13,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Switch } from "@/components/ui/switch";
 import { TrustBadges } from "@/components/TrustBadges";
 import { MapPin, Gift } from "lucide-react";
+import { sanitizeText, sanitizePhone, sanitizeEmail } from "@/lib/sanitize";
 
 export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
@@ -147,15 +148,15 @@ function CheckoutPage() {
     const orderNumber = `GS-${Date.now().toString(36).toUpperCase()}`;
     const orderData = {
       order_number: orderNumber,
-      customer_name: form.name,
-      customer_email: form.email,
-      customer_phone: form.phone,
-      shipping_address: form.adresa,
-      city: form.localitate,
+      customer_name: sanitizeText(form.name),
+      customer_email: sanitizeEmail(form.email),
+      customer_phone: sanitizePhone(form.phone),
+      shipping_address: sanitizeText(form.adresa),
+      city: sanitizeText(form.localitate),
       county: form.judet,
       postal_code: form.codPostal,
       billing_type: billingType,
-      company_name: billingType === "company" ? form.companyName : null,
+      company_name: billingType === "company" ? sanitizeText(form.companyName) : null,
       company_cui: billingType === "company" ? form.companyCui : null,
       company_reg: billingType === "company" ? form.companyReg : null,
       items: items.map((i) => ({ id: i.id, product_id: i.id, name: i.name, price: i.price, quantity: i.quantity, qty: i.quantity, image: i.image_url })),
@@ -165,7 +166,7 @@ function CheckoutPage() {
       discount_code: discountCode,
       total: finalTotal,
       payment_method: form.paymentMethod,
-      notes: form.observatii || null,
+      notes: form.observatii ? sanitizeText(form.observatii) : null,
       status: "pending",
       payment_status: "pending",
       user_id: user?.id || null,

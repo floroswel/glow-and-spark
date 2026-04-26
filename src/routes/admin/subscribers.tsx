@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Download, Search, Users, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
+import { Download, Search, Users, ToggleLeft, ToggleRight, Trash2, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/subscribers")({
   component: AdminSubscribers,
@@ -11,6 +12,24 @@ function AdminSubscribers() {
   const [subs, setSubs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [syncing, setSyncing] = useState(false);
+
+  const syncBrevo = async () => {
+    setSyncing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-brevo", { body: {} });
+      if (error) throw error;
+      if (data?.error) {
+        toast.error(`Eroare Brevo: ${data.error}`);
+      } else {
+        toast.success(`${data?.synced || 0} abonați sincronizați cu Brevo`);
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Eroare la sincronizare");
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const load = async () => {
     const { data } = await supabase.from("newsletter_subscribers").select("*").order("created_at", { ascending: false });
@@ -57,9 +76,14 @@ function AdminSubscribers() {
           <h1 className="font-heading text-2xl font-bold text-foreground">Abonați Newsletter ({subs.length})</h1>
           <p className="text-sm text-muted-foreground">{activeCount} activi · {subs.length - activeCount} inactivi</p>
         </div>
-        <button onClick={exportCSV} className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">
-          <Download className="h-4 w-4" /> Export CSV
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={syncBrevo} disabled={syncing} className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition disabled:opacity-50">
+            <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Sincronizez..." : "Sincronizează Brevo"}
+          </button>
+          <button onClick={exportCSV} className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">
+            <Download className="h-4 w-4" /> Export CSV
+          </button>
+        </div>
       </div>
 
       <div className="relative">

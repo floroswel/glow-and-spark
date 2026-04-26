@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText, Search, Download, Printer, Eye, CheckCircle, Clock, XCircle } from "lucide-react";
+import { toast } from "sonner";
+import { FileText, Search, Download, Printer, Eye, CheckCircle, Clock, XCircle, Mail, Loader2, FileDown } from "lucide-react";
 
 export const Route = createFileRoute("/admin/invoices")({
   component: AdminInvoices,
@@ -14,6 +15,60 @@ function AdminInvoices() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [previewOrder, setPreviewOrder] = useState<any>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [emailingId, setEmailingId] = useState<string | null>(null);
+
+  const downloadPDF = async (inv: any) => {
+    setDownloadingId(inv.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-invoice", { body: { order_id: inv.id } });
+      if (error || !data?.base64) throw new Error(error?.message || "Eroare generare PDF");
+      const bytes = atob(data.base64);
+      const arr = new Uint8Array(bytes.length);
+      for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+      const blob = new Blob([arr], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = data.filename || `factura-${inv.invoice_number}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success("Factură descărcată");
+    } catch (e: any) {
+      toast.error(e.message || "Eroare la descărcare");
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
+  const emailInvoice = async (inv: any) => {
+    setEmailingId(inv.id);
+    try {
+      const { data: gen, error: genErr } = await supabase.functions.invoke("generate-invoice", { body: { order_id: inv.id } });
+      if (genErr || !gen?.base64) throw new Error(genErr?.message || "Eroare generare PDF");
+      const { error: mailErr } = await supabase.functions.invoke("send-email", {
+        body: {
+          type: "invoice",
+          to: inv.customer_email,
+          data: {
+            customer_name: inv.customer_name,
+            order_number: inv.order_number,
+            invoice_number: gen.invoice_number,
+            total: inv.total,
+          },
+          attachments: [{ filename: gen.filename, content: gen.base64, type: "application/pdf" }],
+        },
+      });
+      if (mailErr) throw new Error(mailErr.message);
+      toast.success(`Factură trimisă către ${inv.customer_email}`);
+    } catch (e: any) {
+      toast.error(e.message || "Eroare la trimitere email");
+    } finally {
+      setEmailingId(null);
+    }
+  };
 
   useEffect(() => {
     supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(500)
@@ -219,9 +274,27 @@ function AdminInvoices() {
                   </td>
                   <td className="px-4 py-3 text-xs text-muted-foreground">{new Date(inv.created_at).toLocaleDateString("ro-RO")}</td>
                   <td className="px-4 py-3 text-center">
-                    <button onClick={() => printInvoice(inv)} className="rounded p-1.5 hover:bg-secondary transition" title="Printează">
-                      <Printer className="h-3.5 w-3.5" />
-                    </button>
+                    <div className="flex items-center justify-center gap-1">
+                      <button onClick={() => printInvoice(inv)} className="rounded p-1.5 hover:bg-secondary transition" title="Printează">
+                        <Printer className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => downloadPDF(inv)}
+                        disabled={downloadingId === inv.id}
+                        className="rounded p-1.5 hover:bg-secondary transition disabled:opacity-50"
+                        title="Descarcă PDF"
+                      >
+                        {downloadingId === inv.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
+                      </button>
+                      <button
+                        onClick={() => emailInvoice(inv)}
+                        disabled={emailingId === inv.id}
+                        className="rounded p-1.5 hover:bg-secondary transition disabled:opacity-50"
+                        title="Trimite pe email"
+                      >
+                        {emailingId === inv.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Mail className="h-3.5 w-3.5" />}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );

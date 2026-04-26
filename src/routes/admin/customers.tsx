@@ -138,15 +138,7 @@ function AdminCustomers() {
     else { setSortField(field); setSortDir("desc"); }
   };
 
-  const totalSpent = customers.reduce((s, c) => s + c.totalSpent, 0);
-  const totalOrders = customers.reduce((s, c) => s + c.orderCount, 0);
-  const vipCount = customers.filter(c => c.totalSpent >= 500).length;
-  const activeCount = customers.filter(c => c.orderCount > 0).length;
-  const newThisMonth = customers.filter(c => {
-    const d = new Date(c.created_at);
-    const now = new Date();
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-  }).length;
+  const { totalSpent, totalOrders, vipCount, activeCount, newThisMonth } = aggregateStats;
 
   const handleExportCSV = () => {
     const headers = "Nume,Telefon,Email,Comenzi,Total Cheltuit,Valoare Medie,Adrese,Ultima Comandă,Data Înregistrare\n";

@@ -21,6 +21,7 @@ import { TrustBadges } from "@/components/TrustBadges";
 import { ChevronRight, Minus, Plus, ShoppingCart, Truck, RotateCcw, Heart, GitCompare, Share2, Star, Shield, Check, X, ChevronLeft, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { sanitizeText } from "@/lib/sanitize";
 
 export const Route = createFileRoute("/produs/$slug")({
   head: () => ({

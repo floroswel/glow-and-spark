@@ -327,15 +327,59 @@ serve(async (req) => {
       });
     }
 
-    const templateFn = templateMap[type];
-    if (!templateFn) {
-      return new Response(JSON.stringify({ error: `Unknown template: ${type}` }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // Try custom template from site_settings first
+    let subject: string | undefined;
+    let html: string | undefined;
+
+    try {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
+      const { data: tplRow } = await supabaseAdmin
+        .from("site_settings")
+        .select("value")
+        .eq("key", "email_templates")
+        .single();
+
+      if (tplRow?.value && Array.isArray(tplRow.value)) {
+        const customTpl = (tplRow.value as any[]).find(
+          (t: any) => t.id === type && t.active !== false
+        );
+        if (customTpl && customTpl.subject && customTpl.body) {
+          const d = data || {};
+          const replacements: Record<string, string> = {
+            "{customer_name}": String(d.customer_name ?? ""),
+            "{order_number}": String(d.orderNumber ?? d.order_number ?? ""),
+            "{total}": d.total != null ? Number(d.total).toFixed(2) : "",
+            "{site_name}": cfg.SITE_NAME,
+            "{site_url}": cfg.SITE_URL,
+          };
+          const applyVars = (str: string) =>
+            Object.entries(replacements).reduce(
+              (acc, [k, v]) => acc.split(k).join(v),
+              str
+            );
+          subject = applyVars(String(customTpl.subject));
+          html = applyVars(String(customTpl.body));
+          console.log(`[send-email] Using custom template for type=${type}`);
+        }
+      }
+    } catch (err) {
+      console.error("[send-email] Failed to load custom templates:", err);
     }
 
-    const { subject, html } = templateFn(data || {}, cfg);
+    if (!subject || !html) {
+      const templateFn = templateMap[type];
+      if (!templateFn) {
+        return new Response(JSON.stringify({ error: `Unknown template: ${type}` }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const built = templateFn(data || {}, cfg);
+      subject = built.subject;
+      html = built.html;
+    }
 
     // Send the primary email
     const res = await fetch("https://api.resend.com/emails", {

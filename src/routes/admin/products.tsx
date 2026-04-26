@@ -826,7 +826,7 @@ function AdminProducts() {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     {p.image_url ? (
-                      <img src={p.image_url} alt="" className="h-12 w-12 rounded-lg object-cover border border-border shrink-0" />
+                      <img src={p.image_url} alt={p.name} loading="lazy" className="h-12 w-12 rounded-lg object-cover border border-border shrink-0" />
                     ) : (
                       <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0"><ImageIcon className="h-5 w-5" /></div>
                     )}
@@ -1316,7 +1316,7 @@ function AdminProducts() {
                         return (
                           <div key={i} className="p-3 flex items-center gap-3">
                             {target?.image_url ? (
-                              <img src={target.image_url} alt="" className="h-10 w-10 rounded-lg object-cover border border-border" />
+                              <img src={target.image_url} alt={target.name} loading="lazy" className="h-10 w-10 rounded-lg object-cover border border-border" />
                             ) : (
                               <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>
                             )}
@@ -1345,7 +1345,7 @@ function AdminProducts() {
                         {relatedSearchResults.filter(p => p.id !== editing?.id && !relatedProducts.some(r => r.target_product_id === p.id)).map(p => (
                           <button key={p.id} onClick={() => addRelated(p.id)} className="w-full flex items-center gap-3 p-3 text-left hover:bg-secondary transition">
                             {p.image_url ? (
-                              <img src={p.image_url} alt="" className="h-8 w-8 rounded object-cover border border-border" />
+                              <img src={p.image_url} alt={p.name} loading="lazy" className="h-8 w-8 rounded object-cover border border-border" />
                             ) : (
                               <div className="h-8 w-8 rounded bg-muted flex items-center justify-center"><ImageIcon className="h-3 w-3 text-muted-foreground" /></div>
                             )}

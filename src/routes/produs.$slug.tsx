@@ -171,7 +171,7 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
                 <div className="mt-2 flex gap-2">
                   {(review.photo_urls as string[]).map((url: string, idx: number) => (
                     <button key={idx} onClick={() => openLightbox(review.photo_urls as string[], idx)} className="rounded-md overflow-hidden border border-border hover:border-accent transition">
-                      <img src={url} alt={`Foto ${idx + 1}`} className="h-[60px] w-[60px] object-cover" />
+                      <img src={url} alt={`Foto ${idx + 1}`} loading="lazy" className="h-[60px] w-[60px] object-cover" />
                     </button>
                   ))}
                 </div>
@@ -260,7 +260,7 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
                 <div className="mt-2 flex gap-2">
                   {photoPreviews.map((src, idx) => (
                     <div key={idx} className="relative group">
-                      <img src={src} alt={`Preview ${idx + 1}`} className="h-[60px] w-[60px] rounded-md object-cover border border-border" />
+                      <img src={src} alt={`Preview ${idx + 1}`} loading="lazy" className="h-[60px] w-[60px] rounded-md object-cover border border-border" />
                       <button type="button" onClick={() => removePhoto(idx)}
                         className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
                         <X className="h-3 w-3" />
@@ -287,7 +287,7 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
         <DialogContent className="max-w-2xl p-2 bg-black/95 border-none">
           {lightboxImages.length > 0 && (
             <div className="relative flex items-center justify-center min-h-[300px]">
-              <img src={lightboxImages[lightboxIndex]} alt="" className="max-h-[70vh] max-w-full object-contain rounded" />
+              <img src={lightboxImages[lightboxIndex]} alt={`${product.name} - foto ${lightboxIndex + 1}`} loading="lazy" className="max-h-[70vh] max-w-full object-contain rounded" />
               {lightboxImages.length > 1 && (
                 <>
                   <button onClick={() => setLightboxIndex((i) => (i - 1 + lightboxImages.length) % lightboxImages.length)}
@@ -608,7 +608,7 @@ function ProductPage() {
                     onClick={() => setSelectedImage(img)}
                     className={`shrink-0 h-20 w-20 overflow-hidden rounded-lg border-2 transition ${selectedImage === img ? "border-accent" : "border-border"}`}
                   >
-                    <img src={img} alt={`${product.name} ${i + 1}`} className="h-full w-full object-cover" />
+                    <img src={img} alt={`${product.name} ${i + 1}`} loading="lazy" className="h-full w-full object-cover" />
                   </button>
                 ))}
               </div>

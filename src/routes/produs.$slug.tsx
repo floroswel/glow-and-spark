@@ -171,7 +171,7 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
                 <div className="mt-2 flex gap-2">
                   {(review.photo_urls as string[]).map((url: string, idx: number) => (
                     <button key={idx} onClick={() => openLightbox(review.photo_urls as string[], idx)} className="rounded-md overflow-hidden border border-border hover:border-accent transition">
-                      <img src={url} alt={`Foto ${idx + 1}`} className="h-[60px] w-[60px] object-cover" />
+                      <img src={url} alt={`Foto ${idx + 1}`} loading="lazy" className="h-[60px] w-[60px] object-cover" />
                     </button>
                   ))}
                 </div>

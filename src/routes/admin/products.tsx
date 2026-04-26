@@ -1316,7 +1316,7 @@ function AdminProducts() {
                         return (
                           <div key={i} className="p-3 flex items-center gap-3">
                             {target?.image_url ? (
-                              <img src={target.image_url} alt="" className="h-10 w-10 rounded-lg object-cover border border-border" />
+                              <img src={target.image_url} alt={target.name} loading="lazy" className="h-10 w-10 rounded-lg object-cover border border-border" />
                             ) : (
                               <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center"><ImageIcon className="h-4 w-4 text-muted-foreground" /></div>
                             )}

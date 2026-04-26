@@ -189,7 +189,7 @@ function AdminCustomers() {
       {/* KPI cards */}
       <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
-          { label: "Total clienți", value: customers.length, icon: Users, color: "text-foreground" },
+          { label: "Total clienți", value: aggregateStats.total, icon: Users, color: "text-foreground" },
           { label: "Activi", value: activeCount, icon: UserCheck, color: "text-chart-2" },
           { label: "VIP (500+ RON)", value: vipCount, icon: Crown, color: "text-accent" },
           { label: "Noi luna asta", value: newThisMonth, icon: Calendar, color: "text-chart-1" },
@@ -281,7 +281,7 @@ function AdminCustomers() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">{(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} din {filtered.length}</p>
+          <p className="text-sm text-muted-foreground">{totalCount === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, totalCount)} din {totalCount}</p>
           <div className="flex items-center gap-1">
             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-lg border border-border p-2 text-sm disabled:opacity-40 hover:bg-secondary transition"><ChevronLeft className="h-4 w-4" /></button>
             {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map(pNum => (

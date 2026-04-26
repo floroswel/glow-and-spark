@@ -10,6 +10,7 @@ import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { initGTM } from "@/lib/gtm";
 import { initPixel, trackPageView } from "@/lib/fbpixel";
 import { updateSiteName } from "@/lib/seo";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 import appCss from "../styles.css?url";
 
@@ -185,22 +186,24 @@ function RedirectHandler() {
 
 function RootComponent() {
   return (
-    <SiteSettingsProvider>
-      <AuthProvider>
-        <CartProvider>
-          <FavoritesProvider>
-            <CompareProvider>
-              <TrackingInit />
-              <RedirectHandler />
-              <div className="pb-14 md:pb-0">
-                <Outlet />
-              </div>
-              <MobileBottomNav />
-              <ExitIntentPopup />
-            </CompareProvider>
-          </FavoritesProvider>
-        </CartProvider>
-      </AuthProvider>
-    </SiteSettingsProvider>
+    <ErrorBoundary variant="app">
+      <SiteSettingsProvider>
+        <AuthProvider>
+          <CartProvider>
+            <FavoritesProvider>
+              <CompareProvider>
+                <TrackingInit />
+                <RedirectHandler />
+                <div className="pb-14 md:pb-0">
+                  <Outlet />
+                </div>
+                <MobileBottomNav />
+                <ExitIntentPopup />
+              </CompareProvider>
+            </FavoritesProvider>
+          </CartProvider>
+        </AuthProvider>
+      </SiteSettingsProvider>
+    </ErrorBoundary>
   );
 }

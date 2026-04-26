@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { FavoritesProvider } from "@/hooks/useFavorites";
 import { CompareProvider } from "@/hooks/useCompare";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
+import { InstallAppBanner } from "@/components/InstallAppBanner";
 import { initGTM } from "@/lib/gtm";
 import { initPixel, trackPageView } from "@/lib/fbpixel";
 import { updateSiteName } from "@/lib/seo";
@@ -52,9 +53,18 @@ export const Route = createRootRoute({
       { name: "twitter:description", content: "Magazin online de lumânări artizanale premium din ceară de soia pură." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/848fc03d-3dcb-4f52-825d-f0d1bb6c1ec8/id-preview-3bff9c21--b382c71c-cfbb-4967-add4-5e8c15bf4fcd.lovable.app-1776749135330.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/848fc03d-3dcb-4f52-825d-f0d1bb6c1ec8/id-preview-3bff9c21--b382c71c-cfbb-4967-add4-5e8c15bf4fcd.lovable.app-1776749135330.png" },
+      { name: "theme-color", content: "#C9A24A" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-title", content: "Mama Lucica" },
+      { name: "mobile-web-app-capable", content: "yes" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.json" },
+      { rel: "apple-touch-icon", href: "/icon-192.png" },
+      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
+      { rel: "icon", type: "image/png", sizes: "512x512", href: "/icon-512.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" },
@@ -199,6 +209,7 @@ function RootComponent() {
                 </div>
                 <MobileBottomNav />
                 <ExitIntentPopup />
+                <InstallAppBanner />
               </CompareProvider>
             </FavoritesProvider>
           </CartProvider>

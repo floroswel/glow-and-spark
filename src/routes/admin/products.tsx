@@ -1345,7 +1345,7 @@ function AdminProducts() {
                         {relatedSearchResults.filter(p => p.id !== editing?.id && !relatedProducts.some(r => r.target_product_id === p.id)).map(p => (
                           <button key={p.id} onClick={() => addRelated(p.id)} className="w-full flex items-center gap-3 p-3 text-left hover:bg-secondary transition">
                             {p.image_url ? (
-                              <img src={p.image_url} alt="" className="h-8 w-8 rounded object-cover border border-border" />
+                              <img src={p.image_url} alt={p.name} loading="lazy" className="h-8 w-8 rounded object-cover border border-border" />
                             ) : (
                               <div className="h-8 w-8 rounded bg-muted flex items-center justify-center"><ImageIcon className="h-3 w-3 text-muted-foreground" /></div>
                             )}

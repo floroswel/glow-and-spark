@@ -608,7 +608,7 @@ function ProductPage() {
                     onClick={() => setSelectedImage(img)}
                     className={`shrink-0 h-20 w-20 overflow-hidden rounded-lg border-2 transition ${selectedImage === img ? "border-accent" : "border-border"}`}
                   >
-                    <img src={img} alt={`${product.name} ${i + 1}`} className="h-full w-full object-cover" />
+                    <img src={img} alt={`${product.name} ${i + 1}`} loading="lazy" className="h-full w-full object-cover" />
                   </button>
                 ))}
               </div>

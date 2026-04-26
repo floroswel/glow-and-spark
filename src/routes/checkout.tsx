@@ -148,7 +148,6 @@ function CheckoutPage() {
     const orderNumber = `GS-${Date.now().toString(36).toUpperCase()}`;
     const orderData = {
       order_number: orderNumber,
-      customer_name: form.name,
       customer_name: sanitizeText(form.name),
       customer_email: sanitizeEmail(form.email),
       customer_phone: sanitizePhone(form.phone),

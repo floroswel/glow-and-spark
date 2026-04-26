@@ -149,7 +149,7 @@ export function SiteHeader() {
                       <div className="p-4 text-center">
                         <p className="text-sm text-muted-foreground">Niciun rezultat pentru „{desktopSearch.query}"</p>
                         <Link
-                          to="/catalog"
+                          to="/search"
                           search={{ q: desktopSearch.query.trim() } as any}
                           onClick={() => desktopSearch.clear()}
                           className="mt-2 inline-block text-sm font-medium text-accent hover:underline"
@@ -223,7 +223,7 @@ export function SiteHeader() {
                     )}
                     {desktopSearch.query.trim().length >= 2 && (
                       <Link
-                        to="/catalog"
+                        to="/search"
                         search={{ q: desktopSearch.query.trim() } as any}
                         onClick={() => desktopSearch.clear()}
                         className="block border-t border-border px-4 py-2.5 text-center text-sm font-medium text-accent hover:bg-secondary transition"
@@ -289,7 +289,7 @@ export function SiteHeader() {
               onMouseLeave={() => { setMegaMenuOpen(false); setActiveCategory(null); }}
             >
               <Link
-                to="/catalog"
+                to="/search"
                 className="flex items-center gap-1.5 rounded-md bg-foreground px-4 py-2 text-primary-foreground transition hover:bg-accent hover:text-accent-foreground"
               >
                 <Package className="h-4 w-4" />
@@ -447,7 +447,7 @@ export function SiteHeader() {
                     <div className="p-3 text-center">
                       <p className="text-sm text-muted-foreground">Niciun rezultat pentru „{mobileSearch.query}"</p>
                       <Link
-                        to="/catalog"
+                        to="/search"
                         search={{ q: mobileSearch.query.trim() } as any}
                         onClick={() => { mobileSearch.clear(); setMobileOpen(false); }}
                         className="mt-2 inline-block text-sm font-medium text-accent hover:underline"
@@ -512,7 +512,7 @@ export function SiteHeader() {
                   )}
                   {mobileSearch.query.trim().length >= 2 && (mobileSearch.results.length > 0 || mobileSearch.categoryResults.length > 0) && (
                     <Link
-                      to="/catalog"
+                      to="/search"
                       search={{ q: mobileSearch.query.trim() } as any}
                       onClick={() => { mobileSearch.clear(); setMobileOpen(false); }}
                       className="block border-t border-border px-3 py-2.5 text-center text-sm font-medium text-accent hover:bg-secondary transition"

@@ -447,7 +447,7 @@ function AdminOrders() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-border px-4 py-3">
-            <span className="text-xs text-muted-foreground">Pagina {page} din {totalPages} ({filtered.length} rezultate)</span>
+            <span className="text-xs text-muted-foreground">Pagina {page} din {totalPages} ({totalCount} rezultate)</span>
             <div className="flex gap-1">
               <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="rounded p-1.5 hover:bg-secondary disabled:opacity-30"><ChevronLeft className="h-4 w-4" /></button>
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {

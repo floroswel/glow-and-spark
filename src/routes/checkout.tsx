@@ -448,7 +448,7 @@ function CheckoutPage() {
             <h3 className="font-heading font-bold text-foreground">Comanda ta</h3>
             {items.map((item) => (
               <div key={item.id} className="flex items-center gap-3">
-                {item.image_url && <img src={item.image_url} alt="" className="h-12 w-12 rounded-lg object-cover" />}
+                {item.image_url && <img src={item.image_url} alt={item.name} loading="lazy" className="h-12 w-12 rounded-lg object-cover" />}
                 <div className="flex-1 text-sm">
                   <p className="font-medium text-foreground">{item.name}</p>
                   <p className="text-muted-foreground">×{item.quantity}</p>

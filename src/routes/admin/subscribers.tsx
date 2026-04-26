@@ -12,6 +12,24 @@ function AdminSubscribers() {
   const [subs, setSubs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [syncing, setSyncing] = useState(false);
+
+  const syncBrevo = async () => {
+    setSyncing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("sync-brevo", { body: {} });
+      if (error) throw error;
+      if (data?.error) {
+        toast.error(`Eroare Brevo: ${data.error}`);
+      } else {
+        toast.success(`${data?.synced || 0} abonați sincronizați cu Brevo`);
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Eroare la sincronizare");
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const load = async () => {
     const { data } = await supabase.from("newsletter_subscribers").select("*").order("created_at", { ascending: false });

@@ -287,7 +287,7 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
         <DialogContent className="max-w-2xl p-2 bg-black/95 border-none">
           {lightboxImages.length > 0 && (
             <div className="relative flex items-center justify-center min-h-[300px]">
-              <img src={lightboxImages[lightboxIndex]} alt="" className="max-h-[70vh] max-w-full object-contain rounded" />
+              <img src={lightboxImages[lightboxIndex]} alt={`${product.name} - foto ${lightboxIndex + 1}`} loading="lazy" className="max-h-[70vh] max-w-full object-contain rounded" />
               {lightboxImages.length > 1 && (
                 <>
                   <button onClick={() => setLightboxIndex((i) => (i - 1 + lightboxImages.length) % lightboxImages.length)}

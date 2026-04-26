@@ -179,7 +179,7 @@ function AdminCustomers() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-heading text-2xl font-bold text-foreground">Clienți</h1>
-          <p className="text-sm text-muted-foreground">{customers.length} clienți · {activeCount} activi · {newThisMonth} noi luna aceasta</p>
+          <p className="text-sm text-muted-foreground">{aggregateStats.total} clienți · {activeCount} activi · {newThisMonth} noi luna aceasta</p>
         </div>
         <button onClick={handleExportCSV} className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">
           <Download className="h-4 w-4" /> Export CSV

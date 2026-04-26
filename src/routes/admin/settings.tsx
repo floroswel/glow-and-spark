@@ -195,6 +195,7 @@ function AdminSettings() {
                   <Field label="Cost livrare standard (RON)"><TextInput value={s.default_shipping_cost} onChange={(v) => u("default_shipping_cost", v)} /></Field>
                   <Field label="Cost livrare express (RON)"><TextInput value={s.express_shipping_cost} onChange={(v) => u("express_shipping_cost", v)} /></Field>
                   <Field label="Prag stoc scăzut (alerte)"><TextInput value={s.low_stock_threshold} onChange={(v) => u("low_stock_threshold", v)} /></Field>
+                  <Field label="Prag global alertă email stoc"><TextInput value={s.stock_alert_threshold} onChange={(v) => u("stock_alert_threshold", v)} /></Field>
                   <Field label="Preț ambalaj cadou (RON)"><TextInput value={s.gift_wrapping_price} onChange={(v) => u("gift_wrapping_price", v)} /></Field>
                 </div>
               </Section>

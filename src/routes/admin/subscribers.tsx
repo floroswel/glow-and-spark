@@ -76,9 +76,14 @@ function AdminSubscribers() {
           <h1 className="font-heading text-2xl font-bold text-foreground">Abonați Newsletter ({subs.length})</h1>
           <p className="text-sm text-muted-foreground">{activeCount} activi · {subs.length - activeCount} inactivi</p>
         </div>
-        <button onClick={exportCSV} className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">
-          <Download className="h-4 w-4" /> Export CSV
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={syncBrevo} disabled={syncing} className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition disabled:opacity-50">
+            <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Sincronizez..." : "Sincronizează Brevo"}
+          </button>
+          <button onClick={exportCSV} className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">
+            <Download className="h-4 w-4" /> Export CSV
+          </button>
+        </div>
       </div>
 
       <div className="relative">

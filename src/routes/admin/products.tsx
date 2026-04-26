@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Plus, Pencil, Trash2, X, Search, Eye, EyeOff, Star, Copy, Download, Upload,
@@ -149,54 +149,63 @@ function AdminProducts() {
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    const [pRes, cRes, tRes] = await Promise.all([
-      supabase.from("products").select("*").order("sort_order"),
+  const [totalCount, setTotalCount] = useState(0);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search input (300ms)
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // Reset page when any filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, filterCat, filterStatus, filterStock, filterBadge, priceMin, priceMax, sortField, sortDir]);
+
+  const loadAux = useCallback(async () => {
+    const [cRes, tRes] = await Promise.all([
       supabase.from("categories").select("*").order("sort_order"),
       supabase.from("product_tags").select("*").order("name"),
     ]);
-    setProducts((pRes.data as any) || []);
     setCategories(cRes.data || []);
     setAllTags((tRes.data as any) || []);
-    setLoading(false);
   }, []);
 
+  const load = useCallback(async () => {
+    setLoading(true);
+    let q = supabase.from("products").select("*", { count: "exact" });
+    if (debouncedSearch) {
+      const s = debouncedSearch.replace(/[%,()]/g, "");
+      if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%,short_description.ilike.%${s}%`);
+    }
+    if (filterCat) q = q.eq("category_id", filterCat);
+    if (filterStatus === "active") q = q.eq("is_active", true);
+    else if (filterStatus === "inactive") q = q.eq("is_active", false);
+    else if (filterStatus === "featured") q = q.eq("is_featured", true);
+    if (filterStock === "in_stock") q = q.gt("stock", 0);
+    else if (filterStock === "low") q = q.gt("stock", 0).lte("stock", 10);
+    else if (filterStock === "out") q = q.lte("stock", 0);
+    if (filterBadge) q = q.eq("badge_type", filterBadge);
+    if (priceMin) q = q.gte("price", Number(priceMin));
+    if (priceMax) q = q.lte("price", Number(priceMax));
+    q = q.order(sortField, { ascending: sortDir === "asc" });
+    q = q.range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+    const { data, count } = await q;
+    setProducts((data as any) || []);
+    setTotalCount(count || 0);
+    setLoading(false);
+  }, [page, debouncedSearch, filterCat, filterStatus, filterStock, filterBadge, priceMin, priceMax, sortField, sortDir]);
+
+  useEffect(() => { loadAux(); }, [loadAux]);
   useEffect(() => { load(); }, [load]);
 
-  // Filtered & sorted
-  const filtered = useMemo(() => {
-    let list = products.filter((p) => {
-      if (search) {
-        const s = search.toLowerCase();
-        if (!p.name.toLowerCase().includes(s) && !p.sku?.toLowerCase().includes(s) && !p.short_description?.toLowerCase().includes(s)) return false;
-      }
-      if (filterCat && p.category_id !== filterCat) return false;
-      if (filterStatus === "active" && !p.is_active) return false;
-      if (filterStatus === "inactive" && p.is_active) return false;
-      if (filterStatus === "featured" && !p.is_featured) return false;
-      if (filterStock === "in_stock" && p.stock <= 0) return false;
-      if (filterStock === "low" && (p.stock <= 0 || p.stock > 10)) return false;
-      if (filterStock === "out" && p.stock > 0) return false;
-      if (filterBadge && (p.badge_type !== filterBadge)) return false;
-      if (priceMin && p.price < Number(priceMin)) return false;
-      if (priceMax && p.price > Number(priceMax)) return false;
-      return true;
-    });
-    list.sort((a: any, b: any) => {
-      const va = a[sortField] ?? "";
-      const vb = b[sortField] ?? "";
-      const cmp = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb));
-      return sortDir === "asc" ? cmp : -cmp;
-    });
-    return list;
-  }, [products, search, filterCat, filterStatus, filterStock, filterBadge, priceMin, priceMax, sortField, sortDir]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  // On the server-paginated page, "filtered" is the current page result
+  const filtered = products;
+  const paginated = products;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const hasActiveFilters = filterCat || filterStatus || filterStock || filterBadge || priceMin || priceMax;
 
-  useEffect(() => { setPage(1); }, [search, filterCat, filterStatus, filterStock, filterBadge, priceMin, priceMax]);
 
   const handleSort = (field: string) => {
     if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");
@@ -603,20 +612,27 @@ function AdminProducts() {
   const catName = (catId: string | null) => categories.find((c) => c.id === catId)?.name || "—";
 
   // Stats
-  const statsData = useMemo(() => {
-    const totalValue = products.reduce((s, p) => s + p.price * p.stock, 0);
-    const avgPrice = products.length ? products.reduce((s, p) => s + p.price, 0) / products.length : 0;
-    return {
-      total: products.length,
-      active: products.filter(p => p.is_active).length,
-      featured: products.filter(p => p.is_featured).length,
-      outOfStock: products.filter(p => p.stock <= 0).length,
-      lowStock: products.filter(p => p.stock > 0 && p.stock <= 10).length,
-      totalValue,
-      avgPrice,
-      withImages: products.filter(p => p.image_url).length,
-    };
-  }, [products]);
+  const [statsData, setStatsData] = useState({ total: 0, active: 0, featured: 0, outOfStock: 0, lowStock: 0, totalValue: 0, avgPrice: 0, withImages: 0 });
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from("products").select("price,stock,is_active,is_featured,image_url");
+      const list = data || [];
+      const totalValue = list.reduce((s: number, p: any) => s + Number(p.price) * Number(p.stock || 0), 0);
+      const avgPrice = list.length ? list.reduce((s: number, p: any) => s + Number(p.price), 0) / list.length : 0;
+      setStatsData({
+        total: list.length,
+        active: list.filter((p: any) => p.is_active).length,
+        featured: list.filter((p: any) => p.is_featured).length,
+        outOfStock: list.filter((p: any) => Number(p.stock) <= 0).length,
+        lowStock: list.filter((p: any) => Number(p.stock) > 0 && Number(p.stock) <= 10).length,
+        totalValue,
+        avgPrice,
+        withImages: list.filter((p: any) => p.image_url).length,
+      });
+    })();
+  }, [totalCount]);
+
 
   if (loading) return (
     <div className="space-y-4">
@@ -918,7 +934,7 @@ function AdminProducts() {
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} din {filtered.length} produse
+            {totalCount === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, totalCount)} din {totalCount} produse
           </p>
           <div className="flex items-center gap-1">
             <button onClick={() => setPage(1)} disabled={page === 1} className="rounded-lg border border-border px-2 py-1.5 text-xs disabled:opacity-40 hover:bg-secondary transition">Prima</button>

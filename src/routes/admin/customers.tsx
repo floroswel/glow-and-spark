@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Users, Search, ChevronDown, ChevronUp, Mail, Phone, MapPin,
@@ -16,8 +16,11 @@ const PAGE_SIZE = 25;
 function AdminCustomers() {
   const [customers, setCustomers] = useState<any[]>([]);
   const [allOrders, setAllOrders] = useState<any[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [aggregateStats, setAggregateStats] = useState({ total: 0, activeCount: 0, vipCount: 0, newThisMonth: 0, totalOrders: 0, totalSpent: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [sortField, setSortField] = useState<string>("totalSpent");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
@@ -28,41 +31,90 @@ function AdminCustomers() {
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 2500); };
 
+  // Debounce search (300ms)
   useEffect(() => {
-    (async () => {
-      const [{ data: profiles }, { data: orders }, { data: addresses }] = await Promise.all([
-        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-        supabase.from("orders").select("*").order("created_at", { ascending: false }),
-        supabase.from("addresses").select("user_id, id"),
-      ]);
-      if (!profiles) { setLoading(false); return; }
-      setAllOrders(orders || []);
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
 
-      const enriched = profiles.map((p: any) => {
-        const userAddresses = (addresses || []).filter((a: any) => a.user_id === p.user_id);
-        const userOrders = p.phone ? (orders || []).filter((o: any) => o.customer_phone === p.phone) : [];
-        const lastOrder = userOrders[0];
-        return {
-          ...p,
-          orderCount: userOrders.length,
-          totalSpent: userOrders.filter((o: any) => o.status !== "cancelled").reduce((s: number, o: any) => s + Number(o.total || 0), 0),
-          addressCount: userAddresses.length,
-          matchedEmail: userOrders[0]?.customer_email || null,
-          lastOrderDate: lastOrder?.created_at || null,
-          avgOrderValue: userOrders.length ? userOrders.reduce((s: number, o: any) => s + Number(o.total || 0), 0) / userOrders.length : 0,
-        };
-      });
-      setCustomers(enriched);
-      setLoading(false);
-    })();
+  useEffect(() => { setPage(1); }, [debouncedSearch, filterType]);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    let q = supabase.from("profiles").select("*", { count: "exact" });
+    if (debouncedSearch) {
+      const s = debouncedSearch.replace(/[%,()]/g, "");
+      if (s) q = q.or(`full_name.ilike.%${s}%,phone.ilike.%${s}%`);
+    }
+    q = q.order("created_at", { ascending: false }).range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+    const { data: profiles, count } = await q;
+
+    const phones = (profiles || []).map((p: any) => p.phone).filter(Boolean);
+    const userIds = (profiles || []).map((p: any) => p.user_id);
+
+    const [ordersRes, addressesRes] = await Promise.all([
+      phones.length ? supabase.from("orders").select("*").in("customer_phone", phones) : Promise.resolve({ data: [] as any[] }),
+      userIds.length ? supabase.from("addresses").select("user_id, id").in("user_id", userIds) : Promise.resolve({ data: [] as any[] }),
+    ]);
+    const orders = (ordersRes as any).data || [];
+    const addresses = (addressesRes as any).data || [];
+    setAllOrders(orders);
+
+    const enriched = (profiles || []).map((p: any) => {
+      const userAddresses = addresses.filter((a: any) => a.user_id === p.user_id);
+      const userOrders = p.phone ? orders.filter((o: any) => o.customer_phone === p.phone).sort((a: any, b: any) => (b.created_at > a.created_at ? 1 : -1)) : [];
+      const lastOrder = userOrders[0];
+      return {
+        ...p,
+        orderCount: userOrders.length,
+        totalSpent: userOrders.filter((o: any) => o.status !== "cancelled").reduce((s: number, o: any) => s + Number(o.total || 0), 0),
+        addressCount: userAddresses.length,
+        matchedEmail: userOrders[0]?.customer_email || null,
+        lastOrderDate: lastOrder?.created_at || null,
+        avgOrderValue: userOrders.length ? userOrders.reduce((s: number, o: any) => s + Number(o.total || 0), 0) / userOrders.length : 0,
+      };
+    });
+    setCustomers(enriched);
+    setTotalCount(count || 0);
+    setLoading(false);
+  }, [page, debouncedSearch]);
+
+  // Load aggregate stats independent of pagination
+  const loadStats = useCallback(async () => {
+    const [profilesRes, ordersRes] = await Promise.all([
+      supabase.from("profiles").select("created_at, phone"),
+      supabase.from("orders").select("customer_phone, total, status"),
+    ]);
+    const profiles = profilesRes.data || [];
+    const orders = ordersRes.data || [];
+    const phoneSet = new Set(orders.map((o: any) => o.customer_phone).filter(Boolean));
+    const activeCount = profiles.filter((p: any) => p.phone && phoneSet.has(p.phone)).length;
+    const totalsByPhone: Record<string, number> = {};
+    let totalSpent = 0;
+    let totalOrders = 0;
+    orders.forEach((o: any) => {
+      totalOrders++;
+      if (o.status !== "cancelled") {
+        const t = Number(o.total || 0);
+        totalSpent += t;
+        if (o.customer_phone) totalsByPhone[o.customer_phone] = (totalsByPhone[o.customer_phone] || 0) + t;
+      }
+    });
+    const vipCount = profiles.filter((p: any) => p.phone && (totalsByPhone[p.phone] || 0) >= 500).length;
+    const now = new Date();
+    const newThisMonth = profiles.filter((p: any) => {
+      const d = new Date(p.created_at);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }).length;
+    setAggregateStats({ total: profiles.length, activeCount, vipCount, newThisMonth, totalOrders, totalSpent });
   }, []);
 
+  useEffect(() => { load(); }, [load]);
+  useEffect(() => { loadStats(); }, [loadStats]);
+
+  // Apply VIP/with-orders filter and sort on the loaded page (computed metrics)
   const filtered = useMemo(() => {
     let list = customers.filter(c => {
-      const matchesSearch = !search || (c.full_name || "").toLowerCase().includes(search.toLowerCase()) ||
-        (c.phone || "").includes(search) ||
-        (c.matchedEmail || "").toLowerCase().includes(search.toLowerCase());
-      if (!matchesSearch) return false;
       if (filterType === "with_orders") return c.orderCount > 0;
       if (filterType === "no_orders") return c.orderCount === 0;
       if (filterType === "vip") return c.totalSpent >= 500;
@@ -75,27 +127,18 @@ function AdminCustomers() {
       return sortDir === "asc" ? cmp : -cmp;
     });
     return list;
-  }, [customers, search, sortField, sortDir, filterType]);
+  }, [customers, sortField, sortDir, filterType]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const paginated = filtered;
 
-  useEffect(() => { setPage(1); }, [search, filterType]);
 
   const handleSort = (field: string) => {
     if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");
     else { setSortField(field); setSortDir("desc"); }
   };
 
-  const totalSpent = customers.reduce((s, c) => s + c.totalSpent, 0);
-  const totalOrders = customers.reduce((s, c) => s + c.orderCount, 0);
-  const vipCount = customers.filter(c => c.totalSpent >= 500).length;
-  const activeCount = customers.filter(c => c.orderCount > 0).length;
-  const newThisMonth = customers.filter(c => {
-    const d = new Date(c.created_at);
-    const now = new Date();
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-  }).length;
+  const { totalSpent, totalOrders, vipCount, activeCount, newThisMonth } = aggregateStats;
 
   const handleExportCSV = () => {
     const headers = "Nume,Telefon,Email,Comenzi,Total Cheltuit,Valoare Medie,Adrese,Ultima Comandă,Data Înregistrare\n";
@@ -136,7 +179,7 @@ function AdminCustomers() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-heading text-2xl font-bold text-foreground">Clienți</h1>
-          <p className="text-sm text-muted-foreground">{customers.length} clienți · {activeCount} activi · {newThisMonth} noi luna aceasta</p>
+          <p className="text-sm text-muted-foreground">{aggregateStats.total} clienți · {activeCount} activi · {newThisMonth} noi luna aceasta</p>
         </div>
         <button onClick={handleExportCSV} className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary transition">
           <Download className="h-4 w-4" /> Export CSV
@@ -146,7 +189,7 @@ function AdminCustomers() {
       {/* KPI cards */}
       <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
-          { label: "Total clienți", value: customers.length, icon: Users, color: "text-foreground" },
+          { label: "Total clienți", value: aggregateStats.total, icon: Users, color: "text-foreground" },
           { label: "Activi", value: activeCount, icon: UserCheck, color: "text-chart-2" },
           { label: "VIP (500+ RON)", value: vipCount, icon: Crown, color: "text-accent" },
           { label: "Noi luna asta", value: newThisMonth, icon: Calendar, color: "text-chart-1" },
@@ -238,7 +281,7 @@ function AdminCustomers() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">{(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} din {filtered.length}</p>
+          <p className="text-sm text-muted-foreground">{totalCount === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, totalCount)} din {totalCount}</p>
           <div className="flex items-center gap-1">
             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-lg border border-border p-2 text-sm disabled:opacity-40 hover:bg-secondary transition"><ChevronLeft className="h-4 w-4" /></button>
             {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map(pNum => (

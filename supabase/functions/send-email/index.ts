@@ -291,6 +291,40 @@ function accountDeletionRequestTemplate(data: any, cfg: SiteConfig): { subject: 
   };
 }
 
+function lowStockAlertTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
+  const rows = (data.products || [])
+    .map(
+      (p: any) =>
+        `<tr><td style="padding:8px;border-bottom:1px solid #eee">${p.name}</td><td style="padding:8px;border-bottom:1px solid #eee">${p.sku || "—"}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;color:#c0392b;font-weight:bold">${p.stock}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center">${p.threshold}</td></tr>`,
+    )
+    .join("");
+  const single = data.product;
+  const body = single
+    ? `<p style="color:#555">Produsul <strong>${single.name}</strong> (SKU: ${single.sku || "—"}) are stoc scăzut.</p>
+       <p style="color:#555">Stoc curent: <strong style="color:#c0392b">${single.stock}</strong> / Prag alertă: <strong>${single.threshold}</strong></p>`
+    : `<p style="color:#555">Următoarele produse au stoc sub pragul de alertă:</p>
+       <table style="width:100%;border-collapse:collapse;margin:16px 0">
+         <thead><tr style="background:#f5f5f5"><th style="padding:8px;text-align:left">Produs</th><th style="padding:8px;text-align:left">SKU</th><th style="padding:8px;text-align:center">Stoc</th><th style="padding:8px;text-align:center">Prag</th></tr></thead>
+         <tbody>${rows}</tbody>
+       </table>`;
+  return {
+    subject: `⚠️ Alertă stoc scăzut — ${cfg.SITE_NAME}`,
+    html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+        <div style="background:#c0392b;color:#fff;padding:24px;text-align:center">
+          <h1 style="margin:0;font-size:22px">⚠️ Alertă Stoc Scăzut</h1>
+        </div>
+        <div style="padding:24px">
+          ${body}
+          <div style="text-align:center;margin-top:24px">
+            <a href="${cfg.SITE_URL}/admin/stock" style="background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block">Gestionează stoc</a>
+          </div>
+        </div>
+        <div style="background:#f5f5f5;padding:16px;text-align:center;color:#999;font-size:12px">${cfg.SITE_NAME}</div>
+      </div></body></html>`,
+  };
+}
+
 const templateMap: Record<string, (data: any, cfg: SiteConfig) => { subject: string; html: string }> = {
   order_confirmation: orderConfirmationTemplate,
   welcome: welcomeTemplate,
@@ -301,6 +335,7 @@ const templateMap: Record<string, (data: any, cfg: SiteConfig) => { subject: str
   return_request: returnRequestTemplate,
   cart_recovery: cartRecoveryTemplate,
   account_deletion_request: accountDeletionRequestTemplate,
+  low_stock_alert: lowStockAlertTemplate,
 };
 
 serve(async (req) => {

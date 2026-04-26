@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PoliticaReturnareRouteImport } from './routes/politica-returnare'
@@ -116,6 +117,11 @@ const TrackOrderRoute = TrackOrderRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -589,6 +595,7 @@ export interface FileRoutesByFullPath {
   '/politica-returnare': typeof PoliticaReturnareRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track-order': typeof TrackOrderRoute
   '/wishlist': typeof WishlistRoute
@@ -682,6 +689,7 @@ export interface FileRoutesByTo {
   '/politica-returnare': typeof PoliticaReturnareRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track-order': typeof TrackOrderRoute
   '/wishlist': typeof WishlistRoute
@@ -778,6 +786,7 @@ export interface FileRoutesById {
   '/politica-returnare': typeof PoliticaReturnareRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/track-order': typeof TrackOrderRoute
   '/wishlist': typeof WishlistRoute
@@ -875,6 +884,7 @@ export interface FileRouteTypes {
     | '/politica-returnare'
     | '/reset-password'
     | '/robots.txt'
+    | '/search'
     | '/sitemap.xml'
     | '/track-order'
     | '/wishlist'
@@ -968,6 +978,7 @@ export interface FileRouteTypes {
     | '/politica-returnare'
     | '/reset-password'
     | '/robots.txt'
+    | '/search'
     | '/sitemap.xml'
     | '/track-order'
     | '/wishlist'
@@ -1063,6 +1074,7 @@ export interface FileRouteTypes {
     | '/politica-returnare'
     | '/reset-password'
     | '/robots.txt'
+    | '/search'
     | '/sitemap.xml'
     | '/track-order'
     | '/wishlist'
@@ -1159,6 +1171,7 @@ export interface RootRouteChildren {
   PoliticaReturnareRoute: typeof PoliticaReturnareRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SearchRoute: typeof SearchRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrackOrderRoute: typeof TrackOrderRoute
   WishlistRoute: typeof WishlistRoute
@@ -1189,6 +1202,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -2055,6 +2075,7 @@ const rootRouteChildren: RootRouteChildren = {
   PoliticaReturnareRoute: PoliticaReturnareRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
+  SearchRoute: SearchRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrackOrderRoute: TrackOrderRoute,
   WishlistRoute: WishlistRoute,

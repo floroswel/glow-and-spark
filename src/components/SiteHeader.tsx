@@ -121,7 +121,7 @@ export function SiteHeader() {
                     onFocus={() => { if (desktopSearch.results.length > 0) desktopSearch.setOpen(true); }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && desktopSearch.query.trim()) {
-                        navigate({ to: "/catalog", search: { q: desktopSearch.query.trim() } as any });
+                        navigate({ to: "/search", search: { q: desktopSearch.query.trim() } as any });
                         desktopSearch.clear();
                       }
                     }}
@@ -131,7 +131,7 @@ export function SiteHeader() {
                   <button
                     onClick={() => {
                       if (desktopSearch.query.trim()) {
-                        navigate({ to: "/catalog", search: { q: desktopSearch.query.trim() } as any });
+                        navigate({ to: "/search", search: { q: desktopSearch.query.trim() } as any });
                         desktopSearch.clear();
                       }
                     }}
@@ -149,7 +149,7 @@ export function SiteHeader() {
                       <div className="p-4 text-center">
                         <p className="text-sm text-muted-foreground">Niciun rezultat pentru „{desktopSearch.query}"</p>
                         <Link
-                          to="/catalog"
+                          to="/search"
                           search={{ q: desktopSearch.query.trim() } as any}
                           onClick={() => desktopSearch.clear()}
                           className="mt-2 inline-block text-sm font-medium text-accent hover:underline"
@@ -223,7 +223,7 @@ export function SiteHeader() {
                     )}
                     {desktopSearch.query.trim().length >= 2 && (
                       <Link
-                        to="/catalog"
+                        to="/search"
                         search={{ q: desktopSearch.query.trim() } as any}
                         onClick={() => desktopSearch.clear()}
                         className="block border-t border-border px-4 py-2.5 text-center text-sm font-medium text-accent hover:bg-secondary transition"
@@ -417,7 +417,7 @@ export function SiteHeader() {
                   onChange={(e) => mobileSearch.search(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && mobileSearch.query.trim()) {
-                      navigate({ to: "/catalog", search: { q: mobileSearch.query.trim() } as any });
+                      navigate({ to: "/search", search: { q: mobileSearch.query.trim() } as any });
                       mobileSearch.clear();
                       setMobileOpen(false);
                     }
@@ -428,7 +428,7 @@ export function SiteHeader() {
                 <button
                   onClick={() => {
                     if (mobileSearch.query.trim()) {
-                      navigate({ to: "/catalog", search: { q: mobileSearch.query.trim() } as any });
+                      navigate({ to: "/search", search: { q: mobileSearch.query.trim() } as any });
                       mobileSearch.clear();
                       setMobileOpen(false);
                     }
@@ -447,7 +447,7 @@ export function SiteHeader() {
                     <div className="p-3 text-center">
                       <p className="text-sm text-muted-foreground">Niciun rezultat pentru „{mobileSearch.query}"</p>
                       <Link
-                        to="/catalog"
+                        to="/search"
                         search={{ q: mobileSearch.query.trim() } as any}
                         onClick={() => { mobileSearch.clear(); setMobileOpen(false); }}
                         className="mt-2 inline-block text-sm font-medium text-accent hover:underline"
@@ -512,7 +512,7 @@ export function SiteHeader() {
                   )}
                   {mobileSearch.query.trim().length >= 2 && (mobileSearch.results.length > 0 || mobileSearch.categoryResults.length > 0) && (
                     <Link
-                      to="/catalog"
+                      to="/search"
                       search={{ q: mobileSearch.query.trim() } as any}
                       onClick={() => { mobileSearch.clear(); setMobileOpen(false); }}
                       className="block border-t border-border px-3 py-2.5 text-center text-sm font-medium text-accent hover:bg-secondary transition"

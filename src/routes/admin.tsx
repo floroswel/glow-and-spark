@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, Link, useLocation } from "@tanstack/react-rout
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import AdminGlobalSearch from "@/components/admin/AdminGlobalSearch";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Package, ShoppingCart, Users, Settings,

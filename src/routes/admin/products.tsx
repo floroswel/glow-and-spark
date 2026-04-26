@@ -149,54 +149,63 @@ function AdminProducts() {
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    const [pRes, cRes, tRes] = await Promise.all([
-      supabase.from("products").select("*").order("sort_order"),
+  const [totalCount, setTotalCount] = useState(0);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search input (300ms)
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // Reset page when any filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, filterCat, filterStatus, filterStock, filterBadge, priceMin, priceMax, sortField, sortDir]);
+
+  const loadAux = useCallback(async () => {
+    const [cRes, tRes] = await Promise.all([
       supabase.from("categories").select("*").order("sort_order"),
       supabase.from("product_tags").select("*").order("name"),
     ]);
-    setProducts((pRes.data as any) || []);
     setCategories(cRes.data || []);
     setAllTags((tRes.data as any) || []);
-    setLoading(false);
   }, []);
 
+  const load = useCallback(async () => {
+    setLoading(true);
+    let q = supabase.from("products").select("*", { count: "exact" });
+    if (debouncedSearch) {
+      const s = debouncedSearch.replace(/[%,()]/g, "");
+      if (s) q = q.or(`name.ilike.%${s}%,sku.ilike.%${s}%,short_description.ilike.%${s}%`);
+    }
+    if (filterCat) q = q.eq("category_id", filterCat);
+    if (filterStatus === "active") q = q.eq("is_active", true);
+    else if (filterStatus === "inactive") q = q.eq("is_active", false);
+    else if (filterStatus === "featured") q = q.eq("is_featured", true);
+    if (filterStock === "in_stock") q = q.gt("stock", 0);
+    else if (filterStock === "low") q = q.gt("stock", 0).lte("stock", 10);
+    else if (filterStock === "out") q = q.lte("stock", 0);
+    if (filterBadge) q = q.eq("badge_type", filterBadge);
+    if (priceMin) q = q.gte("price", Number(priceMin));
+    if (priceMax) q = q.lte("price", Number(priceMax));
+    q = q.order(sortField, { ascending: sortDir === "asc" });
+    q = q.range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+    const { data, count } = await q;
+    setProducts((data as any) || []);
+    setTotalCount(count || 0);
+    setLoading(false);
+  }, [page, debouncedSearch, filterCat, filterStatus, filterStock, filterBadge, priceMin, priceMax, sortField, sortDir]);
+
+  useEffect(() => { loadAux(); }, [loadAux]);
   useEffect(() => { load(); }, [load]);
 
-  // Filtered & sorted
-  const filtered = useMemo(() => {
-    let list = products.filter((p) => {
-      if (search) {
-        const s = search.toLowerCase();
-        if (!p.name.toLowerCase().includes(s) && !p.sku?.toLowerCase().includes(s) && !p.short_description?.toLowerCase().includes(s)) return false;
-      }
-      if (filterCat && p.category_id !== filterCat) return false;
-      if (filterStatus === "active" && !p.is_active) return false;
-      if (filterStatus === "inactive" && p.is_active) return false;
-      if (filterStatus === "featured" && !p.is_featured) return false;
-      if (filterStock === "in_stock" && p.stock <= 0) return false;
-      if (filterStock === "low" && (p.stock <= 0 || p.stock > 10)) return false;
-      if (filterStock === "out" && p.stock > 0) return false;
-      if (filterBadge && (p.badge_type !== filterBadge)) return false;
-      if (priceMin && p.price < Number(priceMin)) return false;
-      if (priceMax && p.price > Number(priceMax)) return false;
-      return true;
-    });
-    list.sort((a: any, b: any) => {
-      const va = a[sortField] ?? "";
-      const vb = b[sortField] ?? "";
-      const cmp = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb));
-      return sortDir === "asc" ? cmp : -cmp;
-    });
-    return list;
-  }, [products, search, filterCat, filterStatus, filterStock, filterBadge, priceMin, priceMax, sortField, sortDir]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  // On the server-paginated page, "filtered" is the current page result
+  const filtered = products;
+  const paginated = products;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const hasActiveFilters = filterCat || filterStatus || filterStock || filterBadge || priceMin || priceMax;
 
-  useEffect(() => { setPage(1); }, [search, filterCat, filterStatus, filterStock, filterBadge, priceMin, priceMax]);
 
   const handleSort = (field: string) => {
     if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");

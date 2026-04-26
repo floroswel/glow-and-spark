@@ -289,7 +289,7 @@ export function SiteHeader() {
               onMouseLeave={() => { setMegaMenuOpen(false); setActiveCategory(null); }}
             >
               <Link
-                to="/search"
+                to="/catalog"
                 className="flex items-center gap-1.5 rounded-md bg-foreground px-4 py-2 text-primary-foreground transition hover:bg-accent hover:text-accent-foreground"
               >
                 <Package className="h-4 w-4" />

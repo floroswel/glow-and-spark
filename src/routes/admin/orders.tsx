@@ -52,11 +52,13 @@ const PAGE_SIZE = 25;
 function AdminOrders() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<any[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [viewing, setViewing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   // Filters
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterPayment, setFilterPayment] = useState("all");
   const [filterPaymentStatus, setFilterPaymentStatus] = useState("all");
@@ -85,21 +87,72 @@ function AdminOrders() {
   // Bulk
   const [bulkAction, setBulkAction] = useState("");
 
+  // Aggregate stats (independent of pagination)
+  const [stats, setStats] = useState({ total: 0, count: 0, pending: 0, processing: 0, shipped: 0, aov: 0 });
+
+  // Debounce search input (300ms)
   useEffect(() => {
-    load();
-    const channel = supabase
-      .channel("admin-orders-live")
-      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => load())
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, []);
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // Reset to page 1 whenever filters change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, filterStatus, filterPayment, filterPaymentStatus, dateFrom, dateTo, minValue, maxValue, sortField, sortDir]);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
+    let q = supabase.from("orders").select("*", { count: "exact" });
+    if (filterStatus !== "all") q = q.eq("status", filterStatus);
+    if (filterPayment !== "all") q = q.eq("payment_method", filterPayment);
+    if (filterPaymentStatus !== "all") q = q.eq("payment_status", filterPaymentStatus);
+    if (dateFrom) q = q.gte("created_at", dateFrom);
+    if (dateTo) q = q.lte("created_at", dateTo + "T23:59:59");
+    if (minValue) q = q.gte("total", Number(minValue));
+    if (maxValue) q = q.lte("total", Number(maxValue));
+    if (debouncedSearch) {
+      const s = debouncedSearch.replace(/[%,()]/g, "");
+      if (s) q = q.or(`customer_name.ilike.%${s}%,customer_email.ilike.%${s}%,order_number.ilike.%${s}%,customer_phone.ilike.%${s}%`);
+    }
+    q = q.order(sortField, { ascending: sortDir === "asc" });
+    q = q.range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+    const { data, count } = await q;
     setOrders(data || []);
+    setTotalCount(count || 0);
     setLoading(false);
+  }, [page, debouncedSearch, filterStatus, filterPayment, filterPaymentStatus, dateFrom, dateTo, minValue, maxValue, sortField, sortDir]);
+
+  const loadStats = useCallback(async () => {
+    const [allRes, pendingRes, processingRes, shippedRes, totalsRes] = await Promise.all([
+      supabase.from("orders").select("*", { count: "exact", head: true }),
+      supabase.from("orders").select("*", { count: "exact", head: true }).eq("status", "pending"),
+      supabase.from("orders").select("*", { count: "exact", head: true }).eq("status", "processing"),
+      supabase.from("orders").select("*", { count: "exact", head: true }).eq("status", "shipped"),
+      supabase.from("orders").select("total"),
+    ]);
+    const totals = (totalsRes.data || []).reduce((s: number, o: any) => s + Number(o.total || 0), 0);
+    const cnt = allRes.count || 0;
+    setStats({
+      total: totals,
+      count: cnt,
+      pending: pendingRes.count || 0,
+      processing: processingRes.count || 0,
+      shipped: shippedRes.count || 0,
+      aov: cnt > 0 ? totals / cnt : 0,
+    });
   }, []);
+
+  useEffect(() => { load(); }, [load]);
+  useEffect(() => { loadStats(); }, [loadStats]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("admin-orders-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => { load(); loadStats(); })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [load, loadStats]);
 
   // Load notes & timeline for drawer
   useEffect(() => {
@@ -113,45 +166,10 @@ function AdminOrders() {
     });
   }, [viewing]);
 
-  const filtered = useMemo(() => {
-    let list = [...orders];
-    if (filterStatus !== "all") list = list.filter((o) => o.status === filterStatus);
-    if (filterPayment !== "all") list = list.filter((o) => o.payment_method === filterPayment);
-    if (filterPaymentStatus !== "all") list = list.filter((o) => o.payment_status === filterPaymentStatus);
-    if (dateFrom) list = list.filter((o) => o.created_at >= dateFrom);
-    if (dateTo) list = list.filter((o) => o.created_at <= dateTo + "T23:59:59");
-    if (minValue) list = list.filter((o) => Number(o.total) >= Number(minValue));
-    if (maxValue) list = list.filter((o) => Number(o.total) <= Number(maxValue));
-    if (search) {
-      const q = search.toLowerCase();
-      list = list.filter((o) =>
-        o.customer_name?.toLowerCase().includes(q) ||
-        o.customer_email?.toLowerCase().includes(q) ||
-        o.order_number?.toLowerCase().includes(q) ||
-        o.customer_phone?.includes(q)
-      );
-    }
-    // Sort
-    list.sort((a, b) => {
-      const av = a[sortField], bv = b[sortField];
-      if (sortField === "total" || sortField === "subtotal") return sortDir === "asc" ? Number(av) - Number(bv) : Number(bv) - Number(av);
-      return sortDir === "asc" ? String(av || "").localeCompare(String(bv || "")) : String(bv || "").localeCompare(String(av || ""));
-    });
-    return list;
-  }, [orders, filterStatus, filterPayment, filterPaymentStatus, dateFrom, dateTo, minValue, maxValue, search, sortField, sortDir]);
+  const filtered = orders;
+  const paginated = orders;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-  // Stats
-  const stats = useMemo(() => {
-    const total = orders.reduce((s, o) => s + Number(o.total || 0), 0);
-    const pending = orders.filter((o) => o.status === "pending").length;
-    const processing = orders.filter((o) => o.status === "processing").length;
-    const shipped = orders.filter((o) => o.status === "shipped").length;
-    const aov = orders.length > 0 ? total / orders.length : 0;
-    return { total, count: orders.length, pending, processing, shipped, aov };
-  }, [orders]);
 
   const toggleSort = (field: string) => {
     if (sortField === field) setSortDir((d) => d === "asc" ? "desc" : "asc");

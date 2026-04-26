@@ -612,20 +612,27 @@ function AdminProducts() {
   const catName = (catId: string | null) => categories.find((c) => c.id === catId)?.name || "—";
 
   // Stats
-  const statsData = useMemo(() => {
-    const totalValue = products.reduce((s, p) => s + p.price * p.stock, 0);
-    const avgPrice = products.length ? products.reduce((s, p) => s + p.price, 0) / products.length : 0;
-    return {
-      total: products.length,
-      active: products.filter(p => p.is_active).length,
-      featured: products.filter(p => p.is_featured).length,
-      outOfStock: products.filter(p => p.stock <= 0).length,
-      lowStock: products.filter(p => p.stock > 0 && p.stock <= 10).length,
-      totalValue,
-      avgPrice,
-      withImages: products.filter(p => p.image_url).length,
-    };
-  }, [products]);
+  const [statsData, setStatsData] = useState({ total: 0, active: 0, featured: 0, outOfStock: 0, lowStock: 0, totalValue: 0, avgPrice: 0, withImages: 0 });
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from("products").select("price,stock,is_active,is_featured,image_url");
+      const list = data || [];
+      const totalValue = list.reduce((s: number, p: any) => s + Number(p.price) * Number(p.stock || 0), 0);
+      const avgPrice = list.length ? list.reduce((s: number, p: any) => s + Number(p.price), 0) / list.length : 0;
+      setStatsData({
+        total: list.length,
+        active: list.filter((p: any) => p.is_active).length,
+        featured: list.filter((p: any) => p.is_featured).length,
+        outOfStock: list.filter((p: any) => Number(p.stock) <= 0).length,
+        lowStock: list.filter((p: any) => Number(p.stock) > 0 && Number(p.stock) <= 10).length,
+        totalValue,
+        avgPrice,
+        withImages: list.filter((p: any) => p.image_url).length,
+      });
+    })();
+  }, [totalCount]);
+
 
   if (loading) return (
     <div className="space-y-4">

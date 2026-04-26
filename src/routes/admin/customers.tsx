@@ -16,8 +16,11 @@ const PAGE_SIZE = 25;
 function AdminCustomers() {
   const [customers, setCustomers] = useState<any[]>([]);
   const [allOrders, setAllOrders] = useState<any[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [aggregateStats, setAggregateStats] = useState({ total: 0, activeCount: 0, vipCount: 0, newThisMonth: 0, totalOrders: 0, totalSpent: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [sortField, setSortField] = useState<string>("totalSpent");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
@@ -28,41 +31,90 @@ function AdminCustomers() {
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 2500); };
 
+  // Debounce search (300ms)
   useEffect(() => {
-    (async () => {
-      const [{ data: profiles }, { data: orders }, { data: addresses }] = await Promise.all([
-        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-        supabase.from("orders").select("*").order("created_at", { ascending: false }),
-        supabase.from("addresses").select("user_id, id"),
-      ]);
-      if (!profiles) { setLoading(false); return; }
-      setAllOrders(orders || []);
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
 
-      const enriched = profiles.map((p: any) => {
-        const userAddresses = (addresses || []).filter((a: any) => a.user_id === p.user_id);
-        const userOrders = p.phone ? (orders || []).filter((o: any) => o.customer_phone === p.phone) : [];
-        const lastOrder = userOrders[0];
-        return {
-          ...p,
-          orderCount: userOrders.length,
-          totalSpent: userOrders.filter((o: any) => o.status !== "cancelled").reduce((s: number, o: any) => s + Number(o.total || 0), 0),
-          addressCount: userAddresses.length,
-          matchedEmail: userOrders[0]?.customer_email || null,
-          lastOrderDate: lastOrder?.created_at || null,
-          avgOrderValue: userOrders.length ? userOrders.reduce((s: number, o: any) => s + Number(o.total || 0), 0) / userOrders.length : 0,
-        };
-      });
-      setCustomers(enriched);
-      setLoading(false);
-    })();
+  useEffect(() => { setPage(1); }, [debouncedSearch, filterType]);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    let q = supabase.from("profiles").select("*", { count: "exact" });
+    if (debouncedSearch) {
+      const s = debouncedSearch.replace(/[%,()]/g, "");
+      if (s) q = q.or(`full_name.ilike.%${s}%,phone.ilike.%${s}%`);
+    }
+    q = q.order("created_at", { ascending: false }).range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+    const { data: profiles, count } = await q;
+
+    const phones = (profiles || []).map((p: any) => p.phone).filter(Boolean);
+    const userIds = (profiles || []).map((p: any) => p.user_id);
+
+    const [ordersRes, addressesRes] = await Promise.all([
+      phones.length ? supabase.from("orders").select("*").in("customer_phone", phones) : Promise.resolve({ data: [] as any[] }),
+      userIds.length ? supabase.from("addresses").select("user_id, id").in("user_id", userIds) : Promise.resolve({ data: [] as any[] }),
+    ]);
+    const orders = (ordersRes as any).data || [];
+    const addresses = (addressesRes as any).data || [];
+    setAllOrders(orders);
+
+    const enriched = (profiles || []).map((p: any) => {
+      const userAddresses = addresses.filter((a: any) => a.user_id === p.user_id);
+      const userOrders = p.phone ? orders.filter((o: any) => o.customer_phone === p.phone).sort((a: any, b: any) => (b.created_at > a.created_at ? 1 : -1)) : [];
+      const lastOrder = userOrders[0];
+      return {
+        ...p,
+        orderCount: userOrders.length,
+        totalSpent: userOrders.filter((o: any) => o.status !== "cancelled").reduce((s: number, o: any) => s + Number(o.total || 0), 0),
+        addressCount: userAddresses.length,
+        matchedEmail: userOrders[0]?.customer_email || null,
+        lastOrderDate: lastOrder?.created_at || null,
+        avgOrderValue: userOrders.length ? userOrders.reduce((s: number, o: any) => s + Number(o.total || 0), 0) / userOrders.length : 0,
+      };
+    });
+    setCustomers(enriched);
+    setTotalCount(count || 0);
+    setLoading(false);
+  }, [page, debouncedSearch]);
+
+  // Load aggregate stats independent of pagination
+  const loadStats = useCallback(async () => {
+    const [profilesRes, ordersRes] = await Promise.all([
+      supabase.from("profiles").select("created_at, phone"),
+      supabase.from("orders").select("customer_phone, total, status"),
+    ]);
+    const profiles = profilesRes.data || [];
+    const orders = ordersRes.data || [];
+    const phoneSet = new Set(orders.map((o: any) => o.customer_phone).filter(Boolean));
+    const activeCount = profiles.filter((p: any) => p.phone && phoneSet.has(p.phone)).length;
+    const totalsByPhone: Record<string, number> = {};
+    let totalSpent = 0;
+    let totalOrders = 0;
+    orders.forEach((o: any) => {
+      totalOrders++;
+      if (o.status !== "cancelled") {
+        const t = Number(o.total || 0);
+        totalSpent += t;
+        if (o.customer_phone) totalsByPhone[o.customer_phone] = (totalsByPhone[o.customer_phone] || 0) + t;
+      }
+    });
+    const vipCount = profiles.filter((p: any) => p.phone && (totalsByPhone[p.phone] || 0) >= 500).length;
+    const now = new Date();
+    const newThisMonth = profiles.filter((p: any) => {
+      const d = new Date(p.created_at);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }).length;
+    setAggregateStats({ total: profiles.length, activeCount, vipCount, newThisMonth, totalOrders, totalSpent });
   }, []);
 
+  useEffect(() => { load(); }, [load]);
+  useEffect(() => { loadStats(); }, [loadStats]);
+
+  // Apply VIP/with-orders filter and sort on the loaded page (computed metrics)
   const filtered = useMemo(() => {
     let list = customers.filter(c => {
-      const matchesSearch = !search || (c.full_name || "").toLowerCase().includes(search.toLowerCase()) ||
-        (c.phone || "").includes(search) ||
-        (c.matchedEmail || "").toLowerCase().includes(search.toLowerCase());
-      if (!matchesSearch) return false;
       if (filterType === "with_orders") return c.orderCount > 0;
       if (filterType === "no_orders") return c.orderCount === 0;
       if (filterType === "vip") return c.totalSpent >= 500;
@@ -75,12 +127,11 @@ function AdminCustomers() {
       return sortDir === "asc" ? cmp : -cmp;
     });
     return list;
-  }, [customers, search, sortField, sortDir, filterType]);
+  }, [customers, sortField, sortDir, filterType]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const paginated = filtered;
 
-  useEffect(() => { setPage(1); }, [search, filterType]);
 
   const handleSort = (field: string) => {
     if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");

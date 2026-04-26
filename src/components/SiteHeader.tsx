@@ -121,7 +121,7 @@ export function SiteHeader() {
                     onFocus={() => { if (desktopSearch.results.length > 0) desktopSearch.setOpen(true); }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && desktopSearch.query.trim()) {
-                        navigate({ to: "/catalog", search: { q: desktopSearch.query.trim() } as any });
+                        navigate({ to: "/search", search: { q: desktopSearch.query.trim() } as any });
                         desktopSearch.clear();
                       }
                     }}
@@ -131,7 +131,7 @@ export function SiteHeader() {
                   <button
                     onClick={() => {
                       if (desktopSearch.query.trim()) {
-                        navigate({ to: "/catalog", search: { q: desktopSearch.query.trim() } as any });
+                        navigate({ to: "/search", search: { q: desktopSearch.query.trim() } as any });
                         desktopSearch.clear();
                       }
                     }}
@@ -417,7 +417,7 @@ export function SiteHeader() {
                   onChange={(e) => mobileSearch.search(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && mobileSearch.query.trim()) {
-                      navigate({ to: "/catalog", search: { q: mobileSearch.query.trim() } as any });
+                      navigate({ to: "/search", search: { q: mobileSearch.query.trim() } as any });
                       mobileSearch.clear();
                       setMobileOpen(false);
                     }
@@ -428,7 +428,7 @@ export function SiteHeader() {
                 <button
                   onClick={() => {
                     if (mobileSearch.query.trim()) {
-                      navigate({ to: "/catalog", search: { q: mobileSearch.query.trim() } as any });
+                      navigate({ to: "/search", search: { q: mobileSearch.query.trim() } as any });
                       mobileSearch.clear();
                       setMobileOpen(false);
                     }

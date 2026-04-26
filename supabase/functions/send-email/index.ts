@@ -345,6 +345,21 @@ serve(async (req) => {
     return new Response(null, { status: 204, headers: corsHeaders });
   }
 
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
+  const now = Date.now();
+  const rl = rateLimitMap.get(ip);
+  if (rl && now < rl.resetAt) {
+    if (rl.count >= 10) {
+      return new Response(JSON.stringify({ error: "Too many requests" }), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    rl.count++;
+  } else {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + 60000 });
+  }
+
   try {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     if (!RESEND_API_KEY) {

@@ -236,21 +236,89 @@ function AdminImportExport() {
               <li>• Faceți backup înainte de import masiv</li>
             </ul>
           </div>
-          <div className="flex items-end gap-4">
+          <div className="flex flex-wrap items-end gap-4">
             <div>
               <label className="text-xs font-medium text-muted-foreground">Tabel destinație</label>
-              <select value={importTarget} onChange={e => setImportTarget(e.target.value)} className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm bg-background">
+              <select value={importTarget} onChange={e => { setImportTarget(e.target.value); setPreview(null); setImportResult(""); }} className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm bg-background">
                 {exports.map(e => <option key={e.id} value={e.table}>{e.label}</option>)}
               </select>
             </div>
             <div>
               <label className="flex items-center gap-2 rounded-lg border-2 border-dashed border-border px-6 py-3 text-sm font-medium text-muted-foreground hover:border-accent/50 hover:text-accent cursor-pointer transition">
                 <Upload className="h-4 w-4" />
-                {importing ? "Se importă..." : "Alege fișier CSV"}
-                <input type="file" accept=".csv" onChange={handleImport} className="hidden" disabled={importing} />
+                {importing ? `Se importă ${progress.current}/${progress.total}...` : "Alege fișier CSV"}
+                <input type="file" accept=".csv" onChange={handleFileSelect} className="hidden" disabled={importing} />
               </label>
             </div>
+            {importTarget === "products" && (
+              <button onClick={downloadTemplate} className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent/10 transition">
+                <FileDown className="h-4 w-4" /> Descarcă Template
+              </button>
+            )}
           </div>
+
+          {importing && progress.total > 0 && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Se importă {progress.current} din {progress.total} produse...</span>
+                <span>{Math.round((progress.current / progress.total) * 100)}%</span>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-full bg-accent transition-all" style={{ width: `${(progress.current / progress.total) * 100}%` }} />
+              </div>
+            </div>
+          )}
+
+          {preview && !importing && (
+            <div className="space-y-3 rounded-lg border border-border bg-background p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <p className="text-sm font-semibold text-foreground">Preview: {preview.valid.length} rânduri valide</p>
+                </div>
+                {preview.skipped.length > 0 && (
+                  <div className="flex items-center gap-1 text-xs text-yellow-600 dark:text-yellow-400">
+                    <AlertTriangle className="h-3.5 w-3.5" /> {preview.skipped.length} sărite
+                  </div>
+                )}
+              </div>
+
+              {preview.skipped.length > 0 && (
+                <div className="rounded-md bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 p-2 max-h-24 overflow-y-auto">
+                  <p className="text-[11px] text-yellow-700 dark:text-yellow-400 font-medium mb-1">Rânduri sărite:</p>
+                  {preview.skipped.slice(0, 10).map((s, i) => (
+                    <div key={i} className="text-[11px] text-yellow-700 dark:text-yellow-400">Rând {s.row}: {s.reason}</div>
+                  ))}
+                  {preview.skipped.length > 10 && <div className="text-[11px] text-yellow-700 dark:text-yellow-400">... și încă {preview.skipped.length - 10}</div>}
+                </div>
+              )}
+
+              <div className="overflow-x-auto rounded-md border border-border">
+                <table className="w-full text-xs">
+                  <thead className="bg-muted">
+                    <tr>{preview.headers.slice(0, 6).map(h => <th key={h} className="px-2 py-1.5 text-left font-medium text-muted-foreground">{h}</th>)}</tr>
+                  </thead>
+                  <tbody>
+                    {preview.rows.map((r, i) => (
+                      <tr key={i} className="border-t border-border">
+                        {preview.headers.slice(0, 6).map(h => <td key={h} className="px-2 py-1.5 text-foreground truncate max-w-[120px]">{String(r[h] ?? "")}</td>)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="flex gap-2">
+                <button onClick={confirmImport} disabled={preview.valid.length === 0} className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition disabled:opacity-50">
+                  <CheckCircle2 className="h-4 w-4" /> Confirmă importul ({preview.valid.length})
+                </button>
+                <button onClick={() => setPreview(null)} className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition">
+                  <XCircle className="h-4 w-4" /> Anulează
+                </button>
+              </div>
+            </div>
+          )}
+
           {importResult && (
             <div className={`rounded-lg p-3 text-sm ${importResult.startsWith("✅") ? "bg-green-50 dark:bg-green-900/10 text-green-700 dark:text-green-400" : "bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-400"}`}>
               {importResult}

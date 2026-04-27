@@ -256,6 +256,17 @@ function CheckoutPage() {
       ).then(() => {});
     }
 
+    if (user?.id) {
+      supabase.from("user_notifications").insert({
+        user_id: user.id,
+        title: "Comandă plasată",
+        message: `Comanda #${orderData.order_number} a fost plasată cu succes. Total: ${orderData.total} RON`,
+        type: "order",
+        link: "/account/orders",
+        is_read: false,
+      }).then(() => {});
+    }
+
     clearCart();
     navigate({ to: "/order-confirmed/$orderId", params: { orderId: data.id } });
   };

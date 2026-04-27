@@ -59,10 +59,6 @@ function AdminPages() {
     load();
   };
 
-  if (loading) return <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />)}</div>;
-
-  const [exporting, setExporting] = useState(false);
-
   const legalSlugs = [
     "termeni-si-conditii",
     "politica-confidentialitate",

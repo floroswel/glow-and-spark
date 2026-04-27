@@ -261,16 +261,26 @@ function AccountOrders() {
                     {Number(order.subtotal).toFixed(2)} / {Number(order.shipping_cost || 0).toFixed(2)} / {Number(order.total).toFixed(2)} lei
                   </span>
                 </div>
-                {(order.status === "completed" || order.status === "shipped") && (
+                {(order.status === "completed" || order.status === "shipped" || order.status === "processing") && (
                   <div className="border-t border-border pt-3 flex flex-wrap items-center gap-2">
                     <button
-                      onClick={(e) => { e.stopPropagation(); handleReorder(order); }}
-                      disabled={reorderingId === order.id}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:opacity-90 transition disabled:opacity-50"
+                      onClick={(e) => { e.stopPropagation(); handleDownloadInvoice(order); }}
+                      disabled={invoiceLoadingId === order.id}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary transition disabled:opacity-50"
                     >
-                      {reorderingId === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-                      Recomandă
+                      {invoiceLoadingId === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+                      Descarcă factură
                     </button>
+                    {(order.status === "completed" || order.status === "shipped") && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleReorder(order); }}
+                        disabled={reorderingId === order.id}
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:opacity-90 transition disabled:opacity-50"
+                      >
+                        {reorderingId === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                        Recomandă
+                      </button>
+                    )}
                     {canReturn && (
                       <button
                         onClick={(e) => { e.stopPropagation(); openReturnModal(order); }}

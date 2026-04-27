@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Download, Upload, FileText, Package, Users, ShoppingCart, Tag, Database } from "lucide-react";
+import { Download, Upload, Package, Users, ShoppingCart, Tag, Database, FileDown, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/admin/import-export")({
   component: AdminImportExport,

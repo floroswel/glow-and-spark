@@ -47,6 +47,17 @@ function ContactPage() {
     if (error) {
       toast.error("Eroare la trimitere. Încearcă din nou.");
     } else {
+      // Fire-and-forget email notification (admin + customer confirmation)
+      supabase.functions.invoke("send-email", {
+        body: {
+          type: "contact_form",
+          customer_name: form.name,
+          customer_email: form.email,
+          subject: form.subject,
+          message: form.message,
+          phone: form.phone || null,
+        },
+      }).catch(() => {});
       toast.success("Mesajul a fost trimis! Îți vom răspunde în cel mai scurt timp.");
       setForm({ name: "", email: "", phone: "", subject: "", message: "" });
     }

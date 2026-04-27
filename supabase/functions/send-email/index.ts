@@ -369,8 +369,81 @@ serve(async (req) => {
     // Fetch site configuration from database
     const cfg = await fetchSiteConfig();
 
-    const { type, to, data } = await req.json();
+    const body = await req.json();
+    const { type, to, data } = body;
     console.log(`[send-email] type=${type}, to=${to}`);
+
+    // Special-case: contact form — sends two emails (admin + customer confirmation)
+    if (type === "contact_form") {
+      const customerName = String(body.customer_name || "").slice(0, 200);
+      const customerEmail = String(body.customer_email || "").slice(0, 255);
+      const subj = String(body.subject || "Mesaj de contact").slice(0, 300);
+      const message = String(body.message || "").slice(0, 5000);
+      const phone = body.phone ? String(body.phone).slice(0, 30) : "";
+
+      if (!customerEmail || !message) {
+        return new Response(JSON.stringify({ error: "Missing customer_email or message" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+      const adminTo = cfg.CONTACT_EMAIL;
+      const adminSubject = `Mesaj nou de la ${customerName || customerEmail}: ${subj}`;
+      const adminHtml = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+        <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+          <div style="background:#1a1a1a;color:#fff;padding:20px"><h2 style="margin:0">📨 Mesaj nou de contact</h2></div>
+          <div style="padding:24px;color:#333">
+            <p><strong>Nume:</strong> ${esc(customerName) || "—"}</p>
+            <p><strong>Email:</strong> <a href="mailto:${esc(customerEmail)}">${esc(customerEmail)}</a></p>
+            <p><strong>Telefon:</strong> ${esc(phone) || "—"}</p>
+            <p><strong>Subiect:</strong> ${esc(subj)}</p>
+            <hr style="border:none;border-top:1px solid #eee;margin:16px 0">
+            <p><strong>Mesaj:</strong></p>
+            <div style="background:#f9f9f9;border-radius:8px;padding:14px;white-space:pre-wrap;color:#333">${esc(message)}</div>
+          </div>
+        </div></body></html>`;
+
+      const customerSubject = `Am primit mesajul tău — ${cfg.SITE_NAME}`;
+      const customerHtml = `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+        <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+          <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center"><h1 style="margin:0;font-size:22px">🕯️ ${esc(cfg.SITE_NAME)}</h1></div>
+          <div style="padding:24px;color:#333">
+            <h2 style="margin-top:0;color:#1a1a1a">Mulțumim${customerName ? `, ${esc(customerName)}` : ""}!</h2>
+            <p style="color:#555">Am primit mesajul tău și îți vom răspunde în maxim 1 zi lucrătoare.</p>
+            <div style="background:#f9f9f9;border-radius:8px;padding:14px;margin:16px 0">
+              <p style="margin:0 0 6px;color:#999;font-size:13px">Mesajul tău:</p>
+              <p style="margin:0;color:#333;white-space:pre-wrap">${esc(message)}</p>
+            </div>
+            <p style="color:#555;font-size:14px">Cu drag,<br>Echipa ${esc(cfg.SITE_NAME)}</p>
+          </div>
+        </div></body></html>`;
+
+      const sendOne = async (toAddr: string, s: string, h: string) =>
+        fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${RESEND_API_KEY}` },
+          body: JSON.stringify({ from: `${cfg.SITE_NAME} <${cfg.FROM_EMAIL}>`, to: [toAddr], subject: s, html: h }),
+        });
+
+      const results: any = {};
+      if (adminTo) {
+        try {
+          const r = await sendOne(adminTo, adminSubject, adminHtml);
+          results.admin = await r.json();
+        } catch (e) { console.error("[send-email] contact admin send failed:", e); }
+      }
+      try {
+        const r = await sendOne(customerEmail, customerSubject, customerHtml);
+        results.customer = await r.json();
+      } catch (e) { console.error("[send-email] contact customer send failed:", e); }
+
+      return new Response(JSON.stringify({ success: true, results }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (!type || !to) {
       return new Response(JSON.stringify({ error: "Missing type or to" }), {

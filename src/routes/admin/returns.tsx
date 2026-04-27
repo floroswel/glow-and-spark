@@ -88,6 +88,40 @@ function AdminReturns() {
 
   async function updateStatus(id: string, status: string) {
     await supabase.from("returns").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
+
+    const ret = returns.find(r => r.id === id);
+    if (ret && (status === "approved" || status === "rejected")) {
+      const order = getOrder(ret.order_id);
+      const customer_name = order?.customer_name || "Client";
+      const customer_email = order?.customer_email || "";
+      const orderNumber = order?.order_number || "";
+
+      if (customer_email) {
+        supabase.functions.invoke("send-email", {
+          body: {
+            type: status === "approved" ? "return_approved" : "return_rejected",
+            customer_name,
+            customer_email,
+            orderNumber,
+            reason: ret.reason,
+          },
+        }).catch(() => {});
+      }
+
+      if (ret.user_id) {
+        supabase.from("user_notifications").insert({
+          user_id: ret.user_id,
+          title: status === "approved" ? "Retur aprobat ✓" : "Retur respins",
+          message: status === "approved"
+            ? "Returul tău a fost aprobat. Vei primi rambursarea în 3-5 zile lucrătoare."
+            : "Returul tău a fost respins. Contactează-ne pentru detalii.",
+          type: "system",
+          link: "/account/orders",
+          is_read: false,
+        }).then(() => {});
+      }
+    }
+
     load();
     if (viewing?.id === id) setViewing({ ...viewing, status });
   }

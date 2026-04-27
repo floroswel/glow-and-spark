@@ -327,6 +327,60 @@ function lowStockAlertTemplate(data: any, cfg: SiteConfig): { subject: string; h
   };
 }
 
+function returnApprovedTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
+  return {
+    subject: `✓ Retur aprobat — Comanda #${data.orderNumber}`,
+    html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+        <div style="background:#16a34a;color:#fff;padding:24px;text-align:center">
+          <h1 style="margin:0;font-size:22px">✓ Retur Aprobat</h1>
+        </div>
+        <div style="padding:24px">
+          <p style="color:#555">Dragă ${data.customer_name || "client"},</p>
+          <p style="color:#555">Vestea bună: cererea ta de retur pentru comanda <strong>#${data.orderNumber}</strong> a fost <strong style="color:#16a34a">aprobată</strong>.</p>
+          ${data.reason ? `<div style="background:#f0fdf4;border-left:4px solid #16a34a;border-radius:6px;padding:12px;margin:16px 0"><p style="margin:0;color:#555;font-size:14px"><strong>Motiv retur:</strong> ${data.reason}</p></div>` : ""}
+          <div style="background:#f9f9f9;border-radius:8px;padding:16px;margin:16px 0">
+            <h3 style="margin:0 0 8px;color:#1a1a1a;font-size:15px">📦 Pașii următori</h3>
+            <p style="margin:0 0 8px;color:#555;font-size:14px">1. Împachetează produsele și expediază-le la adresa noastră.</p>
+            <p style="margin:0 0 8px;color:#555;font-size:14px">2. După primirea coletului, vom procesa rambursarea.</p>
+            <p style="margin:0;color:#555;font-size:14px">3. <strong>Vei primi rambursarea în 3-5 zile lucrătoare.</strong></p>
+          </div>
+          <a href="${cfg.SITE_URL}/account/orders" style="display:inline-block;background:#16a34a;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:16px 0">Vezi comenzile mele</a>
+          <p style="color:#999;font-size:13px;margin-top:16px">Pentru orice întrebare, nu ezita să ne contactezi.</p>
+        </div>
+        <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
+          © ${new Date().getFullYear()} ${cfg.SITE_NAME}. Toate drepturile rezervate.
+        </div>
+      </div>
+    </body></html>`,
+  };
+}
+
+function returnRejectedTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
+  return {
+    subject: `Retur respins — Comanda #${data.orderNumber}`,
+    html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+        <div style="background:#dc2626;color:#fff;padding:24px;text-align:center">
+          <h1 style="margin:0;font-size:22px">Retur Respins</h1>
+        </div>
+        <div style="padding:24px">
+          <p style="color:#555">Dragă ${data.customer_name || "client"},</p>
+          <p style="color:#555">Ne pare rău, dar cererea ta de retur pentru comanda <strong>#${data.orderNumber}</strong> nu a putut fi aprobată.</p>
+          ${data.reason ? `<div style="background:#fef2f2;border-left:4px solid #dc2626;border-radius:6px;padding:12px;margin:16px 0"><p style="margin:0;color:#555;font-size:14px"><strong>Motiv retur solicitat:</strong> ${data.reason}</p></div>` : ""}
+          <div style="background:#f9f9f9;border-radius:8px;padding:16px;margin:16px 0">
+            <p style="margin:0;color:#555;font-size:14px">Pentru clarificări sau pentru a discuta o soluție alternativă, te rugăm să ne contactezi. Echipa noastră îți stă la dispoziție.</p>
+          </div>
+          <a href="${cfg.SITE_URL}/contact" style="display:inline-block;background:#1a1a1a;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:16px 0">Contactează-ne</a>
+        </div>
+        <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
+          © ${new Date().getFullYear()} ${cfg.SITE_NAME}. Toate drepturile rezervate.
+        </div>
+      </div>
+    </body></html>`,
+  };
+}
+
 const templateMap: Record<string, (data: any, cfg: SiteConfig) => { subject: string; html: string }> = {
   order_confirmation: orderConfirmationTemplate,
   welcome: welcomeTemplate,
@@ -335,6 +389,8 @@ const templateMap: Record<string, (data: any, cfg: SiteConfig) => { subject: str
   order_shipped: orderShippedTemplate,
   order_completed: orderCompletedTemplate,
   return_request: returnRequestTemplate,
+  return_approved: returnApprovedTemplate,
+  return_rejected: returnRejectedTemplate,
   cart_recovery: cartRecoveryTemplate,
   account_deletion_request: accountDeletionRequestTemplate,
   low_stock_alert: lowStockAlertTemplate,

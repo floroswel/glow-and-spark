@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { FileText, Plus, Trash2, Pencil, Eye, EyeOff, Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 
 export const Route = createFileRoute("/admin/pages")({
   component: AdminPages,
@@ -13,6 +14,7 @@ function AdminPages() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<any>(null);
   const [form, setForm] = useState({ title: "", slug: "", content: "", status: "draft", meta_title: "", meta_description: "" });
+  const [exporting, setExporting] = useState(false);
 
   const load = async () => {
     const { data } = await supabase.from("cms_pages").select("*").order("created_at", { ascending: false });
@@ -56,10 +58,6 @@ function AdminPages() {
     await supabase.from("cms_pages").update({ status: current === "published" ? "draft" : "published" }).eq("id", id);
     load();
   };
-
-  if (loading) return <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />)}</div>;
-
-  const [exporting, setExporting] = useState(false);
 
   const legalSlugs = [
     "termeni-si-conditii",
@@ -183,6 +181,8 @@ function AdminPages() {
     }
   };
 
+  if (loading) return <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />)}</div>;
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -216,8 +216,10 @@ function AdminPages() {
               <option value="published">Publicat</option>
             </select>
           </div>
-          <textarea placeholder="Conținut pagină (HTML)" value={form.content} onChange={(e) => setForm({...form, content: e.target.value})} rows={10}
-            className="w-full rounded-lg border border-border px-4 py-2.5 text-sm font-mono focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30" />
+          <div>
+            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Conținut pagină</label>
+            <RichTextEditor value={form.content} onChange={(html) => setForm({ ...form, content: html })} placeholder="Scrie conținutul paginii..." />
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input placeholder="Meta Title (SEO)" value={form.meta_title} onChange={(e) => setForm({...form, meta_title: e.target.value})}
               className="rounded-lg border border-border px-4 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30" />

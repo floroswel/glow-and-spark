@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BookOpen, Plus, Trash2, Pencil, Eye, EyeOff, Search, Image } from "lucide-react";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 
 export const Route = createFileRoute("/admin/blog")({
   component: AdminBlog,
@@ -141,8 +142,10 @@ function AdminBlog() {
           </div>
           <textarea placeholder="Rezumat scurt" value={form.excerpt} onChange={(e) => setForm({...form, excerpt: e.target.value})} rows={2}
             className="w-full rounded-lg border border-border px-4 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30" />
-          <textarea placeholder="Conținut articol (HTML)" value={form.content} onChange={(e) => setForm({...form, content: e.target.value})} rows={8}
-            className="w-full rounded-lg border border-border px-4 py-2.5 text-sm font-mono focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30" />
+          <div>
+            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Conținut articol</label>
+            <RichTextEditor value={form.content} onChange={(html) => setForm({ ...form, content: html })} placeholder="Scrie conținutul articolului..." />
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <input placeholder="Meta Title (SEO)" value={form.meta_title} onChange={(e) => setForm({...form, meta_title: e.target.value})}

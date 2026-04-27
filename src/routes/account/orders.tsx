@@ -33,6 +33,35 @@ function AccountOrders() {
   const [returnDetails, setReturnDetails] = useState("");
   const [submittingReturn, setSubmittingReturn] = useState(false);
   const [reorderingId, setReorderingId] = useState<string | null>(null);
+  const [invoiceLoadingId, setInvoiceLoadingId] = useState<string | null>(null);
+
+  const handleDownloadInvoice = async (order: any) => {
+    setInvoiceLoadingId(order.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-invoice", {
+        body: { order_id: order.id },
+      });
+      if (error || !data?.pdf) {
+        toast.error("Eroare la generarea facturii.");
+        return;
+      }
+      const bytes = atob(data.pdf);
+      const arr = new Uint8Array(bytes.length);
+      for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+      const blob = new Blob([arr], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "factura-" + order.order_number + ".pdf";
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Factura a fost descărcată!");
+    } catch {
+      toast.error("Eroare la descărcarea facturii.");
+    } finally {
+      setInvoiceLoadingId(null);
+    }
+  };
 
   const handleReorder = async (order: any) => {
     const items = Array.isArray(order.items) ? order.items : [];

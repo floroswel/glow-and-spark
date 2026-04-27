@@ -66,6 +66,7 @@ function CheckoutPage() {
     paymentMethod: "ramburs",
     acceptTerms: false, acceptGdpr: false,
   });
+  const [newsletterOptIn, setNewsletterOptIn] = useState(true);
 
   const u = (field: string, value: any) => setForm((p) => ({ ...p, [field]: value }));
 
@@ -248,6 +249,13 @@ function CheckoutPage() {
       }
     } catch {}
 
+    if (newsletterOptIn && form.email) {
+      supabase.from("newsletter_subscribers").upsert(
+        { email: form.email, name: form.name, is_active: true, source: "checkout" },
+        { onConflict: "email", ignoreDuplicates: true }
+      ).then(() => {});
+    }
+
     clearCart();
     navigate({ to: "/order-confirmed/$orderId", params: { orderId: data.id } });
   };
@@ -428,6 +436,10 @@ function CheckoutPage() {
                   <label className="flex items-start gap-2 text-sm">
                     <input type="checkbox" checked={form.acceptGdpr} onChange={(e) => u("acceptGdpr", e.target.checked)} className="mt-0.5 accent-accent" />
                     <span>Accept <a href="/page/gdpr" className="text-accent underline">politica de confidențialitate</a> *</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer pt-1">
+                    <input type="checkbox" checked={newsletterOptIn} onChange={(e) => setNewsletterOptIn(e.target.checked)} className="w-4 h-4 rounded border-border accent-accent" />
+                    <span className="text-sm text-muted-foreground">Vreau să primesc oferte și noutăți pe email</span>
                   </label>
                   <p className="text-xs text-muted-foreground mt-2 pl-1">
                     🔒 Ai dreptul de retragere în <strong>14 zile calendaristice</strong> de la primirea produsului, conform{" "}

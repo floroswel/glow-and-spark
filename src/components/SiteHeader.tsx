@@ -59,6 +59,7 @@ export function SiteHeader() {
   const [categories, setCategories] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [userPoints, setUserPoints] = useState<number | null>(null);
+  const [unreadNotif, setUnreadNotif] = useState(0);
   const desktopSearch = useProductSearch();
   const mobileSearch = useProductSearch();
   const desktopSearchRef = useRef<HTMLDivElement>(null);
@@ -69,6 +70,25 @@ export function SiteHeader() {
     if (!user) { setUserPoints(null); return; }
     supabase.from("user_points").select("balance").eq("user_id", user.id).maybeSingle()
       .then(({ data }) => setUserPoints(data?.balance ?? null));
+  }, [user]);
+
+  // Live unread notifications count
+  useEffect(() => {
+    if (!user) { setUnreadNotif(0); return; }
+    const fetchCount = async () => {
+      const { count } = await supabase
+        .from("user_notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("is_read", false);
+      setUnreadNotif(count || 0);
+    };
+    fetchCount();
+    const channel = supabase
+      .channel("header-notif-" + user.id)
+      .on("postgres_changes", { event: "*", schema: "public", table: "user_notifications", filter: "user_id=eq." + user.id }, () => fetchCount())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, [user]);
 
   const navLinks = (header?.navbar_links || []).filter((link: any) => link.active);

@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Switch } from "@/components/ui/switch";
 import { TrustBadges } from "@/components/TrustBadges";
-import { MapPin, Gift } from "lucide-react";
+import { MapPin, Gift, Search, Loader2, Check, X } from "lucide-react";
 import { sanitizeText, sanitizePhone, sanitizeEmail } from "@/lib/sanitize";
 
 export const Route = createFileRoute("/checkout")({

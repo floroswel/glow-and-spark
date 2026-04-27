@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { AdminSettingsEditor, Section, Field, TextInput, Toggle, NumberInput, TextArea } from "@/components/admin/AdminSettingsEditor";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { AdminSettingsEditor, Section, Field, TextInput, Toggle, TextArea } from "@/components/admin/AdminSettingsEditor";
 import { useState } from "react";
-import { Store, Phone, MessageCircle, Truck, Globe, CreditCard, Bell, Shield, FileText, Mail, Share2, AlertTriangle } from "lucide-react";
+import { Store, Phone, MessageCircle, CreditCard, Bell, Shield, Mail, Share2, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,
@@ -77,10 +77,7 @@ function AdminSettings() {
     { key: "identity", label: "Identitate", icon: Store },
     { key: "contact", label: "Contact", icon: Phone },
     { key: "whatsapp", label: "WhatsApp", icon: MessageCircle },
-    { key: "shipping", label: "Livrare", icon: Truck },
-    { key: "tax", label: "Fiscalitate", icon: FileText },
     { key: "notifications", label: "Notificări", icon: Bell },
-    { key: "seo", label: "SEO & Analytics", icon: Globe },
     { key: "legal", label: "Legal", icon: Shield },
     { key: "invoicing", label: "Firmă & Facturare", icon: CreditCard },
     { key: "email", label: "Email", icon: Mail },
@@ -188,29 +185,8 @@ function AdminSettings() {
               </Section>
             )}
 
-            {activeSection === "shipping" && (
-              <Section title="🚚 Livrare">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <Field label="Livrare gratuită de la (RON)"><TextInput value={s.free_shipping_min} onChange={(v) => u("free_shipping_min", v)} /></Field>
-                  <Field label="Cost livrare standard (RON)"><TextInput value={s.default_shipping_cost} onChange={(v) => u("default_shipping_cost", v)} /></Field>
-                  <Field label="Cost livrare express (RON)"><TextInput value={s.express_shipping_cost} onChange={(v) => u("express_shipping_cost", v)} /></Field>
-                  <Field label="Prag stoc scăzut (alerte)"><TextInput value={s.low_stock_threshold} onChange={(v) => u("low_stock_threshold", v)} /></Field>
-                  <Field label="Prag global alertă email stoc"><TextInput value={s.stock_alert_threshold} onChange={(v) => u("stock_alert_threshold", v)} /></Field>
-                  <Field label="Preț ambalaj cadou (RON)"><TextInput value={s.gift_wrapping_price} onChange={(v) => u("gift_wrapping_price", v)} /></Field>
-                </div>
-              </Section>
-            )}
-
-            {activeSection === "tax" && (
-              <Section title="💰 Fiscalitate">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <Field label="Cotă TVA (%)"><TextInput value={s.vat_rate} onChange={(v) => u("vat_rate", v)} /></Field>
-                  <div className="flex items-end pb-2">
-                    <Toggle value={s.vat_included} onChange={(v) => u("vat_included", v)} label="Prețurile includ TVA" />
-                  </div>
-                </div>
-              </Section>
-            )}
+            {/* Livrare → /admin/shipping (pagină dedicată cu curieri și zone) */}
+            {/* Fiscalitate → /admin/tax-settings (cote TVA multiple) */}
 
             {activeSection === "notifications" && (
               <Section title="🔔 Notificări">
@@ -223,21 +199,7 @@ function AdminSettings() {
               </Section>
             )}
 
-            {activeSection === "seo" && (
-              <Section title="🔍 SEO & Analytics">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <Field label="Sufix titlu pagini (ex: — Glow & Spark)"><TextInput value={s.meta_title_suffix} onChange={(v) => u("meta_title_suffix", v)} /></Field>
-                  <Field label="Google Analytics ID"><TextInput value={s.google_analytics_id} onChange={(v) => u("google_analytics_id", v)} /></Field>
-                  <Field label="Facebook Pixel ID"><TextInput value={s.facebook_pixel_id} onChange={(v) => u("facebook_pixel_id", v)} /></Field>
-                </div>
-                <div className="mt-4">
-                  <label className="text-xs font-medium text-muted-foreground">robots.txt</label>
-                  <div className="mt-1">
-                    <TextArea value={s.robots_txt} onChange={(v) => u("robots_txt", v)} rows={4} />
-                  </div>
-                </div>
-              </Section>
-            )}
+            {/* SEO & Analytics → /admin/content/seo (configurare completă SEO + schema.org) */}
 
             {activeSection === "legal" && (
               <Section title="⚖️ Legal">
@@ -260,7 +222,6 @@ function AdminSettings() {
                   <Field label="Adresă sediu"><TextInput value={s.company_address} onChange={(v) => u("company_address", v)} /></Field>
                   <Field label="Oraș / Județ"><TextInput value={s.company_city} onChange={(v) => u("company_city", v)} /></Field>
                   <Field label="Coduri CAEN (separate prin virgulă)"><TextArea value={s.company_caen} onChange={(v) => u("company_caen", v)} /></Field>
-                  
                   <Field label="Adresă facturare (dacă diferă)"><TextInput value={s.invoice_address} onChange={(v) => u("invoice_address", v)} /></Field>
                   <Field label="Bancă"><TextInput value={s.invoice_bank} onChange={(v) => u("invoice_bank", v)} /></Field>
                   <Field label="IBAN"><TextInput value={s.invoice_iban} onChange={(v) => u("invoice_iban", v)} /></Field>
@@ -269,7 +230,8 @@ function AdminSettings() {
             )}
 
             {activeSection === "email" && (
-              <Section title="📧 Email">
+              <Section title="📧 Email (SMTP expeditor)">
+                <p className="text-sm text-muted-foreground mb-4">Pentru template-urile efective vezi <Link to="/admin/content/email-templates" className="text-accent underline">Conținut → Email Templates</Link></p>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <Field label="Nume expeditor"><TextInput value={s.smtp_from_name} onChange={(v) => u("smtp_from_name", v)} /></Field>
                   <Field label="Email expeditor"><TextInput value={s.smtp_from_email} onChange={(v) => u("smtp_from_email", v)} /></Field>
@@ -290,7 +252,6 @@ function AdminSettings() {
                 </div>
               </Section>
             )}
-
 
             {activeSection === "alert" && (
               <Section title="⚠️ Alertă Site">

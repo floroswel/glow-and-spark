@@ -426,7 +426,17 @@ serve(async (req) => {
     const cfg = await fetchSiteConfig();
 
     const body = await req.json();
-    const { type, to, data } = body;
+    let { type, to, data } = body;
+    // Allow flat-body invocations (e.g. return_approved/return_rejected)
+    if (!to && body.customer_email) to = body.customer_email;
+    if (!data && (body.orderNumber || body.customer_name || body.reason)) {
+      data = {
+        customer_name: body.customer_name,
+        customer_email: body.customer_email,
+        orderNumber: body.orderNumber,
+        reason: body.reason,
+      };
+    }
     console.log(`[send-email] type=${type}, to=${to}`);
 
     // Special-case: contact form — sends two emails (admin + customer confirmation)

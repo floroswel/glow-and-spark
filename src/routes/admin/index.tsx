@@ -412,7 +412,7 @@ function AdminDashboard() {
                 { label: "Vezi Comenzi", to: "/admin/orders", icon: ShoppingCart },
                 { label: "Moderează Recenzii", to: "/admin/reviews", icon: Star, badge: stats.pendingReviews },
                 { label: "Scrie Articol", to: "/admin/blog", icon: BookOpen },
-                { label: "Reclamații", to: "/admin/tickets", icon: MessageSquare, badge: complaints },
+                { label: "Reclamații", to: "/admin/complaints", icon: MessageSquare, badge: complaints },
               ].map((q) => (
                 <Link
                   key={q.label}

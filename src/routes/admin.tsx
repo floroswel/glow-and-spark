@@ -80,7 +80,7 @@ const menuSections: MenuSection[] = [
         children: [
           { to: "/admin/customers", label: "Toți Clienții" },
           { to: "/admin/crm", label: "Segmente & Grupuri" },
-          { to: "/admin/tickets", label: "Tichete Support" },
+          { to: "/admin/complaints", label: "Reclamații / Tichete" },
           { to: "/admin/complaints", label: "Reclamații" },
         ],
       },

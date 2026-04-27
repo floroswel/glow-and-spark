@@ -201,6 +201,57 @@ function AdminSettings() {
 
             {/* SEO & Analytics → /admin/content/seo (configurare completă SEO + schema.org) */}
 
+            {activeSection === "legal" && (
+              <Section title="⚖️ Legal">
+                <p className="text-sm text-muted-foreground mb-4">Slug-urile paginilor legale (trebuie create în secțiunea Pagini CMS)</p>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <Field label="Termeni și condiții (slug)"><TextInput value={s.terms_page_slug} onChange={(v) => u("terms_page_slug", v)} /></Field>
+                  <Field label="Politica confidentialitate (slug)"><TextInput value={s.privacy_page_slug} onChange={(v) => u("privacy_page_slug", v)} /></Field>
+                  <Field label="Politica retur (slug)"><TextInput value={s.return_policy_slug} onChange={(v) => u("return_policy_slug", v)} /></Field>
+                </div>
+              </Section>
+            )}
+
+            {activeSection === "invoicing" && (
+              <Section title="🏢 Firmă & Facturare">
+                <p className="text-sm text-muted-foreground mb-4">Aceste date apar automat în footer-ul site-ului și pe facturile generate</p>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Field label="Nume companie"><TextInput value={s.company_name} onChange={(v) => u("company_name", v)} /></Field>
+                  <Field label="CUI"><TextInput value={s.company_cui} onChange={(v) => u("company_cui", v)} /></Field>
+                  <Field label="Nr. Reg. Comerțului"><TextInput value={s.reg_com} onChange={(v) => u("reg_com", v)} /></Field>
+                  <Field label="Adresă sediu"><TextInput value={s.company_address} onChange={(v) => u("company_address", v)} /></Field>
+                  <Field label="Oraș / Județ"><TextInput value={s.company_city} onChange={(v) => u("company_city", v)} /></Field>
+                  <Field label="Coduri CAEN (separate prin virgulă)"><TextArea value={s.company_caen} onChange={(v) => u("company_caen", v)} /></Field>
+                  <Field label="Adresă facturare (dacă diferă)"><TextInput value={s.invoice_address} onChange={(v) => u("invoice_address", v)} /></Field>
+                  <Field label="Bancă"><TextInput value={s.invoice_bank} onChange={(v) => u("invoice_bank", v)} /></Field>
+                  <Field label="IBAN"><TextInput value={s.invoice_iban} onChange={(v) => u("invoice_iban", v)} /></Field>
+                </div>
+              </Section>
+            )}
+
+            {activeSection === "email" && (
+              <Section title="📧 Email (SMTP expeditor)">
+                <p className="text-sm text-muted-foreground mb-4">Pentru template-urile efective vezi <Link to="/admin/content/email-templates" className="text-accent underline">Conținut → Email Templates</Link></p>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Field label="Nume expeditor"><TextInput value={s.smtp_from_name} onChange={(v) => u("smtp_from_name", v)} /></Field>
+                  <Field label="Email expeditor"><TextInput value={s.smtp_from_email} onChange={(v) => u("smtp_from_email", v)} /></Field>
+                </div>
+              </Section>
+            )}
+
+            {activeSection === "social" && (
+              <Section title="🔗 Social Media">
+                <p className="text-sm text-muted-foreground mb-4">Linkurile vor apărea în footer și în alte secțiuni ale site-ului</p>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Field label="Facebook"><TextInput value={s.social_facebook} onChange={(v) => u("social_facebook", v)} /></Field>
+                  <Field label="Instagram"><TextInput value={s.social_instagram} onChange={(v) => u("social_instagram", v)} /></Field>
+                  <Field label="TikTok"><TextInput value={s.social_tiktok} onChange={(v) => u("social_tiktok", v)} /></Field>
+                  <Field label="YouTube"><TextInput value={s.social_youtube} onChange={(v) => u("social_youtube", v)} /></Field>
+                  <Field label="Pinterest"><TextInput value={s.social_pinterest} onChange={(v) => u("social_pinterest", v)} /></Field>
+                  <Field label="Twitter / X"><TextInput value={s.social_twitter} onChange={(v) => u("social_twitter", v)} /></Field>
+                </div>
+              </Section>
+            )}
 
             {activeSection === "alert" && (
               <Section title="⚠️ Alertă Site">

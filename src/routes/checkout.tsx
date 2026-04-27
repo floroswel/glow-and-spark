@@ -404,7 +404,7 @@ function CheckoutPage() {
                         </button>
                       </div>
                       {cuiLookup.status === "success" && (
-                        <p className="mt-1 flex items-center gap-1 text-xs text-green-600"><Check className="h-3.5 w-3.5" />{cuiLookup.message}</p>
+                        <p className="mt-1 flex items-center gap-1 text-xs text-[oklch(0.55_0.15_145)]"><Check className="h-3.5 w-3.5" />{cuiLookup.message}</p>
                       )}
                       {cuiLookup.status === "error" && (
                         <p className="mt-1 flex items-center gap-1 text-xs text-destructive"><X className="h-3.5 w-3.5" />{cuiLookup.message}</p>

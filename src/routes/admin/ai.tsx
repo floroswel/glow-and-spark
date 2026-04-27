@@ -36,10 +36,67 @@ function AdminAI() {
     if (!selectedTool || !input.trim()) return;
     setGenerating(true);
     setOutput("");
-    // Simulate AI generation (in production would call edge function with Lovable AI)
-    await new Promise(r => setTimeout(r, 2000));
-    setOutput(`[AI Generated Content]\n\n${selectedTool.prompt_template.replace("{input}", input)}\n\nAcesta este un exemplu de conținut generat. Conectați la Lovable AI Gateway pentru conținut real.`);
-    setGenerating(false);
+
+    const prompt = selectedTool.prompt_template.replace("{input}", input).replace("{lang}", "engleză");
+    const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-generate`;
+
+    try {
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ prompt, max_tokens: 800 }),
+      });
+
+      if (!resp.ok || !resp.body) {
+        let msg = "Eroare la generare. Încearcă din nou.";
+        try { const j = await resp.json(); if (j?.error) msg = j.error; } catch {}
+        setOutput(msg);
+        setGenerating(false);
+        return;
+      }
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let acc = "";
+      let done = false;
+
+      while (!done) {
+        const { value, done: streamDone } = await reader.read();
+        if (streamDone) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        let nl: number;
+        while ((nl = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, nl);
+          buffer = buffer.slice(nl + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line || line.startsWith(":")) continue;
+          if (!line.startsWith("data: ")) continue;
+          const json = line.slice(6).trim();
+          if (json === "[DONE]") { done = true; break; }
+          try {
+            const parsed = JSON.parse(json);
+            const delta = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (delta) {
+              acc += delta;
+              setOutput(acc);
+            }
+          } catch {
+            buffer = line + "\n" + buffer;
+            break;
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      setOutput("Eroare de rețea. Încearcă din nou.");
+    } finally {
+      setGenerating(false);
+    }
   }
 
   return (

@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
-import { ShoppingBag, ChevronDown, ChevronUp, RotateCcw, X, RefreshCw, Loader2 } from "lucide-react";
+import { ShoppingBag, ChevronDown, ChevronUp, RotateCcw, X, RefreshCw, Loader2, FileDown } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/account/orders")({
@@ -33,6 +33,35 @@ function AccountOrders() {
   const [returnDetails, setReturnDetails] = useState("");
   const [submittingReturn, setSubmittingReturn] = useState(false);
   const [reorderingId, setReorderingId] = useState<string | null>(null);
+  const [invoiceLoadingId, setInvoiceLoadingId] = useState<string | null>(null);
+
+  const handleDownloadInvoice = async (order: any) => {
+    setInvoiceLoadingId(order.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-invoice", {
+        body: { order_id: order.id },
+      });
+      if (error || !data?.pdf) {
+        toast.error("Eroare la generarea facturii.");
+        return;
+      }
+      const bytes = atob(data.pdf);
+      const arr = new Uint8Array(bytes.length);
+      for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+      const blob = new Blob([arr], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "factura-" + order.order_number + ".pdf";
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Factura a fost descărcată!");
+    } catch {
+      toast.error("Eroare la descărcarea facturii.");
+    } finally {
+      setInvoiceLoadingId(null);
+    }
+  };
 
   const handleReorder = async (order: any) => {
     const items = Array.isArray(order.items) ? order.items : [];
@@ -232,16 +261,26 @@ function AccountOrders() {
                     {Number(order.subtotal).toFixed(2)} / {Number(order.shipping_cost || 0).toFixed(2)} / {Number(order.total).toFixed(2)} lei
                   </span>
                 </div>
-                {(order.status === "completed" || order.status === "shipped") && (
+                {(order.status === "completed" || order.status === "shipped" || order.status === "processing") && (
                   <div className="border-t border-border pt-3 flex flex-wrap items-center gap-2">
                     <button
-                      onClick={(e) => { e.stopPropagation(); handleReorder(order); }}
-                      disabled={reorderingId === order.id}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:opacity-90 transition disabled:opacity-50"
+                      onClick={(e) => { e.stopPropagation(); handleDownloadInvoice(order); }}
+                      disabled={invoiceLoadingId === order.id}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary transition disabled:opacity-50"
                     >
-                      {reorderingId === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-                      Recomandă
+                      {invoiceLoadingId === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+                      Descarcă factură
                     </button>
+                    {(order.status === "completed" || order.status === "shipped") && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleReorder(order); }}
+                        disabled={reorderingId === order.id}
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:opacity-90 transition disabled:opacity-50"
+                      >
+                        {reorderingId === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                        Recomandă
+                      </button>
+                    )}
                     {canReturn && (
                       <button
                         onClick={(e) => { e.stopPropagation(); openReturnModal(order); }}

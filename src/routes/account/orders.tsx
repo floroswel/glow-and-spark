@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
-import { ShoppingBag, ChevronDown, ChevronUp, RotateCcw, X, RefreshCw, Loader2 } from "lucide-react";
+import { ShoppingBag, ChevronDown, ChevronUp, RotateCcw, X, RefreshCw, Loader2, FileDown } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/account/orders")({

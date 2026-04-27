@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BookOpen, Plus, Trash2, Pencil, Eye, EyeOff, Search, Image } from "lucide-react";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 
 export const Route = createFileRoute("/admin/blog")({
   component: AdminBlog,

@@ -216,8 +216,10 @@ function AdminPages() {
               <option value="published">Publicat</option>
             </select>
           </div>
-          <textarea placeholder="Conținut pagină (HTML)" value={form.content} onChange={(e) => setForm({...form, content: e.target.value})} rows={10}
-            className="w-full rounded-lg border border-border px-4 py-2.5 text-sm font-mono focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30" />
+          <div>
+            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Conținut pagină</label>
+            <RichTextEditor value={form.content} onChange={(html) => setForm({ ...form, content: html })} placeholder="Scrie conținutul paginii..." />
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input placeholder="Meta Title (SEO)" value={form.meta_title} onChange={(e) => setForm({...form, meta_title: e.target.value})}
               className="rounded-lg border border-border px-4 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30" />

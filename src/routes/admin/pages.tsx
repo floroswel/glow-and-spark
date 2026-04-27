@@ -14,6 +14,7 @@ function AdminPages() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<any>(null);
   const [form, setForm] = useState({ title: "", slug: "", content: "", status: "draft", meta_title: "", meta_description: "" });
+  const [exporting, setExporting] = useState(false);
 
   const load = async () => {
     const { data } = await supabase.from("cms_pages").select("*").order("created_at", { ascending: false });

@@ -38,7 +38,7 @@ const ADMIN_PAGES: SearchResult[] = [
   { type: "page", id: "stock", title: "Dashboard Stoc", to: "/admin/stock" },
   { type: "page", id: "warehouses", title: "Depozite", to: "/admin/stock/warehouses" },
   { type: "page", id: "suppliers", title: "Furnizori", to: "/admin/stock/suppliers" },
-  { type: "page", id: "tickets", title: "Tichete Support", to: "/admin/tickets" },
+  { type: "page", id: "tickets", title: "Reclamații / Tichete", to: "/admin/complaints" },
   { type: "page", id: "crm", title: "CRM Segmente", to: "/admin/crm" },
   { type: "page", id: "subscribers", title: "Abonați Newsletter", to: "/admin/subscribers" },
   { type: "page", id: "abandoned", title: "Coșuri Abandonate", to: "/admin/abandoned-carts" },

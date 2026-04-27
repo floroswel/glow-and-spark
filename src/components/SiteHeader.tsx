@@ -245,7 +245,7 @@ export function SiteHeader() {
                 </Link>
               )}
               {header?.show_favorites !== false && (
-                <Link to="/wishlist" className="hidden md:flex items-center gap-1 hover:text-foreground transition">
+                <Link to="/account/favorites" className="hidden md:flex items-center gap-1 hover:text-foreground transition">
                   <Heart className="h-5 w-5" />
                   Favorite
                 </Link>
@@ -583,7 +583,7 @@ export function SiteHeader() {
               <MobileLink to="/compare" icon={<GitCompare className="h-5 w-5" />} label="Compară" onClick={() => setMobileOpen(false)} />
             )}
             {header?.show_favorites !== false && (
-              <MobileLink to="/wishlist" icon={<Heart className="h-5 w-5" />} label="Favorite" onClick={() => setMobileOpen(false)} />
+              <MobileLink to="/account/favorites" icon={<Heart className="h-5 w-5" />} label="Favorite" onClick={() => setMobileOpen(false)} />
             )}
             <MobileLink to="/account" icon={<User className="h-5 w-5" />} label="Contul Meu" onClick={() => setMobileOpen(false)} />
             <MobileLink to="/track-order" icon={<Search className="h-5 w-5" />} label="Urmărește Comanda" onClick={() => setMobileOpen(false)} />

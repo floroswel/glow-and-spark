@@ -185,29 +185,8 @@ function AdminSettings() {
               </Section>
             )}
 
-            {activeSection === "shipping" && (
-              <Section title="🚚 Livrare">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <Field label="Livrare gratuită de la (RON)"><TextInput value={s.free_shipping_min} onChange={(v) => u("free_shipping_min", v)} /></Field>
-                  <Field label="Cost livrare standard (RON)"><TextInput value={s.default_shipping_cost} onChange={(v) => u("default_shipping_cost", v)} /></Field>
-                  <Field label="Cost livrare express (RON)"><TextInput value={s.express_shipping_cost} onChange={(v) => u("express_shipping_cost", v)} /></Field>
-                  <Field label="Prag stoc scăzut (alerte)"><TextInput value={s.low_stock_threshold} onChange={(v) => u("low_stock_threshold", v)} /></Field>
-                  <Field label="Prag global alertă email stoc"><TextInput value={s.stock_alert_threshold} onChange={(v) => u("stock_alert_threshold", v)} /></Field>
-                  <Field label="Preț ambalaj cadou (RON)"><TextInput value={s.gift_wrapping_price} onChange={(v) => u("gift_wrapping_price", v)} /></Field>
-                </div>
-              </Section>
-            )}
-
-            {activeSection === "tax" && (
-              <Section title="💰 Fiscalitate">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <Field label="Cotă TVA (%)"><TextInput value={s.vat_rate} onChange={(v) => u("vat_rate", v)} /></Field>
-                  <div className="flex items-end pb-2">
-                    <Toggle value={s.vat_included} onChange={(v) => u("vat_included", v)} label="Prețurile includ TVA" />
-                  </div>
-                </div>
-              </Section>
-            )}
+            {/* Livrare → /admin/shipping (pagină dedicată cu curieri și zone) */}
+            {/* Fiscalitate → /admin/tax-settings (cote TVA multiple) */}
 
             {activeSection === "notifications" && (
               <Section title="🔔 Notificări">

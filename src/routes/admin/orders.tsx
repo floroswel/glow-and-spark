@@ -213,6 +213,17 @@ function AdminOrders() {
       }).catch(() => {});
     }
 
+    if (order?.user_id && (status === "shipped" || status === "completed")) {
+      supabase.from("user_notifications").insert({
+        user_id: order.user_id,
+        title: status === "shipped" ? "Comanda expediată 🚚" : "Comandă finalizată ✓",
+        message: "Comanda #" + order.order_number + (status === "shipped" ? " este în drum spre tine!" : " a fost finalizată. Mulțumim!"),
+        type: "order",
+        link: "/account/orders",
+        is_read: false,
+      }).then(() => {});
+    }
+
     load();
     if (viewing?.id === id) setViewing({ ...viewing, status });
   };

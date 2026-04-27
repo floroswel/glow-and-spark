@@ -276,6 +276,16 @@ export function SiteHeader() {
                   <span className="text-xs font-semibold">{userPoints} pts</span>
                 </Link>
               )}
+              {user && (
+                <Link to="/account/notifications" className="relative flex items-center hover:text-foreground transition" aria-label="Notificări">
+                  <Bell className="h-5 w-5" />
+                  {unreadNotif > 0 && (
+                    <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white">
+                      {unreadNotif > 9 ? "9+" : unreadNotif}
+                    </span>
+                  )}
+                </Link>
+              )}
               {header?.show_cart !== false && (
                 <Link to="/cart" className="relative flex items-center gap-1 hover:text-foreground transition">
                   <ShoppingBag className="h-5 w-5" />

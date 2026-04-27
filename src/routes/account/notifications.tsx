@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,8 +17,17 @@ const typeConfig: Record<string, { icon: typeof Bell; label: string; color: stri
 
 function NotificationsPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleRowClick = async (n: any) => {
+    if (!n.is_read) {
+      await supabase.from("user_notifications").update({ is_read: true }).eq("id", n.id);
+      setNotifications((prev) => prev.map((x) => (x.id === n.id ? { ...x, is_read: true } : x)));
+    }
+    if (n.link) navigate({ to: n.link });
+  };
 
   const fetchNotifications = async () => {
     if (!user) return;
@@ -109,7 +118,8 @@ function NotificationsPage() {
             return (
               <div
                 key={n.id}
-                className={`rounded-xl border bg-card p-4 transition ${
+                onClick={() => handleRowClick(n)}
+                className={`rounded-xl border bg-card p-4 transition cursor-pointer hover:shadow-md ${
                   n.is_read ? "border-border opacity-70" : "border-accent/30 bg-accent/5 shadow-sm"
                 }`}
               >
@@ -144,7 +154,7 @@ function NotificationsPage() {
                         </span>
                         {!n.is_read && (
                           <button
-                            onClick={() => markAsRead(n.id)}
+                            onClick={(e) => { e.stopPropagation(); markAsRead(n.id); }}
                             className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground transition"
                             title="Marchează ca citit"
                           >

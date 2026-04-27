@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { AdminSettingsEditor, Section, Field, TextInput, Toggle, NumberInput, TextArea } from "@/components/admin/AdminSettingsEditor";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { AdminSettingsEditor, Section, Field, TextInput, Toggle, TextArea } from "@/components/admin/AdminSettingsEditor";
 import { useState } from "react";
-import { Store, Phone, MessageCircle, Truck, Globe, CreditCard, Bell, Shield, FileText, Mail, Share2, AlertTriangle } from "lucide-react";
+import { Store, Phone, MessageCircle, CreditCard, Bell, Shield, Mail, Share2, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,

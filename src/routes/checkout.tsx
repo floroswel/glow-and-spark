@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Switch } from "@/components/ui/switch";
 import { TrustBadges } from "@/components/TrustBadges";
-import { MapPin, Gift } from "lucide-react";
+import { MapPin, Gift, Search, Loader2, Check, X } from "lucide-react";
 import { sanitizeText, sanitizePhone, sanitizeEmail } from "@/lib/sanitize";
 
 export const Route = createFileRoute("/checkout")({
@@ -69,6 +69,28 @@ function CheckoutPage() {
   const [newsletterOptIn, setNewsletterOptIn] = useState(true);
 
   const u = (field: string, value: any) => setForm((p) => ({ ...p, [field]: value }));
+
+  const [cuiLookup, setCuiLookup] = useState<{ loading: boolean; status: "idle" | "success" | "error"; message: string }>({ loading: false, status: "idle", message: "" });
+
+  const lookupCui = async () => {
+    const cleanCui = form.companyCui.replace(/\D/g, "");
+    if (cleanCui.length < 6) {
+      setCuiLookup({ loading: false, status: "error", message: "CUI invalid sau negăsit în ANAF" });
+      return;
+    }
+    setCuiLookup({ loading: true, status: "idle", message: "" });
+    try {
+      const { data, error } = await supabase.functions.invoke("anaf-lookup", { body: { cui: cleanCui } });
+      if (error || !data?.valid) {
+        setCuiLookup({ loading: false, status: "error", message: "CUI invalid sau negăsit în ANAF" });
+        return;
+      }
+      setForm((p) => ({ ...p, companyName: data.denumire || p.companyName, companyReg: data.numar_reg || p.companyReg }));
+      setCuiLookup({ loading: false, status: "success", message: data.denumire || "Firmă găsită" });
+    } catch {
+      setCuiLookup({ loading: false, status: "error", message: "CUI invalid sau negăsit în ANAF" });
+    }
+  };
 
   // Fetch saved addresses for logged-in users
   useEffect(() => {
@@ -362,7 +384,32 @@ function CheckoutPage() {
                 {billingType === "company" && (
                   <div className="grid gap-4 sm:grid-cols-2 border-t border-border pt-4">
                     <div className="sm:col-span-2"><label className="mb-1 block text-xs font-medium text-muted-foreground">Denumire firmă *</label><input value={form.companyName} onChange={(e) => u("companyName", e.target.value)} className={inputClass} /></div>
-                    <div><label className="mb-1 block text-xs font-medium text-muted-foreground">CUI *</label><input value={form.companyCui} onChange={(e) => u("companyCui", e.target.value)} className={inputClass} /></div>
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-muted-foreground">CUI *</label>
+                      <div className="flex gap-2">
+                        <input
+                          value={form.companyCui}
+                          onChange={(e) => { u("companyCui", e.target.value); setCuiLookup({ loading: false, status: "idle", message: "" }); }}
+                          className={inputClass}
+                          placeholder="ex: 43025661"
+                        />
+                        <button
+                          type="button"
+                          onClick={lookupCui}
+                          disabled={cuiLookup.loading || form.companyCui.replace(/\D/g, "").length < 6}
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-foreground px-3 py-2 text-xs font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+                        >
+                          {cuiLookup.loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Search className="h-3.5 w-3.5" />}
+                          Verifică
+                        </button>
+                      </div>
+                      {cuiLookup.status === "success" && (
+                        <p className="mt-1 flex items-center gap-1 text-xs text-[oklch(0.55_0.15_145)]"><Check className="h-3.5 w-3.5" />{cuiLookup.message}</p>
+                      )}
+                      {cuiLookup.status === "error" && (
+                        <p className="mt-1 flex items-center gap-1 text-xs text-destructive"><X className="h-3.5 w-3.5" />{cuiLookup.message}</p>
+                      )}
+                    </div>
                     <div><label className="mb-1 block text-xs font-medium text-muted-foreground">Nr. Registru Comerțului</label><input value={form.companyReg} onChange={(e) => u("companyReg", e.target.value)} className={inputClass} /></div>
                   </div>
                 )}

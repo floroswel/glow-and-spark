@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from "react";
 import { useSiteSettings } from "./useSiteSettings";
-import { supabase } from "@/integrations/supabase/client";
+import { saveAbandonedCart } from "@/utils/abandoned-cart.functions";
 
 export interface CartItem {
   id: string;

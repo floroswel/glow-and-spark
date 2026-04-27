@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { FileText, Plus, Trash2, Pencil, Eye, EyeOff, Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 
 export const Route = createFileRoute("/admin/pages")({
   component: AdminPages,

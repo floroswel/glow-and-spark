@@ -25,12 +25,43 @@ const exports: ExportConfig[] = [
   { id: "subscribers", label: "Abonați Newsletter", table: "newsletter_subscribers", icon: Users, columns: ["email", "name", "source", "is_active", "created_at"], description: "Export lista abonați email" },
 ];
 
+const REQUIRED_COLS: Record<string, string[]> = {
+  products: ["name", "price", "stock"],
+  categories: ["name", "slug"],
+  coupons: ["code", "value"],
+  newsletter_subscribers: ["email"],
+};
+
+const PRODUCT_COLUMNS = ["name", "slug", "sku", "price", "old_price", "cost_price", "stock", "category_id", "is_active", "weight", "brand", "meta_title", "meta_description", "short_description", "description"];
+
+function parseCSV(text: string): { headers: string[]; rows: string[][] } {
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 1) return { headers: [], rows: [] };
+  const parseLine = (line: string): string[] => {
+    const out: string[] = [];
+    let cur = "", inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') {
+        if (inQ && line[i + 1] === '"') { cur += '"'; i++; } else inQ = !inQ;
+      } else if (c === "," && !inQ) { out.push(cur); cur = ""; } else cur += c;
+    }
+    out.push(cur);
+    return out.map(s => s.trim());
+  };
+  const headers = parseLine(lines[0]).map(h => h.replace(/^"|"$/g, ""));
+  const rows = lines.slice(1).map(parseLine);
+  return { headers, rows };
+}
+
 function AdminImportExport() {
   const [exporting, setExporting] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
   const [importTarget, setImportTarget] = useState("products");
   const [importResult, setImportResult] = useState("");
   const [toast, setToast] = useState("");
+  const [preview, setPreview] = useState<{ headers: string[]; rows: any[]; skipped: { row: number; reason: string }[]; valid: any[] } | null>(null);
+  const [progress, setProgress] = useState({ current: 0, total: 0 });
 
   const handleExport = async (cfg: ExportConfig) => {
     setExporting(cfg.id);
@@ -60,33 +91,95 @@ function AdminImportExport() {
     setTimeout(() => setToast(""), 3000);
   };
 
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const downloadTemplate = () => {
+    const sample = [
+      PRODUCT_COLUMNS.join(","),
+      `"Produs Exemplu","produs-exemplu","SKU-001",99.99,129.99,50,10,,true,"500g","Brand X","Meta Title","Meta description","Descriere scurtă","Descriere completă"`,
+    ].join("\n");
+    const blob = new Blob(["\uFEFF" + sample], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "template_produse.csv";
+    a.click(); URL.revokeObjectURL(url);
+    setToast("Template descărcat");
+    setTimeout(() => setToast(""), 2500);
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setImporting(true);
     setImportResult("");
+    setPreview(null);
 
     try {
       const text = await file.text();
-      const lines = text.split("\n").filter(l => l.trim());
-      if (lines.length < 2) throw new Error("Fișierul nu conține date");
+      const { headers, rows } = parseCSV(text);
+      if (rows.length === 0) throw new Error("Fișierul nu conține date");
 
-      const headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ""));
-      const rows = lines.slice(1).map(line => {
-        const vals = line.split(",").map(v => v.trim().replace(/^"|"$/g, ""));
+      const required = REQUIRED_COLS[importTarget] || [];
+      const missing = required.filter(c => !headers.includes(c));
+      if (missing.length > 0) {
+        setImportResult(`❌ Coloane obligatorii lipsă: ${missing.join(", ")}`);
+        e.target.value = "";
+        return;
+      }
+
+      const skipped: { row: number; reason: string }[] = [];
+      const valid: any[] = [];
+
+      rows.forEach((vals, idx) => {
         const obj: Record<string, any> = {};
-        headers.forEach((h, i) => { if (vals[i] !== undefined && vals[i] !== "") obj[h] = vals[i]; });
-        return obj;
+        headers.forEach((h, i) => { if (vals[i] !== undefined && vals[i] !== "") obj[h] = vals[i].replace(/^"|"$/g, ""); });
+
+        if (importTarget === "products") {
+          if (!obj.name || String(obj.name).trim() === "") {
+            skipped.push({ row: idx + 2, reason: "nume gol" }); return;
+          }
+          const price = parseFloat(obj.price);
+          if (isNaN(price) || price < 0) {
+            skipped.push({ row: idx + 2, reason: `preț invalid (${obj.price})` }); return;
+          }
+          obj.price = price;
+          if (obj.old_price) obj.old_price = parseFloat(obj.old_price) || null;
+          if (obj.cost_price) obj.cost_price = parseFloat(obj.cost_price) || 0;
+          if (obj.stock) obj.stock = parseInt(obj.stock) || 0;
+          if (obj.is_active !== undefined) obj.is_active = String(obj.is_active).toLowerCase() === "true";
+          if (!obj.slug) obj.slug = String(obj.name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        }
+        valid.push(obj);
       });
 
-      const { error } = await supabase.from(importTarget as any).upsert(rows as any, { onConflict: importTarget === "products" ? "slug" : "id" });
-      if (error) throw error;
-      setImportResult(`✅ Import reușit: ${rows.length} rânduri procesate în ${importTarget}`);
+      setPreview({ headers, rows: valid.slice(0, 5), skipped, valid });
+    } catch (err: any) {
+      setImportResult(`❌ Eroare citire fișier: ${err.message}`);
+    }
+    e.target.value = "";
+  };
+
+  const confirmImport = async () => {
+    if (!preview) return;
+    setImporting(true);
+    setProgress({ current: 0, total: preview.valid.length });
+    try {
+      const batchSize = 50;
+      let imported = 0;
+      for (let i = 0; i < preview.valid.length; i += batchSize) {
+        const batch = preview.valid.slice(i, i + batchSize);
+        const { error } = await supabase.from(importTarget as any).upsert(batch as any, { onConflict: importTarget === "products" ? "slug" : importTarget === "categories" ? "slug" : importTarget === "coupons" ? "code" : importTarget === "newsletter_subscribers" ? "email" : "id" });
+        if (error) throw error;
+        imported += batch.length;
+        setProgress({ current: imported, total: preview.valid.length });
+      }
+      const skippedSummary = preview.skipped.length > 0
+        ? ` ${preview.skipped.length} rânduri sărite (${[...new Set(preview.skipped.map(s => s.reason))].slice(0, 3).join(", ")})`
+        : "";
+      setImportResult(`✅ ${imported} produse importate cu succes.${skippedSummary}`);
+      setPreview(null);
     } catch (err: any) {
       setImportResult(`❌ Eroare import: ${err.message}`);
     }
     setImporting(false);
-    e.target.value = "";
+    setProgress({ current: 0, total: 0 });
   };
 
   return (

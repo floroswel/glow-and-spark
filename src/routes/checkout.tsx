@@ -70,6 +70,28 @@ function CheckoutPage() {
 
   const u = (field: string, value: any) => setForm((p) => ({ ...p, [field]: value }));
 
+  const [cuiLookup, setCuiLookup] = useState<{ loading: boolean; status: "idle" | "success" | "error"; message: string }>({ loading: false, status: "idle", message: "" });
+
+  const lookupCui = async () => {
+    const cleanCui = form.companyCui.replace(/\D/g, "");
+    if (cleanCui.length < 6) {
+      setCuiLookup({ loading: false, status: "error", message: "CUI invalid sau negăsit în ANAF" });
+      return;
+    }
+    setCuiLookup({ loading: true, status: "idle", message: "" });
+    try {
+      const { data, error } = await supabase.functions.invoke("anaf-lookup", { body: { cui: cleanCui } });
+      if (error || !data?.valid) {
+        setCuiLookup({ loading: false, status: "error", message: "CUI invalid sau negăsit în ANAF" });
+        return;
+      }
+      setForm((p) => ({ ...p, companyName: data.denumire || p.companyName, companyReg: data.numar_reg || p.companyReg }));
+      setCuiLookup({ loading: false, status: "success", message: data.denumire || "Firmă găsită" });
+    } catch {
+      setCuiLookup({ loading: false, status: "error", message: "CUI invalid sau negăsit în ANAF" });
+    }
+  };
+
   // Fetch saved addresses for logged-in users
   useEffect(() => {
     if (!user) return;

@@ -45,6 +45,19 @@ function NotificationsPage() {
     fetchNotifications();
   }, [user]);
 
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel("user-notifications-" + user.id)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "user_notifications", filter: "user_id=eq." + user.id },
+        (payload) => setNotifications((prev) => [payload.new as any, ...prev])
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user]);
+
   const markAsRead = async (id: string) => {
     await supabase.from("user_notifications").update({ is_read: true }).eq("id", id);
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));

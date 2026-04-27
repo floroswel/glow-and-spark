@@ -3,7 +3,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Menu, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package, X, Gift, Star } from "lucide-react";
+import { Menu, Search, Heart, GitCompare, ShoppingBag, User, FileText, Home, Phone, Package, X, Gift, Star, Bell } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { HighlightText } from "@/components/HighlightText";
@@ -59,6 +59,7 @@ export function SiteHeader() {
   const [categories, setCategories] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [userPoints, setUserPoints] = useState<number | null>(null);
+  const [unreadNotif, setUnreadNotif] = useState(0);
   const desktopSearch = useProductSearch();
   const mobileSearch = useProductSearch();
   const desktopSearchRef = useRef<HTMLDivElement>(null);
@@ -69,6 +70,25 @@ export function SiteHeader() {
     if (!user) { setUserPoints(null); return; }
     supabase.from("user_points").select("balance").eq("user_id", user.id).maybeSingle()
       .then(({ data }) => setUserPoints(data?.balance ?? null));
+  }, [user]);
+
+  // Live unread notifications count
+  useEffect(() => {
+    if (!user) { setUnreadNotif(0); return; }
+    const fetchCount = async () => {
+      const { count } = await supabase
+        .from("user_notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("is_read", false);
+      setUnreadNotif(count || 0);
+    };
+    fetchCount();
+    const channel = supabase
+      .channel("header-notif-" + user.id)
+      .on("postgres_changes", { event: "*", schema: "public", table: "user_notifications", filter: "user_id=eq." + user.id }, () => fetchCount())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, [user]);
 
   const navLinks = (header?.navbar_links || []).filter((link: any) => link.active);
@@ -254,6 +274,16 @@ export function SiteHeader() {
                 <Link to="/account" className="hidden md:flex items-center gap-1 text-accent hover:text-foreground transition">
                   <Star className="h-4 w-4 fill-accent" />
                   <span className="text-xs font-semibold">{userPoints} pts</span>
+                </Link>
+              )}
+              {user && (
+                <Link to="/account/notifications" className="relative flex items-center hover:text-foreground transition" aria-label="Notificări">
+                  <Bell className="h-5 w-5" />
+                  {unreadNotif > 0 && (
+                    <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white">
+                      {unreadNotif > 9 ? "9+" : unreadNotif}
+                    </span>
+                  )}
                 </Link>
               )}
               {header?.show_cart !== false && (

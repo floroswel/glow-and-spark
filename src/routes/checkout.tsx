@@ -249,6 +249,13 @@ function CheckoutPage() {
       }
     } catch {}
 
+    if (newsletterOptIn && form.email) {
+      supabase.from("newsletter_subscribers").upsert(
+        { email: form.email, name: form.name, is_active: true, source: "checkout" },
+        { onConflict: "email", ignoreDuplicates: true }
+      ).then(() => {});
+    }
+
     clearCart();
     navigate({ to: "/order-confirmed/$orderId", params: { orderId: data.id } });
   };

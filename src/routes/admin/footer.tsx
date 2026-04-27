@@ -201,8 +201,13 @@ function FooterHealthCheck({ settings }: { settings: any }) {
       }
     }
 
-    // 4. Check static route links
-    const staticRoutes = ["/contact", "/politica-cookies", "/faq", "/blog", "/catalog"];
+    // 4. Check static route links (toate rutele TanStack reale + sub-rutele account)
+    const staticRoutes = [
+      "/", "/contact", "/politica-cookies", "/faq", "/blog", "/catalog",
+      "/account", "/account/orders", "/account/favorites", "/account/addresses",
+      "/account/settings", "/account/notifications",
+      "/auth", "/cart", "/checkout", "/compare",
+    ];
     const staticLinks = allLinks.filter((l: any) => !l.url?.startsWith("/page/") && !l.url?.startsWith("http") && l.url);
     for (const link of staticLinks) {
       const known = staticRoutes.includes(link.url) || link.url === "/";

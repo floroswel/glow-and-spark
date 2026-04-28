@@ -485,6 +485,101 @@ export type Database = {
           },
         ]
       }
+      gift_card_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string
+          gift_card_id: string
+          id: string
+          notes: string | null
+          order_id: string | null
+          performed_by: string | null
+          type: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          created_at?: string
+          gift_card_id: string
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          performed_by?: string | null
+          type: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string
+          gift_card_id?: string
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          performed_by?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_card_transactions_gift_card_id_fkey"
+            columns: ["gift_card_id"]
+            isOneToOne: false
+            referencedRelation: "gift_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gift_cards: {
+        Row: {
+          balance: number
+          code: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          expires_at: string | null
+          id: string
+          initial_amount: number
+          message: string | null
+          recipient_email: string | null
+          recipient_name: string | null
+          sender_name: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          balance?: number
+          code: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          initial_amount: number
+          message?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          sender_name?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          balance?: number
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          initial_amount?: number
+          message?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          sender_name?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string | null
@@ -1189,6 +1284,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rate_limits: {
+        Row: {
+          count: number
+          created_at: string
+          key: string
+          reset_at: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          key: string
+          reset_at: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          key?: string
+          reset_at?: string
+        }
+        Relationships: []
       }
       related_products: {
         Row: {
@@ -1924,6 +2040,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_rate_limit: {
+        Args: { p_key: string; p_limit: number; p_window_seconds: number }
+        Returns: {
+          allowed: boolean
+          current_count: number
+          reset_at: string
+        }[]
+      }
       compute_tier: { Args: { pts: number }; Returns: string }
       decrement_stock: {
         Args: { p_product_id: string; p_quantity: number }
@@ -1935,6 +2059,14 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      redeem_gift_card: {
+        Args: { p_amount: number; p_code: string; p_order_id?: string }
+        Returns: {
+          message: string
+          new_balance: number
+          success: boolean
+        }[]
       }
       search_categories_unaccent: {
         Args: { lim?: number; term: string }

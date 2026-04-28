@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit, getClientIp, tooManyRequests } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,6 +12,15 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders });
   }
+
+  // Cron-style endpoint - protect from abuse: 6 runs / hour / IP
+  const rl = await checkRateLimit({
+    endpoint: "cart-recovery",
+    identifier: getClientIp(req),
+    limit: 6,
+    windowSeconds: 3600,
+  });
+  if (!rl.allowed) return tooManyRequests(rl, corsHeaders);
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;

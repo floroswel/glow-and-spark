@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { checkRateLimit, getClientIp, tooManyRequests } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,6 +11,15 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders });
   }
+
+  // Strict: AI generation is expensive - 15 calls / minute / IP
+  const rl = await checkRateLimit({
+    endpoint: "ai-generate",
+    identifier: getClientIp(req),
+    limit: 15,
+    windowSeconds: 60,
+  });
+  if (!rl.allowed) return tooManyRequests(rl, corsHeaders);
 
   try {
     const { prompt, max_tokens, model, system } = await req.json();

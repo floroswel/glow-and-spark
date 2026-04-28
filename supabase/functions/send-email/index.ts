@@ -7,7 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
 };
 
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+import { checkRateLimit, getClientIp, tooManyRequests } from "../_shared/rate-limit.ts";
 
 interface SiteConfig {
   SITE_NAME: string;
@@ -401,20 +401,13 @@ serve(async (req) => {
     return new Response(null, { status: 204, headers: corsHeaders });
   }
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
-  const now = Date.now();
-  const rl = rateLimitMap.get(ip);
-  if (rl && now < rl.resetAt) {
-    if (rl.count >= 10) {
-      return new Response(JSON.stringify({ error: "Too many requests" }), {
-        status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    rl.count++;
-  } else {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + 60000 });
-  }
+  const rl = await checkRateLimit({
+    endpoint: "send-email",
+    identifier: getClientIp(req),
+    limit: 10,
+    windowSeconds: 60,
+  });
+  if (!rl.allowed) return tooManyRequests(rl, corsHeaders);
 
   try {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");

@@ -1,13 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
-};
-
 import { checkRateLimit, getClientIp, tooManyRequests } from "../_shared/rate-limit.ts";
+import { buildCorsHeaders } from "../_shared/cors.ts";
 
 interface SiteConfig {
   SITE_NAME: string;
@@ -397,6 +392,7 @@ const templateMap: Record<string, (data: any, cfg: SiteConfig) => { subject: str
 };
 
 serve(async (req) => {
+  const corsHeaders = buildCorsHeaders(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders });
   }

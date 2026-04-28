@@ -257,7 +257,7 @@ function CheckoutPage() {
         await supabase.rpc("redeem_gift_card", {
           p_code: gcCode,
           p_amount: gcAmount,
-          p_order_id: order.id,
+          p_order_id: data?.id,
         });
         sessionStorage.removeItem("gift_card_code");
         sessionStorage.removeItem("gift_card_amount");

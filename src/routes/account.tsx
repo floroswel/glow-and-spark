@@ -6,7 +6,7 @@ import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import {
-  LayoutDashboard, ShoppingBag, Heart, MapPin, Settings, LogOut, ChevronRight, Bell,
+  LayoutDashboard, ShoppingBag, Heart, MapPin, Settings, LogOut, ChevronRight, Bell, Shield,
 } from "lucide-react";
 
 export const Route = createFileRoute("/account")({
@@ -26,6 +26,7 @@ const navItems = [
   { to: "/account/favorites", icon: Heart, label: "Favorite" },
   { to: "/account/addresses", icon: MapPin, label: "Adrese" },
   { to: "/account/settings", icon: Settings, label: "Setări Cont" },
+  { to: "/account/gdpr", icon: Shield, label: "Date Personale (GDPR)" },
 ];
 
 function AccountLayout() {

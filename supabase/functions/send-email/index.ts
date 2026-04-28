@@ -392,6 +392,7 @@ const templateMap: Record<string, (data: any, cfg: SiteConfig) => { subject: str
 };
 
 serve(async (req) => {
+  const corsHeaders = buildCorsHeaders(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders });
   }

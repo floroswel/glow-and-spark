@@ -90,6 +90,7 @@ function buildInvoiceHTML(order: any, invoiceNumber: string): string {
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = buildCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {

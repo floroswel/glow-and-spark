@@ -315,7 +315,8 @@ function AdminLayout() {
   const markAllRead = async () => {
     const ids = notifications.filter(n => !n.is_read).map(n => n.id);
     if (ids.length === 0) return;
-    for (const id of ids) await supabase.from("admin_notifications").update({ is_read: true }).eq("id", id);
+    // Bulk update in a single query
+    await supabase.from("admin_notifications").update({ is_read: true }).in("id", ids);
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
   };
 

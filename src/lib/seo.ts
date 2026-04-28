@@ -1,4 +1,4 @@
-let SITE_NAME = "Glow & Spark — Lumânări Artizanale";
+let SITE_NAME = "Mama Lucica — Lumânări Artizanale";
 
 export function updateSiteName(name: string) {
   if (name) SITE_NAME = name + " — Lumânări Artizanale";

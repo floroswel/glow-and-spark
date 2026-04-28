@@ -1190,6 +1190,27 @@ export type Database = {
           },
         ]
       }
+      rate_limits: {
+        Row: {
+          count: number
+          created_at: string
+          key: string
+          reset_at: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          key: string
+          reset_at: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          key?: string
+          reset_at?: string
+        }
+        Relationships: []
+      }
       related_products: {
         Row: {
           id: string
@@ -1924,6 +1945,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_rate_limit: {
+        Args: { p_key: string; p_limit: number; p_window_seconds: number }
+        Returns: {
+          allowed: boolean
+          current_count: number
+          reset_at: string
+        }[]
+      }
       compute_tier: { Args: { pts: number }; Returns: string }
       decrement_stock: {
         Args: { p_product_id: string; p_quantity: number }

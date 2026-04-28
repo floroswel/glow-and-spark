@@ -744,20 +744,27 @@ function ProductPage() {
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
-              <button
-                ref={addToCartRef}
-                onClick={handleAddToCart}
-                disabled={activeStock === 0}
-                className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-3 text-sm font-semibold transition disabled:opacity-50 ${
-                  added
-                    ? "bg-chart-2 text-primary-foreground"
-                    : "bg-foreground text-primary-foreground hover:bg-accent hover:text-accent-foreground"
-                }`}
-              >
-                <ShoppingCart className="h-4 w-4" />
-                {added ? "✓ Adăugat în coș" : "ADAUGĂ ÎN COȘ"}
-              </button>
+              {activeStock === 0 ? (
+                <div className="flex-1">
+                  <BackInStockNotify productId={product.id} />
+                </div>
+              ) : (
+                <button
+                  ref={addToCartRef}
+                  onClick={handleAddToCart}
+                  disabled={activeStock === 0}
+                  className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-3 text-sm font-semibold transition disabled:opacity-50 ${
+                    added
+                      ? "bg-chart-2 text-primary-foreground"
+                      : "bg-foreground text-primary-foreground hover:bg-accent hover:text-accent-foreground"
+                  }`}
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  {added ? "✓ Adăugat în coș" : "ADAUGĂ ÎN COȘ"}
+                </button>
+              )}
             </div>
+
 
             <TrustBadges variant="compact" />
 

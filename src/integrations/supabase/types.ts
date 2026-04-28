@@ -485,6 +485,42 @@ export type Database = {
           },
         ]
       }
+      gdpr_requests: {
+        Row: {
+          created_at: string
+          details: string | null
+          email: string
+          id: string
+          processed_at: string | null
+          processed_by: string | null
+          request_type: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          email: string
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          request_type: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          email?: string
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          request_type?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       gift_card_transactions: {
         Row: {
           amount: number
@@ -865,6 +901,71 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      product_bundle_items: {
+        Row: {
+          bundle_id: string
+          id: string
+          product_id: string
+          quantity: number
+          sort_order: number | null
+        }
+        Insert: {
+          bundle_id: string
+          id?: string
+          product_id: string
+          quantity?: number
+          sort_order?: number | null
+        }
+        Update: {
+          bundle_id?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_bundle_items_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "product_bundles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_bundles: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_percent: number
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_percent?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_percent?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       product_reviews: {
         Row: {
@@ -1649,6 +1750,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      stock_notifications: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          notified_at: string | null
+          product_id: string
+          user_id: string | null
+          variant_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          notified_at?: string | null
+          product_id: string
+          user_id?: string | null
+          variant_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          notified_at?: string | null
+          product_id?: string
+          user_id?: string | null
+          variant_id?: string | null
+        }
+        Relationships: []
       }
       stock_transfer_items: {
         Row: {

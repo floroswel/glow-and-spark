@@ -183,6 +183,8 @@ const menuSections: MenuSection[] = [
         children: [
           { to: "/admin/system", label: "System Health" },
           { to: "/admin/activity", label: "Jurnal Activitate" },
+          { to: "/admin/audit-log", label: "Audit Log (Securitate)" },
+          { to: "/admin/gdpr", label: "Cereri GDPR" },
           { to: "/admin/settings", label: "Setări Generale" },
           { to: "/admin/settings/checkout", label: "Checkout Config" },
         ],

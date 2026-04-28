@@ -67,6 +67,7 @@ import { Route as AdminImportExportRouteImport } from './routes/admin/import-exp
 import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
 import { Route as AdminHeaderRouteImport } from './routes/admin/header'
 import { Route as AdminGiftCardsRouteImport } from './routes/admin/gift-cards'
+import { Route as AdminGdprRouteImport } from './routes/admin/gdpr'
 import { Route as AdminFooterRouteImport } from './routes/admin/footer'
 import { Route as AdminCustomersRouteImport } from './routes/admin/customers'
 import { Route as AdminCrmRouteImport } from './routes/admin/crm'
@@ -76,12 +77,14 @@ import { Route as AdminComplaintsRouteImport } from './routes/admin/complaints'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminBlogRouteImport } from './routes/admin/blog'
 import { Route as AdminAutomationsRouteImport } from './routes/admin/automations'
+import { Route as AdminAuditLogRouteImport } from './routes/admin/audit-log'
 import { Route as AdminAiRouteImport } from './routes/admin/ai'
 import { Route as AdminActivityRouteImport } from './routes/admin/activity'
 import { Route as AdminAbandonedCartsRouteImport } from './routes/admin/abandoned-carts'
 import { Route as AccountSettingsRouteImport } from './routes/account/settings'
 import { Route as AccountOrdersRouteImport } from './routes/account/orders'
 import { Route as AccountNotificationsRouteImport } from './routes/account/notifications'
+import { Route as AccountGdprRouteImport } from './routes/account/gdpr'
 import { Route as AccountFavoritesRouteImport } from './routes/account/favorites'
 import { Route as AccountAddressesRouteImport } from './routes/account/addresses'
 import { Route as AdminStockWarehousesRouteImport } from './routes/admin/stock.warehouses'
@@ -394,6 +397,11 @@ const AdminGiftCardsRoute = AdminGiftCardsRouteImport.update({
   path: '/gift-cards',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminGdprRoute = AdminGdprRouteImport.update({
+  id: '/gdpr',
+  path: '/gdpr',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminFooterRoute = AdminFooterRouteImport.update({
   id: '/footer',
   path: '/footer',
@@ -439,6 +447,11 @@ const AdminAutomationsRoute = AdminAutomationsRouteImport.update({
   path: '/automations',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAuditLogRoute = AdminAuditLogRouteImport.update({
+  id: '/audit-log',
+  path: '/audit-log',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAiRoute = AdminAiRouteImport.update({
   id: '/ai',
   path: '/ai',
@@ -467,6 +480,11 @@ const AccountOrdersRoute = AccountOrdersRouteImport.update({
 const AccountNotificationsRoute = AccountNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => AccountRoute,
+} as any)
+const AccountGdprRoute = AccountGdprRouteImport.update({
+  id: '/gdpr',
+  path: '/gdpr',
   getParentRoute: () => AccountRoute,
 } as any)
 const AccountFavoritesRoute = AccountFavoritesRouteImport.update({
@@ -601,12 +619,14 @@ export interface FileRoutesByFullPath {
   '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/favorites': typeof AccountFavoritesRoute
+  '/account/gdpr': typeof AccountGdprRoute
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/ai': typeof AdminAiRoute
+  '/admin/audit-log': typeof AdminAuditLogRoute
   '/admin/automations': typeof AdminAutomationsRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -616,6 +636,7 @@ export interface FileRoutesByFullPath {
   '/admin/crm': typeof AdminCrmRoute
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/footer': typeof AdminFooterRoute
+  '/admin/gdpr': typeof AdminGdprRoute
   '/admin/gift-cards': typeof AdminGiftCardsRouteWithChildren
   '/admin/header': typeof AdminHeaderRoute
   '/admin/homepage': typeof AdminHomepageRoute
@@ -695,12 +716,14 @@ export interface FileRoutesByTo {
   '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/favorites': typeof AccountFavoritesRoute
+  '/account/gdpr': typeof AccountGdprRoute
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/ai': typeof AdminAiRoute
+  '/admin/audit-log': typeof AdminAuditLogRoute
   '/admin/automations': typeof AdminAutomationsRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -710,6 +733,7 @@ export interface FileRoutesByTo {
   '/admin/crm': typeof AdminCrmRoute
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/footer': typeof AdminFooterRoute
+  '/admin/gdpr': typeof AdminGdprRoute
   '/admin/gift-cards': typeof AdminGiftCardsRouteWithChildren
   '/admin/header': typeof AdminHeaderRoute
   '/admin/homepage': typeof AdminHomepageRoute
@@ -792,12 +816,14 @@ export interface FileRoutesById {
   '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/favorites': typeof AccountFavoritesRoute
+  '/account/gdpr': typeof AccountGdprRoute
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/ai': typeof AdminAiRoute
+  '/admin/audit-log': typeof AdminAuditLogRoute
   '/admin/automations': typeof AdminAutomationsRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -807,6 +833,7 @@ export interface FileRoutesById {
   '/admin/crm': typeof AdminCrmRoute
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/footer': typeof AdminFooterRoute
+  '/admin/gdpr': typeof AdminGdprRoute
   '/admin/gift-cards': typeof AdminGiftCardsRouteWithChildren
   '/admin/header': typeof AdminHeaderRoute
   '/admin/homepage': typeof AdminHomepageRoute
@@ -890,12 +917,14 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/account/addresses'
     | '/account/favorites'
+    | '/account/gdpr'
     | '/account/notifications'
     | '/account/orders'
     | '/account/settings'
     | '/admin/abandoned-carts'
     | '/admin/activity'
     | '/admin/ai'
+    | '/admin/audit-log'
     | '/admin/automations'
     | '/admin/blog'
     | '/admin/categories'
@@ -905,6 +934,7 @@ export interface FileRouteTypes {
     | '/admin/crm'
     | '/admin/customers'
     | '/admin/footer'
+    | '/admin/gdpr'
     | '/admin/gift-cards'
     | '/admin/header'
     | '/admin/homepage'
@@ -984,12 +1014,14 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/account/addresses'
     | '/account/favorites'
+    | '/account/gdpr'
     | '/account/notifications'
     | '/account/orders'
     | '/account/settings'
     | '/admin/abandoned-carts'
     | '/admin/activity'
     | '/admin/ai'
+    | '/admin/audit-log'
     | '/admin/automations'
     | '/admin/blog'
     | '/admin/categories'
@@ -999,6 +1031,7 @@ export interface FileRouteTypes {
     | '/admin/crm'
     | '/admin/customers'
     | '/admin/footer'
+    | '/admin/gdpr'
     | '/admin/gift-cards'
     | '/admin/header'
     | '/admin/homepage'
@@ -1080,12 +1113,14 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/account/addresses'
     | '/account/favorites'
+    | '/account/gdpr'
     | '/account/notifications'
     | '/account/orders'
     | '/account/settings'
     | '/admin/abandoned-carts'
     | '/admin/activity'
     | '/admin/ai'
+    | '/admin/audit-log'
     | '/admin/automations'
     | '/admin/blog'
     | '/admin/categories'
@@ -1095,6 +1130,7 @@ export interface FileRouteTypes {
     | '/admin/crm'
     | '/admin/customers'
     | '/admin/footer'
+    | '/admin/gdpr'
     | '/admin/gift-cards'
     | '/admin/header'
     | '/admin/homepage'
@@ -1589,6 +1625,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGiftCardsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/gdpr': {
+      id: '/admin/gdpr'
+      path: '/gdpr'
+      fullPath: '/admin/gdpr'
+      preLoaderRoute: typeof AdminGdprRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/footer': {
       id: '/admin/footer'
       path: '/footer'
@@ -1652,6 +1695,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAutomationsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/audit-log': {
+      id: '/admin/audit-log'
+      path: '/audit-log'
+      fullPath: '/admin/audit-log'
+      preLoaderRoute: typeof AdminAuditLogRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/ai': {
       id: '/admin/ai'
       path: '/ai'
@@ -1692,6 +1742,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/account/notifications'
       preLoaderRoute: typeof AccountNotificationsRouteImport
+      parentRoute: typeof AccountRoute
+    }
+    '/account/gdpr': {
+      id: '/account/gdpr'
+      path: '/gdpr'
+      fullPath: '/account/gdpr'
+      preLoaderRoute: typeof AccountGdprRouteImport
       parentRoute: typeof AccountRoute
     }
     '/account/favorites': {
@@ -1847,6 +1904,7 @@ declare module '@tanstack/react-router' {
 interface AccountRouteChildren {
   AccountAddressesRoute: typeof AccountAddressesRoute
   AccountFavoritesRoute: typeof AccountFavoritesRoute
+  AccountGdprRoute: typeof AccountGdprRoute
   AccountNotificationsRoute: typeof AccountNotificationsRoute
   AccountOrdersRoute: typeof AccountOrdersRoute
   AccountSettingsRoute: typeof AccountSettingsRoute
@@ -1856,6 +1914,7 @@ interface AccountRouteChildren {
 const AccountRouteChildren: AccountRouteChildren = {
   AccountAddressesRoute: AccountAddressesRoute,
   AccountFavoritesRoute: AccountFavoritesRoute,
+  AccountGdprRoute: AccountGdprRoute,
   AccountNotificationsRoute: AccountNotificationsRoute,
   AccountOrdersRoute: AccountOrdersRoute,
   AccountSettingsRoute: AccountSettingsRoute,
@@ -1957,6 +2016,7 @@ interface AdminRouteChildren {
   AdminAbandonedCartsRoute: typeof AdminAbandonedCartsRoute
   AdminActivityRoute: typeof AdminActivityRoute
   AdminAiRoute: typeof AdminAiRoute
+  AdminAuditLogRoute: typeof AdminAuditLogRoute
   AdminAutomationsRoute: typeof AdminAutomationsRoute
   AdminBlogRoute: typeof AdminBlogRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
@@ -1966,6 +2026,7 @@ interface AdminRouteChildren {
   AdminCrmRoute: typeof AdminCrmRoute
   AdminCustomersRoute: typeof AdminCustomersRoute
   AdminFooterRoute: typeof AdminFooterRoute
+  AdminGdprRoute: typeof AdminGdprRoute
   AdminGiftCardsRoute: typeof AdminGiftCardsRouteWithChildren
   AdminHeaderRoute: typeof AdminHeaderRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
@@ -2003,6 +2064,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAbandonedCartsRoute: AdminAbandonedCartsRoute,
   AdminActivityRoute: AdminActivityRoute,
   AdminAiRoute: AdminAiRoute,
+  AdminAuditLogRoute: AdminAuditLogRoute,
   AdminAutomationsRoute: AdminAutomationsRoute,
   AdminBlogRoute: AdminBlogRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
@@ -2012,6 +2074,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCrmRoute: AdminCrmRoute,
   AdminCustomersRoute: AdminCustomersRoute,
   AdminFooterRoute: AdminFooterRoute,
+  AdminGdprRoute: AdminGdprRoute,
   AdminGiftCardsRoute: AdminGiftCardsRouteWithChildren,
   AdminHeaderRoute: AdminHeaderRoute,
   AdminHomepageRoute: AdminHomepageRoute,

@@ -249,27 +249,22 @@ function CheckoutPage() {
       } catch {}
     }
 
-    // Deduct gift card balance if used
+    // Deduct gift card balance via atomic RPC (uses gift_cards table + transactions log)
     try {
       const gcCode = sessionStorage.getItem("gift_card_code");
       const gcAmount = parseFloat(sessionStorage.getItem("gift_card_amount") || "0");
       if (gcCode && gcAmount > 0) {
-        const { data: gcSettings } = await supabase.from("site_settings").select("value").eq("key", "gift_cards").maybeSingle();
-        if (gcSettings?.value && Array.isArray(gcSettings.value)) {
-          const cards = gcSettings.value as any[];
-          const updatedCards = cards.map((c: any) => {
-            if (c.code?.toUpperCase() === gcCode.toUpperCase()) {
-              const newBalance = Math.max(0, Number(c.balance) - gcAmount);
-              return { ...c, balance: newBalance, status: newBalance <= 0 ? "used" : c.status };
-            }
-            return c;
-          });
-          await supabase.from("site_settings").upsert({ key: "gift_cards", value: updatedCards as any }, { onConflict: "key" });
-        }
+        await supabase.rpc("redeem_gift_card", {
+          p_code: gcCode,
+          p_amount: gcAmount,
+          p_order_id: order.id,
+        });
         sessionStorage.removeItem("gift_card_code");
         sessionStorage.removeItem("gift_card_amount");
       }
-    } catch {}
+    } catch (e) {
+      console.error("[checkout] gift card redemption failed:", e);
+    }
 
     if (newsletterOptIn && form.email) {
       supabase.from("newsletter_subscribers").upsert(

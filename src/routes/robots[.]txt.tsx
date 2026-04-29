@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createServerClient } from "@/integrations/supabase/client.server";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 // Hard-coded canonical domain — see sitemap.xml.tsx for rationale.
 const SITE_URL = "https://mamalucica.ro";

@@ -182,7 +182,15 @@ export function SiteFooter() {
     { key: "social_instagram", Icon: InstagramIcon, label: "Instagram" },
     { key: "social_youtube", Icon: YoutubeIcon, label: "YouTube" },
     { key: "social_tiktok", Icon: TikTokIcon, label: "TikTok" },
+    { key: "social_twitter", Icon: TwitterIcon, label: "Twitter / X" },
+    { key: "social_pinterest", Icon: PinterestIcon, label: "Pinterest" },
   ].filter(s => general?.[s.key]);
+
+  // Page slugs (admin-overridable)
+  const termsSlug = general?.terms_page_slug || "termeni-si-conditii";
+  const privacySlug = general?.privacy_page_slug || "politica-confidentialitate";
+  const returnSlug = general?.return_policy_slug || "politica-retur";
+  const logoUrl = general?.logo_url || "";
 
   const renderLink = (url: string, label: string, i: number) => {
     const isExternal = url.startsWith("http");

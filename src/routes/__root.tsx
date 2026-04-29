@@ -1,5 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouter, useLocation } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
+import { setCanonical } from "@/lib/seo";
 import { isAllowedRedirect } from "@/lib/allowed-hosts";
 import { SiteSettingsProvider, useSiteSettings } from "@/hooks/useSiteSettings";
 import { MobileBottomNav } from "@/components/MobileBottomNav";

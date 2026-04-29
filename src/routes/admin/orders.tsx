@@ -92,6 +92,9 @@ function AdminOrders() {
   // Aggregate stats (independent of pagination)
   const [stats, setStats] = useState({ total: 0, count: 0, pending: 0, processing: 0, shipped: 0, aov: 0 });
 
+  // Manual order modal
+  const [showManualOrder, setShowManualOrder] = useState(false);
+
   // Debounce search input (300ms)
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);

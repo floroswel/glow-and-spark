@@ -90,7 +90,7 @@ function FooterNewsletter({ accentColor }: { accentColor: string }) {
                 {loading ? "..." : "Abonează-te"}
               </button>
             </div>
-            <label className="flex items-start gap-2 text-xs text-white/70 cursor-pointer leading-snug">
+            <label className="flex items-start gap-2 text-xs text-white cursor-pointer leading-snug">
               <input
                 type="checkbox"
                 checked={consent}

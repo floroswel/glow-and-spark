@@ -9,14 +9,41 @@ function push(event: string, data: Record<string, any>) {
   window.dataLayer.push({ event, ...data });
 }
 
-export function initGTM(gtmId: string) {
-  if (!gtmId || typeof document === "undefined") return;
+/**
+ * Initialize Google tag manager OR Google Analytics 4 based on ID prefix.
+ *  - "G-XXXX"   → loads gtag.js (GA4 Measurement ID)
+ *  - "GTM-XXXX" → loads gtm.js  (Google Tag Manager container)
+ * Invalid / unknown IDs are ignored to avoid leaking misconfigured tags.
+ */
+export function initGTM(id: string) {
+  if (!id || typeof document === "undefined") return;
+  const trimmed = id.trim();
   window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
-  const script = document.createElement("script");
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
-  document.head.appendChild(script);
+
+  if (/^G-[A-Z0-9]+$/i.test(trimmed)) {
+    // GA4 via gtag.js
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${trimmed}`;
+    document.head.appendChild(script);
+    const inline = document.createElement("script");
+    inline.text = `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${trimmed}');`;
+    document.head.appendChild(inline);
+    return;
+  }
+
+  if (/^GTM-[A-Z0-9]+$/i.test(trimmed)) {
+    window.dataLayer.push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtm.js?id=${trimmed}`;
+    document.head.appendChild(script);
+    return;
+  }
+
+  if (typeof console !== "undefined") {
+    console.warn(`[analytics] Ignored invalid tracking ID: "${trimmed}". Expected "G-..." (GA4) or "GTM-..." (Tag Manager).`);
+  }
 }
 
 interface ProductItem {

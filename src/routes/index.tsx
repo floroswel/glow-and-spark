@@ -19,10 +19,10 @@ import { BackToTop } from "@/components/BackToTop";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Lumini.ro - Lumânări Artizanale Premium din Ceară de Soia" },
-      { name: "description", content: "Magazin online de lumânări artizanale premium din ceară de soia pură. Diffuzoare, seturi cadou și lumânări turnate manual cu esențe rare." },
-      { property: "og:title", content: "Lumini.ro - Lumânări Artizanale Premium" },
-      { property: "og:description", content: "Lumânări artizanale din ceară de soia pură, turnate manual cu esențe sintetice rare." },
+      { title: "Mama Lucica — Magazin Online Universal" },
+      { name: "description", content: "Mama Lucica — magazin online universal cu produse atent selecționate pentru casă, familie și cadouri. Livrare rapidă în toată România." },
+      { property: "og:title", content: "Mama Lucica — Magazin Online Universal" },
+      { property: "og:description", content: "Descoperă o gamă variată de produse pentru casă, familie și cadouri pe Mama Lucica. Calitate, prețuri corecte și livrare rapidă în toată România." },
       { property: "og:type", content: "website" },
     ],
   }),

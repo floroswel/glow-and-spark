@@ -71,7 +71,7 @@ function FooterNewsletter({ accentColor }: { accentColor: string }) {
       <div className="mx-auto max-w-7xl px-4 py-8 md:py-10">
         <div className="max-w-xl">
           <h3 className="text-2xl font-bold mb-1">Newsletter</h3>
-          <p className="text-white/80 text-sm mb-4">Nu rata ofertele și promoțiile noastre</p>
+          <p className="text-white text-sm mb-4">Nu rata ofertele și promoțiile noastre</p>
           <form onSubmit={submit} className="space-y-2">
             <div className="flex gap-0">
               <input

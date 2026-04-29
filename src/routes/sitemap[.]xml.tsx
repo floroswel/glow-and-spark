@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const SITE_URL = (process.env.SITE_URL || "https://mamalucica.ro").replace(/\/$/, "");
+// Hard-coded canonical domain. We intentionally ignore process.env.SITE_URL to
+// prevent stale env values (e.g. an old preview URL like glow-and-spark.lovable.app)
+// from leaking into sitemap entries indexed by search engines.
+const SITE_URL = "https://mamalucica.ro";
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {

@@ -1017,6 +1017,54 @@ export type Database = {
           },
         ]
       }
+      product_subscriptions: {
+        Row: {
+          cancelled_at: string | null
+          created_at: string
+          discount_percent: number
+          frequency_days: number
+          id: string
+          next_delivery_date: string
+          product_id: string
+          quantity: number
+          shipping_address: Json | null
+          status: string
+          updated_at: string
+          user_id: string
+          variant_id: string | null
+        }
+        Insert: {
+          cancelled_at?: string | null
+          created_at?: string
+          discount_percent?: number
+          frequency_days?: number
+          id?: string
+          next_delivery_date?: string
+          product_id: string
+          quantity?: number
+          shipping_address?: Json | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          variant_id?: string | null
+        }
+        Update: {
+          cancelled_at?: string | null
+          created_at?: string
+          discount_percent?: number
+          frequency_days?: number
+          id?: string
+          next_delivery_date?: string
+          product_id?: string
+          quantity?: number
+          shipping_address?: Json | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          variant_id?: string | null
+        }
+        Relationships: []
+      }
       product_tag_links: {
         Row: {
           id: string
@@ -1385,6 +1433,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          last_used_at: string | null
+          p256dh: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          last_used_at?: string | null
+          p256dh: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          last_used_at?: string | null
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       rate_limits: {
         Row: {

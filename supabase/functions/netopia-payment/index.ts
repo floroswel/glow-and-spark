@@ -33,9 +33,10 @@ serve(async (req) => {
   if (!rl.allowed) return tooManyRequests(rl, corsHeaders);
 
   try {
-    const NETOPIA_API_KEY = Deno.env.get("NETOPIA_API_KEY");
-    const NETOPIA_POS_SIGNATURE = Deno.env.get("NETOPIA_POS_SIGNATURE");
-    const NETOPIA_ENV = (Deno.env.get("NETOPIA_ENV") || "sandbox").toLowerCase();
+    // Trim to defend against accidental whitespace/newline in copied secrets
+    const NETOPIA_API_KEY = (Deno.env.get("NETOPIA_API_KEY") || "").trim();
+    const NETOPIA_POS_SIGNATURE = (Deno.env.get("NETOPIA_POS_SIGNATURE") || "").trim();
+    const NETOPIA_ENV = (Deno.env.get("NETOPIA_ENV") || "sandbox").trim().toLowerCase();
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const PUBLIC_SITE_URL = Deno.env.get("PUBLIC_SITE_URL") || "https://mamalucica.ro";
 

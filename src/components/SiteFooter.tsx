@@ -461,7 +461,7 @@ export function SiteFooter() {
               <Shield className="h-3 w-3" />
               SOL — Platformă Online de Soluționare a Litigiilor
             </a>
-            <span className="opacity-60">Conform OUG 34/2014 și Regulamentului UE 524/2013</span>
+            <span className="opacity-90">Conform OUG 34/2014 și Regulamentului UE 524/2013</span>
           </div>
 
           {/* Copyright */}

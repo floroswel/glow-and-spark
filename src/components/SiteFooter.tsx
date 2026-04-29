@@ -487,7 +487,7 @@ export function SiteFooter() {
 
           {/* Disclaimer fiscal / legal */}
           {footer?.show_legal_disclaimer !== false && (
-            <p className="text-[10px] text-center mt-2 opacity-50" style={{ color: textColor }}>
+            <p className="text-[10px] text-center mt-2 opacity-90" style={{ color: textColor }}>
               {footer?.legal_disclaimer || "Prețurile includ TVA. Imaginile produselor sunt cu titlu informativ și pot diferi de realitate."}
             </p>
           )}

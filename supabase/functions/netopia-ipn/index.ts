@@ -27,23 +27,65 @@ function base64UrlToUint8Array(b64url: string): Uint8Array {
   return out;
 }
 
-function pemToArrayBuffer(pem: string): ArrayBuffer {
+function pemToBytes(pem: string): Uint8Array {
   const cleaned = pem
     .replace(/-----BEGIN [^-]+-----/g, "")
     .replace(/-----END [^-]+-----/g, "")
     .replace(/\s+/g, "");
   const bin = atob(cleaned);
-  const buf = new ArrayBuffer(bin.length);
-  const view = new Uint8Array(buf);
-  for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
-  return buf;
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+// Minimal DER walker: extract the SubjectPublicKeyInfo (SPKI) bytes from an X.509 certificate.
+// X.509 Certificate ::= SEQUENCE { tbsCertificate, signatureAlgorithm, signatureValue }
+// tbsCertificate ::= SEQUENCE { version[0]?, serial, sigAlg, issuer, validity, subject, SPKI, ... }
+function extractSpkiFromCertificate(certDer: Uint8Array): Uint8Array {
+  let i = 0;
+  function readLen(): number {
+    let len = certDer[i++];
+    if (len & 0x80) {
+      const n = len & 0x7f;
+      len = 0;
+      for (let k = 0; k < n; k++) len = (len << 8) | certDer[i++];
+    }
+    return len;
+  }
+  function expectSeq() {
+    if (certDer[i++] !== 0x30) throw new Error("Expected SEQUENCE");
+    return readLen();
+  }
+  function skipElement() {
+    i++; // tag
+    const len = readLen();
+    i += len;
+  }
+  expectSeq();          // outer Certificate SEQUENCE
+  expectSeq();          // tbsCertificate SEQUENCE
+  // optional [0] version
+  if (certDer[i] === 0xa0) skipElement();
+  skipElement();        // serialNumber INTEGER
+  skipElement();        // signature AlgorithmIdentifier
+  skipElement();        // issuer Name
+  skipElement();        // validity SEQUENCE
+  skipElement();        // subject Name
+  // Now at SubjectPublicKeyInfo SEQUENCE
+  const spkiStart = i;
+  if (certDer[i++] !== 0x30) throw new Error("Expected SPKI SEQUENCE");
+  const spkiLen = readLen();
+  const spkiEnd = i + spkiLen;
+  return certDer.slice(spkiStart, spkiEnd);
 }
 
 async function importRsaPublicKey(pem: string, hash: "SHA-256" | "SHA-512"): Promise<CryptoKey> {
-  const keyData = pemToArrayBuffer(pem);
+  const der = pemToBytes(pem);
+  // If PEM is a CERTIFICATE, extract the SPKI; if it's already a PUBLIC KEY, use as-is.
+  const isCert = /-----BEGIN CERTIFICATE-----/.test(pem);
+  const spkiBytes = isCert ? extractSpkiFromCertificate(der) : der;
   return await crypto.subtle.importKey(
     "spki",
-    keyData,
+    spkiBytes.buffer.slice(spkiBytes.byteOffset, spkiBytes.byteOffset + spkiBytes.byteLength),
     { name: "RSASSA-PKCS1-v1_5", hash },
     false,
     ["verify"]

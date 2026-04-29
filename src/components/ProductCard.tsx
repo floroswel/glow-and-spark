@@ -97,7 +97,10 @@ export function ProductCard({
 
   return (
     <>
-      <div className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition hover:shadow-md">
+      <div
+        className="group overflow-hidden rounded-xl border border-border bg-card transition hover:brightness-[1.02]"
+        style={{ boxShadow: "var(--product-card-shadow, 0 1px 2px 0 rgb(0 0 0 / 0.05))" }}
+      >
         <Link to="/produs/$slug" params={{ slug }} className="block relative overflow-hidden">
           {badge && (
             <span className={`absolute left-3 top-3 z-10 rounded-md px-2.5 py-1 text-xs font-bold uppercase ${badgeColors[badgeType]}`}>

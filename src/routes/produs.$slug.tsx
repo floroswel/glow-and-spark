@@ -768,6 +768,12 @@ function ProductPage() {
               )}
             </div>
 
+            {activeStock > 0 && (
+              <div className="mt-4">
+                <SubscribeAndSave productId={product.id} />
+              </div>
+            )}
+
 
             <TrustBadges variant="compact" />
 

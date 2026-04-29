@@ -667,6 +667,8 @@ function AdminOrders() {
           </div>
         </div>
       )}
+
+      <ManualOrderModal open={showManualOrder} onClose={() => setShowManualOrder(false)} onCreated={() => { load(); }} />
     </div>
   );
 }

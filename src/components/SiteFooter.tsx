@@ -469,6 +469,22 @@ export function SiteFooter() {
             {footer?.copyright_text || `© ${new Date().getFullYear()} SC Vomix Genius SRL — Toate drepturile rezervate`}
           </p>
 
+          {/* Reset cookies — GDPR right to withdraw consent */}
+          <p className="text-xs text-center mt-2" style={{ color: textColor }}>
+            <button
+              onClick={() => {
+                try {
+                  localStorage.removeItem("cookie_consent");
+                  window.dispatchEvent(new CustomEvent("cookie-consent-changed", { detail: null }));
+                  window.location.reload();
+                } catch {}
+              }}
+              className="underline opacity-70 hover:opacity-100 transition"
+            >
+              Resetează preferințele cookies
+            </button>
+          </p>
+
           {/* Disclaimer fiscal / legal */}
           {footer?.show_legal_disclaimer !== false && (
             <p className="text-[10px] text-center mt-2 opacity-50" style={{ color: textColor }}>

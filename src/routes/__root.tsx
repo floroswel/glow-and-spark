@@ -221,8 +221,12 @@ function CanonicalDomainRedirect() {
 
 function CanonicalUrlSync() {
   const location = useLocation();
+  const searchStr =
+    typeof window !== "undefined" ? window.location.search : "";
   useEffect(() => {
-    const url = `https://${CANONICAL_HOST}${location.pathname}${location.search}`;
+    const search =
+      typeof window !== "undefined" ? window.location.search : "";
+    const url = `https://${CANONICAL_HOST}${location.pathname}${search}`;
     setCanonical(url);
     let og = document.querySelector('meta[property="og:url"]');
     if (!og) {
@@ -231,7 +235,7 @@ function CanonicalUrlSync() {
       document.head.appendChild(og);
     }
     og.setAttribute("content", url);
-  }, [location.pathname, location.search]);
+  }, [location.pathname, searchStr]);
   return null;
 }
 

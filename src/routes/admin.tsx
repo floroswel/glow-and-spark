@@ -131,6 +131,7 @@ const menuSections: MenuSection[] = [
           { to: "/admin/ticker", label: "Ticker Banner" },
           { to: "/admin/homepage", label: "Homepage" },
           { to: "/admin/footer", label: "Footer" },
+          { to: "/admin/trust-badges", label: "Trust Badges" },
         ],
       },
     ],

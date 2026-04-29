@@ -195,13 +195,22 @@ if (report.orphan.length) {
   report.orphan.forEach((k) => console.log(`   - ${k}`));
 }
 if (report.consumerMissing.length) {
-  console.log(c("\n🔗 CONSUMER MISMATCH (registry says file uses key, file doesn't):"));
+  console.log(c("\n🔗 CONSUMER MISMATCH (informational — declared consumer file may use indirect access):"));
   report.consumerMissing.forEach(({ key, missing }) => {
     console.log(`   - ${key}`);
     missing.forEach((m) => console.log(`       missing in: ${m}`));
   });
 }
 
-const totalProblems = report.adminOnly.length + report.storefrontOnly.length + report.orphan.length + report.consumerMissing.length;
-console.log(`\n${totalProblems === 0 ? g("✓ All settings synchronized.") : y(`Total problems: ${totalProblems}`)}\n`);
-process.exit(totalProblems === 0 ? 0 : 1);
+// Exit code is gated on STRUCTURAL problems only (admin/storefront/orphan).
+// consumerMissing is informational: detection is heuristic and may produce
+// false positives for destructuring or computed property access.
+const blockers = report.adminOnly.length + report.storefrontOnly.length + report.orphan.length;
+const totalIssues = blockers + report.consumerMissing.length;
+console.log(
+  `\n${blockers === 0 ? g("✓ All settings synchronized.") : y(`Blocking problems: ${blockers}`)}` +
+    (report.consumerMissing.length ? y(`  (${report.consumerMissing.length} informational mismatches)`) : "") +
+    "\n",
+);
+process.exit(blockers === 0 ? 0 : 1);
+

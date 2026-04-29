@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const SITE_URL = (process.env.SITE_URL || "https://mamalucica.ro").replace(/\/$/, "");
+// Hard-coded canonical domain — see sitemap.xml.tsx for rationale.
+const SITE_URL = "https://mamalucica.ro";
 
 export const Route = createFileRoute("/robots.txt")({
   server: {

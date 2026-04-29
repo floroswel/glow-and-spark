@@ -17,8 +17,7 @@ export const Route = createFileRoute("/robots.txt")({
       GET: async () => {
         let body = DEFAULT_BODY;
         try {
-          const supabase = createServerClient();
-          const { data } = await supabase
+          const { data } = await supabaseAdmin
             .from("site_settings")
             .select("value")
             .eq("key", "general")

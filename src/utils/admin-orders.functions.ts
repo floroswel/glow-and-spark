@@ -17,6 +17,7 @@ const LineSchema = z
   .passthrough();
 
 const ManualOrderSchema = z.object({
+  access_token: z.string().min(20).max(4096),
   customer: z.object({
     name: z.string().min(2).max(200),
     email: z.string().email().max(254),
@@ -43,12 +44,23 @@ const ManualOrderSchema = z.object({
 });
 
 export const createManualOrder = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => ManualOrderSchema.parse(input))
-  .handler(async ({ data, context }) => {
-    const { userId } = context;
+  .handler(async ({ data }) => {
+    // Verify token & admin role server-side
+    const SUPABASE_URL = process.env.SUPABASE_URL;
+    const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
+    if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+      throw new Response("Server misconfigured", { status: 500 });
+    }
+    const verifyClient = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    });
+    const { data: claimsData, error: claimsErr } = await verifyClient.auth.getClaims(data.access_token);
+    if (claimsErr || !claimsData?.claims?.sub) {
+      throw new Response("Unauthorized", { status: 401 });
+    }
+    const userId = claimsData.claims.sub;
 
-    // Verify admin role server-side
     const { data: roleRow, error: roleErr } = await supabaseAdmin
       .from("user_roles")
       .select("role")
@@ -60,8 +72,8 @@ export const createManualOrder = createServerFn({ method: "POST" })
     }
 
     // Server-side trusted totals: re-price catalog lines from DB; trust manual lines as entered.
-    const productIds = data.lines
-      .map((l) => l.product_id)
+    const productIds: string[] = data.lines
+      .map((l): string | null => l.product_id ?? null)
       .filter((id): id is string => Boolean(id));
 
     let productMap = new Map<string, { id: string; name: string; price: number; image_url: string | null; sku: string | null }>();

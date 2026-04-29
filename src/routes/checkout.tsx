@@ -199,7 +199,12 @@ function CheckoutPage() {
 
     const { data, error: dbError } = await supabase.from("orders").insert(orderData).select("id").single();
     if (dbError || !data) {
-      setError("Eroare la plasarea comenzii. Încearcă din nou.");
+      console.error("[checkout] Order insert failed:", dbError);
+      setError(
+        dbError?.message
+          ? `Eroare la plasarea comenzii: ${dbError.message}`
+          : "Eroare la plasarea comenzii. Încearcă din nou."
+      );
       setSubmitting(false);
       return;
     }
@@ -285,6 +290,47 @@ function CheckoutPage() {
     }
 
     clearCart();
+
+    // If card payment, initiate Netopia and redirect to payment page
+    if (form.paymentMethod === "card") {
+      try {
+        const { data: payData, error: payErr } = await supabase.functions.invoke("netopia-payment", {
+          body: {
+            orderId: data.id,
+            amount: finalTotal,
+            currency: "RON",
+            returnUrl: `${window.location.origin}/order-confirmed/${data.id}`,
+            cancelUrl: `${window.location.origin}/checkout`,
+            customerData: {
+              email: orderData.customer_email,
+              phone: orderData.customer_phone,
+              firstName: orderData.customer_name?.split(" ")[0] || "",
+              lastName: orderData.customer_name?.split(" ").slice(1).join(" ") || "-",
+              city: orderData.city,
+              county: orderData.county,
+              postalCode: orderData.postal_code,
+              address: orderData.shipping_address,
+            },
+          },
+        });
+        if (payErr || !payData?.paymentUrl) {
+          console.error("[checkout] Netopia init failed:", payErr, payData);
+          setError(
+            "Plata cu cardul nu a putut fi inițiată. Comanda este înregistrată — te rugăm să încerci din nou din contul tău sau să alegi altă metodă de plată."
+          );
+          setSubmitting(false);
+          return;
+        }
+        window.location.href = payData.paymentUrl;
+        return;
+      } catch (e) {
+        console.error("[checkout] Netopia exception:", e);
+        setError("Eroare la inițierea plății cu cardul. Încearcă din nou.");
+        setSubmitting(false);
+        return;
+      }
+    }
+
     navigate({ to: "/order-confirmed/$orderId", params: { orderId: data.id } });
   };
 

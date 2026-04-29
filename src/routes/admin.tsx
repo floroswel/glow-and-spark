@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import AdminGlobalSearch from "@/components/admin/AdminGlobalSearch";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { isAllowedRedirect } from "@/lib/allowed-hosts";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Package, ShoppingCart, Users, Settings,

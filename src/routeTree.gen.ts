@@ -45,6 +45,7 @@ import { Route as AdminTickerRouteImport } from './routes/admin/ticker'
 import { Route as AdminThemeRouteImport } from './routes/admin/theme'
 import { Route as AdminTaxSettingsRouteImport } from './routes/admin/tax-settings'
 import { Route as AdminSystemRouteImport } from './routes/admin/system'
+import { Route as AdminSubscriptionsRouteImport } from './routes/admin/subscriptions'
 import { Route as AdminSubscribersRouteImport } from './routes/admin/subscribers'
 import { Route as AdminStockRouteImport } from './routes/admin/stock'
 import { Route as AdminSocialProofRouteImport } from './routes/admin/social-proof'
@@ -82,6 +83,7 @@ import { Route as AdminAuditLogRouteImport } from './routes/admin/audit-log'
 import { Route as AdminAiRouteImport } from './routes/admin/ai'
 import { Route as AdminActivityRouteImport } from './routes/admin/activity'
 import { Route as AdminAbandonedCartsRouteImport } from './routes/admin/abandoned-carts'
+import { Route as AccountSubscriptionsRouteImport } from './routes/account/subscriptions'
 import { Route as AccountSettingsRouteImport } from './routes/account/settings'
 import { Route as AccountOrdersRouteImport } from './routes/account/orders'
 import { Route as AccountNotificationsRouteImport } from './routes/account/notifications'
@@ -288,6 +290,11 @@ const AdminSystemRoute = AdminSystemRouteImport.update({
   path: '/system',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSubscriptionsRoute = AdminSubscriptionsRouteImport.update({
+  id: '/subscriptions',
+  path: '/subscriptions',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSubscribersRoute = AdminSubscribersRouteImport.update({
   id: '/subscribers',
   path: '/subscribers',
@@ -473,6 +480,11 @@ const AdminAbandonedCartsRoute = AdminAbandonedCartsRouteImport.update({
   path: '/abandoned-carts',
   getParentRoute: () => AdminRoute,
 } as any)
+const AccountSubscriptionsRoute = AccountSubscriptionsRouteImport.update({
+  id: '/subscriptions',
+  path: '/subscriptions',
+  getParentRoute: () => AccountRoute,
+} as any)
 const AccountSettingsRoute = AccountSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -629,6 +641,7 @@ export interface FileRoutesByFullPath {
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
+  '/account/subscriptions': typeof AccountSubscriptionsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/ai': typeof AdminAiRoute
@@ -666,6 +679,7 @@ export interface FileRoutesByFullPath {
   '/admin/social-proof': typeof AdminSocialProofRoute
   '/admin/stock': typeof AdminStockRouteWithChildren
   '/admin/subscribers': typeof AdminSubscribersRoute
+  '/admin/subscriptions': typeof AdminSubscriptionsRoute
   '/admin/system': typeof AdminSystemRoute
   '/admin/tax-settings': typeof AdminTaxSettingsRoute
   '/admin/theme': typeof AdminThemeRoute
@@ -727,6 +741,7 @@ export interface FileRoutesByTo {
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
+  '/account/subscriptions': typeof AccountSubscriptionsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/ai': typeof AdminAiRoute
@@ -764,6 +779,7 @@ export interface FileRoutesByTo {
   '/admin/social-proof': typeof AdminSocialProofRoute
   '/admin/stock': typeof AdminStockRouteWithChildren
   '/admin/subscribers': typeof AdminSubscribersRoute
+  '/admin/subscriptions': typeof AdminSubscriptionsRoute
   '/admin/system': typeof AdminSystemRoute
   '/admin/tax-settings': typeof AdminTaxSettingsRoute
   '/admin/theme': typeof AdminThemeRoute
@@ -828,6 +844,7 @@ export interface FileRoutesById {
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
+  '/account/subscriptions': typeof AccountSubscriptionsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/ai': typeof AdminAiRoute
@@ -865,6 +882,7 @@ export interface FileRoutesById {
   '/admin/social-proof': typeof AdminSocialProofRoute
   '/admin/stock': typeof AdminStockRouteWithChildren
   '/admin/subscribers': typeof AdminSubscribersRoute
+  '/admin/subscriptions': typeof AdminSubscriptionsRoute
   '/admin/system': typeof AdminSystemRoute
   '/admin/tax-settings': typeof AdminTaxSettingsRoute
   '/admin/theme': typeof AdminThemeRoute
@@ -930,6 +948,7 @@ export interface FileRouteTypes {
     | '/account/notifications'
     | '/account/orders'
     | '/account/settings'
+    | '/account/subscriptions'
     | '/admin/abandoned-carts'
     | '/admin/activity'
     | '/admin/ai'
@@ -967,6 +986,7 @@ export interface FileRouteTypes {
     | '/admin/social-proof'
     | '/admin/stock'
     | '/admin/subscribers'
+    | '/admin/subscriptions'
     | '/admin/system'
     | '/admin/tax-settings'
     | '/admin/theme'
@@ -1028,6 +1048,7 @@ export interface FileRouteTypes {
     | '/account/notifications'
     | '/account/orders'
     | '/account/settings'
+    | '/account/subscriptions'
     | '/admin/abandoned-carts'
     | '/admin/activity'
     | '/admin/ai'
@@ -1065,6 +1086,7 @@ export interface FileRouteTypes {
     | '/admin/social-proof'
     | '/admin/stock'
     | '/admin/subscribers'
+    | '/admin/subscriptions'
     | '/admin/system'
     | '/admin/tax-settings'
     | '/admin/theme'
@@ -1128,6 +1150,7 @@ export interface FileRouteTypes {
     | '/account/notifications'
     | '/account/orders'
     | '/account/settings'
+    | '/account/subscriptions'
     | '/admin/abandoned-carts'
     | '/admin/activity'
     | '/admin/ai'
@@ -1165,6 +1188,7 @@ export interface FileRouteTypes {
     | '/admin/social-proof'
     | '/admin/stock'
     | '/admin/subscribers'
+    | '/admin/subscriptions'
     | '/admin/system'
     | '/admin/tax-settings'
     | '/admin/theme'
@@ -1483,6 +1507,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSystemRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/subscriptions': {
+      id: '/admin/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/admin/subscriptions'
+      preLoaderRoute: typeof AdminSubscriptionsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/subscribers': {
       id: '/admin/subscribers'
       path: '/subscribers'
@@ -1742,6 +1773,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAbandonedCartsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/account/subscriptions': {
+      id: '/account/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/account/subscriptions'
+      preLoaderRoute: typeof AccountSubscriptionsRouteImport
+      parentRoute: typeof AccountRoute
+    }
     '/account/settings': {
       id: '/account/settings'
       path: '/settings'
@@ -1927,6 +1965,7 @@ interface AccountRouteChildren {
   AccountNotificationsRoute: typeof AccountNotificationsRoute
   AccountOrdersRoute: typeof AccountOrdersRoute
   AccountSettingsRoute: typeof AccountSettingsRoute
+  AccountSubscriptionsRoute: typeof AccountSubscriptionsRoute
   AccountIndexRoute: typeof AccountIndexRoute
 }
 
@@ -1937,6 +1976,7 @@ const AccountRouteChildren: AccountRouteChildren = {
   AccountNotificationsRoute: AccountNotificationsRoute,
   AccountOrdersRoute: AccountOrdersRoute,
   AccountSettingsRoute: AccountSettingsRoute,
+  AccountSubscriptionsRoute: AccountSubscriptionsRoute,
   AccountIndexRoute: AccountIndexRoute,
 }
 
@@ -2069,6 +2109,7 @@ interface AdminRouteChildren {
   AdminSocialProofRoute: typeof AdminSocialProofRoute
   AdminStockRoute: typeof AdminStockRouteWithChildren
   AdminSubscribersRoute: typeof AdminSubscribersRoute
+  AdminSubscriptionsRoute: typeof AdminSubscriptionsRoute
   AdminSystemRoute: typeof AdminSystemRoute
   AdminTaxSettingsRoute: typeof AdminTaxSettingsRoute
   AdminThemeRoute: typeof AdminThemeRoute
@@ -2118,6 +2159,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSocialProofRoute: AdminSocialProofRoute,
   AdminStockRoute: AdminStockRouteWithChildren,
   AdminSubscribersRoute: AdminSubscribersRoute,
+  AdminSubscriptionsRoute: AdminSubscriptionsRoute,
   AdminSystemRoute: AdminSystemRoute,
   AdminTaxSettingsRoute: AdminTaxSettingsRoute,
   AdminThemeRoute: AdminThemeRoute,

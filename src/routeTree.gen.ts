@@ -54,6 +54,7 @@ import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminReviewsRouteImport } from './routes/admin/reviews'
 import { Route as AdminReturnsRouteImport } from './routes/admin/returns'
 import { Route as AdminReportsRouteImport } from './routes/admin/reports'
+import { Route as AdminPushNotificationsRouteImport } from './routes/admin/push-notifications'
 import { Route as AdminPromotionsRouteImport } from './routes/admin/promotions'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as AdminPopupRouteImport } from './routes/admin/popup'
@@ -333,6 +334,11 @@ const AdminReturnsRoute = AdminReturnsRouteImport.update({
 const AdminReportsRoute = AdminReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPushNotificationsRoute = AdminPushNotificationsRouteImport.update({
+  id: '/push-notifications',
+  path: '/push-notifications',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPromotionsRoute = AdminPromotionsRouteImport.update({
@@ -671,6 +677,7 @@ export interface FileRoutesByFullPath {
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/promotions': typeof AdminPromotionsRoute
+  '/admin/push-notifications': typeof AdminPushNotificationsRoute
   '/admin/reports': typeof AdminReportsRouteWithChildren
   '/admin/returns': typeof AdminReturnsRoute
   '/admin/reviews': typeof AdminReviewsRoute
@@ -771,6 +778,7 @@ export interface FileRoutesByTo {
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/promotions': typeof AdminPromotionsRoute
+  '/admin/push-notifications': typeof AdminPushNotificationsRoute
   '/admin/reports': typeof AdminReportsRouteWithChildren
   '/admin/returns': typeof AdminReturnsRoute
   '/admin/reviews': typeof AdminReviewsRoute
@@ -874,6 +882,7 @@ export interface FileRoutesById {
   '/admin/popup': typeof AdminPopupRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/promotions': typeof AdminPromotionsRoute
+  '/admin/push-notifications': typeof AdminPushNotificationsRoute
   '/admin/reports': typeof AdminReportsRouteWithChildren
   '/admin/returns': typeof AdminReturnsRoute
   '/admin/reviews': typeof AdminReviewsRoute
@@ -978,6 +987,7 @@ export interface FileRouteTypes {
     | '/admin/popup'
     | '/admin/products'
     | '/admin/promotions'
+    | '/admin/push-notifications'
     | '/admin/reports'
     | '/admin/returns'
     | '/admin/reviews'
@@ -1078,6 +1088,7 @@ export interface FileRouteTypes {
     | '/admin/popup'
     | '/admin/products'
     | '/admin/promotions'
+    | '/admin/push-notifications'
     | '/admin/reports'
     | '/admin/returns'
     | '/admin/reviews'
@@ -1180,6 +1191,7 @@ export interface FileRouteTypes {
     | '/admin/popup'
     | '/admin/products'
     | '/admin/promotions'
+    | '/admin/push-notifications'
     | '/admin/reports'
     | '/admin/returns'
     | '/admin/reviews'
@@ -1568,6 +1580,13 @@ declare module '@tanstack/react-router' {
       path: '/reports'
       fullPath: '/admin/reports'
       preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/push-notifications': {
+      id: '/admin/push-notifications'
+      path: '/push-notifications'
+      fullPath: '/admin/push-notifications'
+      preLoaderRoute: typeof AdminPushNotificationsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/promotions': {
@@ -2101,6 +2120,7 @@ interface AdminRouteChildren {
   AdminPopupRoute: typeof AdminPopupRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminPromotionsRoute: typeof AdminPromotionsRoute
+  AdminPushNotificationsRoute: typeof AdminPushNotificationsRoute
   AdminReportsRoute: typeof AdminReportsRouteWithChildren
   AdminReturnsRoute: typeof AdminReturnsRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
@@ -2151,6 +2171,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPopupRoute: AdminPopupRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminPromotionsRoute: AdminPromotionsRoute,
+  AdminPushNotificationsRoute: AdminPushNotificationsRoute,
   AdminReportsRoute: AdminReportsRouteWithChildren,
   AdminReturnsRoute: AdminReturnsRoute,
   AdminReviewsRoute: AdminReviewsRoute,

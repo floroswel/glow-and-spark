@@ -204,6 +204,7 @@ function RootComponent() {
           <CartProvider>
             <FavoritesProvider>
               <CompareProvider>
+                <CanonicalDomainRedirect />
                 <TrackingInit />
                 <RedirectHandler />
                 <div className="pb-14 md:pb-0">

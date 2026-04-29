@@ -1,5 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouter, useLocation } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
+import { setCanonical } from "@/lib/seo";
 import { isAllowedRedirect } from "@/lib/allowed-hosts";
 import { SiteSettingsProvider, useSiteSettings } from "@/hooks/useSiteSettings";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
@@ -196,6 +197,44 @@ function RedirectHandler() {
   return null;
 }
 
+const CANONICAL_HOST = "mamalucica.ro";
+// Hosts that should NOT be redirected (dev / preview environments).
+const PREVIEW_HOST_PATTERNS = [
+  /^localhost$/,
+  /^127\.0\.0\.1$/,
+  /^id-preview--[a-z0-9-]+\.lovable\.app$/,
+  /^project--[a-z0-9-]+(-dev)?\.lovable\.app$/,
+];
+
+function CanonicalDomainRedirect() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const host = window.location.hostname;
+    if (host === CANONICAL_HOST || host === `www.${CANONICAL_HOST}`) return;
+    if (PREVIEW_HOST_PATTERNS.some((re) => re.test(host))) return;
+    // Redirect any other host (e.g. glow-and-spark.lovable.app) to canonical.
+    const target = `https://${CANONICAL_HOST}${window.location.pathname}${window.location.search}${window.location.hash}`;
+    window.location.replace(target);
+  }, []);
+  return null;
+}
+
+function CanonicalUrlSync() {
+  const location = useLocation();
+  useEffect(() => {
+    const url = `https://${CANONICAL_HOST}${location.pathname}${location.search}`;
+    setCanonical(url);
+    let og = document.querySelector('meta[property="og:url"]');
+    if (!og) {
+      og = document.createElement("meta");
+      og.setAttribute("property", "og:url");
+      document.head.appendChild(og);
+    }
+    og.setAttribute("content", url);
+  }, [location.pathname, location.search]);
+  return null;
+}
+
 function RootComponent() {
   return (
     <ErrorBoundary variant="app">
@@ -204,6 +243,8 @@ function RootComponent() {
           <CartProvider>
             <FavoritesProvider>
               <CompareProvider>
+                <CanonicalDomainRedirect />
+                <CanonicalUrlSync />
                 <TrackingInit />
                 <RedirectHandler />
                 <div className="pb-14 md:pb-0">

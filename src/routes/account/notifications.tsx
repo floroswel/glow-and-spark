@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Bell, ShoppingBag, RotateCcw, Gift, Info, Check, CheckCheck } from "lucide-react";
+import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 
 export const Route = createFileRoute("/account/notifications")({
   component: NotificationsPage,

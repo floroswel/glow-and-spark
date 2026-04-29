@@ -178,20 +178,24 @@ export const SETTINGS_REGISTRY: SettingDefinition[] = [
   def("footer", "show_social", "boolean", true, "/admin/footer", [], "Iconițe sociale în footer", { deprecated: true }),
 
   // ─── THEME ──────────────────────────────────────────────────────────────
-  def("theme", "primary_color", "color", "#3d2c1f", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Culoare primară"),
-  def("theme", "secondary_color", "color", "#f0ece6", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Culoare secundară"),
-  def("theme", "accent_color", "color", "#c4873a", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Culoare accent"),
-  def("theme", "background_color", "color", "#f7f5f2", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Culoare fundal"),
-  def("theme", "foreground_color", "color", "#2d1f14", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Culoare text"),
-  def("theme", "card_color", "color", "#ffffff", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Culoare card"),
-  def("theme", "muted_color", "color", "#ebe7e0", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Culoare muted"),
-  def("theme", "border_color", "color", "#e0dbd4", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Culoare border"),
-  def("theme", "destructive_color", "color", "#c53030", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Culoare destructive"),
-  def("theme", "heading_font", "string", "Playfair Display", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Font titluri"),
-  def("theme", "body_font", "string", "Inter", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Font body"),
-  def("theme", "border_radius", "string", "0.5", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Rază colțuri (rem)"),
-  def("theme", "button_style", "string", "rounded", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Stil butoane"),
-  def("theme", "product_card_shadow", "string", "sm", "/admin/theme", ["src/components/ThemeProvider.tsx"], "Umbră card produs"),
+  // All theme.* keys are applied at runtime by src/hooks/useSiteSettings.tsx
+  // via applyThemeVariables() → CSS custom properties on :root. They have no
+  // direct per-component references, so we mark them internalOnly to prevent
+  // false positives in the audit. Admin editor: /admin/theme.
+  def("theme", "primary_color", "color", "#3d2c1f", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Culoare primară (→ --primary)", { internalOnly: true }),
+  def("theme", "secondary_color", "color", "#f0ece6", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Culoare secundară (→ --secondary)", { internalOnly: true }),
+  def("theme", "accent_color", "color", "#c4873a", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Culoare accent (→ --accent, --ring)", { internalOnly: true }),
+  def("theme", "background_color", "color", "#f7f5f2", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Culoare fundal (→ --background)", { internalOnly: true }),
+  def("theme", "foreground_color", "color", "#2d1f14", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Culoare text (→ --foreground)", { internalOnly: true }),
+  def("theme", "card_color", "color", "#ffffff", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Culoare card (→ --card)", { internalOnly: true }),
+  def("theme", "muted_color", "color", "#ebe7e0", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Culoare muted (→ --muted)", { internalOnly: true }),
+  def("theme", "border_color", "color", "#e0dbd4", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Culoare border (→ --border, --input)", { internalOnly: true }),
+  def("theme", "destructive_color", "color", "#c53030", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Culoare destructive (→ --destructive, --sale)", { internalOnly: true }),
+  def("theme", "heading_font", "string", "Playfair Display", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Font titluri (→ --font-heading + Google Fonts)", { internalOnly: true }),
+  def("theme", "body_font", "string", "Inter", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Font body (→ --font-body + Google Fonts)", { internalOnly: true }),
+  def("theme", "border_radius", "string", "0.5", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Rază colțuri în rem (→ --radius)", { internalOnly: true }),
+  def("theme", "button_style", "string", "rounded", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Stil butoane: rounded|pill|square (→ --button-radius)", { internalOnly: true }),
+  def("theme", "product_card_shadow", "string", "sm", "/admin/theme", ["src/hooks/useSiteSettings.tsx"], "Umbră card produs: none|sm|md|lg (→ --product-card-shadow)", { internalOnly: true }),
   def("theme", "hero_overlay_opacity", "string", "0.6", "/admin/theme", [], "DUPLICAT — folosește homepage.hero_overlay_opacity", { deprecated: true }),
   def("theme", "badge_style", "string", "rounded", "/admin/theme", [], "Stil badge", { deprecated: true }),
 

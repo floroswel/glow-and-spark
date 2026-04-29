@@ -11,6 +11,7 @@ export interface SiteSettings {
   popup: Record<string, any>;
   social_proof: Record<string, any>;
   seo_global: Record<string, any>;
+  trust_badges: Record<string, any>;
   redirects: any[];
   email_templates: any[];
   automations: any[];
@@ -26,6 +27,7 @@ const defaultSettings: SiteSettings = {
   popup: {},
   social_proof: {},
   seo_global: {},
+  trust_badges: {},
   redirects: [],
   email_templates: [],
   automations: [],

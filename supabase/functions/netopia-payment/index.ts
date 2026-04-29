@@ -33,9 +33,10 @@ serve(async (req) => {
   if (!rl.allowed) return tooManyRequests(rl, corsHeaders);
 
   try {
-    const NETOPIA_API_KEY = Deno.env.get("NETOPIA_API_KEY");
-    const NETOPIA_POS_SIGNATURE = Deno.env.get("NETOPIA_POS_SIGNATURE");
-    const NETOPIA_ENV = (Deno.env.get("NETOPIA_ENV") || "sandbox").toLowerCase();
+    // Trim to defend against accidental whitespace/newline in copied secrets
+    const NETOPIA_API_KEY = (Deno.env.get("NETOPIA_API_KEY") || "").trim();
+    const NETOPIA_POS_SIGNATURE = (Deno.env.get("NETOPIA_POS_SIGNATURE") || "").trim();
+    const NETOPIA_ENV = (Deno.env.get("NETOPIA_ENV") || "sandbox").trim().toLowerCase();
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const PUBLIC_SITE_URL = Deno.env.get("PUBLIC_SITE_URL") || "https://mamalucica.ro";
 
@@ -167,16 +168,28 @@ serve(async (req) => {
     };
     console.log("[netopia-payment] Payload to Netopia:", JSON.stringify(paymentPayload));
 
+    // Netopia v2 sometimes wants the raw API key in Authorization, sometimes "Bearer <key>".
+    // Try raw first, then fallback to Bearer if we get 401 — covers both account configurations.
+    const callNetopia = (authHeader: string) =>
+      fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: authHeader,
+        },
+        body: JSON.stringify(paymentPayload),
+      });
+
     const t0 = Date.now();
-    const netopiaRes = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: NETOPIA_API_KEY,
-      },
-      body: JSON.stringify(paymentPayload),
-    });
+    let netopiaRes = await callNetopia(NETOPIA_API_KEY);
+    let usedAuthScheme = "raw";
+    if (netopiaRes.status === 401) {
+      console.warn("[netopia-payment] 401 with raw key — retrying with 'Bearer' prefix");
+      netopiaRes = await callNetopia(`Bearer ${NETOPIA_API_KEY}`);
+      usedAuthScheme = "bearer";
+    }
     const elapsed = Date.now() - t0;
+    console.log(`[netopia-payment] Auth scheme that succeeded/last-tried: ${usedAuthScheme}`);
 
     const rawText = await netopiaRes.text();
     console.log(`[netopia-payment] Netopia replied in ${elapsed}ms — status=${netopiaRes.status}`);
@@ -199,11 +212,15 @@ serve(async (req) => {
 
     if (!netopiaRes.ok || netopiaResult?.error) {
       console.error("[netopia-payment] Netopia returned error:", JSON.stringify(netopiaResult));
+      const isAuth = netopiaRes.status === 401 || netopiaRes.status === 403;
       return new Response(
         JSON.stringify({
-          error: "Payment initiation failed",
+          error: isAuth ? "Netopia authentication failed" : "Payment initiation failed",
           netopiaStatus: netopiaRes.status,
           details: netopiaResult?.error || netopiaResult,
+          hint: isAuth
+            ? `Check that NETOPIA_API_KEY matches NETOPIA_ENV='${NETOPIA_ENV}' and that NETOPIA_POS_SIGNATURE belongs to the same merchant account. Key length=${NETOPIA_API_KEY.length}, signature length=${NETOPIA_POS_SIGNATURE.length}.`
+            : undefined,
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );

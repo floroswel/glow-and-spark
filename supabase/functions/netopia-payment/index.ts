@@ -212,11 +212,15 @@ serve(async (req) => {
 
     if (!netopiaRes.ok || netopiaResult?.error) {
       console.error("[netopia-payment] Netopia returned error:", JSON.stringify(netopiaResult));
+      const isAuth = netopiaRes.status === 401 || netopiaRes.status === 403;
       return new Response(
         JSON.stringify({
-          error: "Payment initiation failed",
+          error: isAuth ? "Netopia authentication failed" : "Payment initiation failed",
           netopiaStatus: netopiaRes.status,
           details: netopiaResult?.error || netopiaResult,
+          hint: isAuth
+            ? `Check that NETOPIA_API_KEY matches NETOPIA_ENV='${NETOPIA_ENV}' and that NETOPIA_POS_SIGNATURE belongs to the same merchant account. Key length=${NETOPIA_API_KEY.length}, signature length=${NETOPIA_POS_SIGNATURE.length}.`
+            : undefined,
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );

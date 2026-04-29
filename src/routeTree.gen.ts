@@ -38,6 +38,7 @@ import { Route as OrderConfirmedOrderIdRouteImport } from './routes/order-confir
 import { Route as CategorieSlugRouteImport } from './routes/categorie.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AdminTrustBadgesRouteImport } from './routes/admin/trust-badges'
 import { Route as AdminTransactionsRouteImport } from './routes/admin/transactions'
 import { Route as AdminTrackingRouteImport } from './routes/admin/tracking'
 import { Route as AdminTicketsRouteImport } from './routes/admin/tickets'
@@ -254,6 +255,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTrustBadgesRoute = AdminTrustBadgesRouteImport.update({
+  id: '/trust-badges',
+  path: '/trust-badges',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
@@ -694,6 +700,7 @@ export interface FileRoutesByFullPath {
   '/admin/tickets': typeof AdminTicketsRoute
   '/admin/tracking': typeof AdminTrackingRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/admin/trust-badges': typeof AdminTrustBadgesRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/categorie/$slug': typeof CategorieSlugRoute
@@ -795,6 +802,7 @@ export interface FileRoutesByTo {
   '/admin/tickets': typeof AdminTicketsRoute
   '/admin/tracking': typeof AdminTrackingRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/admin/trust-badges': typeof AdminTrustBadgesRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/categorie/$slug': typeof CategorieSlugRoute
@@ -899,6 +907,7 @@ export interface FileRoutesById {
   '/admin/tickets': typeof AdminTicketsRoute
   '/admin/tracking': typeof AdminTrackingRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/admin/trust-badges': typeof AdminTrustBadgesRoute
   '/admin/users': typeof AdminUsersRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/categorie/$slug': typeof CategorieSlugRoute
@@ -1004,6 +1013,7 @@ export interface FileRouteTypes {
     | '/admin/tickets'
     | '/admin/tracking'
     | '/admin/transactions'
+    | '/admin/trust-badges'
     | '/admin/users'
     | '/blog/$slug'
     | '/categorie/$slug'
@@ -1105,6 +1115,7 @@ export interface FileRouteTypes {
     | '/admin/tickets'
     | '/admin/tracking'
     | '/admin/transactions'
+    | '/admin/trust-badges'
     | '/admin/users'
     | '/blog/$slug'
     | '/categorie/$slug'
@@ -1208,6 +1219,7 @@ export interface FileRouteTypes {
     | '/admin/tickets'
     | '/admin/tracking'
     | '/admin/transactions'
+    | '/admin/trust-badges'
     | '/admin/users'
     | '/blog/$slug'
     | '/categorie/$slug'
@@ -1468,6 +1480,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/trust-badges': {
+      id: '/admin/trust-badges'
+      path: '/trust-badges'
+      fullPath: '/admin/trust-badges'
+      preLoaderRoute: typeof AdminTrustBadgesRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/transactions': {
@@ -2137,6 +2156,7 @@ interface AdminRouteChildren {
   AdminTicketsRoute: typeof AdminTicketsRoute
   AdminTrackingRoute: typeof AdminTrackingRoute
   AdminTransactionsRoute: typeof AdminTransactionsRoute
+  AdminTrustBadgesRoute: typeof AdminTrustBadgesRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -2188,6 +2208,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminTicketsRoute: AdminTicketsRoute,
   AdminTrackingRoute: AdminTrackingRoute,
   AdminTransactionsRoute: AdminTransactionsRoute,
+  AdminTrustBadgesRoute: AdminTrustBadgesRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }

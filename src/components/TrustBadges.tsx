@@ -1,37 +1,61 @@
+import * as Icons from "lucide-react";
 import { ShieldCheck, RotateCcw, Truck, Award } from "lucide-react";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
-const badges = [
-  { icon: ShieldCheck, title: "Plată securizată SSL", desc: "Protecție 100%" },
-  { icon: RotateCcw, title: "Retur 30 de zile", desc: "Fără întrebări" },
-  { icon: Truck, title: "Livrare 24-48h", desc: "Prin Fan Courier" },
-  { icon: Award, title: "Produs artizanal", desc: "Fabricat în România" },
+const FALLBACK = [
+  { id: "b1", icon: "ShieldCheck", title: "Plată securizată SSL", desc: "Protecție 100%", color: "#C9A24A", active: true },
+  { id: "b2", icon: "RotateCcw", title: "Retur 30 de zile", desc: "Fără întrebări", color: "#C9A24A", active: true },
+  { id: "b3", icon: "Truck", title: "Livrare 24-48h", desc: "Prin Fan Courier", color: "#C9A24A", active: true },
+  { id: "b4", icon: "Award", title: "Produs artizanal", desc: "Fabricat în România", color: "#C9A24A", active: true },
 ];
 
+const ICON_MAP: Record<string, any> = { ShieldCheck, RotateCcw, Truck, Award };
+
+function resolveIcon(name: string) {
+  if (ICON_MAP[name]) return ICON_MAP[name];
+  const dyn = (Icons as any)[name];
+  return dyn || ShieldCheck;
+}
+
 export function TrustBadges({ variant = "full" }: { variant?: "compact" | "full" }) {
+  const { trust_badges } = useSiteSettings();
   const compact = variant === "compact";
   const iconSize = compact ? 16 : 20;
 
-  // Always 2 columns — 4 columns produced ugly per-letter wrapping in narrow
-  // containers (e.g. checkout sidebar). 2 cols stays readable everywhere and
-  // the layout is identical across desktop/mobile.
+  if (trust_badges?.enabled === false) return null;
+
+  const list = (Array.isArray(trust_badges?.badges) && trust_badges.badges.length
+    ? trust_badges.badges
+    : FALLBACK
+  ).filter((b: any) => b.active !== false);
+
+  if (!list.length) return null;
+
   return (
     <div className="grid grid-cols-2 gap-3">
-      {badges.map((b) => (
-        <div
-          key={b.title}
-          className={`flex items-start gap-2.5 rounded-lg border border-border bg-secondary/50 ${compact ? "px-3 py-2" : "px-3 py-3"}`}
-        >
-          <b.icon className="shrink-0 text-accent mt-0.5" size={iconSize} />
-          <div className="min-w-0 flex-1">
-            <p className={`font-medium text-foreground leading-tight break-words hyphens-auto ${compact ? "text-xs" : "text-xs sm:text-sm"}`}>
-              {b.title}
-            </p>
-            <p className={`text-muted-foreground leading-tight break-words hyphens-auto ${compact ? "text-[10px]" : "text-[10px] sm:text-xs"}`}>
-              {b.desc}
-            </p>
+      {list.map((b: any) => {
+        const Icon = resolveIcon(b.icon);
+        return (
+          <div
+            key={b.id || b.title}
+            className={`flex items-start gap-2.5 rounded-lg border border-border bg-secondary/50 ${compact ? "px-3 py-2" : "px-3 py-3"}`}
+          >
+            <Icon
+              className="shrink-0 mt-0.5"
+              size={iconSize}
+              style={{ color: b.color || undefined }}
+            />
+            <div className="min-w-0 flex-1">
+              <p className={`font-medium text-foreground leading-tight break-words hyphens-auto ${compact ? "text-xs" : "text-xs sm:text-sm"}`}>
+                {b.title}
+              </p>
+              <p className={`text-muted-foreground leading-tight break-words hyphens-auto ${compact ? "text-[10px]" : "text-[10px] sm:text-xs"}`}>
+                {b.desc}
+              </p>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

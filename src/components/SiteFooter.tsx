@@ -323,7 +323,7 @@ export function SiteFooter() {
               <a
                 href="/contact"
                 className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-full text-white text-sm font-semibold hover:opacity-90 transition-opacity"
-                style={{ background: "#0084FF" }}
+                style={{ background: "#0058b3" }}
               >
                 <MessageCircle className="h-4 w-4" />
                 Contactează-ne

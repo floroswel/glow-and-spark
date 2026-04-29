@@ -101,6 +101,8 @@ const menuSections: MenuSection[] = [
           { to: "/admin/gift-cards/history", label: "Istoric Carduri Cadou" },
           { to: "/admin/bundles", label: "Pachete Promoționale" },
           { to: "/admin/loyalty", label: "Program Fidelitate" },
+          { to: "/admin/subscriptions", label: "Abonamente Recurente" },
+          { to: "/admin/push-notifications", label: "Notificări Push" },
         ],
       },
     ],

@@ -105,7 +105,7 @@ export const SETTINGS_REGISTRY: SettingDefinition[] = [
   def("general", "site_alert_text", "string", "", "/admin/system", ["src/components/SiteAlert.tsx"], "Textul bannerului de alertă"),
   def("general", "site_alert_type", "string", "info", "/admin/system", ["src/components/SiteAlert.tsx"], "Tipul alertei (info/warning/success/error)"),
   def("general", "site_alert_dismissible", "boolean", false, "/admin/system", ["src/components/SiteAlert.tsx"], "Permite închiderea alertei"),
-  def("general", "robots_txt", "richtext", "User-agent: *\nAllow: /", "/admin/system", ["src/routes/api/public/robots.ts"], "Conținut robots.txt"),
+  def("general", "robots_txt", "richtext", "User-agent: *\nAllow: /", "/admin/system", ["src/routes/robots[.]txt.tsx"], "Conținut robots.txt"),
   def("general", "order_prefix", "string", "GS", "/admin/system", ["src/routes/checkout.tsx"], "Prefix număr comandă (ex: GS-1234)"),
   def("general", "order_email_notifications", "boolean", true, "/admin/system", ["src/routes/checkout.tsx"], "Trimite email confirmare comandă"),
   def("general", "smtp_from_name", "string", "Mamalucica.ro", "/admin/system", [], "Nume expeditor email", { internalOnly: true }),

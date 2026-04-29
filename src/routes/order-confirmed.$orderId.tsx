@@ -13,7 +13,7 @@ export const Route = createFileRoute("/order-confirmed/$orderId")({
   component: OrderConfirmedPage,
   head: () => ({
     meta: [
-      { title: "Comandă confirmată | Glow & Spark" },
+      { title: "Comandă confirmată | Mama Lucica" },
       { name: "robots", content: "noindex" },
     ],
   }),

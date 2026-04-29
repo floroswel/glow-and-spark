@@ -13,8 +13,8 @@ export const Route = createFileRoute("/cart")({
   component: CartPage,
   head: () => ({
     meta: [
-      { title: "Coș de cumpărături | Glow & Spark" },
-      { name: "description", content: "Coșul tău de cumpărături" },
+      { title: "Coș de cumpărături | Mama Lucica" },
+      { name: "description", content: "Coșul tău de cumpărături — Mama Lucica." },
     ],
   }),
 });

@@ -10,8 +10,8 @@ import { Calendar, ArrowLeft } from "lucide-react";
 export const Route = createFileRoute("/blog/$slug")({
   head: () => ({
     meta: [
-      { title: "Blog — Glow & Spark" },
-      { name: "description", content: "Articol de blog Glow & Spark" },
+      { title: "Blog — Mama Lucica" },
+      { name: "description", content: "Articol de blog Mama Lucica" },
     ],
   }),
   component: BlogPostPage,

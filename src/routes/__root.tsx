@@ -173,6 +173,70 @@ function TrackingInit() {
   return null;
 }
 
+function SiteIdentitySync() {
+  const { general } = useSiteSettings();
+  useEffect(() => {
+    if (!general) return;
+    // Language attr
+    if (general.language && document.documentElement.lang !== general.language) {
+      document.documentElement.lang = general.language;
+    }
+    // Favicon override
+    if (general.favicon_url) {
+      let link = document.querySelector('link[rel="icon"][data-dynamic="1"]') as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement("link");
+        link.rel = "icon";
+        link.setAttribute("data-dynamic", "1");
+        document.head.appendChild(link);
+      }
+      link.href = general.favicon_url;
+    }
+    // OG image override
+    if (general.og_image_url) {
+      ["og:image", "twitter:image"].forEach((p) => {
+        const sel = p.startsWith("og:") ? `meta[property="${p}"]` : `meta[name="${p}"]`;
+        let m = document.querySelector(sel) as HTMLMetaElement | null;
+        if (!m) {
+          m = document.createElement("meta");
+          if (p.startsWith("og:")) m.setAttribute("property", p);
+          else m.setAttribute("name", p);
+          document.head.appendChild(m);
+        }
+        m.content = general.og_image_url;
+      });
+    }
+    // Tagline → meta description fallback if not already set per-route
+    if (general.site_tagline) {
+      const desc = document.querySelector('meta[name="description"]');
+      if (desc && !desc.getAttribute("content")?.trim()) {
+        desc.setAttribute("content", general.site_tagline);
+      }
+    }
+  }, [general]);
+  return null;
+}
+
+function MaintenanceGate({ children }: { children: React.ReactNode }) {
+  const { general } = useSiteSettings();
+  const location = useLocation();
+  // Allow admin + auth routes through even in maintenance
+  const bypass = location.pathname.startsWith("/admin") || location.pathname.startsWith("/auth");
+  if (general?.maintenance_mode && !bypass) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-8 bg-background text-foreground text-center">
+        <div className="max-w-md">
+          <h1 className="text-3xl font-heading mb-4">Mentenanță</h1>
+          <p className="text-muted-foreground whitespace-pre-line">
+            {general?.maintenance_message || "Revenim în curând!"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return <>{children}</>;
+}
+
 function RedirectHandler() {
   const router = useRouter();
   const location = useLocation();

@@ -6,7 +6,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
     meta: [
-      { title: "Resetare parolă — Lumini.ro" },
+      { title: "Resetare parolă — Mama Lucica" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

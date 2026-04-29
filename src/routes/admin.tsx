@@ -17,7 +17,7 @@ import {
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin — Lumini.ro" },
+      { title: "Admin — Mama Lucica" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

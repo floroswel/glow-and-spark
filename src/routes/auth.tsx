@@ -7,7 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Autentificare — Lumini.ro" },
+      { title: "Autentificare — Mama Lucica" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

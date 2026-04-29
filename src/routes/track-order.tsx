@@ -9,7 +9,7 @@ import { Search, ChevronRight, Package, Truck, CheckCircle2, Clock, XCircle } fr
 export const Route = createFileRoute("/track-order")({
   head: () => ({
     meta: [
-      { title: "Urmărire Comandă — Lumini.ro" },
+      { title: "Urmărire Comandă — Mama Lucica" },
       { name: "description", content: "Verifică statusul comenzii tale introduc numărul comenzii și adresa de email." },
     ],
   }),

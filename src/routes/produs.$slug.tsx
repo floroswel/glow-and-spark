@@ -29,7 +29,7 @@ import { sanitizeText } from "@/lib/sanitize";
 export const Route = createFileRoute("/produs/$slug")({
   head: () => ({
     meta: [
-      { title: "Produs — Lumini.ro" },
+      { title: "Produs — Mama Lucica" },
       { name: "description", content: "Lumânare artizanală premium din ceară de soia." },
     ],
   }),

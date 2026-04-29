@@ -10,9 +10,9 @@ import { ChevronRight, ChevronDown, Search } from "lucide-react";
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "Întrebări Frecvente (FAQ) — Lumini.ro" },
+      { title: "Întrebări Frecvente (FAQ) — Mama Lucica" },
       { name: "description", content: "Găsește răspunsuri la cele mai frecvente întrebări despre comenzi, livrare, retur și produsele noastre." },
-      { property: "og:title", content: "FAQ — Lumini.ro" },
+      { property: "og:title", content: "FAQ — Mama Lucica" },
       { property: "og:description", content: "Răspunsuri rapide la întrebările frecvente." },
     ],
   }),

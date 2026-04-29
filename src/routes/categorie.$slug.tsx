@@ -13,7 +13,7 @@ import { ChevronRight } from "lucide-react";
 export const Route = createFileRoute("/categorie/$slug")({
   head: () => ({
     meta: [
-      { title: "Categorie — Lumini.ro" },
+      { title: "Categorie — Mama Lucica" },
       { name: "description", content: "Explorează produsele din această categorie." },
     ],
   }),

@@ -28,9 +28,9 @@ export const Route = createFileRoute("/catalog")({
   validateSearch: zodValidator(catalogSearchSchema),
   head: () => ({
     meta: [
-      { title: "Catalog Produse — Lumini.ro" },
+      { title: "Catalog Produse — Mama Lucica" },
       { name: "description", content: "Explorează catalogul complet de lumânări artizanale, odorizante și seturi cadou." },
-      { property: "og:title", content: "Catalog Produse — Lumini.ro" },
+      { property: "og:title", content: "Catalog Produse — Mama Lucica" },
       { property: "og:description", content: "Explorează catalogul complet de lumânări artizanale premium." },
     ],
   }),

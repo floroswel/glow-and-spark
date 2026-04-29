@@ -13,9 +13,9 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Lumini.ro" },
+      { title: "Contact — Mama Lucica" },
       { name: "description", content: "Contactează-ne pentru orice întrebare. Răspundem în maxim 24h." },
-      { property: "og:title", content: "Contact — Lumini.ro" },
+      { property: "og:title", content: "Contact — Mama Lucica" },
       { property: "og:description", content: "Contactează-ne pentru orice întrebare despre produsele noastre." },
     ],
   }),

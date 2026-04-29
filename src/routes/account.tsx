@@ -12,7 +12,7 @@ import {
 export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
-      { title: "Contul Meu — Lumini.ro" },
+      { title: "Contul Meu — Mama Lucica" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

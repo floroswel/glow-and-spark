@@ -37,7 +37,7 @@ const defaults = {
   step3: "Primește comanda",
   // Why Us
   show_why_us: true,
-  why_us_title: "De ce să alegi Lumini.ro?",
+  why_us_title: "De ce să alegi Mama Lucica?",
   why_us_1_icon: "🕯️",
   why_us_1_title: "100% Handmade",
   why_us_1_desc: "Fiecare lumânare este turnată manual cu grijă",

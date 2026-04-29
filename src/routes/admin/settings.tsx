@@ -10,12 +10,12 @@ export const Route = createFileRoute("/admin/settings")({
 const defaults = {
   site_name: "Glow & Spark",
   site_tagline: "Lumânări artizanale premium",
-  site_url: "https://glowandspark.ro",
+  site_url: "https://mamalucica.ro",
   logo_url: "",
   favicon_url: "",
   og_image_url: "",
   contact_phone: "+40753326405",
-  contact_email: "contact@glowandspark.ro",
+  contact_email: "contact@mamalucica.ro",
   contact_address: "România",
   contact_schedule: "Luni-Vineri 09:00-17:00",
   whatsapp_number: "40753326405",
@@ -60,7 +60,7 @@ const defaults = {
   invoice_bank: "",
   invoice_iban: "",
   smtp_from_name: "Glow & Spark",
-  smtp_from_email: "comenzi@glowandspark.ro",
+  smtp_from_email: "comenzi@mamalucica.ro",
   // Social Media
   social_facebook: "",
   social_instagram: "",

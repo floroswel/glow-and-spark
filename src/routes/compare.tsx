@@ -11,7 +11,7 @@ import { GitCompareArrows, ShoppingCart, ChevronRight, X, Star } from "lucide-re
 export const Route = createFileRoute("/compare")({
   head: () => ({
     meta: [
-      { title: "Compară Produse — Lumini.ro" },
+      { title: "Compară Produse — Mama Lucica" },
       { name: "description", content: "Compară până la 4 produse una lângă alta." },
     ],
   }),

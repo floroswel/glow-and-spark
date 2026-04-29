@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const SITE_URL = (process.env.SITE_URL || "https://glow-and-spark.lovable.app").replace(/\/$/, "");
+const SITE_URL = (process.env.SITE_URL || "https://mamalucica.ro").replace(/\/$/, "");
 
 export const Route = createFileRoute("/robots.txt")({
   server: {

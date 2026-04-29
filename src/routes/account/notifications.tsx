@@ -118,6 +118,8 @@ function NotificationsPage() {
         )}
       </div>
 
+      <PushNotificationToggle />
+
       {notifications.length === 0 ? (
         <div className="rounded-xl border border-border bg-card py-16 text-center">
           <Bell className="mx-auto h-12 w-12 text-muted-foreground/30" />

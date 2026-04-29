@@ -123,6 +123,29 @@ function applyThemeVariables(theme: Record<string, any>) {
   if (theme.border_radius) {
     root.style.setProperty("--radius", `${theme.border_radius}rem`);
   }
+
+  // Button style → maps to a CSS var consumed via Tailwind arbitrary values / button variants
+  // Values: "rounded" (default), "pill", "square"
+  if (theme.button_style) {
+    const map: Record<string, string> = {
+      pill: "9999px",
+      square: "0px",
+      rounded: "var(--radius)",
+    };
+    root.style.setProperty("--button-radius", map[theme.button_style] || "var(--radius)");
+  }
+
+  // Product card shadow → CSS var consumed by ProductCard
+  // Values: "none" | "sm" | "md" | "lg"
+  if (theme.product_card_shadow) {
+    const map: Record<string, string> = {
+      none: "none",
+      sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+      md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+      lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    };
+    root.style.setProperty("--product-card-shadow", map[theme.product_card_shadow] || map.sm);
+  }
 }
 
 function hexToOklch(hex: string): string {

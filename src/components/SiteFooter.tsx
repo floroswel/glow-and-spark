@@ -3,6 +3,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { sanitizeHtml } from "@/lib/sanitize-html";
 import { ChevronDown, Phone, Mail, Clock, MessageCircle, MapPin, FileText, Building2, Shield } from "lucide-react";
 
 /* Inline social SVG icons */
@@ -268,7 +269,7 @@ export function SiteFooter() {
                     <div
                       className="text-sm space-y-2 [&_a]:underline hover:[&_a]:text-white"
                       style={{ color: textColor }}
-                      dangerouslySetInnerHTML={{ __html: html }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }}
                     />
                   ) : (
                     <ul className="space-y-2">

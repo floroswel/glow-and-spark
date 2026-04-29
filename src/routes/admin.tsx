@@ -449,7 +449,20 @@ function AdminLayout() {
                       <div className="px-4 py-6 text-center text-xs text-muted-foreground">Nicio notificare</div>
                     ) : notifications.slice(0, 10).map(n => (
                       <div key={n.id} className={`px-4 py-2.5 hover:bg-muted/30 transition cursor-pointer ${!n.is_read ? "bg-accent/5" : ""}`}
-                        onClick={() => { markRead(n.id); if (n.link) window.location.href = n.link; }}>
+                        onClick={() => {
+                          markRead(n.id);
+                          if (n.link) {
+                            try {
+                              const parsed = new URL(n.link, window.location.origin);
+                              const allowed = ["mamalucica.ro", "www.mamalucica.ro"];
+                              if (!parsed.hostname || allowed.includes(parsed.hostname) || parsed.hostname === window.location.hostname) {
+                                window.location.href = n.link;
+                              }
+                            } catch {
+                              // invalid URL, do nothing
+                            }
+                          }
+                        }}>
                         <p className="text-xs font-medium text-foreground">{n.title}</p>
                         {n.message && <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{n.message}</p>}
                         <span className="text-[9px] text-muted-foreground">{new Date(n.created_at).toLocaleString("ro-RO")}</span>

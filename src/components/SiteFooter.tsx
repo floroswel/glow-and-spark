@@ -71,7 +71,7 @@ function FooterNewsletter({ accentColor }: { accentColor: string }) {
       <div className="mx-auto max-w-7xl px-4 py-8 md:py-10">
         <div className="max-w-xl">
           <h3 className="text-2xl font-bold mb-1">Newsletter</h3>
-          <p className="text-white/80 text-sm mb-4">Nu rata ofertele și promoțiile noastre</p>
+          <p className="text-white text-sm mb-4">Nu rata ofertele și promoțiile noastre</p>
           <form onSubmit={submit} className="space-y-2">
             <div className="flex gap-0">
               <input
@@ -90,7 +90,7 @@ function FooterNewsletter({ accentColor }: { accentColor: string }) {
                 {loading ? "..." : "Abonează-te"}
               </button>
             </div>
-            <label className="flex items-start gap-2 text-xs text-white/70 cursor-pointer leading-snug">
+            <label className="flex items-start gap-2 text-xs text-white cursor-pointer leading-snug">
               <input
                 type="checkbox"
                 checked={consent}
@@ -168,7 +168,7 @@ export function SiteFooter() {
   const linkColor = "#9ca3af";
   const linkHover = "#ffffff";
   const bottomBg = footer?.footer_bottom_bg || "#181818";
-  const accentColor = "#00bcd4";
+  const accentColor = "#00838f";
 
   const socialLinks = [
     { key: "social_facebook", Icon: FacebookIcon, label: "Facebook" },
@@ -323,7 +323,7 @@ export function SiteFooter() {
               <a
                 href="/contact"
                 className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-full text-white text-sm font-semibold hover:opacity-90 transition-opacity"
-                style={{ background: "#0084FF" }}
+                style={{ background: "#0058b3" }}
               >
                 <MessageCircle className="h-4 w-4" />
                 Contactează-ne
@@ -461,7 +461,7 @@ export function SiteFooter() {
               <Shield className="h-3 w-3" />
               SOL — Platformă Online de Soluționare a Litigiilor
             </a>
-            <span className="opacity-60">Conform OUG 34/2014 și Regulamentului UE 524/2013</span>
+            <span className="opacity-90">Conform OUG 34/2014 și Regulamentului UE 524/2013</span>
           </div>
 
           {/* Copyright */}
@@ -487,7 +487,7 @@ export function SiteFooter() {
 
           {/* Disclaimer fiscal / legal */}
           {footer?.show_legal_disclaimer !== false && (
-            <p className="text-[10px] text-center mt-2 opacity-50" style={{ color: textColor }}>
+            <p className="text-[10px] text-center mt-2 opacity-90" style={{ color: textColor }}>
               {footer?.legal_disclaimer || "Prețurile includ TVA. Imaginile produselor sunt cu titlu informativ și pot diferi de realitate."}
             </p>
           )}

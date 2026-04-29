@@ -75,6 +75,7 @@ import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
 import { Route as AdminContentRouteImport } from './routes/admin/content'
 import { Route as AdminComplaintsRouteImport } from './routes/admin/complaints'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
+import { Route as AdminBundlesRouteImport } from './routes/admin/bundles'
 import { Route as AdminBlogRouteImport } from './routes/admin/blog'
 import { Route as AdminAutomationsRouteImport } from './routes/admin/automations'
 import { Route as AdminAuditLogRouteImport } from './routes/admin/audit-log'
@@ -437,6 +438,11 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBundlesRoute = AdminBundlesRouteImport.update({
+  id: '/bundles',
+  path: '/bundles',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminBlogRoute = AdminBlogRouteImport.update({
   id: '/blog',
   path: '/blog',
@@ -629,6 +635,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit-log': typeof AdminAuditLogRoute
   '/admin/automations': typeof AdminAutomationsRoute
   '/admin/blog': typeof AdminBlogRoute
+  '/admin/bundles': typeof AdminBundlesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/complaints': typeof AdminComplaintsRoute
   '/admin/content': typeof AdminContentRouteWithChildren
@@ -726,6 +733,7 @@ export interface FileRoutesByTo {
   '/admin/audit-log': typeof AdminAuditLogRoute
   '/admin/automations': typeof AdminAutomationsRoute
   '/admin/blog': typeof AdminBlogRoute
+  '/admin/bundles': typeof AdminBundlesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/complaints': typeof AdminComplaintsRoute
   '/admin/content': typeof AdminContentRouteWithChildren
@@ -826,6 +834,7 @@ export interface FileRoutesById {
   '/admin/audit-log': typeof AdminAuditLogRoute
   '/admin/automations': typeof AdminAutomationsRoute
   '/admin/blog': typeof AdminBlogRoute
+  '/admin/bundles': typeof AdminBundlesRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/complaints': typeof AdminComplaintsRoute
   '/admin/content': typeof AdminContentRouteWithChildren
@@ -927,6 +936,7 @@ export interface FileRouteTypes {
     | '/admin/audit-log'
     | '/admin/automations'
     | '/admin/blog'
+    | '/admin/bundles'
     | '/admin/categories'
     | '/admin/complaints'
     | '/admin/content'
@@ -1024,6 +1034,7 @@ export interface FileRouteTypes {
     | '/admin/audit-log'
     | '/admin/automations'
     | '/admin/blog'
+    | '/admin/bundles'
     | '/admin/categories'
     | '/admin/complaints'
     | '/admin/content'
@@ -1123,6 +1134,7 @@ export interface FileRouteTypes {
     | '/admin/audit-log'
     | '/admin/automations'
     | '/admin/blog'
+    | '/admin/bundles'
     | '/admin/categories'
     | '/admin/complaints'
     | '/admin/content'
@@ -1681,6 +1693,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/bundles': {
+      id: '/admin/bundles'
+      path: '/bundles'
+      fullPath: '/admin/bundles'
+      preLoaderRoute: typeof AdminBundlesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/blog': {
       id: '/admin/blog'
       path: '/blog'
@@ -2019,6 +2038,7 @@ interface AdminRouteChildren {
   AdminAuditLogRoute: typeof AdminAuditLogRoute
   AdminAutomationsRoute: typeof AdminAutomationsRoute
   AdminBlogRoute: typeof AdminBlogRoute
+  AdminBundlesRoute: typeof AdminBundlesRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminComplaintsRoute: typeof AdminComplaintsRoute
   AdminContentRoute: typeof AdminContentRouteWithChildren
@@ -2067,6 +2087,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAuditLogRoute: AdminAuditLogRoute,
   AdminAutomationsRoute: AdminAutomationsRoute,
   AdminBlogRoute: AdminBlogRoute,
+  AdminBundlesRoute: AdminBundlesRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminComplaintsRoute: AdminComplaintsRoute,
   AdminContentRoute: AdminContentRouteWithChildren,

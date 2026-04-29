@@ -168,7 +168,7 @@ export function SiteFooter() {
   const linkColor = "#9ca3af";
   const linkHover = "#ffffff";
   const bottomBg = footer?.footer_bottom_bg || "#181818";
-  const accentColor = "#00bcd4";
+  const accentColor = "#00838f";
 
   const socialLinks = [
     { key: "social_facebook", Icon: FacebookIcon, label: "Facebook" },

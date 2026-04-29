@@ -11,12 +11,15 @@ export function NewsletterPopup() {
   const [errorMsg, setErrorMsg] = useState("");
 
   // Respect admin settings: only show if popup is enabled
-  const isEnabled = popup?.enabled !== false;
+  // Admin scrie `show`; păstrăm fallback la `enabled` pentru retrocompatibilitate
+  const isEnabled = popup?.show !== false && popup?.enabled !== false;
   const delay = (popup?.delay_seconds || 5) * 1000;
   const title = popup?.title || "10% REDUCERE";
   const subtitle = popup?.subtitle || "La prima comandă";
-  const description = popup?.description || "Abonează-te și primești un cod de 10% reducere + acces la vânzările private.";
-  const buttonText = popup?.button_text || "VREAU REDUCEREA DE 10%";
+  const description = popup?.body_text || popup?.description || "Abonează-te și primești un cod de 10% reducere + acces la vânzările private.";
+  const buttonText = popup?.btn_text || popup?.button_text || "VREAU REDUCEREA DE 10%";
+  const buttonColor: string | undefined = popup?.btn_color;
+  const dismissText = popup?.dismiss_text || "Nu, mulțumesc. Renunț la reducere.";
   const discountCode = popup?.discount_code || "";
 
   useEffect(() => {
@@ -126,7 +129,8 @@ export function NewsletterPopup() {
               <button
                 onClick={handleSubscribe}
                 disabled={status === "loading"}
-                className="mt-3 w-full rounded-lg bg-accent py-2.5 text-sm font-bold uppercase text-accent-foreground transition hover:bg-accent/90 disabled:opacity-50"
+                className="mt-3 w-full rounded-lg py-2.5 text-sm font-bold uppercase text-accent-foreground transition hover:opacity-90 disabled:opacity-50"
+                style={buttonColor ? { backgroundColor: buttonColor, color: "#fff" } : undefined}
               >
                 {status === "loading" ? "Se procesează..." : buttonText}
               </button>
@@ -134,7 +138,7 @@ export function NewsletterPopup() {
                 onClick={handleClose}
                 className="mt-2 text-xs text-muted-foreground underline hover:text-foreground"
               >
-                Nu, mulțumesc. Renunț la reducere.
+                {dismissText}
               </button>
             </>
           )}

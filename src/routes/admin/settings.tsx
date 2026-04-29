@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AdminSettingsEditor, Section, Field, TextInput, Toggle, TextArea } from "@/components/admin/AdminSettingsEditor";
 import { useState } from "react";
-import { Store, Phone, MessageCircle, CreditCard, Bell, Shield, Mail, Share2, AlertTriangle } from "lucide-react";
+import { Store, Phone, MessageCircle, CreditCard, Bell, Shield, Mail, Share2, AlertTriangle, Truck, BarChart3 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,
@@ -81,6 +81,8 @@ function AdminSettings() {
     { key: "legal", label: "Legal", icon: Shield },
     { key: "invoicing", label: "Firmă & Facturare", icon: CreditCard },
     { key: "email", label: "Email", icon: Mail },
+    { key: "shipping", label: "Livrare & Cadou", icon: Truck },
+    { key: "tracking", label: "Tracking & Analytics", icon: BarChart3 },
     { key: "social", label: "Social Media", icon: Share2 },
     { key: "alert", label: "Alertă Site", icon: AlertTriangle },
   ];
@@ -249,6 +251,53 @@ function AdminSettings() {
                   <Field label="YouTube"><TextInput value={s.social_youtube} onChange={(v) => u("social_youtube", v)} /></Field>
                   <Field label="Pinterest"><TextInput value={s.social_pinterest} onChange={(v) => u("social_pinterest", v)} /></Field>
                   <Field label="Twitter / X"><TextInput value={s.social_twitter} onChange={(v) => u("social_twitter", v)} /></Field>
+                </div>
+              </Section>
+            )}
+
+            {activeSection === "shipping" && (
+              <Section title="🚚 Livrare & Ambalaj Cadou">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Aceste valori se aplică în coș (<code className="text-xs">/cart</code>) și la checkout (<code className="text-xs">/checkout</code>).
+                  Pentru curieri și zone detaliate vezi <Link to="/admin/shipping" className="text-accent underline">Livrare</Link>.
+                </p>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Field label="Prag livrare gratuită (RON)">
+                    <TextInput value={s.free_shipping_min} onChange={(v) => u("free_shipping_min", v.replace(/[^0-9.]/g, ""))} />
+                  </Field>
+                  <Field label="Cost livrare standard (RON)">
+                    <TextInput value={s.default_shipping_cost} onChange={(v) => u("default_shipping_cost", v.replace(/[^0-9.]/g, ""))} />
+                  </Field>
+                  <Field label="Cost livrare express (RON)">
+                    <TextInput value={s.express_shipping_cost} onChange={(v) => u("express_shipping_cost", v.replace(/[^0-9.]/g, ""))} />
+                  </Field>
+                  <Field label="Preț ambalaj cadou (RON)">
+                    <TextInput value={s.gift_wrapping_price} onChange={(v) => u("gift_wrapping_price", v.replace(/[^0-9.]/g, ""))} />
+                  </Field>
+                </div>
+                <div className="mt-4 rounded-lg bg-secondary/50 p-3 text-xs text-muted-foreground">
+                  💡 Pragul de livrare gratuită apare în bara de sus (TopBar) și determină automat costul în coș când subtotalul îl depășește.
+                </div>
+              </Section>
+            )}
+
+            {activeSection === "tracking" && (
+              <Section title="📊 Tracking & Analytics">
+                <p className="text-sm text-muted-foreground mb-4">
+                  ID-urile sunt încărcate doar după acceptul cookie-urilor (GDPR). Lasă gol pentru a dezactiva.
+                </p>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Field label="Google Analytics / GTM ID (G-XXXX sau GTM-XXXX)">
+                    <TextInput value={s.google_analytics_id} onChange={(v) => u("google_analytics_id", v.trim())} />
+                  </Field>
+                  <Field label="Facebook Pixel ID (numeric)">
+                    <TextInput value={s.facebook_pixel_id} onChange={(v) => u("facebook_pixel_id", v.replace(/[^0-9]/g, ""))} />
+                  </Field>
+                </div>
+                <div className="mt-4 rounded-lg bg-secondary/50 p-3 text-xs text-muted-foreground space-y-1">
+                  <p>✅ <strong>GA</strong> se încarcă doar dacă userul acceptă „Analytics" în consimțământul cookie.</p>
+                  <p>✅ <strong>FB Pixel</strong> se încarcă doar dacă userul acceptă „Marketing".</p>
+                  <p>⚠️ Variabilele <code>VITE_GTM_ID</code> / <code>VITE_FB_PIXEL_ID</code> din build au prioritate dacă sunt setate.</p>
                 </div>
               </Section>
             )}

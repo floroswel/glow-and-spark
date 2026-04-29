@@ -324,8 +324,7 @@ function CheckoutPage() {
           // Try to extract the response body from FunctionsHttpError
           let serverDetails: any = null;
           try {
-            // @ts-expect-error - context exists on FunctionsHttpError
-            const ctx = payErr.context;
+            const ctx = (payErr as any).context;
             if (ctx && typeof ctx.json === "function") {
               serverDetails = await ctx.json();
             } else if (ctx && typeof ctx.text === "function") {

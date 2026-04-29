@@ -415,6 +415,12 @@ function CheckoutPage() {
         </div>
 
         {error && <p className="mt-4 rounded-lg bg-destructive/10 px-4 py-2 text-sm text-destructive">{error}</p>}
+        {debugInfo && (
+          <details className="mt-2 rounded-lg border border-border bg-muted/30 px-4 py-2 text-xs">
+            <summary className="cursor-pointer font-medium text-muted-foreground">🔍 Detalii debug (Netopia)</summary>
+            <pre className="mt-2 overflow-auto whitespace-pre-wrap text-[11px] text-foreground">{debugInfo}</pre>
+          </details>
+        )}
 
         <div className="mt-8 grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2">

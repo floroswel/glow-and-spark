@@ -255,6 +255,31 @@ export function SiteFooter() {
       <div style={{ background: mainBg, color: textColor }}>
         <div className="mx-auto max-w-7xl px-4 py-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 
+          {Array.isArray(footer?.columns) && footer.columns.length > 0 ? (
+            /* DYNAMIC COLUMNS — admin-managed (footer.columns) */
+            footer.columns.map((col: any, idx: number) => {
+              if (col?.show === false) return null;
+              const title = col?.title || "";
+              const links: Array<{ label: string; url: string }> = Array.isArray(col?.links) ? col.links : [];
+              const html: string | undefined = col?.html;
+              return (
+                <FooterColumn key={idx} title={title} titleColor={titleColor}>
+                  {html ? (
+                    <div
+                      className="text-sm space-y-2 [&_a]:underline hover:[&_a]:text-white"
+                      style={{ color: textColor }}
+                      dangerouslySetInnerHTML={{ __html: html }}
+                    />
+                  ) : (
+                    <ul className="space-y-2">
+                      {links.map((l, i) => renderLink(l.url, l.label, i))}
+                    </ul>
+                  )}
+                </FooterColumn>
+              );
+            })
+          ) : (
+            <>
           {/* COL 1 — Informații utile */}
           {footer?.col1_show !== false && (
             <FooterColumn title={footer?.col1_title || "Informații utile"} titleColor={titleColor}>
@@ -373,6 +398,8 @@ export function SiteFooter() {
                 )}
               </div>
             </FooterColumn>
+          )}
+            </>
           )}
         </div>
       </div>

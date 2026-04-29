@@ -451,7 +451,7 @@ function ProductPage() {
       description: product.short_description,
       image: images,
       sku: product.sku || product.id,
-      brand: { '@type': 'Brand', name: 'Glow & Spark' },
+      brand: { '@type': 'Brand', name: product.brand || 'Mama Lucica' },
       offers: {
         '@type': 'Offer',
         url: window.location.href,

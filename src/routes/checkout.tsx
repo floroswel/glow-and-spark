@@ -19,8 +19,8 @@ export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
   head: () => ({
     meta: [
-      { title: "Finalizare comandă | Glow & Spark" },
-      { name: "description", content: "Finalizează comanda ta" },
+      { title: "Finalizare comandă | Mama Lucica" },
+      { name: "description", content: "Finalizează comanda ta — lumânări artizanale Mama Lucica." },
     ],
   }),
 });

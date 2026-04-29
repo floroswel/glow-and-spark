@@ -9,9 +9,9 @@ import { Calendar, ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/blog")({
   head: () => ({
     meta: [
-      { title: "Blog — Glow & Spark" },
+      { title: "Blog — Mama Lucica" },
       { name: "description", content: "Articole despre lumânări, aromaterapie și decorațiuni." },
-      { property: "og:title", content: "Blog — Glow & Spark" },
+      { property: "og:title", content: "Blog — Mama Lucica" },
       { property: "og:description", content: "Articole despre lumânări, aromaterapie și decorațiuni." },
     ],
   }),

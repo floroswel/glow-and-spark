@@ -32,7 +32,7 @@ function CmsPage() {
         setPage(data);
         setLoading(false);
         if (data) {
-          document.title = data.meta_title || `${data.title} — Glow & Spark`;
+          document.title = data.meta_title || `${data.title} — Mama Lucica`;
           const desc = document.querySelector('meta[name="description"]');
           if (desc) desc.setAttribute("content", data.meta_description || "");
         }

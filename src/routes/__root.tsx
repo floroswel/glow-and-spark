@@ -182,7 +182,17 @@ function RedirectHandler() {
     );
     if (!match) return;
     if (match.to.startsWith("http")) {
-      window.location.href = match.to;
+      try {
+        const parsed = new URL(match.to);
+        const allowed = ["mamalucica.ro", "www.mamalucica.ro"];
+        if (allowed.includes(parsed.hostname)) {
+          window.location.href = match.to;
+        } else {
+          router.navigate({ to: "/", replace: true });
+        }
+      } catch {
+        router.navigate({ to: "/", replace: true });
+      }
     } else {
       router.navigate({ to: match.to, replace: true });
     }

@@ -217,7 +217,7 @@ function AdminLoginForm() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary px-4">
       <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8 shadow-lg">
-        <h1 className="font-heading text-2xl font-bold text-center text-foreground">Admin Lumini.ro</h1>
+        <h1 className="font-heading text-2xl font-bold text-center text-foreground">Admin Mama Lucica</h1>
         <p className="mt-1 text-center text-sm text-muted-foreground">Conectează-te pentru a gestiona magazinul</p>
         {authError && (
           <div className="mt-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{authError}</div>

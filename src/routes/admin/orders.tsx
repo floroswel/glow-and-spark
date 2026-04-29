@@ -9,6 +9,8 @@ import {
   ArrowRight, DollarSign, ShoppingBag, ChevronDown
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import ManualOrderModal from "@/components/admin/ManualOrderModal";
+import { Plus } from "lucide-react";
 
 export const Route = createFileRoute("/admin/orders")({
   component: AdminOrders,
@@ -89,6 +91,9 @@ function AdminOrders() {
 
   // Aggregate stats (independent of pagination)
   const [stats, setStats] = useState({ total: 0, count: 0, pending: 0, processing: 0, shipped: 0, aov: 0 });
+
+  // Manual order modal
+  const [showManualOrder, setShowManualOrder] = useState(false);
 
   // Debounce search input (300ms)
   useEffect(() => {
@@ -281,6 +286,9 @@ function AdminOrders() {
           <p className="text-sm text-muted-foreground mt-0.5">{filtered.length} comenzi {filterStatus !== "all" ? `(${statusLabels[filterStatus]})` : ""}</p>
         </div>
         <div className="flex gap-2">
+          <button onClick={() => setShowManualOrder(true)} className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-3 py-2 text-sm hover:opacity-90 transition">
+            <Plus className="h-4 w-4" /> Adaugă comandă manuală
+          </button>
           <button onClick={load} className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm hover:bg-secondary transition">
             <RefreshCw className="h-4 w-4" /> Reîmprospătează
           </button>
@@ -659,6 +667,8 @@ function AdminOrders() {
           </div>
         </div>
       )}
+
+      <ManualOrderModal open={showManualOrder} onClose={() => setShowManualOrder(false)} onCreated={() => { load(); }} />
     </div>
   );
 }

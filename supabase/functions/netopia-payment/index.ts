@@ -216,10 +216,17 @@ serve(async (req) => {
       netopiaResult.payment?.redirect?.url ||
       "";
 
+    console.log("[netopia-payment] Extracted:", { ntpID, paymentUrl });
+
     if (!ntpID || !paymentUrl) {
-      console.error("[netopia-payment] Missing ntpID/paymentURL:", JSON.stringify(netopiaResult));
+      console.error("[netopia-payment] Missing ntpID/paymentURL in response keys:", Object.keys(netopiaResult || {}));
       return new Response(
-        JSON.stringify({ error: "Invalid Netopia response" }),
+        JSON.stringify({
+          error: "Invalid Netopia response",
+          details: "Missing ntpID or paymentURL",
+          responseKeys: Object.keys(netopiaResult || {}),
+          response: netopiaResult,
+        }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

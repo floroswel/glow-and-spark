@@ -39,20 +39,40 @@ serve(async (req) => {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const PUBLIC_SITE_URL = Deno.env.get("PUBLIC_SITE_URL") || "https://mamalucica.ro";
 
+    console.log("[netopia-payment] === START ===");
+    console.log("[netopia-payment] Config:", {
+      env: NETOPIA_ENV,
+      hasApiKey: !!NETOPIA_API_KEY,
+      apiKeyLen: NETOPIA_API_KEY?.length || 0,
+      apiKeyPreview: NETOPIA_API_KEY ? `${NETOPIA_API_KEY.slice(0, 8)}...` : "MISSING",
+      hasPosSignature: !!NETOPIA_POS_SIGNATURE,
+      posSignaturePreview: NETOPIA_POS_SIGNATURE ? `${NETOPIA_POS_SIGNATURE.slice(0, 8)}...` : "MISSING",
+      publicSiteUrl: PUBLIC_SITE_URL,
+    });
+
     if (!NETOPIA_API_KEY || !NETOPIA_POS_SIGNATURE) {
       console.error("[netopia-payment] Missing NETOPIA_API_KEY or NETOPIA_POS_SIGNATURE");
       return new Response(
-        JSON.stringify({ error: "Payment provider not configured" }),
+        JSON.stringify({
+          error: "Payment provider not configured",
+          details: {
+            hasApiKey: !!NETOPIA_API_KEY,
+            hasPosSignature: !!NETOPIA_POS_SIGNATURE,
+          },
+        }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     const endpoint = NETOPIA_ENV === "live" ? NETOPIA_ENDPOINTS.live : NETOPIA_ENDPOINTS.sandbox;
+    console.log("[netopia-payment] Endpoint:", endpoint);
 
-    const { orderId, amount, currency, returnUrl, cancelUrl, customerData } = await req.json();
-    console.log(`[netopia-payment] env=${NETOPIA_ENV} order=${orderId} amount=${amount} ${currency || "RON"}`);
+    const requestBody = await req.json();
+    console.log("[netopia-payment] Request body:", JSON.stringify(requestBody));
+    const { orderId, amount, currency, returnUrl, cancelUrl, customerData } = requestBody;
 
     if (!orderId || !amount) {
+      console.error("[netopia-payment] Missing orderId or amount", { orderId, amount });
       return new Response(JSON.stringify({ error: "Missing orderId or amount" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -68,13 +88,21 @@ serve(async (req) => {
       .single();
 
     if (orderErr || !order) {
-      console.error("[netopia-payment] Order not found:", orderErr?.message);
-      return new Response(JSON.stringify({ error: "Order not found" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      console.error("[netopia-payment] Order not found:", orderErr?.message, "orderId=", orderId);
+      return new Response(
+        JSON.stringify({ error: "Order not found", details: orderErr?.message, orderId }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
+    console.log("[netopia-payment] Order loaded:", {
+      orderNumber: order.order_number,
+      total: order.total,
+      currency: order.currency,
+      paymentStatus: order.payment_status,
+    });
+
     if (order.payment_status === "paid") {
+      console.warn("[netopia-payment] Order already paid:", order.order_number);
       return new Response(JSON.stringify({ error: "Order already paid" }), {
         status: 409,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -97,6 +125,7 @@ serve(async (req) => {
       postalCode: order.postal_code || customerData?.postalCode || "",
       details: order.shipping_address || customerData?.address || "",
     };
+    console.log("[netopia-payment] Billing prepared:", billing);
 
     const paymentPayload = {
       config: {
@@ -136,7 +165,9 @@ serve(async (req) => {
         data: {},
       },
     };
+    console.log("[netopia-payment] Payload to Netopia:", JSON.stringify(paymentPayload));
 
+    const t0 = Date.now();
     const netopiaRes = await fetch(endpoint, {
       method: "POST",
       headers: {
@@ -145,14 +176,35 @@ serve(async (req) => {
       },
       body: JSON.stringify(paymentPayload),
     });
+    const elapsed = Date.now() - t0;
 
-    const netopiaResult = await netopiaRes.json();
-    console.log(`[netopia-payment] Netopia response status: ${netopiaRes.status}`);
+    const rawText = await netopiaRes.text();
+    console.log(`[netopia-payment] Netopia replied in ${elapsed}ms — status=${netopiaRes.status}`);
+    console.log(`[netopia-payment] Netopia raw body: ${rawText}`);
 
-    if (!netopiaRes.ok || netopiaResult.error) {
-      console.error("[netopia-payment] Netopia error:", JSON.stringify(netopiaResult));
+    let netopiaResult: any = null;
+    try {
+      netopiaResult = JSON.parse(rawText);
+    } catch (parseErr) {
+      console.error("[netopia-payment] Failed to parse Netopia response as JSON:", parseErr);
       return new Response(
-        JSON.stringify({ error: "Payment initiation failed", details: netopiaResult?.error || netopiaResult }),
+        JSON.stringify({
+          error: "Invalid Netopia response (non-JSON)",
+          details: rawText.slice(0, 500),
+          status: netopiaRes.status,
+        }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!netopiaRes.ok || netopiaResult?.error) {
+      console.error("[netopia-payment] Netopia returned error:", JSON.stringify(netopiaResult));
+      return new Response(
+        JSON.stringify({
+          error: "Payment initiation failed",
+          netopiaStatus: netopiaRes.status,
+          details: netopiaResult?.error || netopiaResult,
+        }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -164,10 +216,17 @@ serve(async (req) => {
       netopiaResult.payment?.redirect?.url ||
       "";
 
+    console.log("[netopia-payment] Extracted:", { ntpID, paymentUrl });
+
     if (!ntpID || !paymentUrl) {
-      console.error("[netopia-payment] Missing ntpID/paymentURL:", JSON.stringify(netopiaResult));
+      console.error("[netopia-payment] Missing ntpID/paymentURL in response keys:", Object.keys(netopiaResult || {}));
       return new Response(
-        JSON.stringify({ error: "Invalid Netopia response" }),
+        JSON.stringify({
+          error: "Invalid Netopia response",
+          details: "Missing ntpID or paymentURL",
+          responseKeys: Object.keys(netopiaResult || {}),
+          response: netopiaResult,
+        }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -188,9 +247,13 @@ serve(async (req) => {
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("[netopia-payment] Error:", error);
+    console.error("[netopia-payment] UNCAUGHT EXCEPTION:", error);
+    console.error("[netopia-payment] Stack:", error instanceof Error ? error.stack : "n/a");
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
+      JSON.stringify({
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack?.split("\n").slice(0, 5) : undefined,
+      }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

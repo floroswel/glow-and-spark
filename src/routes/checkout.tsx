@@ -43,6 +43,7 @@ function CheckoutPage() {
   const [billingType, setBillingType] = useState<"individual" | "company">("individual");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [debugInfo, setDebugInfo] = useState<string>("");
   const [giftWrapping, setGiftWrapping] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
 
@@ -293,39 +294,97 @@ function CheckoutPage() {
 
     // If card payment, initiate Netopia and redirect to payment page
     if (form.paymentMethod === "card") {
+      const payloadBody = {
+        orderId: data.id,
+        amount: finalTotal,
+        currency: "RON",
+        returnUrl: `${window.location.origin}/order-confirmed/${data.id}`,
+        cancelUrl: `${window.location.origin}/checkout`,
+        customerData: {
+          email: orderData.customer_email,
+          phone: orderData.customer_phone,
+          firstName: orderData.customer_name?.split(" ")[0] || "",
+          lastName: orderData.customer_name?.split(" ").slice(1).join(" ") || "-",
+          city: orderData.city,
+          county: orderData.county,
+          postalCode: orderData.postal_code,
+          address: orderData.shipping_address,
+        },
+      };
+      console.log("[checkout][netopia] Invoking netopia-payment with:", payloadBody);
       try {
+        const t0 = Date.now();
         const { data: payData, error: payErr } = await supabase.functions.invoke("netopia-payment", {
-          body: {
-            orderId: data.id,
-            amount: finalTotal,
-            currency: "RON",
-            returnUrl: `${window.location.origin}/order-confirmed/${data.id}`,
-            cancelUrl: `${window.location.origin}/checkout`,
-            customerData: {
-              email: orderData.customer_email,
-              phone: orderData.customer_phone,
-              firstName: orderData.customer_name?.split(" ")[0] || "",
-              lastName: orderData.customer_name?.split(" ").slice(1).join(" ") || "-",
-              city: orderData.city,
-              county: orderData.county,
-              postalCode: orderData.postal_code,
-              address: orderData.shipping_address,
-            },
-          },
+          body: payloadBody,
         });
-        if (payErr || !payData?.paymentUrl) {
-          console.error("[checkout] Netopia init failed:", payErr, payData);
+        const elapsed = Date.now() - t0;
+        console.log(`[checkout][netopia] Response in ${elapsed}ms:`, { payData, payErr });
+
+        if (payErr) {
+          // Try to extract the response body from FunctionsHttpError
+          let serverDetails: any = null;
+          try {
+            const ctx = (payErr as any).context;
+            if (ctx && typeof ctx.json === "function") {
+              serverDetails = await ctx.json();
+            } else if (ctx && typeof ctx.text === "function") {
+              serverDetails = await ctx.text();
+            }
+          } catch (parseErr) {
+            console.warn("[checkout][netopia] Could not parse error context:", parseErr);
+          }
+          console.error("[checkout][netopia] Edge function error:", {
+            name: payErr.name,
+            message: payErr.message,
+            serverDetails,
+          });
+          const debug = JSON.stringify(
+            {
+              step: "netopia-invoke",
+              error: payErr.message || String(payErr),
+              serverDetails,
+              orderId: data.id,
+              amount: finalTotal,
+            },
+            null,
+            2
+          );
+          setDebugInfo(debug);
           setError(
-            "Plata cu cardul nu a putut fi inițiată. Comanda este înregistrată — te rugăm să încerci din nou din contul tău sau să alegi altă metodă de plată."
+            `Plata cu cardul a eșuat: ${
+              (serverDetails && (serverDetails.error || serverDetails.details)) ||
+              payErr.message ||
+              "eroare necunoscută"
+            }`
           );
           setSubmitting(false);
           return;
         }
+        if (!payData?.paymentUrl) {
+          console.error("[checkout][netopia] Missing paymentUrl in response:", payData);
+          setDebugInfo(JSON.stringify({ step: "missing-payment-url", payData }, null, 2));
+          setError("Răspunsul Netopia nu conține URL de plată. Verifică logurile.");
+          setSubmitting(false);
+          return;
+        }
+        console.log("[checkout][netopia] Redirecting to:", payData.paymentUrl);
         window.location.href = payData.paymentUrl;
         return;
-      } catch (e) {
-        console.error("[checkout] Netopia exception:", e);
-        setError("Eroare la inițierea plății cu cardul. Încearcă din nou.");
+      } catch (e: any) {
+        console.error("[checkout][netopia] Exception:", e);
+        setDebugInfo(
+          JSON.stringify(
+            {
+              step: "exception",
+              name: e?.name,
+              message: e?.message || String(e),
+              stack: e?.stack,
+            },
+            null,
+            2
+          )
+        );
+        setError(`Eroare la inițierea plății: ${e?.message || String(e)}`);
         setSubmitting(false);
         return;
       }
@@ -356,6 +415,12 @@ function CheckoutPage() {
         </div>
 
         {error && <p className="mt-4 rounded-lg bg-destructive/10 px-4 py-2 text-sm text-destructive">{error}</p>}
+        {debugInfo && (
+          <details className="mt-2 rounded-lg border border-border bg-muted/30 px-4 py-2 text-xs">
+            <summary className="cursor-pointer font-medium text-muted-foreground">🔍 Detalii debug (Netopia)</summary>
+            <pre className="mt-2 overflow-auto whitespace-pre-wrap text-[11px] text-foreground">{debugInfo}</pre>
+          </details>
+        )}
 
         <div className="mt-8 grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2">

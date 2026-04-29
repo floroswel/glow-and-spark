@@ -9,6 +9,8 @@ import {
   ArrowRight, DollarSign, ShoppingBag, ChevronDown
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import ManualOrderModal from "@/components/admin/ManualOrderModal";
+import { Plus } from "lucide-react";
 
 export const Route = createFileRoute("/admin/orders")({
   component: AdminOrders,

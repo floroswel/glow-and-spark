@@ -126,8 +126,12 @@ export function SiteHeader() {
         {/* Main header */}
         <div className="border-b border-border">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 md:py-3">
-            <Link to="/" className="font-heading text-xl md:text-2xl font-bold tracking-tight text-foreground">
-              {general?.site_name || "LUMINI"}<span className="text-accent">.RO</span>
+            <Link to="/" className="font-heading text-xl md:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+              {general?.logo_url ? (
+                <img src={general.logo_url} alt={general?.site_name || "Logo"} className="h-8 md:h-10 w-auto" />
+              ) : (
+                <>{general?.site_name || "LUMINI"}<span className="text-accent">.RO</span></>
+              )}
             </Link>
 
             {/* Desktop search */}

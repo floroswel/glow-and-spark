@@ -244,6 +244,7 @@ function RootComponent() {
             <FavoritesProvider>
               <CompareProvider>
                 <CanonicalDomainRedirect />
+                <CanonicalUrlSync />
                 <TrackingInit />
                 <RedirectHandler />
                 <div className="pb-14 md:pb-0">

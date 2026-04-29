@@ -169,8 +169,10 @@ function CheckoutPage() {
     setSubmitting(true);
     setError("");
 
+    const orderId = crypto.randomUUID();
     const orderNumber = `GS-${Date.now().toString(36).toUpperCase()}`;
     const orderData = {
+      id: orderId,
       order_number: orderNumber,
       customer_name: sanitizeText(form.name),
       customer_email: sanitizeEmail(form.email),
@@ -198,8 +200,8 @@ function CheckoutPage() {
       gift_message: giftWrapping ? giftMessage || null : null,
     };
 
-    const { data, error: dbError } = await supabase.from("orders").insert(orderData).select("id").single();
-    if (dbError || !data) {
+    const { error: dbError } = await supabase.from("orders").insert(orderData);
+    if (dbError) {
       console.error("[checkout] Order insert failed:", dbError);
       setError(
         dbError?.message
@@ -263,7 +265,7 @@ function CheckoutPage() {
         await supabase.rpc("redeem_gift_card", {
           p_code: gcCode,
           p_amount: gcAmount,
-          p_order_id: data?.id,
+          p_order_id: orderId,
         });
         sessionStorage.removeItem("gift_card_code");
         sessionStorage.removeItem("gift_card_amount");
@@ -290,15 +292,13 @@ function CheckoutPage() {
       }).then(() => {});
     }
 
-    clearCart();
-
     // If card payment, initiate Netopia and redirect to payment page
     if (form.paymentMethod === "card") {
       const payloadBody = {
-        orderId: data.id,
+        orderId,
         amount: finalTotal,
         currency: "RON",
-        returnUrl: `${window.location.origin}/order-confirmed/${data.id}`,
+        returnUrl: `${window.location.origin}/order-confirmed/${orderId}`,
         cancelUrl: `${window.location.origin}/checkout`,
         customerData: {
           email: orderData.customer_email,
@@ -343,7 +343,7 @@ function CheckoutPage() {
               step: "netopia-invoke",
               error: payErr.message || String(payErr),
               serverDetails,
-              orderId: data.id,
+              orderId,
               amount: finalTotal,
             },
             null,
@@ -368,6 +368,7 @@ function CheckoutPage() {
           return;
         }
         console.log("[checkout][netopia] Redirecting to:", payData.paymentUrl);
+        clearCart();
         window.location.href = payData.paymentUrl;
         return;
       } catch (e: any) {
@@ -390,7 +391,8 @@ function CheckoutPage() {
       }
     }
 
-    navigate({ to: "/order-confirmed/$orderId", params: { orderId: data.id } });
+    clearCart();
+    navigate({ to: "/order-confirmed/$orderId", params: { orderId } });
   };
 
   const inputClass = "w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground focus:border-accent focus:outline-none";

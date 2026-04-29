@@ -196,6 +196,28 @@ function RedirectHandler() {
   return null;
 }
 
+const CANONICAL_HOST = "mamalucica.ro";
+// Hosts that should NOT be redirected (dev / preview environments).
+const PREVIEW_HOST_PATTERNS = [
+  /^localhost$/,
+  /^127\.0\.0\.1$/,
+  /^id-preview--[a-z0-9-]+\.lovable\.app$/,
+  /^project--[a-z0-9-]+(-dev)?\.lovable\.app$/,
+];
+
+function CanonicalDomainRedirect() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const host = window.location.hostname;
+    if (host === CANONICAL_HOST || host === `www.${CANONICAL_HOST}`) return;
+    if (PREVIEW_HOST_PATTERNS.some((re) => re.test(host))) return;
+    // Redirect any other host (e.g. glow-and-spark.lovable.app) to canonical.
+    const target = `https://${CANONICAL_HOST}${window.location.pathname}${window.location.search}${window.location.hash}`;
+    window.location.replace(target);
+  }, []);
+  return null;
+}
+
 function RootComponent() {
   return (
     <ErrorBoundary variant="app">

@@ -131,7 +131,16 @@ for (const entry of registry) {
   const refs = findKeyReferences(entry.field, index);
   const adminRefs = refs.filter((f) => classify(f) === "admin");
   const storefrontRefs = refs.filter((f) => classify(f) === "storefront");
-  const missingConsumers = entry.consumers.filter((c) => index.has(c) && !refs.includes(c));
+  // Verify declared consumers actually reference the key.
+  // Check the consumer file directly (don't filter through EXCLUDE), so
+  // legitimate sinks like src/hooks/useSiteSettings.tsx (theme.* applier)
+  // count as real consumers.
+  const re = makeKeyRegex(entry.field);
+  const missingConsumers = entry.consumers.filter((c) => {
+    const content = index.get(c);
+    if (content === undefined) return false; // unknown path — skip
+    return !re.test(content);
+  });
 
   if (entry.internalOnly) {
     if (adminRefs.length > 0) report.ok.push(entry.key);

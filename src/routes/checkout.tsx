@@ -43,6 +43,7 @@ function CheckoutPage() {
   const [billingType, setBillingType] = useState<"individual" | "company">("individual");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [debugInfo, setDebugInfo] = useState<string>("");
   const [giftWrapping, setGiftWrapping] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
 

@@ -168,16 +168,28 @@ serve(async (req) => {
     };
     console.log("[netopia-payment] Payload to Netopia:", JSON.stringify(paymentPayload));
 
+    // Netopia v2 sometimes wants the raw API key in Authorization, sometimes "Bearer <key>".
+    // Try raw first, then fallback to Bearer if we get 401 — covers both account configurations.
+    const callNetopia = (authHeader: string) =>
+      fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: authHeader,
+        },
+        body: JSON.stringify(paymentPayload),
+      });
+
     const t0 = Date.now();
-    const netopiaRes = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: NETOPIA_API_KEY,
-      },
-      body: JSON.stringify(paymentPayload),
-    });
+    let netopiaRes = await callNetopia(NETOPIA_API_KEY);
+    let usedAuthScheme = "raw";
+    if (netopiaRes.status === 401) {
+      console.warn("[netopia-payment] 401 with raw key — retrying with 'Bearer' prefix");
+      netopiaRes = await callNetopia(`Bearer ${NETOPIA_API_KEY}`);
+      usedAuthScheme = "bearer";
+    }
     const elapsed = Date.now() - t0;
+    console.log(`[netopia-payment] Auth scheme that succeeded/last-tried: ${usedAuthScheme}`);
 
     const rawText = await netopiaRes.text();
     console.log(`[netopia-payment] Netopia replied in ${elapsed}ms — status=${netopiaRes.status}`);

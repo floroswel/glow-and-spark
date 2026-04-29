@@ -1,0 +1,1 @@
+UPDATE public.site_settings SET value = jsonb_set(value, '{background_color}', '"#046b27"') WHERE key = 'ticker';

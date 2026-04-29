@@ -1,5 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouter, useLocation } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
+import { isAllowedRedirect } from "@/lib/allowed-hosts";
 import { SiteSettingsProvider, useSiteSettings } from "@/hooks/useSiteSettings";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { CartProvider } from "@/hooks/useCart";
@@ -182,15 +183,9 @@ function RedirectHandler() {
     );
     if (!match) return;
     if (match.to.startsWith("http")) {
-      try {
-        const parsed = new URL(match.to);
-        const allowed = ["mamalucica.ro", "www.mamalucica.ro"];
-        if (allowed.includes(parsed.hostname)) {
-          window.location.href = match.to;
-        } else {
-          router.navigate({ to: "/", replace: true });
-        }
-      } catch {
+      if (isAllowedRedirect(match.to)) {
+        window.location.href = match.to;
+      } else {
         router.navigate({ to: "/", replace: true });
       }
     } else {

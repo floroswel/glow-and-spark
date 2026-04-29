@@ -268,6 +268,11 @@ export function SiteFooter() {
 
       {/* MAIN FOOTER */}
       <div style={{ background: mainBg, color: textColor }}>
+        {logoUrl && (
+          <div className="mx-auto max-w-7xl px-4 pt-8 flex justify-center">
+            <img src={logoUrl} alt={general?.site_name || "Logo"} className="h-12 w-auto opacity-90" loading="lazy" />
+          </div>
+        )}
         <div className="mx-auto max-w-7xl px-4 py-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 
           {Array.isArray(footer?.columns) && footer.columns.length > 0 ? (

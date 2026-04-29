@@ -112,7 +112,7 @@ export const SETTINGS_REGISTRY: SettingDefinition[] = [
   def("general", "smtp_from_email", "string", "comenzi@mamalucica.ro", "/admin/system", [], "Email expeditor", { internalOnly: true }),
   def("general", "currency", "string", "RON", "/admin/system", ["src/routes/checkout.tsx", "src/components/ProductGrid.tsx"], "Moneda magazinului"),
   def("general", "language", "string", "ro", "/admin/system", ["src/routes/__root.tsx"], "Limba site-ului (lang attr)"),
-  def("general", "meta_title_suffix", "string", " — Mama Lucica", "/admin/system", ["src/routes/__root.tsx"], "Sufix adăugat la <title>"),
+  def("general", "meta_title_suffix", "string", " — Mama Lucica", "/admin/system", [], "DEPRECATED — sufix titlu nu mai este aplicat global; fiecare rută își setează propriul title via head()", { deprecated: true }),
   def("general", "terms_page_slug", "string", "termeni-si-conditii", "/admin/pages", ["src/components/SiteFooter.tsx", "src/routes/checkout.tsx"], "Slug pagină Termeni"),
   def("general", "privacy_page_slug", "string", "politica-confidentialitate", "/admin/pages", ["src/components/SiteFooter.tsx"], "Slug pagină Confidențialitate"),
   def("general", "return_policy_slug", "string", "politica-retur", "/admin/pages", ["src/components/SiteFooter.tsx"], "Slug pagină Retur"),
@@ -224,7 +224,8 @@ export const SETTINGS_REGISTRY: SettingDefinition[] = [
   // ─── SOCIAL PROOF ───────────────────────────────────────────────────────
   def("social_proof", "show", "boolean", false, "/admin/social-proof", ["src/components/SocialProofToast.tsx"], "Activează social proof toasts"),
   def("social_proof", "messages", "array", [], "/admin/social-proof", ["src/components/SocialProofToast.tsx"], "Mesaje rotative"),
-  def("social_proof", "interval_seconds", "number", 12, "/admin/social-proof", ["src/components/SocialProofToast.tsx"], "Interval afișare (secunde)"),
+  def("social_proof", "interval", "number", 30, "/admin/social-proof", ["src/components/SocialProofToast.tsx"], "Interval între toasts (secunde)"),
+  def("social_proof", "interval_seconds", "number", 12, "/admin/social-proof", [], "DUPLICAT — folosește social_proof.interval", { deprecated: true }),
 ];
 
 /** Lookup helper: get definition by full key (e.g. "homepage.show_hero") */

@@ -219,6 +219,22 @@ function CanonicalDomainRedirect() {
   return null;
 }
 
+function CanonicalUrlSync() {
+  const location = useLocation();
+  useEffect(() => {
+    const url = `https://${CANONICAL_HOST}${location.pathname}${location.search}`;
+    setCanonical(url);
+    let og = document.querySelector('meta[property="og:url"]');
+    if (!og) {
+      og = document.createElement("meta");
+      og.setAttribute("property", "og:url");
+      document.head.appendChild(og);
+    }
+    og.setAttribute("content", url);
+  }, [location.pathname, location.search]);
+  return null;
+}
+
 function RootComponent() {
   return (
     <ErrorBoundary variant="app">

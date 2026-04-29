@@ -1,1 +1,5 @@
 project_id = "bdaruamlzueuojivflud"
+
+# IPN endpoint must be callable by Netopia without a Supabase JWT
+[functions.netopia-ipn]
+verify_jwt = false

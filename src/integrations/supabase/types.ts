@@ -715,6 +715,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          admin_notes: string | null
           awb_carrier: string | null
           awb_number: string | null
           billing_type: string | null
@@ -724,6 +725,7 @@ export type Database = {
           company_reg: string | null
           county: string | null
           created_at: string | null
+          currency: string
           customer_email: string
           customer_name: string
           customer_phone: string | null
@@ -736,6 +738,7 @@ export type Database = {
           items: Json
           notes: string | null
           order_number: string
+          paid_at: string | null
           payment_method: string | null
           payment_reference: string | null
           payment_status: string | null
@@ -749,6 +752,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          admin_notes?: string | null
           awb_carrier?: string | null
           awb_number?: string | null
           billing_type?: string | null
@@ -758,6 +762,7 @@ export type Database = {
           company_reg?: string | null
           county?: string | null
           created_at?: string | null
+          currency?: string
           customer_email: string
           customer_name: string
           customer_phone?: string | null
@@ -770,6 +775,7 @@ export type Database = {
           items?: Json
           notes?: string | null
           order_number: string
+          paid_at?: string | null
           payment_method?: string | null
           payment_reference?: string | null
           payment_status?: string | null
@@ -783,6 +789,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          admin_notes?: string | null
           awb_carrier?: string | null
           awb_number?: string | null
           billing_type?: string | null
@@ -792,6 +799,7 @@ export type Database = {
           company_reg?: string | null
           county?: string | null
           created_at?: string | null
+          currency?: string
           customer_email?: string
           customer_name?: string
           customer_phone?: string | null
@@ -804,6 +812,7 @@ export type Database = {
           items?: Json
           notes?: string | null
           order_number?: string
+          paid_at?: string | null
           payment_method?: string | null
           payment_reference?: string | null
           payment_status?: string | null

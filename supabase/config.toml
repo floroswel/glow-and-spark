@@ -7,3 +7,28 @@ verify_jwt = false
 # Diagnostic endpoint requires admin auth (verify_jwt = true is default but explicit here)
 [functions.netopia-diagnostic]
 verify_jwt = true
+
+# Public endpoints (callable without auth)
+[functions.sitemap]
+verify_jwt = false
+
+[functions.send-contact-email]
+verify_jwt = false
+
+[functions.save-gdpr-consent]
+verify_jwt = false
+
+[functions.chatbot-ai]
+verify_jwt = false
+
+[functions.chat-assistant]
+verify_jwt = false
+
+[functions.get-localities]
+verify_jwt = false
+
+[functions.generate-qr]
+verify_jwt = false
+
+[functions.remove-background]
+verify_jwt = false

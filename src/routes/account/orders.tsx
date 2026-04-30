@@ -98,6 +98,7 @@ function AccountOrders() {
 
   useEffect(() => {
     if (!user) return;
+    let active = true;
     (async () => {
       const [ordersRes, returnsRes] = await Promise.all([
         supabase
@@ -110,10 +111,33 @@ function AccountOrders() {
           .select("order_id")
           .eq("user_id", user.id),
       ]);
+      if (!active) return;
       setOrders(ordersRes.data || []);
       setExistingReturns(new Set((returnsRes.data || []).map((r: any) => r.order_id)));
       setLoading(false);
     })();
+
+    // Realtime: keep orders list in sync when payment_status / status changes
+    const channel = supabase
+      .channel(`account-orders-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders", filter: `customer_email=eq.${user.email}` },
+        (payload) => {
+          if (!active) return;
+          if (payload.eventType === "UPDATE") {
+            setOrders((prev) => prev.map((o) => (o.id === (payload.new as any).id ? payload.new : o)));
+          } else if (payload.eventType === "INSERT") {
+            setOrders((prev) => [payload.new, ...prev]);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const statusLabel = (s: string) => {

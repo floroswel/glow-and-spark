@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { CreditCard, Banknote, Smartphone, Check, X, Settings, ToggleLeft, ToggleRight } from "lucide-react";
+import { CreditCard, Banknote, Smartphone, Check, X, Settings, ToggleLeft, ToggleRight, Zap, Loader2, ExternalLink, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/admin/payments")({

@@ -72,7 +72,7 @@ const menuSections: MenuSection[] = [
           { to: "/admin/stock/purchase-orders", label: "Comenzi Furnizori" },
           { to: "/admin/stock/batches", label: "Loturi" },
           { to: "/admin/stock/alerts", label: "Alerte Stoc" },
-          { to: "/admin/back-in-stock", label: "Notif. „Stoc revenit"" },
+          { to: "/admin/back-in-stock", label: "Notif. Stoc revenit" },
           { to: "/admin/price-alerts", label: "Alerte de preț" },
         ],
       },

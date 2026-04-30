@@ -258,6 +258,19 @@ function AccountOrders() {
                 <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${statusColor(order.status)}`}>
                   {statusLabel(order.status)}
                 </span>
+                {(order.payment_method === "card" || order.payment_method === "netopia") && (
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
+                    order.payment_status === "paid" ? "bg-green-100 text-green-700" :
+                    order.payment_status === "failed" ? "bg-red-100 text-red-700" :
+                    order.payment_status === "cancelled" ? "bg-gray-100 text-gray-700" :
+                    "bg-yellow-100 text-yellow-700"
+                  }`}>
+                    {order.payment_status === "paid" ? "✓ Plătit" :
+                     order.payment_status === "failed" ? "✕ Eșuat" :
+                     order.payment_status === "cancelled" ? "Anulat" :
+                     "În așteptare"}
+                  </span>
+                )}
                 <span className="text-sm font-bold text-foreground">{Number(order.total).toFixed(2)} lei</span>
                 {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
               </div>

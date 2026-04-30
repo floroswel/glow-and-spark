@@ -1,12 +1,66 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { CreditCard, Banknote, Smartphone, Check, X, Settings, ToggleLeft, ToggleRight, Zap, Loader2, ExternalLink, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { CreditCard, Banknote, Smartphone, Check, X, Settings, ToggleLeft, ToggleRight, Zap, Loader2, ExternalLink, AlertCircle, CheckCircle2, ShieldAlert, LogIn } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/admin/payments")({
-  component: AdminPayments,
+  component: AdminPaymentsGuard,
 });
+
+function AdminPaymentsGuard() {
+  const { user, loading, isAdmin } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-accent" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-xl rounded-xl border border-amber-300 bg-amber-50 p-6 text-center shadow-sm">
+        <ShieldAlert className="mx-auto h-10 w-10 text-amber-600" />
+        <h2 className="mt-3 font-heading text-xl font-bold text-amber-900">Trebuie să te autentifici</h2>
+        <p className="mt-2 text-sm text-amber-800">
+          Pagina <strong>Metode de Plată</strong> (inclusiv butonul „Testează Netopia acum”) este disponibilă doar pentru administratori autentificați.
+        </p>
+        <Link
+          to="/admin"
+          className="mt-4 inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 transition"
+        >
+          <LogIn className="h-4 w-4" /> Mergi la login admin
+        </Link>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="mx-auto max-w-xl rounded-xl border border-red-300 bg-red-50 p-6 text-center shadow-sm">
+        <ShieldAlert className="mx-auto h-10 w-10 text-red-600" />
+        <h2 className="mt-3 font-heading text-xl font-bold text-red-900">Acces refuzat</h2>
+        <p className="mt-2 text-sm text-red-800">
+          Ești autentificat ca <strong>{user.email}</strong>, dar acest cont nu are rol de administrator.
+        </p>
+        <p className="mt-2 text-xs text-red-700">
+          Loghează-te cu contul admin (<code className="bg-white/60 px-1 rounded">gicaflorinionut1987@gmail.com</code>) pentru a accesa diagnosticul Netopia.
+        </p>
+        <Link
+          to="/admin"
+          className="mt-4 inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition"
+        >
+          <LogIn className="h-4 w-4" /> Schimbă contul
+        </Link>
+      </div>
+    );
+  }
+
+  return <AdminPayments />;
+}
 
 interface PaymentMethod {
   id: string;

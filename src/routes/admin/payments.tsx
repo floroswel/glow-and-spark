@@ -92,6 +92,42 @@ function AdminPayments() {
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<any>(null);
   const [clientLog, setClientLog] = useState<string[]>([]);
+  const [diagLoading, setDiagLoading] = useState<"none" | "secrets" | "probe">("none");
+  const [diagResult, setDiagResult] = useState<any>(null);
+
+  async function runDiagnostic(mode: "secrets" | "probe") {
+    setDiagLoading(mode);
+    setDiagResult(null);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) {
+        setDiagResult({ ok: false, error: "Nu ești autentificat. Re-loghează-te." });
+        return;
+      }
+      const { data, error } = await supabase.functions.invoke("netopia-diagnostic", {
+        body: { mode },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (error) {
+        setDiagResult({ ok: false, error: error.message });
+        return;
+      }
+      setDiagResult(data);
+    } catch (e: any) {
+      setDiagResult({ ok: false, error: e?.message || String(e) });
+    } finally {
+      setDiagLoading("none");
+    }
+  }
+
+  function copyDiagToClipboard() {
+    if (!diagResult) return;
+    const text = JSON.stringify(diagResult, null, 2);
+    navigator.clipboard.writeText(text);
+    setToast("Log diagnostic copiat!");
+    setTimeout(() => setToast(""), 2000);
+  }
 
   async function runNetopiaTest() {
     const log: string[] = [];

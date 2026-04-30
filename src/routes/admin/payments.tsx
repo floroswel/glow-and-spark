@@ -34,6 +34,33 @@ function AdminPayments() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<PaymentMethod | null>(null);
   const [toast, setToast] = useState("");
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<any>(null);
+
+  async function runNetopiaTest() {
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) {
+        setTestResult({ ok: false, message: "Nu ești autentificat. Re-loghează-te." });
+        return;
+      }
+      const { data, error } = await supabase.functions.invoke("netopia-test", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (error) {
+        setTestResult({ ok: false, message: `Eroare apel: ${error.message}`, error });
+        return;
+      }
+      setTestResult(data);
+    } catch (e: any) {
+      setTestResult({ ok: false, message: `Excepție: ${e?.message || String(e)}` });
+    } finally {
+      setTesting(false);
+    }
+  }
 
   useEffect(() => {
     loadSettings();

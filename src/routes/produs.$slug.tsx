@@ -775,6 +775,12 @@ function ProductPage() {
               </div>
             )}
 
+            {activeStock > 0 && (
+              <div className="mt-3">
+                <PriceAlertNotify productId={product.id} currentPrice={Number(activePrice) || 0} />
+              </div>
+            )}
+
 
             <TrustBadges variant="compact" />
 

@@ -27,6 +27,7 @@ import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AfiliatRouteImport } from './routes/afiliat'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
@@ -99,6 +100,7 @@ import { Route as AdminAffiliatesRouteImport } from './routes/admin/affiliates'
 import { Route as AdminActivityRouteImport } from './routes/admin/activity'
 import { Route as AdminAbandonedCartsRouteImport } from './routes/admin/abandoned-carts'
 import { Route as AdminAbTestsRouteImport } from './routes/admin/ab-tests'
+import { Route as AccountTwofaRouteImport } from './routes/account/twofa'
 import { Route as AccountSubscriptionsRouteImport } from './routes/account/subscriptions'
 import { Route as AccountSettingsRouteImport } from './routes/account/settings'
 import { Route as AccountOrdersRouteImport } from './routes/account/orders'
@@ -215,6 +217,11 @@ const BlogRoute = BlogRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AfiliatRoute = AfiliatRouteImport.update({
+  id: '/afiliat',
+  path: '/afiliat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -577,6 +584,11 @@ const AdminAbTestsRoute = AdminAbTestsRouteImport.update({
   path: '/ab-tests',
   getParentRoute: () => AdminRoute,
 } as any)
+const AccountTwofaRoute = AccountTwofaRouteImport.update({
+  id: '/twofa',
+  path: '/twofa',
+  getParentRoute: () => AccountRoute,
+} as any)
 const AccountSubscriptionsRoute = AccountSubscriptionsRouteImport.update({
   id: '/subscriptions',
   path: '/subscriptions',
@@ -719,6 +731,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
+  '/afiliat': typeof AfiliatRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
@@ -744,6 +757,7 @@ export interface FileRoutesByFullPath {
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/account/subscriptions': typeof AccountSubscriptionsRoute
+  '/account/twofa': typeof AccountTwofaRoute
   '/admin/ab-tests': typeof AdminAbTestsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
   '/admin/activity': typeof AdminActivityRoute
@@ -836,6 +850,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/afiliat': typeof AfiliatRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
@@ -861,6 +876,7 @@ export interface FileRoutesByTo {
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/account/subscriptions': typeof AccountSubscriptionsRoute
+  '/account/twofa': typeof AccountTwofaRoute
   '/admin/ab-tests': typeof AdminAbTestsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
   '/admin/activity': typeof AdminActivityRoute
@@ -956,6 +972,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
+  '/afiliat': typeof AfiliatRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
@@ -981,6 +998,7 @@ export interface FileRoutesById {
   '/account/orders': typeof AccountOrdersRoute
   '/account/settings': typeof AccountSettingsRoute
   '/account/subscriptions': typeof AccountSubscriptionsRoute
+  '/account/twofa': typeof AccountTwofaRoute
   '/admin/ab-tests': typeof AdminAbTestsRoute
   '/admin/abandoned-carts': typeof AdminAbandonedCartsRoute
   '/admin/activity': typeof AdminActivityRoute
@@ -1077,6 +1095,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/afiliat'
     | '/auth'
     | '/blog'
     | '/cart'
@@ -1102,6 +1121,7 @@ export interface FileRouteTypes {
     | '/account/orders'
     | '/account/settings'
     | '/account/subscriptions'
+    | '/account/twofa'
     | '/admin/ab-tests'
     | '/admin/abandoned-carts'
     | '/admin/activity'
@@ -1194,6 +1214,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/afiliat'
     | '/auth'
     | '/blog'
     | '/cart'
@@ -1219,6 +1240,7 @@ export interface FileRouteTypes {
     | '/account/orders'
     | '/account/settings'
     | '/account/subscriptions'
+    | '/account/twofa'
     | '/admin/ab-tests'
     | '/admin/abandoned-carts'
     | '/admin/activity'
@@ -1313,6 +1335,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
+    | '/afiliat'
     | '/auth'
     | '/blog'
     | '/cart'
@@ -1338,6 +1361,7 @@ export interface FileRouteTypes {
     | '/account/orders'
     | '/account/settings'
     | '/account/subscriptions'
+    | '/account/twofa'
     | '/admin/ab-tests'
     | '/admin/abandoned-carts'
     | '/admin/activity'
@@ -1433,6 +1457,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
+  AfiliatRoute: typeof AfiliatRoute
   AuthRoute: typeof AuthRoute
   BlogRoute: typeof BlogRouteWithChildren
   CartRoute: typeof CartRoute
@@ -1583,6 +1608,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/afiliat': {
+      id: '/afiliat'
+      path: '/afiliat'
+      fullPath: '/afiliat'
+      preLoaderRoute: typeof AfiliatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -2089,6 +2121,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAbTestsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/account/twofa': {
+      id: '/account/twofa'
+      path: '/twofa'
+      fullPath: '/account/twofa'
+      preLoaderRoute: typeof AccountTwofaRouteImport
+      parentRoute: typeof AccountRoute
+    }
     '/account/subscriptions': {
       id: '/account/subscriptions'
       path: '/subscriptions'
@@ -2289,6 +2328,7 @@ interface AccountRouteChildren {
   AccountOrdersRoute: typeof AccountOrdersRoute
   AccountSettingsRoute: typeof AccountSettingsRoute
   AccountSubscriptionsRoute: typeof AccountSubscriptionsRoute
+  AccountTwofaRoute: typeof AccountTwofaRoute
   AccountIndexRoute: typeof AccountIndexRoute
 }
 
@@ -2300,6 +2340,7 @@ const AccountRouteChildren: AccountRouteChildren = {
   AccountOrdersRoute: AccountOrdersRoute,
   AccountSettingsRoute: AccountSettingsRoute,
   AccountSubscriptionsRoute: AccountSubscriptionsRoute,
+  AccountTwofaRoute: AccountTwofaRoute,
   AccountIndexRoute: AccountIndexRoute,
 }
 
@@ -2554,6 +2595,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
+  AfiliatRoute: AfiliatRoute,
   AuthRoute: AuthRoute,
   BlogRoute: BlogRouteWithChildren,
   CartRoute: CartRoute,

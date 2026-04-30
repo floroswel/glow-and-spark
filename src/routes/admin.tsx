@@ -56,6 +56,7 @@ const menuSections: MenuSection[] = [
         children: [
           { to: "/admin/products", label: "Toate Produsele" },
           { to: "/admin/categories", label: "Categorii" },
+          { to: "/admin/brands", label: "Branduri" },
           { to: "/admin/reviews", label: "Recenzii" },
         ],
       },
@@ -71,6 +72,8 @@ const menuSections: MenuSection[] = [
           { to: "/admin/stock/purchase-orders", label: "Comenzi Furnizori" },
           { to: "/admin/stock/batches", label: "Loturi" },
           { to: "/admin/stock/alerts", label: "Alerte Stoc" },
+          { to: "/admin/back-in-stock", label: "Notif. „Stoc revenit"" },
+          { to: "/admin/price-alerts", label: "Alerte de preț" },
         ],
       },
     ],

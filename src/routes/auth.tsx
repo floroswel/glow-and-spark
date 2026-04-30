@@ -2,7 +2,19 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff } from "lucide-react";
+
+async function logLoginAttempt(email: string, success: boolean, failure_reason?: string) {
+  try {
+    await supabase.from("login_attempts").insert({
+      email,
+      success,
+      failure_reason: failure_reason ?? null,
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+    });
+  } catch (e) { /* fail open */ }
+}
 
 export const Route = createFileRoute("/auth")({
   head: () => ({

@@ -332,6 +332,67 @@ function AdminPayments() {
         </div>
       </div>
 
+      {/* Server-side diagnostic card */}
+      <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="rounded-lg bg-blue-500/10 p-3 text-blue-600"><AlertCircle className="h-5 w-5" /></div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="font-heading font-semibold text-foreground">Diagnostic Netopia (server)</h3>
+              <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold text-blue-600">SERVER</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Inspectează direct secretele din Supabase Edge Functions (lungime, format, dacă API key-ul e un certificat PEM greșit pus etc.) și opțional face un apel HTTP de probă către Netopia.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                onClick={() => runDiagnostic("secrets")}
+                disabled={diagLoading !== "none"}
+                className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-xs font-semibold hover:bg-secondary transition disabled:opacity-50"
+              >
+                {diagLoading === "secrets" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Settings className="h-3.5 w-3.5" />}
+                Verifică doar secretele
+              </button>
+              <button
+                onClick={() => runDiagnostic("probe")}
+                disabled={diagLoading !== "none"}
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition disabled:opacity-50"
+              >
+                {diagLoading === "probe" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5" />}
+                Testează Netopia acum (apel HTTP)
+              </button>
+              {diagResult && (
+                <button
+                  onClick={copyDiagToClipboard}
+                  className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium hover:bg-secondary transition"
+                >
+                  📋 Copiază log
+                </button>
+              )}
+            </div>
+
+            {diagResult && (
+              <div className="mt-4 space-y-3">
+                {Array.isArray(diagResult.warnings) && diagResult.warnings.length > 0 && (
+                  <div className="rounded-lg border border-amber-300 bg-amber-50 p-3">
+                    <p className="text-xs font-semibold text-amber-900 mb-1">⚠️ Avertismente ({diagResult.warnings.length})</p>
+                    <ul className="list-disc pl-5 text-[11px] text-amber-800 space-y-1">
+                      {diagResult.warnings.map((w: string, i: number) => <li key={i}>{w}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {diagResult.probe?.interpretation && (
+                  <div className={`rounded-lg border p-3 text-xs ${diagResult.probe.httpStatus === 200 || diagResult.probe.httpStatus === 201 ? "border-green-300 bg-green-50 text-green-800" : "border-red-300 bg-red-50 text-red-800"}`}>
+                    <strong>Interpretare:</strong> {diagResult.probe.interpretation}
+                  </div>
+                )}
+                <pre className="max-h-96 overflow-auto rounded bg-slate-900 text-slate-100 p-3 text-[10px] font-mono whitespace-pre-wrap break-all">{JSON.stringify(diagResult, null, 2)}</pre>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-4">
         {methods.map(method => (
           <div key={method.id} className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 shadow-sm">

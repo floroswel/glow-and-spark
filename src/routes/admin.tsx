@@ -11,7 +11,9 @@ import {
   CreditCard, Truck, Brain, Server, ChevronDown, ChevronRight,
   Link2, UserCog, Warehouse, Search, Command, Bell, Moon, Sun,
   RotateCcw, Activity, User, Gift, Crown, Percent, FileSpreadsheet,
-  Zap, Receipt, Calculator, Cookie, Star, Briefcase
+  Zap, Receipt, Calculator, Cookie, Star, Briefcase,
+  Bot, FlaskConical, Megaphone, Sparkles, TrendingDown, Webhook,
+  Mail, ShieldAlert, Award, Users2, Wallet, ArrowRightLeft, Bell as BellIcon
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -54,6 +56,7 @@ const menuSections: MenuSection[] = [
         children: [
           { to: "/admin/products", label: "Toate Produsele" },
           { to: "/admin/categories", label: "Categorii" },
+          { to: "/admin/brands", label: "Branduri" },
           { to: "/admin/reviews", label: "Recenzii" },
         ],
       },
@@ -69,6 +72,8 @@ const menuSections: MenuSection[] = [
           { to: "/admin/stock/purchase-orders", label: "Comenzi Furnizori" },
           { to: "/admin/stock/batches", label: "Loturi" },
           { to: "/admin/stock/alerts", label: "Alerte Stoc" },
+          { to: "/admin/back-in-stock", label: "Notif. Stoc revenit" },
+          { to: "/admin/price-alerts", label: "Alerte de preț" },
         ],
       },
     ],
@@ -81,8 +86,17 @@ const menuSections: MenuSection[] = [
         children: [
           { to: "/admin/customers", label: "Toți Clienții" },
           { to: "/admin/crm", label: "Segmente & Grupuri" },
+          { to: "/admin/customer-groups", label: "Grupuri (Discount)" },
+          { to: "/admin/wallets", label: "Portofele Clienți" },
           { to: "/admin/tickets", label: "Tichete Suport" },
           { to: "/admin/complaints", label: "Reclamații" },
+        ],
+      },
+      {
+        icon: Bot, label: "Chatbot",
+        children: [
+          { to: "/admin/chatbot", label: "Setări & FAQ" },
+          { to: "/admin/chatbot/sessions", label: "Sesiuni & Conversații" },
         ],
       },
     ],
@@ -97,13 +111,17 @@ const menuSections: MenuSection[] = [
           { to: "/admin/promotions", label: "Promoții & Campanii" },
           { to: "/admin/subscribers", label: "Abonați Newsletter" },
           { to: "/admin/social-proof", label: "Social Proof" },
-          { to: "/admin/popup", label: "Popup" },
+          { to: "/admin/popup", label: "Popup (simplu)" },
+          { to: "/admin/popups-manager", label: "Manager Popup-uri" },
+          { to: "/admin/banners", label: "Banner-e Site" },
           { to: "/admin/gift-cards", label: "Carduri Cadou" },
           { to: "/admin/gift-cards/history", label: "Istoric Carduri Cadou" },
           { to: "/admin/bundles", label: "Pachete Promoționale" },
           { to: "/admin/loyalty", label: "Program Fidelitate" },
           { to: "/admin/subscriptions", label: "Abonamente Recurente" },
           { to: "/admin/push-notifications", label: "Notificări Push" },
+          { to: "/admin/affiliates", label: "Afiliați" },
+          { to: "/admin/ab-tests", label: "A/B Tests" },
         ],
       },
     ],
@@ -121,6 +139,7 @@ const menuSections: MenuSection[] = [
           { to: "/admin/content/email-templates", label: "Șabloane Email" },
           { to: "/admin/media", label: "Media Library" },
           { to: "/admin/content/redirects", label: "Redirecturi" },
+          { to: "/admin/seo-redirects", label: "Redirect-uri SEO (301/302)" },
         ],
       },
       {
@@ -189,12 +208,15 @@ const menuSections: MenuSection[] = [
           { to: "/admin/system", label: "System Health" },
           { to: "/admin/activity", label: "Jurnal Activitate" },
           { to: "/admin/audit-log", label: "Audit Log (Securitate)" },
+          { to: "/admin/login-attempts", label: "Încercări Login" },
+          { to: "/admin/email-logs", label: "Jurnal Email" },
           { to: "/admin/gdpr", label: "Cereri GDPR" },
           { to: "/admin/settings", label: "Setări Generale" },
           { to: "/admin/settings/checkout", label: "Checkout Config" },
         ],
       },
       { icon: Link2, label: "Integrări", to: "/admin/integrations" },
+      { icon: Webhook, label: "Webhook-uri", to: "/admin/webhooks" },
       { icon: UserCog, label: "Utilizatori", to: "/admin/users" },
       { icon: FileSpreadsheet, label: "Import / Export", to: "/admin/import-export" },
     ],

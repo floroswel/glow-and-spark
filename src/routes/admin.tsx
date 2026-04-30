@@ -139,6 +139,7 @@ const menuSections: MenuSection[] = [
           { to: "/admin/content/email-templates", label: "Șabloane Email" },
           { to: "/admin/media", label: "Media Library" },
           { to: "/admin/content/redirects", label: "Redirecturi" },
+          { to: "/admin/seo-redirects", label: "Redirect-uri SEO (301/302)" },
         ],
       },
       {

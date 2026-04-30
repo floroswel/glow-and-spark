@@ -113,6 +113,71 @@ function AdminPayments() {
         </div>
       </div>
 
+      {/* Netopia diagnostic test card */}
+      <div className="rounded-xl border border-border bg-gradient-to-br from-card to-secondary/30 p-5 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="rounded-lg bg-accent/10 p-3 text-accent"><Zap className="h-5 w-5" /></div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="font-heading font-semibold text-foreground">Test conexiune Netopia</h3>
+              <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold text-accent">DIAGNOSTIC</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Inițiază o tranzacție test de 1 RON folosind credențialele configurate (API key + POS Signature + ENV).
+              Folosește pentru a verifica că integrarea funcționează fără să mai treci prin checkout.
+            </p>
+            <button
+              onClick={runNetopiaTest}
+              disabled={testing}
+              className="mt-3 inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:opacity-90 transition disabled:opacity-50"
+            >
+              {testing ? <><Loader2 className="h-4 w-4 animate-spin" /> Se testează...</> : <><Zap className="h-4 w-4" /> Testează Netopia acum</>}
+            </button>
+
+            {testResult && (
+              <div className={`mt-4 rounded-lg border p-4 text-sm ${testResult.ok ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}>
+                <div className="flex items-center gap-2 font-semibold">
+                  {testResult.ok ? <CheckCircle2 className="h-5 w-5 text-green-600" /> : <AlertCircle className="h-5 w-5 text-red-600" />}
+                  <span className={testResult.ok ? "text-green-800" : "text-red-800"}>
+                    {testResult.ok ? "✓ Tranzacție aprobată de Netopia" : "✗ Tranzacție respinsă"}
+                  </span>
+                </div>
+                <p className={`mt-1 text-xs ${testResult.ok ? "text-green-700" : "text-red-700"}`}>{testResult.message}</p>
+
+                {testResult.config && (
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] font-mono bg-white/60 rounded p-2">
+                    <div><span className="text-muted-foreground">ENV:</span> <strong>{testResult.config.env}</strong> {testResult.config.envRaw !== testResult.config.env && <span className="text-red-600">(raw: "{testResult.config.envRaw}")</span>}</div>
+                    <div><span className="text-muted-foreground">Auth scheme:</span> <strong>{testResult.usedAuthScheme || "—"}</strong></div>
+                    <div><span className="text-muted-foreground">API Key:</span> <strong>{testResult.config.apiKeyPreview}</strong> ({testResult.config.apiKeyLen} car.)</div>
+                    <div><span className="text-muted-foreground">POS Sig:</span> <strong>{testResult.config.posSignaturePreview}</strong> ({testResult.config.posSignatureLen} car.)</div>
+                    <div><span className="text-muted-foreground">Status HTTP:</span> <strong>{testResult.netopiaStatus ?? "—"}</strong></div>
+                    <div><span className="text-muted-foreground">Răspuns în:</span> <strong>{testResult.elapsedMs ?? "—"}ms</strong></div>
+                  </div>
+                )}
+
+                {testResult.ntpID && (
+                  <div className="mt-2 text-xs"><span className="text-muted-foreground">ntpID:</span> <code className="bg-white/60 px-1.5 py-0.5 rounded">{testResult.ntpID}</code></div>
+                )}
+
+                {testResult.paymentUrl && (
+                  <a href={testResult.paymentUrl} target="_blank" rel="noreferrer"
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-700">
+                    Deschide pagină de plată test <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
+
+                {!testResult.ok && testResult.rawResponse && (
+                  <details className="mt-3">
+                    <summary className="cursor-pointer text-xs font-medium text-red-700">Vezi răspuns brut Netopia</summary>
+                    <pre className="mt-2 max-h-60 overflow-auto rounded bg-white/60 p-2 text-[10px] font-mono whitespace-pre-wrap break-all">{typeof testResult.rawResponse === "string" ? testResult.rawResponse : JSON.stringify(testResult.rawResponse, null, 2)}</pre>
+                  </details>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-4">
         {methods.map(method => (
           <div key={method.id} className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 shadow-sm">

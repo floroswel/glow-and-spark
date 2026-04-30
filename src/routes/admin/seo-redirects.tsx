@@ -14,7 +14,7 @@ function Page() {
   useEffect(() => { load(); }, []);
 
   const add = async () => {
-    const { error } = await supabase.from("seo_redirects").insert({ from_path: "/old", to_path: "/new", status_code: 301, is_active: true });
+    const { error } = await supabase.from("seo_redirects").insert({ source_path: "/old", target_path: "/new", redirect_type: 301, is_active: true });
     if (error) return toast.error(error.message); load();
   };
   const update = async (id: string, patch: any) => { setItems(items.map(i => i.id === id ? { ...i, ...patch } : i)); await supabase.from("seo_redirects").update(patch).eq("id", id); };
@@ -37,10 +37,10 @@ function Page() {
           <tbody className="divide-y divide-border">
             {items.map(r => (
               <tr key={r.id}>
-                <td className="p-3"><input value={r.from_path} onChange={e => update(r.id, { from_path: e.target.value })} className="w-full rounded border border-border bg-background px-2 py-1 text-xs font-mono" /></td>
-                <td className="p-3"><input value={r.to_path} onChange={e => update(r.id, { to_path: e.target.value })} className="w-full rounded border border-border bg-background px-2 py-1 text-xs font-mono" /></td>
-                <td className="p-3"><select value={r.status_code} onChange={e => update(r.id, { status_code: parseInt(e.target.value) })} className="rounded border border-border bg-background px-2 py-1 text-xs"><option value={301}>301</option><option value={302}>302</option><option value={307}>307</option><option value={308}>308</option></select></td>
-                <td className="p-3 text-xs">{r.hit_count || 0}</td>
+                <td className="p-3"><input value={r.source_path} onChange={e => update(r.id, { source_path: e.target.value })} className="w-full rounded border border-border bg-background px-2 py-1 text-xs font-mono" /></td>
+                <td className="p-3"><input value={r.target_path} onChange={e => update(r.id, { target_path: e.target.value })} className="w-full rounded border border-border bg-background px-2 py-1 text-xs font-mono" /></td>
+                <td className="p-3"><select value={r.redirect_type} onChange={e => update(r.id, { redirect_type: parseInt(e.target.value) })} className="rounded border border-border bg-background px-2 py-1 text-xs"><option value={301}>301</option><option value={302}>302</option><option value={307}>307</option><option value={308}>308</option></select></td>
+                <td className="p-3 text-xs">{r.hits || 0}</td>
                 <td className="p-3"><input type="checkbox" checked={!!r.is_active} onChange={e => update(r.id, { is_active: e.target.checked })} /></td>
                 <td className="p-3"><button onClick={() => remove(r.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></button></td>
               </tr>

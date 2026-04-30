@@ -17,7 +17,7 @@ function BannersPage() {
   useEffect(() => { load(); }, []);
 
   const add = async () => {
-    const { error } = await supabase.from("site_banners").insert({ title: "Banner nou", message: "Mesaj banner", position: "top", is_active: true, sort_order: items.length });
+    const { error } = await supabase.from("site_banners").insert({ title: "Banner nou", subtitle: "Mesaj banner", position: "top", is_active: true, sort_order: items.length });
     if (error) return toast.error(error.message);
     load();
   };
@@ -48,7 +48,8 @@ function BannersPage() {
                 <option value="top">Top</option><option value="hero">Hero</option><option value="middle">Mijloc</option><option value="footer">Footer</option>
               </select>
             </div>
-            <textarea value={b.message || ""} onChange={e => update(b.id, { message: e.target.value })} rows={2} placeholder="Mesaj" className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
+            <textarea value={b.subtitle || ""} onChange={e => update(b.id, { subtitle: e.target.value })} rows={2} placeholder="Subtitlu / mesaj" className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
+            <input value={b.image_url || ""} onChange={e => update(b.id, { image_url: e.target.value })} placeholder="URL imagine (opțional)" className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!b.is_active} onChange={e => update(b.id, { is_active: e.target.checked })} />Activ</label>
               <button onClick={() => remove(b.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></button>

@@ -290,6 +290,30 @@ serve(async (req) => {
 
     if (updateError) console.error("[netopia-ipn] Update error:", updateError.message);
 
+    // Notify the customer (in-app) if they have an account
+    if (order.user_id) {
+      try {
+        await supabase.from("user_notifications").insert({
+          user_id: order.user_id,
+          type: "order",
+          title: `Plată confirmată — ${order.order_number}`,
+          message: `Plata pentru comanda #${order.order_number} (${order.total} ${order.currency || "RON"}) a fost confirmată cu succes.`,
+          link: "/account/orders",
+          is_read: false,
+        });
+      } catch (e) { console.error("[netopia-ipn] user notification:", e); }
+    }
+
+    // Notify admins (admin_notifications)
+    try {
+      await supabase.from("admin_notifications").insert({
+        type: "payment",
+        title: `Plată online încasată: ${order.order_number}`,
+        message: `${order.customer_name} — ${order.total} ${order.currency || "RON"} (Netopia)`,
+        link: "/admin/orders",
+      });
+    } catch (e) { console.error("[netopia-ipn] admin notification:", e); }
+
     // Send confirmation email (best-effort)
     try {
       await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email`, {
@@ -321,10 +345,35 @@ serve(async (req) => {
       console.error("[netopia-ipn] Email send error:", emailErr);
     }
   } else if (mapped === "cancelled") {
-    await supabase.from("orders").update({ payment_status: "cancelled" }).eq("id", order.id);
+    await supabase.from("orders").update({ payment_status: "cancelled", status: "cancelled" }).eq("id", order.id);
+    if (order.user_id) {
+      try {
+        await supabase.from("user_notifications").insert({
+          user_id: order.user_id,
+          type: "order",
+          title: `Plată anulată — ${order.order_number}`,
+          message: `Plata pentru comanda #${order.order_number} a fost anulată.`,
+          link: "/account/orders",
+          is_read: false,
+        });
+      } catch {}
+    }
   } else if (mapped === "failed") {
     await supabase.from("orders").update({ payment_status: "failed" }).eq("id", order.id);
+    if (order.user_id) {
+      try {
+        await supabase.from("user_notifications").insert({
+          user_id: order.user_id,
+          type: "order",
+          title: `Plată eșuată — ${order.order_number}`,
+          message: `Plata pentru comanda #${order.order_number} a eșuat. Te rugăm să încerci din nou.`,
+          link: "/account/orders",
+          is_read: false,
+        });
+      } catch {}
+    }
   } // "pending" → no change, await next IPN
+
 
   // Netopia expects errorCode: 0 for ack
   return new Response(JSON.stringify({ errorCode: 0, errorMessage: "OK" }), {

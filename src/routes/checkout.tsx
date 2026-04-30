@@ -170,7 +170,14 @@ function CheckoutPage() {
     setError("");
 
     const orderId = crypto.randomUUID();
-    const orderNumber = `GS-${Date.now().toString(36).toUpperCase()}`;
+    // Generate ML + 5 random digits via DB function (guarantees uniqueness)
+    let orderNumber = `ML${Math.floor(10000 + Math.random() * 90000)}`;
+    try {
+      const { data: genNum } = await supabase.rpc("generate_order_number" as any);
+      if (genNum && typeof genNum === "string") orderNumber = genNum;
+    } catch {
+      // fallback to client-generated number above
+    }
     const orderData = {
       id: orderId,
       order_number: orderNumber,

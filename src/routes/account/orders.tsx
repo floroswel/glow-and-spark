@@ -98,6 +98,7 @@ function AccountOrders() {
 
   useEffect(() => {
     if (!user) return;
+    let active = true;
     (async () => {
       const [ordersRes, returnsRes] = await Promise.all([
         supabase
@@ -110,10 +111,33 @@ function AccountOrders() {
           .select("order_id")
           .eq("user_id", user.id),
       ]);
+      if (!active) return;
       setOrders(ordersRes.data || []);
       setExistingReturns(new Set((returnsRes.data || []).map((r: any) => r.order_id)));
       setLoading(false);
     })();
+
+    // Realtime: keep orders list in sync when payment_status / status changes
+    const channel = supabase
+      .channel(`account-orders-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders", filter: `customer_email=eq.${user.email}` },
+        (payload) => {
+          if (!active) return;
+          if (payload.eventType === "UPDATE") {
+            setOrders((prev) => prev.map((o) => (o.id === (payload.new as any).id ? payload.new : o)));
+          } else if (payload.eventType === "INSERT") {
+            setOrders((prev) => [payload.new, ...prev]);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const statusLabel = (s: string) => {
@@ -234,6 +258,19 @@ function AccountOrders() {
                 <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${statusColor(order.status)}`}>
                   {statusLabel(order.status)}
                 </span>
+                {(order.payment_method === "card" || order.payment_method === "netopia") && (
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
+                    order.payment_status === "paid" ? "bg-green-100 text-green-700" :
+                    order.payment_status === "failed" ? "bg-red-100 text-red-700" :
+                    order.payment_status === "cancelled" ? "bg-gray-100 text-gray-700" :
+                    "bg-yellow-100 text-yellow-700"
+                  }`}>
+                    {order.payment_status === "paid" ? "✓ Plătit" :
+                     order.payment_status === "failed" ? "✕ Eșuat" :
+                     order.payment_status === "cancelled" ? "Anulat" :
+                     "În așteptare"}
+                  </span>
+                )}
                 <span className="text-sm font-bold text-foreground">{Number(order.total).toFixed(2)} lei</span>
                 {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
               </div>

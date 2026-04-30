@@ -55,8 +55,13 @@ function AuthPage() {
         else setRegisterSuccess(true);
       } else {
         const { error } = await signIn(email, password);
-        if (error) setError("Email sau parolă incorectă");
-        else navigate({ to: "/" });
+        if (error) {
+          await logLoginAttempt(email, false, error.message);
+          setError("Email sau parolă incorectă");
+        } else {
+          await logLoginAttempt(email, true);
+          navigate({ to: "/" });
+        }
       }
     } catch { setError("A apărut o eroare"); }
     finally { setLoading(false); }

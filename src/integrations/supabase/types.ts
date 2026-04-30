@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      ab_test_assignments: {
+        Row: {
+          conversion_value: number | null
+          converted: boolean
+          converted_at: string | null
+          created_at: string
+          id: string
+          test_id: string
+          user_id: string | null
+          variant_id: string
+          visitor_id: string
+        }
+        Insert: {
+          conversion_value?: number | null
+          converted?: boolean
+          converted_at?: string | null
+          created_at?: string
+          id?: string
+          test_id: string
+          user_id?: string | null
+          variant_id: string
+          visitor_id: string
+        }
+        Update: {
+          conversion_value?: number | null
+          converted?: boolean
+          converted_at?: string | null
+          created_at?: string
+          id?: string
+          test_id?: string
+          user_id?: string | null
+          variant_id?: string
+          visitor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ab_test_assignments_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "ab_tests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ab_test_assignments_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "ab_test_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ab_test_variants: {
         Row: {
           config: Json | null
@@ -1234,6 +1285,45 @@ export type Database = {
           status?: string
           subject?: string | null
           template?: string | null
+        }
+        Relationships: []
+      }
+      email_outbox: {
+        Row: {
+          attempts: number
+          created_at: string
+          id: string
+          last_error: string | null
+          payload: Json
+          scheduled_for: string
+          sent_at: string | null
+          status: string
+          template: string
+          to_email: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          payload?: Json
+          scheduled_for?: string
+          sent_at?: string | null
+          status?: string
+          template: string
+          to_email: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          payload?: Json
+          scheduled_for?: string
+          sent_at?: string | null
+          status?: string
+          template?: string
+          to_email?: string
         }
         Relationships: []
       }
@@ -3957,6 +4047,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      attribute_affiliate_conversion: {
+        Args: { p_order_id: string; p_ref_code: string }
+        Returns: undefined
+      }
+      charge_wallet: {
+        Args: { p_amount: number; p_order_id?: string; p_user_id: string }
+        Returns: {
+          message: string
+          new_balance: number
+          success: boolean
+        }[]
+      }
       check_rate_limit: {
         Args: { p_key: string; p_limit: number; p_window_seconds: number }
         Returns: {
@@ -3975,6 +4077,7 @@ export type Database = {
         Returns: undefined
       }
       generate_order_number: { Args: never; Returns: string }
+      get_user_group_discount: { Args: { p_user_id: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -3997,6 +4100,15 @@ export type Database = {
       redeem_gift_card: {
         Args: { p_amount: number; p_code: string; p_order_id?: string }
         Returns: {
+          message: string
+          new_balance: number
+          success: boolean
+        }[]
+      }
+      redeem_loyalty_points: {
+        Args: { p_order_id?: string; p_points: number; p_user_id: string }
+        Returns: {
+          discount: number
           message: string
           new_balance: number
           success: boolean

@@ -376,6 +376,46 @@ function returnRejectedTemplate(data: any, cfg: SiteConfig): { subject: string; 
   };
 }
 
+function backInStockTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
+  return {
+    subject: `🎉 ${data.product_name} a revenit pe stoc!`,
+    html: `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+        <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center"><h1 style="margin:0">🕯️ ${cfg.SITE_NAME}</h1></div>
+        <div style="padding:24px">
+          <h2 style="color:#1a1a1a;margin-top:0">🎉 Vești bune!</h2>
+          <p style="color:#555">Produsul <strong>${data.product_name}</strong> pe care îl așteptai este din nou disponibil.</p>
+          <p style="color:#555">Preț: <strong>${Number(data.price || 0).toFixed(2)} RON</strong></p>
+          <div style="text-align:center;margin:24px 0">
+            <a href="${cfg.SITE_URL}/produs/${data.slug}" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:bold">Cumpără acum</a>
+          </div>
+          <p style="color:#999;font-size:12px;text-align:center">Stocul este limitat — nu rata!</p>
+        </div>
+      </div></body></html>`,
+  };
+}
+
+function priceAlertTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
+  return {
+    subject: `💰 Preț scăzut: ${data.product_name}`,
+    html: `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+        <div style="background:#1a1a1a;color:#fff;padding:24px;text-align:center"><h1 style="margin:0">🕯️ ${cfg.SITE_NAME}</h1></div>
+        <div style="padding:24px">
+          <h2 style="color:#1a1a1a;margin-top:0">💰 Prețul a scăzut!</h2>
+          <p style="color:#555"><strong>${data.product_name}</strong> a ajuns la prețul tău dorit.</p>
+          <div style="background:#f0fdf4;border-radius:8px;padding:16px;margin:16px 0;text-align:center">
+            <p style="margin:0;color:#16a34a;font-size:24px;font-weight:bold">${Number(data.price || 0).toFixed(2)} RON</p>
+            <p style="margin:4px 0 0;color:#555;font-size:13px">Pragul tău: ${Number(data.target_price || 0).toFixed(2)} RON</p>
+          </div>
+          <div style="text-align:center;margin:24px 0">
+            <a href="${cfg.SITE_URL}/produs/${data.slug}" style="display:inline-block;background:#c9a84c;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:bold">Vezi produsul</a>
+          </div>
+        </div>
+      </div></body></html>`,
+  };
+}
+
 const templateMap: Record<string, (data: any, cfg: SiteConfig) => { subject: string; html: string }> = {
   order_confirmation: orderConfirmationTemplate,
   welcome: welcomeTemplate,
@@ -389,6 +429,8 @@ const templateMap: Record<string, (data: any, cfg: SiteConfig) => { subject: str
   cart_recovery: cartRecoveryTemplate,
   account_deletion_request: accountDeletionRequestTemplate,
   low_stock_alert: lowStockAlertTemplate,
+  back_in_stock: backInStockTemplate,
+  price_alert: priceAlertTemplate,
 };
 
 serve(async (req) => {

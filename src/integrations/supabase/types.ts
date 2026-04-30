@@ -3970,6 +3970,10 @@ export type Database = {
         Args: { p_product_id: string; p_quantity: number }
         Returns: undefined
       }
+      dispatch_webhook_event: {
+        Args: { p_event: string; p_payload: Json }
+        Returns: undefined
+      }
       generate_order_number: { Args: never; Returns: string }
       has_role: {
         Args: {
@@ -3977,6 +3981,18 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      process_back_in_stock_notifications: {
+        Args: never
+        Returns: {
+          notified: number
+        }[]
+      }
+      process_price_alerts: {
+        Args: never
+        Returns: {
+          notified: number
+        }[]
       }
       redeem_gift_card: {
         Args: { p_amount: number; p_code: string; p_order_id?: string }

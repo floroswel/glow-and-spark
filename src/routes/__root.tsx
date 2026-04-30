@@ -10,6 +10,8 @@ import { FavoritesProvider } from "@/hooks/useFavorites";
 import { CompareProvider } from "@/hooks/useCompare";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { InstallAppBanner } from "@/components/InstallAppBanner";
+import { SiteBanners } from "@/components/SiteBanners";
+import { LivePopups } from "@/components/LivePopups";
 import { initGTM } from "@/lib/gtm";
 import { initPixel, trackPageView } from "@/lib/fbpixel";
 import { updateSiteName } from "@/lib/seo";
@@ -318,12 +320,15 @@ function RootComponent() {
                 <TrackingInit />
                 <RedirectHandler />
                 <MaintenanceGate>
+                  <SiteBanners position="top" />
                   <div className="pb-14 md:pb-0">
                     <Outlet />
                   </div>
+                  <SiteBanners position="footer" />
                 </MaintenanceGate>
                 <MobileBottomNav />
                 <ExitIntentPopup />
+                <LivePopups />
                 <InstallAppBanner />
               </CompareProvider>
             </FavoritesProvider>

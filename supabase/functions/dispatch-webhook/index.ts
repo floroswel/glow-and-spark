@@ -43,7 +43,6 @@ async function sendWithRetry(
         return { status: 0, ok: false, body: String(err) };
       }
     }
-    // Exponential backoff: 1s, 2s, 4s
     await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt)));
   }
   return { status: 0, ok: false, body: "max retries" };
@@ -63,16 +62,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceKey);
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
 
-    // Get matching enabled webhooks
+    // Match webhooks by is_active=true and events array containing event_type
     const { data: webhooks, error } = await supabase
       .from("external_webhooks")
       .select("*")
-      .eq("enabled", true)
-      .or(`event_type.eq.${event_type},event_type.eq.custom_event`);
+      .eq("is_active", true)
+      .contains("events", [event_type]);
 
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {
@@ -81,59 +81,34 @@ Deno.serve(async (req) => {
       });
     }
 
-    if (!webhooks || webhooks.length === 0) {
-      return new Response(JSON.stringify({ dispatched: 0 }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     const results = [];
+    for (const wh of webhooks ?? []) {
+      const body = JSON.stringify({
+        event: event_type,
+        timestamp: new Date().toISOString(),
+        data: payload ?? {},
+      });
 
-    for (const wh of webhooks) {
-      const bodyObj = wh.include_payload
-        ? { event: event_type, timestamp: new Date().toISOString(), data: payload }
-        : { event: event_type, timestamp: new Date().toISOString() };
-
-      const bodyStr = JSON.stringify(bodyObj);
-
-      // Build headers
-      const extraHeaders: Record<string, string> = {};
-      if (wh.custom_headers && typeof wh.custom_headers === "object") {
-        Object.assign(extraHeaders, wh.custom_headers);
-      }
-      if (wh.secret_key) {
-        const signature = await hmacSign(wh.secret_key, bodyStr);
-        extraHeaders["X-Webhook-Signature"] = `sha256=${signature}`;
+      const headers: Record<string, string> = { ...(wh.headers || {}) };
+      if (wh.secret) {
+        headers["x-webhook-signature"] = await hmacSign(wh.secret, body);
       }
 
-      const result = await sendWithRetry(wh.url, bodyStr, extraHeaders);
+      const result = await sendWithRetry(wh.url, body, headers);
+      results.push({ id: wh.id, name: wh.name, status: result.status, ok: result.ok });
 
-      // Update webhook status
       await supabase
         .from("external_webhooks")
         .update({
           last_triggered_at: new Date().toISOString(),
-          last_status: result.status,
-          updated_at: new Date().toISOString(),
+          failure_count: result.ok ? 0 : (wh.failure_count || 0) + 1,
         })
         .eq("id", wh.id);
-
-      results.push({
-        webhook_id: wh.id,
-        name: wh.name,
-        status: result.status,
-        ok: result.ok,
-      });
     }
 
-    return new Response(
-      JSON.stringify({ dispatched: results.length, results }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ ok: true, dispatched: results.length, results }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (err) {
     return new Response(JSON.stringify({ error: String(err) }), {
       status: 500,

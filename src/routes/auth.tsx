@@ -2,7 +2,19 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff } from "lucide-react";
+
+async function logLoginAttempt(email: string, success: boolean, failure_reason?: string) {
+  try {
+    await supabase.from("login_attempts").insert({
+      email,
+      success,
+      failure_reason: failure_reason ?? null,
+      user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+    });
+  } catch (e) { /* fail open */ }
+}
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -43,8 +55,13 @@ function AuthPage() {
         else setRegisterSuccess(true);
       } else {
         const { error } = await signIn(email, password);
-        if (error) setError("Email sau parolă incorectă");
-        else navigate({ to: "/" });
+        if (error) {
+          await logLoginAttempt(email, false, error.message);
+          setError("Email sau parolă incorectă");
+        } else {
+          await logLoginAttempt(email, true);
+          navigate({ to: "/" });
+        }
       }
     } catch { setError("A apărut o eroare"); }
     finally { setLoading(false); }

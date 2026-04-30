@@ -84,34 +84,83 @@ const defaultMethods: PaymentMethod[] = [
 ];
 
 function AdminPayments() {
+  const { user, isAdmin } = useAuth();
   const [methods, setMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<PaymentMethod | null>(null);
   const [toast, setToast] = useState("");
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<any>(null);
+  const [clientLog, setClientLog] = useState<string[]>([]);
 
   async function runNetopiaTest() {
+    const log: string[] = [];
+    const push = (line: string) => {
+      const ts = new Date().toISOString().slice(11, 23);
+      const entry = `[${ts}] ${line}`;
+      log.push(entry);
+      console.log("[netopia-test-client]", entry);
+    };
+
     setTesting(true);
     setTestResult(null);
+    setClientLog([]);
+
+    push(`User: ${user?.email || "anonim"} (id=${user?.id || "—"})`);
+    push(`Rol admin: ${isAdmin ? "DA" : "NU"}`);
+    push(`Rută: ${typeof window !== "undefined" ? window.location.pathname : "—"}`);
+    push(`Origin: ${typeof window !== "undefined" ? window.location.origin : "—"}`);
+
+    const t0 = performance.now();
     try {
+      push("Cer sesiunea Supabase...");
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData.session?.access_token;
       if (!token) {
+        push("✗ Nu există access_token. Trebuie să te re-loghezi.");
         setTestResult({ ok: false, message: "Nu ești autentificat. Re-loghează-te." });
+        setClientLog([...log]);
         return;
       }
+      push(`✓ Token primit (${token.length} car., expiră la ${sessionData.session?.expires_at ? new Date(sessionData.session.expires_at * 1000).toLocaleTimeString("ro-RO") : "?"})`);
+      push("Apelez edge function 'netopia-test'...");
+
       const { data, error } = await supabase.functions.invoke("netopia-test", {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      const elapsed = Math.round(performance.now() - t0);
+      push(`Răspuns primit în ${elapsed}ms`);
+
       if (error) {
+        push(`✗ Eroare invoke: ${error.message}`);
         setTestResult({ ok: false, message: `Eroare apel: ${error.message}`, error });
+        setClientLog([...log]);
         return;
       }
+
+      push(`Status edge: ok=${data?.ok}, stage=${data?.stage}`);
+      if (data?.config) {
+        push(`Config Netopia: ENV=${data.config.env}, apiKeyLen=${data.config.apiKeyLen}, posSigLen=${data.config.posSignatureLen}`);
+        push(`API Key preview: ${data.config.apiKeyPreview}`);
+        push(`POS Sig preview: ${data.config.posSignaturePreview}`);
+      }
+      if (data?.netopiaStatus !== undefined) {
+        push(`Netopia HTTP: ${data.netopiaStatus} (auth=${data.usedAuthScheme}, ${data.elapsedMs}ms)`);
+      }
+      if (data?.ntpID) push(`✓ ntpID: ${data.ntpID}`);
+      if (data?.paymentUrl) push(`✓ Payment URL: ${data.paymentUrl}`);
+      if (!data?.ok && data?.rawResponse) {
+        const raw = typeof data.rawResponse === "string" ? data.rawResponse : JSON.stringify(data.rawResponse);
+        push(`✗ Răspuns brut Netopia: ${raw.slice(0, 200)}${raw.length > 200 ? "..." : ""}`);
+      }
+
       setTestResult(data);
     } catch (e: any) {
+      push(`✗ Excepție: ${e?.message || String(e)}`);
       setTestResult({ ok: false, message: `Excepție: ${e?.message || String(e)}` });
     } finally {
+      setClientLog([...log]);
       setTesting(false);
     }
   }

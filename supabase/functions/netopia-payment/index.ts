@@ -220,7 +220,16 @@ serve(async (req) => {
       );
     }
 
-    if (!netopiaRes.ok || netopiaResult?.error) {
+    const ntpID = netopiaResult.payment?.ntpID || netopiaResult.ntpID || "";
+    const paymentUrl =
+      netopiaResult.payment?.paymentURL ||
+      netopiaResult.paymentURL ||
+      netopiaResult.payment?.redirect?.url ||
+      "";
+    const netopiaCode = String(netopiaResult?.error?.code || "");
+    const isRedirectInstruction = netopiaRes.ok && netopiaCode === "101" && !!ntpID && !!paymentUrl;
+
+    if (!netopiaRes.ok || (netopiaResult?.error && !isRedirectInstruction)) {
       console.error("[netopia-payment] Netopia returned error:", JSON.stringify(netopiaResult));
       const isAuth = netopiaRes.status === 401 || netopiaRes.status === 403;
       const hint = isAuth
@@ -240,12 +249,9 @@ serve(async (req) => {
       );
     }
 
-    const ntpID = netopiaResult.payment?.ntpID || netopiaResult.ntpID || "";
-    const paymentUrl =
-      netopiaResult.payment?.paymentURL ||
-      netopiaResult.paymentURL ||
-      netopiaResult.payment?.redirect?.url ||
-      "";
+    if (isRedirectInstruction) {
+      console.log("[netopia-payment] Netopia code 101 accepted as redirect success");
+    }
 
     console.log("[netopia-payment] Extracted:", { ntpID, paymentUrl });
 

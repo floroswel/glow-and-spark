@@ -277,6 +277,21 @@ function AdminPayments() {
                 )}
               </div>
             )}
+
+            {clientLog.length > 0 && (
+              <details className="mt-3" open={!testResult?.ok}>
+                <summary className="cursor-pointer text-xs font-medium text-muted-foreground hover:text-foreground">
+                  📋 Log detaliat client ({clientLog.length} linii)
+                </summary>
+                <pre className="mt-2 max-h-72 overflow-auto rounded bg-slate-900 text-slate-100 p-3 text-[10px] font-mono whitespace-pre-wrap break-all">{clientLog.join("\n")}</pre>
+                <button
+                  onClick={() => navigator.clipboard.writeText(clientLog.join("\n"))}
+                  className="mt-2 text-[10px] text-accent hover:underline"
+                >
+                  Copiază log în clipboard
+                </button>
+              </details>
+            )}
           </div>
         </div>
       </div>

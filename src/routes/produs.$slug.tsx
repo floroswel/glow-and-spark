@@ -20,6 +20,7 @@ import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { BackToTop } from "@/components/BackToTop";
 import { TrustBadges } from "@/components/TrustBadges";
 import { BackInStockNotify } from "@/components/BackInStockNotify";
+import { PriceAlertNotify } from "@/components/PriceAlertNotify";
 import { SubscribeAndSave } from "@/components/SubscribeAndSave";
 import { ChevronRight, Minus, Plus, ShoppingCart, Truck, RotateCcw, Heart, GitCompare, Share2, Star, Shield, Check, X, ChevronLeft, ImageIcon } from "lucide-react";
 import { toast } from "sonner";

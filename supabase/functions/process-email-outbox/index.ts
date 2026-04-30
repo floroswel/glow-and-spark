@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           to: row.to_email,
-          template: row.template,
+          type: row.template,
           data: row.payload,
         }),
       });

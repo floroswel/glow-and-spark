@@ -3,3 +3,7 @@ project_id = "bdaruamlzueuojivflud"
 # IPN endpoint must be callable by Netopia without a Supabase JWT
 [functions.netopia-ipn]
 verify_jwt = false
+
+# Diagnostic endpoint requires admin auth (verify_jwt = true is default but explicit here)
+[functions.netopia-diagnostic]
+verify_jwt = true

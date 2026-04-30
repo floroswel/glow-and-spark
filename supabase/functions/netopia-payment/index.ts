@@ -14,8 +14,13 @@ import { buildCorsHeaders } from "../_shared/cors.ts";
 
 const NETOPIA_ENDPOINTS = {
   sandbox: "https://secure.sandbox.netopia-payments.com/payment/card/start",
-  live: "https://secure.mobilpay.ro/payment/card/start",
+  // IMPORTANT: include /pay in the live endpoint path
+  live: "https://secure.mobilpay.ro/pay/payment/card/start",
 };
+
+function looksLikePemCertificate(key: string): boolean {
+  return /-----BEGIN (CERTIFICATE|PUBLIC KEY|RSA PUBLIC KEY)-----/.test(key) || key.length > 600;
+}
 
 serve(async (req) => {
   const corsHeaders = buildCorsHeaders(req);
@@ -168,8 +173,8 @@ serve(async (req) => {
     };
     console.log("[netopia-payment] Payload to Netopia:", JSON.stringify(paymentPayload));
 
-    // Netopia v2 sometimes wants the raw API key in Authorization, sometimes "Bearer <key>".
-    // Try raw first, then fallback to Bearer if we get 401 — covers both account configurations.
+    // Netopia v2 expects the raw API key in Authorization header (no "Bearer" prefix).
+    // We still try Bearer as a fallback for 401s in case the merchant account is configured differently.
     const callNetopia = (authHeader: string) =>
       fetch(endpoint, {
         method: "POST",
@@ -179,6 +184,11 @@ serve(async (req) => {
         },
         body: JSON.stringify(paymentPayload),
       });
+
+    const apiKeyIsPem = looksLikePemCertificate(NETOPIA_API_KEY);
+    if (apiKeyIsPem) {
+      console.warn(`[netopia-payment] WARNING: NETOPIA_API_KEY looks like a PEM certificate (length=${NETOPIA_API_KEY.length}). This will fail with 401.`);
+    }
 
     const t0 = Date.now();
     let netopiaRes = await callNetopia(NETOPIA_API_KEY);
@@ -213,14 +223,18 @@ serve(async (req) => {
     if (!netopiaRes.ok || netopiaResult?.error) {
       console.error("[netopia-payment] Netopia returned error:", JSON.stringify(netopiaResult));
       const isAuth = netopiaRes.status === 401 || netopiaRes.status === 403;
+      const hint = isAuth
+        ? (apiKeyIsPem
+          ? `NETOPIA_API_KEY pare să fie un CERTIFICAT PEM (lungime=${NETOPIA_API_KEY.length}). Trebuie să pui aici API Key-ul (string scurt, 50-300 caractere, NU certificatul care începe cu -----BEGIN-----). Certificatul se pune în NETOPIA_PUBLIC_KEY (folosit pentru IPN).`
+          : `Verifică NETOPIA_API_KEY pentru ENV='${NETOPIA_ENV}' și că NETOPIA_POS_SIGNATURE aparține aceluiași cont. Key length=${NETOPIA_API_KEY.length}, signature length=${NETOPIA_POS_SIGNATURE.length}.`)
+        : undefined;
       return new Response(
         JSON.stringify({
           error: isAuth ? "Netopia authentication failed" : "Payment initiation failed",
           netopiaStatus: netopiaRes.status,
           details: netopiaResult?.error || netopiaResult,
-          hint: isAuth
-            ? `Check that NETOPIA_API_KEY matches NETOPIA_ENV='${NETOPIA_ENV}' and that NETOPIA_POS_SIGNATURE belongs to the same merchant account. Key length=${NETOPIA_API_KEY.length}, signature length=${NETOPIA_POS_SIGNATURE.length}.`
-            : undefined,
+          apiKeyLooksLikeCertificate: apiKeyIsPem,
+          hint,
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );

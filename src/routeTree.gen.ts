@@ -72,6 +72,7 @@ import { Route as AdminPopupRouteImport } from './routes/admin/popup'
 import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
 import { Route as AdminPagesRouteImport } from './routes/admin/pages'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
+import { Route as AdminMonitoringRouteImport } from './routes/admin/monitoring'
 import { Route as AdminMediaRouteImport } from './routes/admin/media'
 import { Route as AdminLoyaltyRouteImport } from './routes/admin/loyalty'
 import { Route as AdminLoginAttemptsRouteImport } from './routes/admin/login-attempts'
@@ -450,6 +451,11 @@ const AdminOrdersRoute = AdminOrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMonitoringRoute = AdminMonitoringRouteImport.update({
+  id: '/monitoring',
+  path: '/monitoring',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminMediaRoute = AdminMediaRouteImport.update({
   id: '/media',
   path: '/media',
@@ -825,6 +831,7 @@ export interface FileRoutesByFullPath {
   '/admin/login-attempts': typeof AdminLoginAttemptsRoute
   '/admin/loyalty': typeof AdminLoyaltyRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -949,6 +956,7 @@ export interface FileRoutesByTo {
   '/admin/login-attempts': typeof AdminLoginAttemptsRoute
   '/admin/loyalty': typeof AdminLoyaltyRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -1076,6 +1084,7 @@ export interface FileRoutesById {
   '/admin/login-attempts': typeof AdminLoginAttemptsRoute
   '/admin/loyalty': typeof AdminLoyaltyRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -1204,6 +1213,7 @@ export interface FileRouteTypes {
     | '/admin/login-attempts'
     | '/admin/loyalty'
     | '/admin/media'
+    | '/admin/monitoring'
     | '/admin/orders'
     | '/admin/pages'
     | '/admin/payments'
@@ -1328,6 +1338,7 @@ export interface FileRouteTypes {
     | '/admin/login-attempts'
     | '/admin/loyalty'
     | '/admin/media'
+    | '/admin/monitoring'
     | '/admin/orders'
     | '/admin/pages'
     | '/admin/payments'
@@ -1454,6 +1465,7 @@ export interface FileRouteTypes {
     | '/admin/login-attempts'
     | '/admin/loyalty'
     | '/admin/media'
+    | '/admin/monitoring'
     | '/admin/orders'
     | '/admin/pages'
     | '/admin/payments'
@@ -1989,6 +2001,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/admin/orders'
       preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/monitoring': {
+      id: '/admin/monitoring'
+      path: '/monitoring'
+      fullPath: '/admin/monitoring'
+      preLoaderRoute: typeof AdminMonitoringRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/media': {
@@ -2581,6 +2600,7 @@ interface AdminRouteChildren {
   AdminLoginAttemptsRoute: typeof AdminLoginAttemptsRoute
   AdminLoyaltyRoute: typeof AdminLoyaltyRoute
   AdminMediaRoute: typeof AdminMediaRoute
+  AdminMonitoringRoute: typeof AdminMonitoringRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPagesRoute: typeof AdminPagesRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
@@ -2647,6 +2667,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminLoginAttemptsRoute: AdminLoginAttemptsRoute,
   AdminLoyaltyRoute: AdminLoyaltyRoute,
   AdminMediaRoute: AdminMediaRoute,
+  AdminMonitoringRoute: AdminMonitoringRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPagesRoute: AdminPagesRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,

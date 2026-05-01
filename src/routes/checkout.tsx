@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Switch } from "@/components/ui/switch";
+import { attributeOrderToAffiliate } from "@/lib/affiliate-tracker";
 import { TrustBadges } from "@/components/TrustBadges";
 import { MapPin, Gift, Search, Loader2, Check, X } from "lucide-react";
 import { sanitizeText, sanitizePhone, sanitizeEmail } from "@/lib/sanitize";
@@ -47,8 +48,40 @@ function CheckoutPage() {
   const [giftWrapping, setGiftWrapping] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
 
+  // Loyalty / Wallet / Group discount
+  const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+  const [loyaltyBalance, setLoyaltyBalance] = useState(0);
+  const [useLoyalty, setUseLoyalty] = useState(false);
+  const [loyaltyInput, setLoyaltyInput] = useState("");
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [useWallet, setUseWallet] = useState(false);
+  const [groupDiscount, setGroupDiscount] = useState(0);
+
+  // Fetch loyalty, wallet, group discount for logged-in users
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      // Loyalty points
+      const { data: pts } = await (supabase.from("user_points" as any).select("balance").eq("user_id", user.id).maybeSingle() as any);
+      if (pts) { setLoyaltyBalance(pts.balance); setLoyaltyPoints(pts.balance); }
+      // Wallet
+      const { data: w } = await (supabase.from("customer_wallets" as any).select("balance").eq("user_id", user.id).maybeSingle() as any);
+      if (w) setWalletBalance(Number(w.balance) || 0);
+      // Group discount
+      const { data: gd } = await supabase.rpc("get_user_group_discount" as any, { p_user_id: user.id });
+      if (gd && Number(gd) > 0) setGroupDiscount(Number(gd));
+    })();
+  }, [user]);
+
+  const groupDiscountAmount = groupDiscount > 0 ? Math.round(cartSubtotal * groupDiscount / 100 * 100) / 100 : 0;
+  const loyaltyDiscount = useLoyalty && loyaltyInput ? Math.min(Number(loyaltyInput), loyaltyBalance) / 100 : 0;
+  const walletPayment = useWallet ? Math.min(walletBalance, 0) : 0; // calculated below
+
   const giftWrappingPrice = Number(general?.gift_wrapping_price) || 15;
-  const finalTotal = cartTotal + (giftWrapping ? giftWrappingPrice : 0);
+  const subtotalAfterGroupDiscount = cartSubtotal - groupDiscountAmount;
+  const preWalletTotal = subtotalAfterGroupDiscount + shippingCost - discountAmount - loyaltyDiscount + (giftWrapping ? giftWrappingPrice : 0);
+  const walletDeduction = useWallet ? Math.min(walletBalance, Math.max(preWalletTotal, 0)) : 0;
+  const finalTotal = Math.max(preWalletTotal - walletDeduction, 0);
 
   // Saved addresses
   useEffect(() => {
@@ -195,7 +228,7 @@ function CheckoutPage() {
       items: items.map((i) => ({ id: i.id, product_id: i.id, name: i.name, price: i.price, quantity: i.quantity, qty: i.quantity, image: i.image_url })),
       subtotal: cartSubtotal,
       shipping_cost: shippingCost,
-      discount_amount: discountAmount,
+      discount_amount: discountAmount + groupDiscountAmount + loyaltyDiscount,
       discount_code: discountCode,
       total: finalTotal,
       payment_method: form.paymentMethod,
@@ -280,6 +313,31 @@ function CheckoutPage() {
     } catch (e) {
       console.error("[checkout] gift card redemption failed:", e);
     }
+
+    // Redeem loyalty points
+    if (useLoyalty && loyaltyInput && Number(loyaltyInput) > 0 && user?.id) {
+      try {
+        await supabase.rpc("redeem_loyalty_points" as any, {
+          p_user_id: user.id,
+          p_points: Math.min(Number(loyaltyInput), loyaltyBalance),
+          p_order_id: orderId,
+        });
+      } catch (e) { console.error("[checkout] loyalty redemption failed:", e); }
+    }
+
+    // Charge wallet
+    if (useWallet && walletDeduction > 0 && user?.id) {
+      try {
+        await supabase.rpc("charge_wallet" as any, {
+          p_user_id: user.id,
+          p_amount: walletDeduction,
+          p_order_id: orderId,
+        });
+      } catch (e) { console.error("[checkout] wallet charge failed:", e); }
+    }
+
+    // Affiliate attribution
+    attributeOrderToAffiliate(orderId).catch(() => {});
 
     if (newsletterOptIn && form.email) {
       supabase.from("newsletter_subscribers").upsert(
@@ -645,10 +703,44 @@ function CheckoutPage() {
             <div className="space-y-1 border-t border-border pt-3 text-sm">
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{cartSubtotal.toFixed(2)} RON</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Livrare</span><span>{shippingCost === 0 ? "GRATUITĂ" : `${shippingCost} RON`}</span></div>
-              {discountAmount > 0 && <div className="flex justify-between text-chart-2"><span>Reducere</span><span>-{discountAmount.toFixed(2)} RON</span></div>}
+              {discountAmount > 0 && <div className="flex justify-between text-chart-2"><span>Reducere cupon</span><span>-{discountAmount.toFixed(2)} RON</span></div>}
+              {groupDiscountAmount > 0 && <div className="flex justify-between text-chart-2"><span>Discount grup (-{groupDiscount}%)</span><span>-{groupDiscountAmount.toFixed(2)} RON</span></div>}
+              {loyaltyDiscount > 0 && <div className="flex justify-between text-chart-2"><span>Puncte fidelitate</span><span>-{loyaltyDiscount.toFixed(2)} RON</span></div>}
+              {walletDeduction > 0 && <div className="flex justify-between text-chart-2"><span>Portofel</span><span>-{walletDeduction.toFixed(2)} RON</span></div>}
               {giftWrapping && <div className="flex justify-between"><span className="text-muted-foreground">Ambalaj cadou</span><span>{giftWrappingPrice.toFixed(2)} RON</span></div>}
               <div className="flex justify-between border-t border-border pt-2 text-base font-bold"><span>Total</span><span>{finalTotal.toFixed(2)} RON</span></div>
             </div>
+
+            {/* Loyalty points */}
+            {user && loyaltyBalance > 0 && (
+              <div className="rounded-lg border border-border bg-secondary/50 p-3 space-y-2">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={useLoyalty} onChange={(e) => { setUseLoyalty(e.target.checked); if (!e.target.checked) setLoyaltyInput(""); }} className="accent-accent" />
+                  <span className="text-foreground font-medium">Folosește puncte ({loyaltyBalance} disponibile = {(loyaltyBalance / 100).toFixed(2)} RON)</span>
+                </label>
+                {useLoyalty && (
+                  <input
+                    type="number"
+                    min={100}
+                    max={loyaltyBalance}
+                    step={100}
+                    value={loyaltyInput}
+                    onChange={(e) => setLoyaltyInput(e.target.value)}
+                    placeholder={`100 - ${loyaltyBalance}`}
+                    className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
+                  />
+                )}
+              </div>
+            )}
+
+            {/* Wallet */}
+            {user && walletBalance > 0 && (
+              <label className="flex items-center gap-2 text-sm cursor-pointer rounded-lg border border-border bg-secondary/50 p-3">
+                <input type="checkbox" checked={useWallet} onChange={(e) => setUseWallet(e.target.checked)} className="accent-accent" />
+                <span className="text-foreground font-medium">Plătește din portofel ({walletBalance.toFixed(2)} RON)</span>
+              </label>
+            )}
+
             <TrustBadges variant="full" />
           </div>
         </div>

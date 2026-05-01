@@ -12,6 +12,9 @@ import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { InstallAppBanner } from "@/components/InstallAppBanner";
 import { SiteBanners } from "@/components/SiteBanners";
 import { LivePopups } from "@/components/LivePopups";
+import { ChatWidget } from "@/components/ChatWidget";
+import { PushNotificationManager } from "@/components/PushNotificationManager";
+import { captureRefFromUrl } from "@/lib/affiliate-tracker";
 import { initGTM } from "@/lib/gtm";
 import { initPixel, trackPageView } from "@/lib/fbpixel";
 import { updateSiteName } from "@/lib/seo";
@@ -306,6 +309,11 @@ function CanonicalUrlSync() {
   return null;
 }
 
+function AffiliateCapture() {
+  useEffect(() => { captureRefFromUrl(); }, []);
+  return null;
+}
+
 function RootComponent() {
   return (
     <ErrorBoundary variant="app">
@@ -319,6 +327,7 @@ function RootComponent() {
                 <SiteIdentitySync />
                 <TrackingInit />
                 <RedirectHandler />
+                <AffiliateCapture />
                 <MaintenanceGate>
                   <SiteBanners position="top" />
                   <div className="pb-14 md:pb-0">
@@ -330,6 +339,8 @@ function RootComponent() {
                 <ExitIntentPopup />
                 <LivePopups />
                 <InstallAppBanner />
+                <ChatWidget />
+                <PushNotificationManager />
               </CompareProvider>
             </FavoritesProvider>
           </CartProvider>

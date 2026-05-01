@@ -26,19 +26,19 @@ export async function captureRefFromUrl() {
 
   // Înregistrează click anonim
   try {
-    const { data: aff } = await supabase
-      .from("affiliates")
+    const { data: aff } = await (supabase
+      .from("affiliates" as any)
       .select("id")
       .eq("code", ref)
       .eq("status", "active")
-      .maybeSingle();
+      .maybeSingle() as any);
     if (aff) {
-      await supabase.from("affiliate_clicks").insert({
+      await (supabase.from("affiliate_clicks" as any).insert({
         affiliate_id: aff.id,
         landing_page: window.location.pathname,
         referrer: document.referrer || null,
         user_agent: navigator.userAgent.slice(0, 500),
-      });
+      } as any) as any);
     }
   } catch (e) {
     console.warn("Affiliate tracking failed", e);
@@ -49,7 +49,7 @@ export async function attributeOrderToAffiliate(orderId: string) {
   const ref = getRefCookie();
   if (!ref) return;
   try {
-    await supabase.rpc("attribute_affiliate_conversion", {
+    await supabase.rpc("attribute_affiliate_conversion" as any, {
       p_order_id: orderId,
       p_ref_code: ref,
     });

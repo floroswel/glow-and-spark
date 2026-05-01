@@ -26,6 +26,21 @@ import { NotFound } from "@/components/NotFound";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
+  beforeLoad: async ({ location }) => {
+    // Server-side SEO redirects from seo_redirects table
+    try {
+      const result = await checkSeoRedirect({ data: { path: location.pathname } });
+      if (result?.target) {
+        throw redirect({
+          to: result.target,
+          statusCode: (result.type === 302 ? 302 : 301) as any,
+        });
+      }
+    } catch (e: any) {
+      // Re-throw redirect errors, swallow others
+      if (e?.isRedirect || e?.status === 301 || e?.status === 302) throw e;
+    }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },

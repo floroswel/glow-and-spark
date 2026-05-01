@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useRefreshSiteSettings } from "@/hooks/useSiteSettings";
 import { Save, Check } from "lucide-react";
 
 interface Props {

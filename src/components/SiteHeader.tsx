@@ -429,9 +429,13 @@ export function SiteHeader() {
           </SheetHeader>
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-border">
-            <span className="font-heading text-lg font-bold tracking-tight text-foreground">
-              Mama Lucica
-            </span>
+            {general?.logo_url ? (
+              <img src={general.logo_url} alt={general?.logo_alt || general?.site_name || "Mama Lucica"} className="h-7 w-auto" />
+            ) : (
+              <span className="font-heading text-lg font-bold tracking-tight text-foreground">
+                {general?.site_name || "Mama Lucica"}
+              </span>
+            )}
             <button
               onClick={() => setMobileOpen(false)}
               className="rounded-md p-1.5 hover:bg-secondary transition"

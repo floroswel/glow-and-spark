@@ -188,7 +188,17 @@ function PoliticaReturnarePage() {
                       j % 2 === 1 ? (
                         <strong key={j} className="text-foreground font-semibold">{part}</strong>
                       ) : (
-                        <span key={j}>{part}</span>
+                        <span key={j}>
+                          {part.split(/\[([^\]]+)\]\(([^)]+)\)/g).map((seg, k) =>
+                            k % 3 === 1 ? (
+                              <Link key={k} to={part.split(/\[([^\]]+)\]\(([^)]+)\)/g)[k + 1]} className="text-accent underline hover:text-accent/80 transition-colors">
+                                {seg}
+                              </Link>
+                            ) : k % 3 === 2 ? null : (
+                              <span key={k}>{seg}</span>
+                            )
+                          )}
+                        </span>
                       )
                     )}
                   </div>

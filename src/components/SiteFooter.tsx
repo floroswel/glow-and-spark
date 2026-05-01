@@ -320,7 +320,7 @@ export function SiteFooter() {
 
           {/* COL 3 — Date comerciale */}
           {footer?.col3_show !== false && (
-            <FooterColumn title={footer?.col3_title || "Date comerciale"} titleColor={titleColor}>
+            <FooterColumn title="Date comerciale" titleColor={titleColor}>
               <div className="space-y-2 text-sm" style={{ color: textColor }}>
                 {companyName && (
                   <div className="flex items-start gap-2">

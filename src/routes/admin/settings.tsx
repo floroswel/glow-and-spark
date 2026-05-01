@@ -8,7 +8,7 @@ export const Route = createFileRoute("/admin/settings")({
 });
 
 const defaults = {
-  site_name: "Glow & Spark",
+  site_name: "Mama Lucica",
   site_tagline: "Lumânări artizanale premium",
   site_url: "https://mamalucica.ro",
   logo_url: "",
@@ -35,7 +35,7 @@ const defaults = {
   stock_alert_threshold: "5",
   google_analytics_id: "",
   facebook_pixel_id: "",
-  meta_title_suffix: " — Glow & Spark",
+  meta_title_suffix: " — Mama Lucica",
   robots_txt: "User-agent: *\nAllow: /",
   maintenance_mode: false,
   maintenance_message: "Revenim în curând cu o experiență nouă!",
@@ -59,7 +59,7 @@ const defaults = {
   invoice_address: "",
   invoice_bank: "",
   invoice_iban: "",
-  smtp_from_name: "Glow & Spark",
+  smtp_from_name: "Mama Lucica",
   smtp_from_email: "comenzi@mamalucica.ro",
   // Social Media
   social_facebook: "",

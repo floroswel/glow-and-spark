@@ -1052,7 +1052,7 @@ function AdminProducts() {
                   </div>
                   <div>
                     <label className={labelClass}>Brand</label>
-                    <input value={editing.brand || ""} onChange={(e) => updateField("brand", e.target.value)} className={inputClass} placeholder="Glow & Spark" />
+                    <input value={editing.brand || ""} onChange={(e) => updateField("brand", e.target.value)} className={inputClass} placeholder="Mama Lucica" />
                   </div>
                   <div className="col-span-2">
                     <label className={labelClass}>Descriere scurtă</label>
@@ -1537,7 +1537,7 @@ function AdminProducts() {
                   </div>
                   <div className="border-t border-border pt-6">
                     <label className={labelClass}>Brand</label>
-                    <input value={editing.brand || ""} onChange={(e) => updateField("brand", e.target.value)} className={inputClass} placeholder="Glow & Spark" />
+                    <input value={editing.brand || ""} onChange={(e) => updateField("brand", e.target.value)} className={inputClass} placeholder="Mama Lucica" />
                   </div>
                   <div className="border-t border-border pt-6">
                     <label className={labelClass}>Informații financiare</label>

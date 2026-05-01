@@ -222,7 +222,7 @@ function AdminDashboard() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="font-heading text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Panoul de control LUMINI.RO — date în timp real</p>
+          <p className="mt-1 text-sm text-muted-foreground">Panoul de control Mama Lucica — date în timp real</p>
         </div>
         {notifPermission === "default" && (
           <button

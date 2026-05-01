@@ -372,7 +372,7 @@ function AdminLayout() {
     <div className="flex min-h-screen bg-secondary">
       <aside className={`${sidebarOpen ? "w-60" : "w-14"} fixed inset-y-0 left-0 z-30 flex flex-col border-r border-border bg-card transition-all duration-300`}>
         <div className="flex h-12 items-center justify-between border-b border-border px-3">
-          {sidebarOpen && <span className="font-heading text-base font-bold text-foreground">LUMINI<span className="text-accent">.RO</span></span>}
+          {sidebarOpen && <span className="font-heading text-base font-bold text-foreground">Mama Lucica</span>}
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-muted-foreground hover:text-foreground">
             {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>

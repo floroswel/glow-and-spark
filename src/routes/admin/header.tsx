@@ -8,7 +8,7 @@ export const Route = createFileRoute("/admin/header")({
 
 const defaults = {
   show_topbar: true,
-  topbar_text: "Bine ai venit pe Glow & Spark!",
+  topbar_text: "Bine ai venit pe Mama Lucica!",
   topbar_right: "RO / RON",
   show_search: true,
   search_placeholder: "Caută lumânări, odorizante, seturi cadou...",

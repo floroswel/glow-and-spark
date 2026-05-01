@@ -33,12 +33,12 @@ export function PushNotificationManager() {
           applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC),
         });
         const json = sub.toJSON();
-        await supabase.from("push_subscriptions").insert({
+        await (supabase.from("push_subscriptions" as any).insert({
           user_id: user?.id || null,
           endpoint: json.endpoint,
           p256dh: json.keys?.p256dh,
           auth: json.keys?.auth,
-        } as any);
+        } as any) as any);
       } catch (e) {
         console.warn("Push subscribe failed", e);
       }

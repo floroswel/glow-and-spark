@@ -307,7 +307,7 @@ function CheckoutPage() {
         sessionStorage.removeItem("gift_card_amount");
       }
     } catch (e) {
-      console.error("[checkout] gift card redemption failed:", e);
+      if (import.meta.env.DEV) console.error("[checkout] gift card redemption failed");
     }
 
     // Redeem loyalty points
@@ -318,7 +318,7 @@ function CheckoutPage() {
           p_points: Math.min(Number(loyaltyInput), loyaltyBalance),
           p_order_id: orderId,
         });
-      } catch (e) { console.error("[checkout] loyalty redemption failed:", e); }
+      } catch { /* silent in production */ }
     }
 
     // Charge wallet
@@ -329,7 +329,7 @@ function CheckoutPage() {
           p_amount: walletDeduction,
           p_order_id: orderId,
         });
-      } catch (e) { console.error("[checkout] wallet charge failed:", e); }
+      } catch { /* silent in production */ }
     }
 
     // Affiliate attribution

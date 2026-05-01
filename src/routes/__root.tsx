@@ -55,7 +55,7 @@ export const Route = createRootRoute({
       if (e?.isRedirect || e?.status === 301 || e?.status === 302) throw e;
     }
   },
-  head: () => ({
+  head: ({ match }) => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -71,6 +71,7 @@ export const Route = createRootRoute({
       { name: "twitter:description", content: "Lumânări artizanale premium din ceară de soia 100% naturală, turnate manual cu dragoste în România." },
       { property: "og:image", content: "https://mamalucica.ro/og-image.jpg" },
       { name: "twitter:image", content: "https://mamalucica.ro/og-image.jpg" },
+      { property: "og:url", content: `https://mamalucica.ro${match.pathname}` },
       { name: "theme-color", content: "#C9A24A" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "default" },
@@ -79,6 +80,7 @@ export const Route = createRootRoute({
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "canonical", href: `https://mamalucica.ro${match.pathname}` },
       { rel: "manifest", href: "/manifest.json" },
       { rel: "apple-touch-icon", href: "/icon-192.png" },
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },

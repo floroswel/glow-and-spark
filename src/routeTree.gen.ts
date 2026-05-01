@@ -11,15 +11,18 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as TrackOrderRouteImport } from './routes/track-order'
+import { Route as TermeniSiConditiiRouteImport } from './routes/termeni-si-conditii'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PoliticaReturnareRouteImport } from './routes/politica-returnare'
 import { Route as PoliticaCookiesRouteImport } from './routes/politica-cookies'
+import { Route as PoliticaConfidentialitateRouteImport } from './routes/politica-confidentialitate'
 import { Route as GiftCardRouteImport } from './routes/gift-card'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as DespreNoiRouteImport } from './routes/despre-noi'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -139,6 +142,11 @@ const TrackOrderRoute = TrackOrderRouteImport.update({
   path: '/track-order',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermeniSiConditiiRoute = TermeniSiConditiiRouteImport.update({
+  id: '/termeni-si-conditii',
+  path: '/termeni-si-conditii',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -169,6 +177,12 @@ const PoliticaCookiesRoute = PoliticaCookiesRouteImport.update({
   path: '/politica-cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PoliticaConfidentialitateRoute =
+  PoliticaConfidentialitateRouteImport.update({
+    id: '/politica-confidentialitate',
+    path: '/politica-confidentialitate',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const GiftCardRoute = GiftCardRouteImport.update({
   id: '/gift-card',
   path: '/gift-card',
@@ -182,6 +196,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DespreNoiRoute = DespreNoiRouteImport.update({
+  id: '/despre-noi',
+  path: '/despre-noi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -739,15 +758,18 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
   '/contact': typeof ContactRoute
+  '/despre-noi': typeof DespreNoiRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/gift-card': typeof GiftCardRoute
+  '/politica-confidentialitate': typeof PoliticaConfidentialitateRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
   '/politica-returnare': typeof PoliticaReturnareRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/track-order': typeof TrackOrderRoute
   '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
@@ -858,15 +880,18 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
   '/contact': typeof ContactRoute
+  '/despre-noi': typeof DespreNoiRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/gift-card': typeof GiftCardRoute
+  '/politica-confidentialitate': typeof PoliticaConfidentialitateRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
   '/politica-returnare': typeof PoliticaReturnareRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/track-order': typeof TrackOrderRoute
   '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
@@ -980,15 +1005,18 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
   '/contact': typeof ContactRoute
+  '/despre-noi': typeof DespreNoiRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/gift-card': typeof GiftCardRoute
+  '/politica-confidentialitate': typeof PoliticaConfidentialitateRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
   '/politica-returnare': typeof PoliticaReturnareRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/track-order': typeof TrackOrderRoute
   '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
@@ -1103,15 +1131,18 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/compare'
     | '/contact'
+    | '/despre-noi'
     | '/faq'
     | '/forgot-password'
     | '/gift-card'
+    | '/politica-confidentialitate'
     | '/politica-cookies'
     | '/politica-returnare'
     | '/reset-password'
     | '/robots.txt'
     | '/search'
     | '/sitemap.xml'
+    | '/termeni-si-conditii'
     | '/track-order'
     | '/wishlist'
     | '/account/addresses'
@@ -1222,15 +1253,18 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/compare'
     | '/contact'
+    | '/despre-noi'
     | '/faq'
     | '/forgot-password'
     | '/gift-card'
+    | '/politica-confidentialitate'
     | '/politica-cookies'
     | '/politica-returnare'
     | '/reset-password'
     | '/robots.txt'
     | '/search'
     | '/sitemap.xml'
+    | '/termeni-si-conditii'
     | '/track-order'
     | '/wishlist'
     | '/account/addresses'
@@ -1343,15 +1377,18 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/compare'
     | '/contact'
+    | '/despre-noi'
     | '/faq'
     | '/forgot-password'
     | '/gift-card'
+    | '/politica-confidentialitate'
     | '/politica-cookies'
     | '/politica-returnare'
     | '/reset-password'
     | '/robots.txt'
     | '/search'
     | '/sitemap.xml'
+    | '/termeni-si-conditii'
     | '/track-order'
     | '/wishlist'
     | '/account/addresses'
@@ -1465,15 +1502,18 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   CompareRoute: typeof CompareRoute
   ContactRoute: typeof ContactRoute
+  DespreNoiRoute: typeof DespreNoiRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   GiftCardRoute: typeof GiftCardRoute
+  PoliticaConfidentialitateRoute: typeof PoliticaConfidentialitateRoute
   PoliticaCookiesRoute: typeof PoliticaCookiesRoute
   PoliticaReturnareRoute: typeof PoliticaReturnareRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SearchRoute: typeof SearchRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermeniSiConditiiRoute: typeof TermeniSiConditiiRoute
   TrackOrderRoute: typeof TrackOrderRoute
   WishlistRoute: typeof WishlistRoute
   CategorieSlugRoute: typeof CategorieSlugRoute
@@ -1496,6 +1536,13 @@ declare module '@tanstack/react-router' {
       path: '/track-order'
       fullPath: '/track-order'
       preLoaderRoute: typeof TrackOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termeni-si-conditii': {
+      id: '/termeni-si-conditii'
+      path: '/termeni-si-conditii'
+      fullPath: '/termeni-si-conditii'
+      preLoaderRoute: typeof TermeniSiConditiiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -1540,6 +1587,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PoliticaCookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/politica-confidentialitate': {
+      id: '/politica-confidentialitate'
+      path: '/politica-confidentialitate'
+      fullPath: '/politica-confidentialitate'
+      preLoaderRoute: typeof PoliticaConfidentialitateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gift-card': {
       id: '/gift-card'
       path: '/gift-card'
@@ -1559,6 +1613,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/despre-noi': {
+      id: '/despre-noi'
+      path: '/despre-noi'
+      fullPath: '/despre-noi'
+      preLoaderRoute: typeof DespreNoiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -2603,15 +2664,18 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   CompareRoute: CompareRoute,
   ContactRoute: ContactRoute,
+  DespreNoiRoute: DespreNoiRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   GiftCardRoute: GiftCardRoute,
+  PoliticaConfidentialitateRoute: PoliticaConfidentialitateRoute,
   PoliticaCookiesRoute: PoliticaCookiesRoute,
   PoliticaReturnareRoute: PoliticaReturnareRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SearchRoute: SearchRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermeniSiConditiiRoute: TermeniSiConditiiRoute,
   TrackOrderRoute: TrackOrderRoute,
   WishlistRoute: WishlistRoute,
   CategorieSlugRoute: CategorieSlugRoute,

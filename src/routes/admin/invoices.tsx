@@ -144,9 +144,8 @@ function AdminInvoices() {
         <div class="party">
           <h3>Furnizor</h3>
           <p><strong>SC Vomix Genius SRL</strong></p>
-          <p>CUI: RO12345678</p>
-          <p>Reg. Com: J40/1234/2024</p>
-          <p>Str. Lumânărilor 42, București</p>
+           <p>CUI: 43025661</p>
+           <p>Str. Constructorilor Nr 39, sat Voievoda, com. Furculești, jud. Teleorman</p>
         </div>
         <div class="party">
           <h3>Client</h3>

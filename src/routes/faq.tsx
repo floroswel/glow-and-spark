@@ -36,7 +36,7 @@ const faqCategories = [
     items: [
       { q: "Cât durează livrarea?", a: "Comenzile sunt procesate în 24h și livrate în 1-3 zile lucrătoare prin Fan Courier, DPD sau Sameday." },
       { q: "Cât costă livrarea?", a: "Livrarea este gratuită pentru comenzi peste 200 RON. Sub această sumă, costul este de 15-20 RON în funcție de curier." },
-      { q: "Livrați și în afara României?", a: "Momentan livrăm doar în România. Pentru comenzi internaționale, contactează-ne la contact@lumini.ro." },
+      { q: "Livrați și în afara României?", a: "Momentan livrăm doar în România. Pentru comenzi internaționale, contactează-ne la contact@mamalucica.ro." },
       { q: "Cum pot urmări comanda?", a: "După expediere, vei primi un email cu numărul AWB. Poți urmări coletul pe pagina 'Urmărește comanda' sau direct pe site-ul curierului." },
     ],
   },

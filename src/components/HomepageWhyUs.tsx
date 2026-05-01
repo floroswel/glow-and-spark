@@ -11,7 +11,7 @@ export function HomepageWhyUs() {
   const { homepage } = useSiteSettings();
   if (homepage?.show_why_us === false) return null;
 
-  const title = homepage?.why_us_title || "De ce să alegi Lumini.ro?";
+  const title = homepage?.why_us_title || "De ce să alegi Mama Lucica?";
 
   // Read individual fields from admin settings, fallback to defaults
   const items = [1, 2, 3, 4].map((i) => ({

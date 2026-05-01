@@ -205,6 +205,7 @@ const menuSections: MenuSection[] = [
       {
         icon: Server, label: "Sistem",
         children: [
+          { to: "/admin/monitoring", label: "Monitoring & Health" },
           { to: "/admin/system", label: "System Health" },
           { to: "/admin/activity", label: "Jurnal Activitate" },
           { to: "/admin/audit-log", label: "Audit Log (Securitate)" },

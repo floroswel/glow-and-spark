@@ -134,6 +134,7 @@ import { Route as AdminContentRedirectsRouteImport } from './routes/admin/conten
 import { Route as AdminContentFaqRouteImport } from './routes/admin/content.faq'
 import { Route as AdminContentEmailTemplatesRouteImport } from './routes/admin/content.email-templates'
 import { Route as AdminChatbotSessionsRouteImport } from './routes/admin/chatbot.sessions'
+import { Route as ApiPublicMonitorsSmokeRouteImport } from './routes/api/public/monitors/smoke'
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -763,6 +764,11 @@ const AdminChatbotSessionsRoute = AdminChatbotSessionsRouteImport.update({
   path: '/sessions',
   getParentRoute: () => AdminChatbotRoute,
 } as any)
+const ApiPublicMonitorsSmokeRoute = ApiPublicMonitorsSmokeRouteImport.update({
+  id: '/api/public/monitors/smoke',
+  path: '/api/public/monitors/smoke',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -890,6 +896,7 @@ export interface FileRoutesByFullPath {
   '/admin/stock/transfers': typeof AdminStockTransfersRoute
   '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
   '/api/public/health': typeof ApiPublicHealthRoute
+  '/api/public/monitors/smoke': typeof ApiPublicMonitorsSmokeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -1015,6 +1022,7 @@ export interface FileRoutesByTo {
   '/admin/stock/transfers': typeof AdminStockTransfersRoute
   '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
   '/api/public/health': typeof ApiPublicHealthRoute
+  '/api/public/monitors/smoke': typeof ApiPublicMonitorsSmokeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1143,6 +1151,7 @@ export interface FileRoutesById {
   '/admin/stock/transfers': typeof AdminStockTransfersRoute
   '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
   '/api/public/health': typeof ApiPublicHealthRoute
+  '/api/public/monitors/smoke': typeof ApiPublicMonitorsSmokeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1272,6 +1281,7 @@ export interface FileRouteTypes {
     | '/admin/stock/transfers'
     | '/admin/stock/warehouses'
     | '/api/public/health'
+    | '/api/public/monitors/smoke'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1397,6 +1407,7 @@ export interface FileRouteTypes {
     | '/admin/stock/transfers'
     | '/admin/stock/warehouses'
     | '/api/public/health'
+    | '/api/public/monitors/smoke'
   id:
     | '__root__'
     | '/'
@@ -1524,6 +1535,7 @@ export interface FileRouteTypes {
     | '/admin/stock/transfers'
     | '/admin/stock/warehouses'
     | '/api/public/health'
+    | '/api/public/monitors/smoke'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1558,6 +1570,7 @@ export interface RootRouteChildren {
   PageSlugRoute: typeof PageSlugRoute
   ProdusSlugRoute: typeof ProdusSlugRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
+  ApiPublicMonitorsSmokeRoute: typeof ApiPublicMonitorsSmokeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -2437,6 +2450,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminChatbotSessionsRouteImport
       parentRoute: typeof AdminChatbotRoute
     }
+    '/api/public/monitors/smoke': {
+      id: '/api/public/monitors/smoke'
+      path: '/api/public/monitors/smoke'
+      fullPath: '/api/public/monitors/smoke'
+      preLoaderRoute: typeof ApiPublicMonitorsSmokeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -2745,6 +2765,7 @@ const rootRouteChildren: RootRouteChildren = {
   PageSlugRoute: PageSlugRoute,
   ProdusSlugRoute: ProdusSlugRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
+  ApiPublicMonitorsSmokeRoute: ApiPublicMonitorsSmokeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useRefreshSiteSettings } from "@/hooks/useSiteSettings";
 import { Save, Check } from "lucide-react";
 
 interface Props {
@@ -13,6 +14,7 @@ export function AdminSettingsEditor({ settingsKey, defaults, children, title }: 
   const [settings, setSettings] = useState(defaults);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const refreshSiteSettings = useRefreshSiteSettings();
 
   useEffect(() => {
     supabase
@@ -33,6 +35,8 @@ export function AdminSettingsEditor({ settingsKey, defaults, children, title }: 
         { key: settingsKey, value: settings as any, updated_at: new Date().toISOString() },
         { onConflict: "key" }
       );
+    // Invalidate site-wide cache so changes appear immediately
+    refreshSiteSettings();
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };

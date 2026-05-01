@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface SiteSettings {
@@ -17,6 +17,7 @@ export interface SiteSettings {
   automations: any[];
 }
 
+const RefreshContext = createContext<() => void>(() => {});
 const defaultSettings: SiteSettings = {
   general: {},
   theme: {},
@@ -34,6 +35,8 @@ const defaultSettings: SiteSettings = {
 };
 
 const CACHE_KEY = "site_settings_cache";
+const CACHE_VERSION_KEY = "site_settings_cache_v";
+const CACHE_VERSION = "2";
 
 const SiteSettingsContext = createContext<SiteSettings>(defaultSettings);
 
@@ -172,38 +175,53 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
   const mounted = useRef(false);
 
+  const fetchSettings = useCallback(async () => {
+    const { data } = await supabase.from("site_settings").select("key, value");
+    if (data && mounted.current) {
+      const s = { ...defaultSettings };
+      data.forEach((row) => {
+        if (row.key in s) {
+          (s as any)[row.key] = row.value;
+        }
+      });
+      setSettings(s);
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(s));
+        localStorage.setItem(CACHE_VERSION_KEY, CACHE_VERSION);
+      } catch {}
+      if (s.theme && Object.keys(s.theme).length) applyThemeVariables(s.theme);
+    }
+  }, []);
+
+  const refreshSettings = useCallback(() => {
+    // Clear cache and re-fetch immediately
+    try { localStorage.removeItem(CACHE_KEY); } catch {}
+    fetchSettings();
+  }, [fetchSettings]);
+
   useEffect(() => {
     mounted.current = true;
 
-    // Load from cache first for instant display
+    // Load from cache only if version matches
     try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        setSettings(parsed);
-        if (parsed.theme && Object.keys(parsed.theme).length) {
-          applyThemeVariables(parsed.theme);
+      const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
+      if (cachedVersion === CACHE_VERSION) {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          setSettings(parsed);
+          if (parsed.theme && Object.keys(parsed.theme).length) {
+            applyThemeVariables(parsed.theme);
+          }
         }
+      } else {
+        // Stale cache version — discard
+        localStorage.removeItem(CACHE_KEY);
       }
     } catch {}
 
-    // Then fetch fresh from DB
-    supabase
-      .from("site_settings")
-      .select("key, value")
-      .then(({ data }) => {
-        if (data && mounted.current) {
-          const s = { ...defaultSettings };
-          data.forEach((row) => {
-            if (row.key in s) {
-              (s as any)[row.key] = row.value;
-            }
-          });
-          setSettings(s);
-          try { localStorage.setItem(CACHE_KEY, JSON.stringify(s)); } catch {}
-          if (s.theme && Object.keys(s.theme).length) applyThemeVariables(s.theme);
-        }
-      });
+    // Always fetch fresh from DB
+    fetchSettings();
 
     const channel = supabase
       .channel("site_settings_realtime")
@@ -228,15 +246,21 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
       mounted.current = false;
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [fetchSettings]);
 
   return (
     <SiteSettingsContext.Provider value={settings}>
-      {children}
+      <RefreshContext.Provider value={refreshSettings}>
+        {children}
+      </RefreshContext.Provider>
     </SiteSettingsContext.Provider>
   );
 }
 
 export function useSiteSettings() {
   return useContext(SiteSettingsContext);
+}
+
+export function useRefreshSiteSettings() {
+  return useContext(RefreshContext);
 }

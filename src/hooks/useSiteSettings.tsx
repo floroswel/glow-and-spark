@@ -17,11 +17,7 @@ export interface SiteSettings {
   automations: any[];
 }
 
-interface SiteSettingsContextValue {
-  settings: SiteSettings;
-  refreshSettings: () => void;
-}
-
+const RefreshContext = createContext<() => void>(() => {});
 const defaultSettings: SiteSettings = {
   general: {},
   theme: {},

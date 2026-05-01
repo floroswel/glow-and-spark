@@ -258,7 +258,7 @@ function ContactPage() {
                 <div>
                   <p className="text-sm font-medium text-foreground">Telefon</p>
                   <a href={`tel:${general?.contact_phone || ""}`} className="text-sm text-accent hover:underline">
-                    {general?.contact_phone || "0770 123 456"}
+                    {general?.contact_phone || "+40753326405"}
                   </a>
                 </div>
               </div>
@@ -266,7 +266,7 @@ function ContactPage() {
                 <MapPin className="h-5 w-5 text-accent mt-0.5 shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Adresă</p>
-                  <p className="text-sm text-muted-foreground">{general?.contact_address || "România"}</p>
+                  <p className="text-sm text-muted-foreground">{general?.contact_address || "Str. Constructorilor Nr 39, sat Voievoda, comuna Furculești, jud. Teleorman"}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">

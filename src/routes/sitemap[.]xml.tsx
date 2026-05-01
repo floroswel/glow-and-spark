@@ -9,6 +9,11 @@ const STATIC_PAGES = [
   { loc: "/contact", changefreq: "monthly", priority: "0.5" },
   { loc: "/faq", changefreq: "monthly", priority: "0.4" },
   { loc: "/blog", changefreq: "weekly", priority: "0.7" },
+  { loc: "/despre-noi", changefreq: "monthly", priority: "0.5" },
+  { loc: "/termeni-si-conditii", changefreq: "monthly", priority: "0.3" },
+  { loc: "/politica-confidentialitate", changefreq: "monthly", priority: "0.3" },
+  { loc: "/politica-returnare", changefreq: "monthly", priority: "0.3" },
+  { loc: "/politica-cookies", changefreq: "monthly", priority: "0.3" },
 ];
 
 function buildXml(

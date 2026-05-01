@@ -21,17 +21,17 @@ function AfiliatPage() {
   useEffect(() => {
     if (!user) { setLoading(false); return; }
     (async () => {
-      const { data: a } = await supabase.from("affiliates").select("*").eq("user_id", user.id).maybeSingle();
+      const { data: a } = await (supabase.from("affiliates" as any).select("*").eq("user_id", user.id).maybeSingle() as any);
       setAff(a);
       if (a) {
         const [{ count: clicks }, { data: convs }] = await Promise.all([
-          supabase.from("affiliate_clicks").select("id", { count: "exact", head: true }).eq("affiliate_id", a.id),
-          supabase.from("affiliate_conversions").select("commission_amount").eq("affiliate_id", a.id),
+          supabase.from("affiliate_clicks" as any).select("id", { count: "exact", head: true }).eq("affiliate_id", a.id) as any,
+          supabase.from("affiliate_conversions" as any).select("commission_amount").eq("affiliate_id", a.id) as any,
         ]);
         setStats({
           clicks: clicks || 0,
           conversions: convs?.length || 0,
-          earned: convs?.reduce((s, c) => s + Number(c.commission_amount || 0), 0) || 0,
+          earned: convs?.reduce((s: number, c: any) => s + Number(c.commission_amount || 0), 0) || 0,
         });
       }
       setLoading(false);
@@ -41,14 +41,14 @@ function AfiliatPage() {
   const apply = async () => {
     if (!user) return;
     const code = (user.email?.split("@")[0] || "ref") + Math.random().toString(36).slice(2, 6).toUpperCase();
-    const { data, error } = await supabase.from("affiliates").insert({
+    const { data, error } = await (supabase.from("affiliates" as any).insert({
       user_id: user.id,
       code,
       name: user.user_metadata?.full_name || user.email,
       email: user.email,
       commission_percent: 10,
       status: "pending",
-    }).select().single();
+    } as any).select().single() as any);
     if (error) { toast.error("Eroare: " + error.message); return; }
     setAff(data);
     toast.success("Cerere trimisă! Așteaptă aprobarea.");

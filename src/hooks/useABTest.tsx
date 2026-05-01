@@ -20,7 +20,7 @@ interface Variant {
   config: any;
 }
 
-export function useABTest(testKey: string) {
+export function useABTest(testName: string) {
   const [variant, setVariant] = useState<Variant | null>(null);
   const [testId, setTestId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,12 +29,12 @@ export function useABTest(testKey: string) {
     let mounted = true;
     (async () => {
       try {
-        const { data: test } = await supabase
-          .from("ab_tests")
+        const { data: test } = await (supabase
+          .from("ab_tests" as any)
           .select("id, status")
-          .eq("key", testKey)
+          .eq("name", testName)
           .eq("status", "running")
-          .maybeSingle();
+          .maybeSingle() as any);
         if (!test || !mounted) {
           setLoading(false);
           return;
@@ -43,18 +43,17 @@ export function useABTest(testKey: string) {
 
         const visitor = getVisitorId();
 
-        // Vezi dacă există atribuire
-        const { data: existing } = await supabase
-          .from("ab_test_assignments")
+        const { data: existing } = await (supabase
+          .from("ab_test_assignments" as any)
           .select("variant_id")
           .eq("test_id", test.id)
           .eq("visitor_id", visitor)
-          .maybeSingle();
+          .maybeSingle() as any);
 
-        const { data: variants } = await supabase
-          .from("ab_test_variants")
-          .select("id, name, config, weight")
-          .eq("test_id", test.id);
+        const { data: variants } = await (supabase
+          .from("ab_test_variants" as any)
+          .select("id, name, config, traffic_percent")
+          .eq("test_id", test.id) as any);
 
         if (!variants?.length) {
           setLoading(false);
@@ -63,21 +62,21 @@ export function useABTest(testKey: string) {
 
         let chosen: any;
         if (existing) {
-          chosen = variants.find((v) => v.id === existing.variant_id) || variants[0];
+          chosen = variants.find((v: any) => v.id === existing.variant_id) || variants[0];
         } else {
-          // Weighted random
-          const total = variants.reduce((s, v) => s + (v.weight || 1), 0);
+          // Weighted random by traffic_percent
+          const total = variants.reduce((s: number, v: any) => s + (v.traffic_percent || 50), 0);
           let r = Math.random() * total;
           chosen = variants[0];
           for (const v of variants) {
-            r -= v.weight || 1;
+            r -= v.traffic_percent || 50;
             if (r <= 0) { chosen = v; break; }
           }
-          await supabase.from("ab_test_assignments").insert({
+          await (supabase.from("ab_test_assignments" as any).insert({
             test_id: test.id,
             variant_id: chosen.id,
             visitor_id: visitor,
-          });
+          }) as any);
         }
         if (mounted) {
           setVariant({ id: chosen.id, name: chosen.name, config: chosen.config });
@@ -89,16 +88,16 @@ export function useABTest(testKey: string) {
       }
     })();
     return () => { mounted = false; };
-  }, [testKey]);
+  }, [testName]);
 
   const trackConversion = async (value?: number) => {
     if (!testId) return;
     const visitor = getVisitorId();
-    await supabase
-      .from("ab_test_assignments")
+    await (supabase
+      .from("ab_test_assignments" as any)
       .update({ converted: true, conversion_value: value, converted_at: new Date().toISOString() })
       .eq("test_id", testId)
-      .eq("visitor_id", visitor);
+      .eq("visitor_id", visitor) as any);
   };
 
   return { variant, loading, trackConversion };

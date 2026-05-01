@@ -25,14 +25,30 @@ vi.mock("@/hooks/useSiteSettings", () => ({
   SiteSettingsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-vi.mock("@/integrations/supabase/client", () => ({
-  supabase: {
-    from: () => ({ select: () => ({ eq: () => ({ order: () => ({ data: [], error: null }) }) }) }),
-    auth: { getSession: () => Promise.resolve({ data: { session: null } }), onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }) },
-    channel: () => ({ on: () => ({ subscribe: () => ({}) }), unsubscribe: () => {} }),
-    functions: { invoke: () => Promise.resolve({ data: null, error: null }) },
-  },
-}));
+vi.mock("@/integrations/supabase/client", () => {
+  const mockQuery = {
+    select: () => mockQuery,
+    eq: () => mockQuery,
+    neq: () => mockQuery,
+    order: () => mockQuery,
+    limit: () => mockQuery,
+    in: () => mockQuery,
+    is: () => mockQuery,
+    gte: () => mockQuery,
+    lte: () => mockQuery,
+    single: () => Promise.resolve({ data: null, error: null }),
+    then: (cb: any) => Promise.resolve({ data: [], error: null }).then(cb),
+    maybeSingle: () => Promise.resolve({ data: null, error: null }),
+  };
+  return {
+    supabase: {
+      from: () => mockQuery,
+      auth: { getSession: () => Promise.resolve({ data: { session: null } }), onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }) },
+      channel: () => ({ on: () => ({ subscribe: () => ({}) }), unsubscribe: () => {} }),
+      functions: { invoke: () => Promise.resolve({ data: null, error: null }) },
+    },
+  };
+});
 
 vi.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({ user: null, loading: false, isAdmin: false }),

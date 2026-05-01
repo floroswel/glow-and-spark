@@ -228,7 +228,7 @@ function CheckoutPage() {
       items: items.map((i) => ({ id: i.id, product_id: i.id, name: i.name, price: i.price, quantity: i.quantity, qty: i.quantity, image: i.image_url })),
       subtotal: cartSubtotal,
       shipping_cost: shippingCost,
-      discount_amount: discountAmount,
+      discount_amount: discountAmount + groupDiscountAmount + loyaltyDiscount,
       discount_code: discountCode,
       total: finalTotal,
       payment_method: form.paymentMethod,

@@ -242,12 +242,8 @@ function CheckoutPage() {
 
     const { error: dbError } = await supabase.from("orders").insert(orderData);
     if (dbError) {
-      console.error("[checkout] Order insert failed:", dbError);
-      setError(
-        dbError?.message
-          ? `Eroare la plasarea comenzii: ${dbError.message}`
-          : "Eroare la plasarea comenzii. Încearcă din nou."
-      );
+      if (import.meta.env.DEV) console.error("[checkout] Order insert failed:", dbError.code);
+      setError("Eroare la plasarea comenzii. Încearcă din nou sau contactează-ne.");
       setSubmitting(false);
       return;
     }

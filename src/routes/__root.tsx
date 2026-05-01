@@ -1,4 +1,5 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouter, useLocation } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouter, useLocation, redirect } from "@tanstack/react-router";
+import { checkSeoRedirect } from "@/server/seo-redirects.functions";
 import { useEffect, useRef } from "react";
 import { setCanonical } from "@/lib/seo";
 import { isAllowedRedirect } from "@/lib/allowed-hosts";

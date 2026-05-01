@@ -17,6 +17,25 @@ export interface SiteSettings {
   automations: any[];
 }
 
+interface SiteSettingsContextValue {
+  settings: SiteSettings;
+  refreshSettings: () => void;
+}
+  general: Record<string, any>;
+  theme: Record<string, any>;
+  header: Record<string, any>;
+  ticker: Record<string, any>;
+  homepage: Record<string, any>;
+  footer: Record<string, any>;
+  popup: Record<string, any>;
+  social_proof: Record<string, any>;
+  seo_global: Record<string, any>;
+  trust_badges: Record<string, any>;
+  redirects: any[];
+  email_templates: any[];
+  automations: any[];
+}
+
 const defaultSettings: SiteSettings = {
   general: {},
   theme: {},

@@ -13,9 +13,9 @@ const STATIC_PAGES = [
 
 function buildXml(
   staticPages: typeof STATIC_PAGES,
-  products: { slug: string; updated_at?: string }[],
+  products: { slug: string; updated_at?: string | null }[],
   categories: { slug: string }[],
-  posts: { slug: string; updated_at?: string }[],
+  posts: { slug: string; updated_at?: string | null }[],
 ) {
   const today = new Date().toISOString().split("T")[0];
 

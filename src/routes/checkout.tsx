@@ -339,6 +339,7 @@ function CheckoutPage() {
     // Affiliate attribution
     attributeOrderToAffiliate(orderId).catch(() => {});
 
+    if (newsletterOptIn && form.email) {
       supabase.from("newsletter_subscribers").upsert(
         { email: form.email, name: form.name, is_active: true, source: "checkout" },
         { onConflict: "email", ignoreDuplicates: true }

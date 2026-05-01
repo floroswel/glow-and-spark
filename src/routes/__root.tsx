@@ -1,5 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouter, useLocation, redirect } from "@tanstack/react-router";
 import { checkSeoRedirect } from "@/server/seo-redirects.functions";
+import { checkCanonicalHost } from "@/server/canonical-host.functions";
 import { useEffect, useRef } from "react";
 import { setCanonical } from "@/lib/seo";
 import { isAllowedRedirect } from "@/lib/allowed-hosts";
@@ -27,6 +28,19 @@ import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
+    // Server-side canonical host redirect (www → non-www)
+    try {
+      const canonicalTarget = await checkCanonicalHost();
+      if (canonicalTarget) {
+        throw redirect({
+          href: canonicalTarget,
+          statusCode: 301 as any,
+        });
+      }
+    } catch (e: any) {
+      if (e?.isRedirect || e?.status === 301 || e?.status === 302) throw e;
+    }
+
     // Server-side SEO redirects from seo_redirects table
     try {
       const result = await checkSeoRedirect({ data: { path: location.pathname } });
@@ -301,9 +315,9 @@ function CanonicalDomainRedirect() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const host = window.location.hostname;
-    if (host === CANONICAL_HOST || host === `www.${CANONICAL_HOST}`) return;
+    if (host === CANONICAL_HOST) return;
     if (PREVIEW_HOST_PATTERNS.some((re) => re.test(host))) return;
-    // Redirect any other host (e.g. glow-and-spark.lovable.app) to canonical.
+    // Redirect www or any other host to canonical (client-side fallback for bots that miss server redirect)
     const target = `https://${CANONICAL_HOST}${window.location.pathname}${window.location.search}${window.location.hash}`;
     window.location.replace(target);
   }, []);

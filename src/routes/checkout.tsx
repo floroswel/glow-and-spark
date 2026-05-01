@@ -703,10 +703,44 @@ function CheckoutPage() {
             <div className="space-y-1 border-t border-border pt-3 text-sm">
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{cartSubtotal.toFixed(2)} RON</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Livrare</span><span>{shippingCost === 0 ? "GRATUITĂ" : `${shippingCost} RON`}</span></div>
-              {discountAmount > 0 && <div className="flex justify-between text-chart-2"><span>Reducere</span><span>-{discountAmount.toFixed(2)} RON</span></div>}
+              {discountAmount > 0 && <div className="flex justify-between text-chart-2"><span>Reducere cupon</span><span>-{discountAmount.toFixed(2)} RON</span></div>}
+              {groupDiscountAmount > 0 && <div className="flex justify-between text-chart-2"><span>Discount grup (-{groupDiscount}%)</span><span>-{groupDiscountAmount.toFixed(2)} RON</span></div>}
+              {loyaltyDiscount > 0 && <div className="flex justify-between text-chart-2"><span>Puncte fidelitate</span><span>-{loyaltyDiscount.toFixed(2)} RON</span></div>}
+              {walletDeduction > 0 && <div className="flex justify-between text-chart-2"><span>Portofel</span><span>-{walletDeduction.toFixed(2)} RON</span></div>}
               {giftWrapping && <div className="flex justify-between"><span className="text-muted-foreground">Ambalaj cadou</span><span>{giftWrappingPrice.toFixed(2)} RON</span></div>}
               <div className="flex justify-between border-t border-border pt-2 text-base font-bold"><span>Total</span><span>{finalTotal.toFixed(2)} RON</span></div>
             </div>
+
+            {/* Loyalty points */}
+            {user && loyaltyBalance > 0 && (
+              <div className="rounded-lg border border-border bg-secondary/50 p-3 space-y-2">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={useLoyalty} onChange={(e) => { setUseLoyalty(e.target.checked); if (!e.target.checked) setLoyaltyInput(""); }} className="accent-accent" />
+                  <span className="text-foreground font-medium">Folosește puncte ({loyaltyBalance} disponibile = {(loyaltyBalance / 100).toFixed(2)} RON)</span>
+                </label>
+                {useLoyalty && (
+                  <input
+                    type="number"
+                    min={100}
+                    max={loyaltyBalance}
+                    step={100}
+                    value={loyaltyInput}
+                    onChange={(e) => setLoyaltyInput(e.target.value)}
+                    placeholder={`100 - ${loyaltyBalance}`}
+                    className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
+                  />
+                )}
+              </div>
+            )}
+
+            {/* Wallet */}
+            {user && walletBalance > 0 && (
+              <label className="flex items-center gap-2 text-sm cursor-pointer rounded-lg border border-border bg-secondary/50 p-3">
+                <input type="checkbox" checked={useWallet} onChange={(e) => setUseWallet(e.target.checked)} className="accent-accent" />
+                <span className="text-foreground font-medium">Plătește din portofel ({walletBalance.toFixed(2)} RON)</span>
+              </label>
+            )}
+
             <TrustBadges variant="full" />
           </div>
         </div>

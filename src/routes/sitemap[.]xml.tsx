@@ -13,6 +13,7 @@ const STATIC_PAGES = [
   { loc: "/termeni-si-conditii", changefreq: "monthly", priority: "0.3" },
   { loc: "/politica-confidentialitate", changefreq: "monthly", priority: "0.3" },
   { loc: "/politica-returnare", changefreq: "monthly", priority: "0.3" },
+  { loc: "/formular-retragere", changefreq: "monthly", priority: "0.2" },
   { loc: "/politica-cookies", changefreq: "monthly", priority: "0.3" },
 ];
 

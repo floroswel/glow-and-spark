@@ -20,6 +20,7 @@ import { Route as PoliticaReturnareRouteImport } from './routes/politica-returna
 import { Route as PoliticaCookiesRouteImport } from './routes/politica-cookies'
 import { Route as PoliticaConfidentialitateRouteImport } from './routes/politica-confidentialitate'
 import { Route as GiftCardRouteImport } from './routes/gift-card'
+import { Route as FormularRetragereRouteImport } from './routes/formular-retragere'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DespreNoiRouteImport } from './routes/despre-noi'
@@ -186,6 +187,11 @@ const PoliticaConfidentialitateRoute =
 const GiftCardRoute = GiftCardRouteImport.update({
   id: '/gift-card',
   path: '/gift-card',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormularRetragereRoute = FormularRetragereRouteImport.update({
+  id: '/formular-retragere',
+  path: '/formular-retragere',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -761,6 +767,7 @@ export interface FileRoutesByFullPath {
   '/despre-noi': typeof DespreNoiRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/formular-retragere': typeof FormularRetragereRoute
   '/gift-card': typeof GiftCardRoute
   '/politica-confidentialitate': typeof PoliticaConfidentialitateRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
@@ -883,6 +890,7 @@ export interface FileRoutesByTo {
   '/despre-noi': typeof DespreNoiRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/formular-retragere': typeof FormularRetragereRoute
   '/gift-card': typeof GiftCardRoute
   '/politica-confidentialitate': typeof PoliticaConfidentialitateRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
@@ -1008,6 +1016,7 @@ export interface FileRoutesById {
   '/despre-noi': typeof DespreNoiRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/formular-retragere': typeof FormularRetragereRoute
   '/gift-card': typeof GiftCardRoute
   '/politica-confidentialitate': typeof PoliticaConfidentialitateRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
@@ -1134,6 +1143,7 @@ export interface FileRouteTypes {
     | '/despre-noi'
     | '/faq'
     | '/forgot-password'
+    | '/formular-retragere'
     | '/gift-card'
     | '/politica-confidentialitate'
     | '/politica-cookies'
@@ -1256,6 +1266,7 @@ export interface FileRouteTypes {
     | '/despre-noi'
     | '/faq'
     | '/forgot-password'
+    | '/formular-retragere'
     | '/gift-card'
     | '/politica-confidentialitate'
     | '/politica-cookies'
@@ -1380,6 +1391,7 @@ export interface FileRouteTypes {
     | '/despre-noi'
     | '/faq'
     | '/forgot-password'
+    | '/formular-retragere'
     | '/gift-card'
     | '/politica-confidentialitate'
     | '/politica-cookies'
@@ -1505,6 +1517,7 @@ export interface RootRouteChildren {
   DespreNoiRoute: typeof DespreNoiRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  FormularRetragereRoute: typeof FormularRetragereRoute
   GiftCardRoute: typeof GiftCardRoute
   PoliticaConfidentialitateRoute: typeof PoliticaConfidentialitateRoute
   PoliticaCookiesRoute: typeof PoliticaCookiesRoute
@@ -1599,6 +1612,13 @@ declare module '@tanstack/react-router' {
       path: '/gift-card'
       fullPath: '/gift-card'
       preLoaderRoute: typeof GiftCardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/formular-retragere': {
+      id: '/formular-retragere'
+      path: '/formular-retragere'
+      fullPath: '/formular-retragere'
+      preLoaderRoute: typeof FormularRetragereRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -2667,6 +2687,7 @@ const rootRouteChildren: RootRouteChildren = {
   DespreNoiRoute: DespreNoiRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  FormularRetragereRoute: FormularRetragereRoute,
   GiftCardRoute: GiftCardRoute,
   PoliticaConfidentialitateRoute: PoliticaConfidentialitateRoute,
   PoliticaCookiesRoute: PoliticaCookiesRoute,

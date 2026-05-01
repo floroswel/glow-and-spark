@@ -67,7 +67,7 @@ export const saveAbandonedCart = createServerFn({ method: "POST" })
     );
 
     if (error) {
-      console.error("[saveAbandonedCart] upsert error:", error);
+      // Error details kept server-side only — not exposed to client
       return { ok: false, error: "save_failed" };
     }
     return { ok: true };

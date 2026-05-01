@@ -135,7 +135,7 @@ function AdminPayments() {
       const ts = new Date().toISOString().slice(11, 23);
       const entry = `[${ts}] ${line}`;
       log.push(entry);
-      console.log("[netopia-test-client]", entry);
+      if (import.meta.env.DEV) console.log("[netopia-test-client]", entry);
     };
 
     setTesting(true);

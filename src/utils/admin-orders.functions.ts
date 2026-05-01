@@ -83,7 +83,7 @@ export const createManualOrder = createServerFn({ method: "POST" })
         .select("id, name, price, image_url, sku")
         .in("id", productIds);
       if (prodErr) {
-        console.error("[createManualOrder] product fetch failed", prodErr);
+        // Don't expose internal DB error details
         throw new Response("Failed to load products", { status: 500 });
       }
       for (const p of products || []) productMap.set(p.id, p as any);
@@ -173,8 +173,7 @@ export const createManualOrder = createServerFn({ method: "POST" })
 
     const { error: insErr } = await supabaseAdmin.from("orders").insert(insertPayload);
     if (insErr) {
-      console.error("[createManualOrder] insert error:", insErr);
-      throw new Response(`Insert failed: ${insErr.message}`, { status: 500 });
+      throw new Response("Order insert failed", { status: 500 });
     }
 
     // Initial timeline entry

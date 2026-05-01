@@ -1598,6 +1598,63 @@ export type Database = {
         }
         Relationships: []
       }
+      health_checks: {
+        Row: {
+          check_name: string
+          checked_at: string
+          error_message: string | null
+          id: string
+          response_time_ms: number | null
+          status: string
+        }
+        Insert: {
+          check_name: string
+          checked_at?: string
+          error_message?: string | null
+          id?: string
+          response_time_ms?: number | null
+          status?: string
+        }
+        Update: {
+          check_name?: string
+          checked_at?: string
+          error_message?: string | null
+          id?: string
+          response_time_ms?: number | null
+          status?: string
+        }
+        Relationships: []
+      }
+      health_incidents: {
+        Row: {
+          check_name: string
+          error_message: string | null
+          id: string
+          notified: boolean
+          resolved_at: string | null
+          started_at: string
+          status: string
+        }
+        Insert: {
+          check_name: string
+          error_message?: string | null
+          id?: string
+          notified?: boolean
+          resolved_at?: string | null
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          check_name?: string
+          error_message?: string | null
+          id?: string
+          notified?: boolean
+          resolved_at?: string | null
+          started_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
       health_logs: {
         Row: {
           check_name: string
@@ -4096,6 +4153,15 @@ export type Database = {
         Returns: {
           notified: number
         }[]
+      }
+      record_health_check: {
+        Args: {
+          p_error?: string
+          p_name: string
+          p_response_ms?: number
+          p_status: string
+        }
+        Returns: undefined
       }
       redeem_gift_card: {
         Args: { p_amount: number; p_code: string; p_order_id?: string }

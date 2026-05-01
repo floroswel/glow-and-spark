@@ -8,6 +8,14 @@ const DEFAULT_BODY = `User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /account
+Disallow: /checkout
+Disallow: /cart
+Disallow: /auth
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /order-confirmed
+Disallow: /search
+
 Sitemap: ${SITE_URL}/sitemap.xml
 `;
 

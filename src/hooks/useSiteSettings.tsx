@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface SiteSettings {
@@ -21,20 +21,6 @@ interface SiteSettingsContextValue {
   settings: SiteSettings;
   refreshSettings: () => void;
 }
-  general: Record<string, any>;
-  theme: Record<string, any>;
-  header: Record<string, any>;
-  ticker: Record<string, any>;
-  homepage: Record<string, any>;
-  footer: Record<string, any>;
-  popup: Record<string, any>;
-  social_proof: Record<string, any>;
-  seo_global: Record<string, any>;
-  trust_badges: Record<string, any>;
-  redirects: any[];
-  email_templates: any[];
-  automations: any[];
-}
 
 const defaultSettings: SiteSettings = {
   general: {},
@@ -53,8 +39,13 @@ const defaultSettings: SiteSettings = {
 };
 
 const CACHE_KEY = "site_settings_cache";
+const CACHE_VERSION_KEY = "site_settings_cache_v";
+const CACHE_VERSION = "2";
 
-const SiteSettingsContext = createContext<SiteSettings>(defaultSettings);
+const SiteSettingsContext = createContext<SiteSettingsContextValue>({
+  settings: defaultSettings,
+  refreshSettings: () => {},
+});
 
 // Load Google Fonts dynamically
 function loadGoogleFont(fontName: string) {

@@ -217,11 +217,11 @@ export function SiteFooter() {
   };
 
   const col1Links = footer?.col1_links?.length > 0 ? footer.col1_links : [
-    { label: "Despre noi", url: "/page/despre-noi" },
-    { label: "Termeni și condiții", url: `/page/${termsSlug}` },
-    { label: "Politica de Confidențialitate", url: `/page/${privacySlug}` },
+    { label: "Despre noi", url: "/despre-noi" },
+    { label: "Termeni și condiții", url: "/termeni-si-conditii" },
+    { label: "Politica de Confidențialitate", url: "/politica-confidentialitate" },
     { label: "Politica Cookie-uri", url: "/politica-cookies" },
-    { label: "Politică de returnare", url: `/page/${returnSlug}` },
+    { label: "Politică de returnare", url: "/politica-returnare" },
     { label: "Contact", url: "/contact" },
     { label: "Card Cadou", url: "/gift-card" },
   ];
@@ -229,7 +229,7 @@ export function SiteFooter() {
   const col2Links = footer?.col2_links?.length > 0 ? footer.col2_links : [
     { label: "Transport și Livrare", url: "/page/transport-livrare" },
     { label: "Metode de plată", url: "/page/metode-plata" },
-    { label: "Politica de Retur", url: `/page/${returnSlug}` },
+    { label: "Politica de Retur", url: "/politica-returnare" },
     { label: "Garanția Produselor", url: "/page/garantie" },
     { label: "ANPC", url: "https://anpc.ro/ce-este-anpc/" },
     { label: "SOL (Soluționare Online Litigii)", url: "https://ec.europa.eu/consumers/odr" },

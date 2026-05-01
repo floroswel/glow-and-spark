@@ -83,7 +83,7 @@ export const createManualOrder = createServerFn({ method: "POST" })
         .select("id, name, price, image_url, sku")
         .in("id", productIds);
       if (prodErr) {
-        console.error("[createManualOrder] product fetch failed", prodErr);
+        // Don't expose internal DB error details
         throw new Response("Failed to load products", { status: 500 });
       }
       for (const p of products || []) productMap.set(p.id, p as any);

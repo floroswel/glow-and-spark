@@ -48,8 +48,40 @@ function CheckoutPage() {
   const [giftWrapping, setGiftWrapping] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
 
+  // Loyalty / Wallet / Group discount
+  const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+  const [loyaltyBalance, setLoyaltyBalance] = useState(0);
+  const [useLoyalty, setUseLoyalty] = useState(false);
+  const [loyaltyInput, setLoyaltyInput] = useState("");
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [useWallet, setUseWallet] = useState(false);
+  const [groupDiscount, setGroupDiscount] = useState(0);
+
+  // Fetch loyalty, wallet, group discount for logged-in users
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      // Loyalty points
+      const { data: pts } = await (supabase.from("user_points" as any).select("balance").eq("user_id", user.id).maybeSingle() as any);
+      if (pts) { setLoyaltyBalance(pts.balance); setLoyaltyPoints(pts.balance); }
+      // Wallet
+      const { data: w } = await (supabase.from("customer_wallets" as any).select("balance").eq("user_id", user.id).maybeSingle() as any);
+      if (w) setWalletBalance(Number(w.balance) || 0);
+      // Group discount
+      const { data: gd } = await supabase.rpc("get_user_group_discount" as any, { p_user_id: user.id });
+      if (gd && Number(gd) > 0) setGroupDiscount(Number(gd));
+    })();
+  }, [user]);
+
+  const groupDiscountAmount = groupDiscount > 0 ? Math.round(cartSubtotal * groupDiscount / 100 * 100) / 100 : 0;
+  const loyaltyDiscount = useLoyalty && loyaltyInput ? Math.min(Number(loyaltyInput), loyaltyBalance) / 100 : 0;
+  const walletPayment = useWallet ? Math.min(walletBalance, 0) : 0; // calculated below
+
   const giftWrappingPrice = Number(general?.gift_wrapping_price) || 15;
-  const finalTotal = cartTotal + (giftWrapping ? giftWrappingPrice : 0);
+  const subtotalAfterGroupDiscount = cartSubtotal - groupDiscountAmount;
+  const preWalletTotal = subtotalAfterGroupDiscount + shippingCost - discountAmount - loyaltyDiscount + (giftWrapping ? giftWrappingPrice : 0);
+  const walletDeduction = useWallet ? Math.min(walletBalance, Math.max(preWalletTotal, 0)) : 0;
+  const finalTotal = Math.max(preWalletTotal - walletDeduction, 0);
 
   // Saved addresses
   useEffect(() => {

@@ -1,17 +1,26 @@
 import { createStart, createMiddleware } from "@tanstack/react-start";
-import { SECURITY_HEADERS } from "./server/security-headers";
+import { setResponseHeader } from "@tanstack/react-start/server";
 
 /**
- * Global request middleware — runs on EVERY server request (SSR, routes, functions).
- * Applies security headers to all responses.
+ * Global security middleware — sets security headers on every server response.
+ * These supplement the meta http-equiv tags in __root.tsx for full coverage
+ * on API routes, server functions, and non-HTML responses.
  */
-const securityHeadersMiddleware = createMiddleware().server(
+const securityMiddleware = createMiddleware().server(
   async ({ next }) => {
-    const result = await next();
-    return result;
+    // Set headers before handler runs — they'll be included in the response
+    setResponseHeader("X-Content-Type-Options", "nosniff");
+    setResponseHeader("X-Frame-Options", "SAMEORIGIN");
+    setResponseHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    setResponseHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+    setResponseHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), interest-cohort=()");
+    setResponseHeader("Cross-Origin-Opener-Policy", "same-origin");
+    setResponseHeader("X-DNS-Prefetch-Control", "off");
+
+    return next();
   },
 );
 
 export default createStart(() => ({
-  requestMiddleware: [securityHeadersMiddleware],
+  requestMiddleware: [securityMiddleware],
 }));

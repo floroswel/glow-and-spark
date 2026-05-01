@@ -41,7 +41,7 @@ const defaults = {
   delivery_badges: ["DPD", "Fan Courier", "Cargus"],
   show_payment_icons: true,
   payment_icons: ["VISA", "MASTERCARD", "RAMBURS"],
-  copyright_text: "© 2026 SC Vomix Genius SRL — Toate drepturile rezervate",
+  copyright_text: "© 2026 Mama Lucica — SC Vomix Genius SRL — Toate drepturile rezervate",
   company_name: "SC Vomix Genius SRL",
   reg_com: "",
   cui: "43025661",

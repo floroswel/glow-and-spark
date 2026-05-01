@@ -4,7 +4,7 @@ const defaultItems = [
   { icon: "🕯️", title: "100% Handmade", desc: "Fiecare lumânare este turnată manual cu grijă" },
   { icon: "🌿", title: "Ceară Naturală", desc: "Doar ceară de soia, fără parafină" },
   { icon: "🚚", title: "Livrare Rapidă", desc: "Comandă azi, primești în 24-48h" },
-  { icon: "🛡️", title: "Garanție Calitate", desc: "Returnare gratuită în 30 de zile" },
+  { icon: "🛡️", title: "Garanție și Retur Gratuit", desc: "Retur fără justificare în 14 zile (OUG 34/2014)" },
 ];
 
 export function HomepageWhyUs() {

@@ -513,7 +513,7 @@ export function SiteFooter() {
 
           {/* Copyright */}
           <p className="text-xs text-center mt-3" style={{ color: textColor }}>
-            {footer?.copyright_text || `© ${new Date().getFullYear()} SC Vomix Genius SRL — Toate drepturile rezervate`}
+            {footer?.copyright_text || `© ${new Date().getFullYear()} Mama Lucica — SC Vomix Genius SRL — Toate drepturile rezervate`}
           </p>
 
           {/* Reset cookies — GDPR right to withdraw consent */}

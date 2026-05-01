@@ -11,7 +11,7 @@ export const Route = createFileRoute("/politica-returnare")({
   head: () => ({
     meta: [
       { title: "Politică de Returnare — Mama Lucica" },
-      { name: "description", content: "Politica de returnare conform OUG 34/2014. Ai dreptul de retragere în 14 zile calendaristice fără justificare. SC Vomix Genius SRL, CUI 43025661." },
+      { name: "description", content: "Politica de returnare Mama Lucica — retur gratuit în 14 zile calendaristice, fără justificare, conform OUG 34/2014. SC Vomix Genius SRL, CUI 43025661." },
       { property: "og:title", content: "Politică de Returnare — Mama Lucica" },
       { property: "og:description", content: "Informații complete despre dreptul de retur și procedura de returnare." },
     ],

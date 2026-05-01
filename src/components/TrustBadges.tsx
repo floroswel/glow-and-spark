@@ -3,10 +3,10 @@ import { ShieldCheck, RotateCcw, Truck, Award } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const FALLBACK = [
-  { id: "b1", icon: "ShieldCheck", title: "Plată securizată SSL", desc: "Protecție 100%", color: "#C9A24A", active: true },
-  { id: "b2", icon: "RotateCcw", title: "Retur 30 de zile", desc: "Fără întrebări", color: "#C9A24A", active: true },
-  { id: "b3", icon: "Truck", title: "Livrare 24-48h", desc: "Prin Fan Courier", color: "#C9A24A", active: true },
-  { id: "b4", icon: "Award", title: "Produs artizanal", desc: "Fabricat în România", color: "#C9A24A", active: true },
+  { id: "b1", icon: "ShieldCheck", title: "Plată securizată SSL", desc: "Datele tale sunt protejate 100%", color: "#C9A24A", active: true },
+  { id: "b2", icon: "RotateCcw", title: "Retur gratuit 14 zile", desc: "Conform OUG 34/2014", color: "#C9A24A", active: true },
+  { id: "b3", icon: "Truck", title: "Livrare rapidă 24-48h", desc: "Prin curier, în toată România", color: "#C9A24A", active: true },
+  { id: "b4", icon: "Award", title: "100% Handmade", desc: "Fabricat artizanal în România", color: "#C9A24A", active: true },
 ];
 
 const ICON_MAP: Record<string, any> = { ShieldCheck, RotateCcw, Truck, Award };

@@ -662,11 +662,11 @@ function CheckoutPage() {
                 <div className="space-y-2">
                   <label className="flex items-start gap-2 text-sm">
                     <input type="checkbox" checked={form.acceptTerms} onChange={(e) => u("acceptTerms", e.target.checked)} className="mt-0.5 accent-accent" />
-                    <span>Accept <a href="/page/termeni" className="text-accent underline">termenii și condițiile</a> *</span>
+                    <span>Accept <a href="/termeni-si-conditii" className="text-accent underline">termenii și condițiile</a> *</span>
                   </label>
                   <label className="flex items-start gap-2 text-sm">
                     <input type="checkbox" checked={form.acceptGdpr} onChange={(e) => u("acceptGdpr", e.target.checked)} className="mt-0.5 accent-accent" />
-                    <span>Accept <a href="/page/gdpr" className="text-accent underline">politica de confidențialitate</a> *</span>
+                    <span>Accept <a href="/politica-confidentialitate" className="text-accent underline">politica de confidențialitate</a> *</span>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer pt-1">
                     <input type="checkbox" checked={newsletterOptIn} onChange={(e) => setNewsletterOptIn(e.target.checked)} className="w-4 h-4 rounded border-border accent-accent" />

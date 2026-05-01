@@ -106,7 +106,7 @@ function FooterNewsletter({ accentColor }: { accentColor: string }) {
               />
               <span>
                 Sunt de acord sa primesc informatii cu promotiile magazinului. Afla mai multe in{" "}
-                <a href="/page/politica-confidentialitate" className="underline hover:text-white">
+                <a href="/politica-confidentialitate" className="underline hover:text-white">
                   Politica de Confidentialitate
                 </a>
               </span>

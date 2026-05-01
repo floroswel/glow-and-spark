@@ -19,10 +19,24 @@ vi.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({ user: null, loading: false }),
 }));
 
+const mockChain = () => {
+  const chain: any = {
+    select: () => chain,
+    eq: () => chain,
+    order: () => chain,
+    limit: () => chain,
+    single: () => chain,
+    then: (cb: any) => { cb({ data: [], error: null }); return chain; },
+    data: [],
+    error: null,
+  };
+  return chain;
+};
+
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
-    from: () => ({ select: () => ({ eq: () => ({ data: [], error: null }), order: () => ({ data: [], error: null }), data: [], error: null }) }),
-    rpc: () => ({ data: [], error: null }),
+    from: () => mockChain(),
+    rpc: () => Promise.resolve({ data: [], error: null }),
   },
 }));
 

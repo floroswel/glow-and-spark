@@ -28,6 +28,19 @@ import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
+    // Server-side canonical host redirect (www → non-www)
+    try {
+      const canonicalTarget = await checkCanonicalHost();
+      if (canonicalTarget) {
+        throw redirect({
+          href: canonicalTarget,
+          statusCode: 301 as any,
+        });
+      }
+    } catch (e: any) {
+      if (e?.isRedirect || e?.status === 301 || e?.status === 302) throw e;
+    }
+
     // Server-side SEO redirects from seo_redirects table
     try {
       const result = await checkSeoRedirect({ data: { path: location.pathname } });

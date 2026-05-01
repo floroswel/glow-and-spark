@@ -8,11 +8,11 @@ export const Route = createFileRoute("/admin/content/seo")({
 const defaults = {
   title_template: "{page} — Glow & Spark | Lumânări Artizanale Premium",
   meta_description: "Descoperă lumânări artizanale din ceară de soia, parfumate natural. Livrare rapidă în toată România.",
-  og_site_name: "Glow & Spark",
+  og_site_name: "Mama Lucica",
   og_default_image: "",
   canonical_url: "https://mamalucica.ro",
   robots_txt: "User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /checkout\nSitemap: https://mamalucica.ro/sitemap.xml",
-  schema_org_name: "Glow & Spark",
+  schema_org_name: "Mama Lucica",
   schema_org_type: "Organization",
   schema_org_logo: "",
   schema_org_phone: "+40753326405",

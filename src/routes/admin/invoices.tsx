@@ -143,7 +143,7 @@ function AdminInvoices() {
       <div class="parties">
         <div class="party">
           <h3>Furnizor</h3>
-          <p><strong>Glow & Spark SRL</strong></p>
+          <p><strong>SC Vomix Genius SRL</strong></p>
           <p>CUI: RO12345678</p>
           <p>Reg. Com: J40/1234/2024</p>
           <p>Str. Lumânărilor 42, București</p>
@@ -171,7 +171,7 @@ function AdminInvoices() {
         <div class="row total-final"><span>TOTAL:</span><span>${Number(inv.total).toFixed(2)} RON</span></div>
       </div>
       <div class="footer">
-        <p>Glow & Spark SRL • CUI RO12345678 • Banca: ING Bank • IBAN: RO49INGB0000999903456789</p>
+        <p>SC Vomix Genius SRL • CUI 43025661 • Banca: ING Bank • IBAN: RO49INGB0000999903456789</p>
         <p>Factură generată automat — nu necesită semnătură</p>
       </div>
     </body></html>`);

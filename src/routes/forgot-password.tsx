@@ -19,7 +19,7 @@ function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { general } = useSiteSettings();
-  const siteName = general?.site_name || "LUMINI.RO";
+  const siteName = general?.site_name || "Mama Lucica";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -130,7 +130,7 @@ export function SiteHeader() {
               {general?.logo_url ? (
                 <img src={general.logo_url} alt={general?.site_name || "Logo"} className="h-8 md:h-10 w-auto" />
               ) : (
-                <>{general?.site_name || "LUMINI"}<span className="text-accent">.RO</span></>
+                <>Mama Lucica</>
               )}
             </Link>
 
@@ -430,7 +430,7 @@ export function SiteHeader() {
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-border">
             <span className="font-heading text-lg font-bold tracking-tight text-foreground">
-              {general?.site_name || "LUMINI"}<span className="text-accent">.RO</span>
+              Mama Lucica
             </span>
             <button
               onClick={() => setMobileOpen(false)}

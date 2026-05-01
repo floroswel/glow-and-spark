@@ -46,7 +46,7 @@ function AuthPage() {
   const [mfaCode, setMfaCode] = useState("");
   const [mfaBusy, setMfaBusy] = useState(false);
 
-  const siteName = general?.site_name || "LUMINI.RO";
+  const siteName = general?.site_name || "Mama Lucica";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

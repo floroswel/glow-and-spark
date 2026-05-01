@@ -150,7 +150,7 @@ function AdminReports() {
   };
 
   const handleExportReport = () => {
-    let csv = "Raport LUMINI.RO\n\n";
+    let csv = "Raport Mama Lucica\n\n";
     csv += `Perioadă: Ultimele ${period} zile\n`;
     csv += `Venituri: ${stats.totalRevenue.toFixed(2)} RON\n`;
     csv += `Comenzi: ${stats.totalOrders}\n`;

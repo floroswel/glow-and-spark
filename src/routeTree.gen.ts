@@ -72,6 +72,7 @@ import { Route as AdminPopupRouteImport } from './routes/admin/popup'
 import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
 import { Route as AdminPagesRouteImport } from './routes/admin/pages'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
+import { Route as AdminMonitoringRouteImport } from './routes/admin/monitoring'
 import { Route as AdminMediaRouteImport } from './routes/admin/media'
 import { Route as AdminLoyaltyRouteImport } from './routes/admin/loyalty'
 import { Route as AdminLoginAttemptsRouteImport } from './routes/admin/login-attempts'
@@ -112,6 +113,7 @@ import { Route as AccountNotificationsRouteImport } from './routes/account/notif
 import { Route as AccountGdprRouteImport } from './routes/account/gdpr'
 import { Route as AccountFavoritesRouteImport } from './routes/account/favorites'
 import { Route as AccountAddressesRouteImport } from './routes/account/addresses'
+import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as AdminStockWarehousesRouteImport } from './routes/admin/stock.warehouses'
 import { Route as AdminStockTransfersRouteImport } from './routes/admin/stock.transfers'
 import { Route as AdminStockSuppliersRouteImport } from './routes/admin/stock.suppliers'
@@ -449,6 +451,11 @@ const AdminOrdersRoute = AdminOrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMonitoringRoute = AdminMonitoringRouteImport.update({
+  id: '/monitoring',
+  path: '/monitoring',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminMediaRoute = AdminMediaRouteImport.update({
   id: '/media',
   path: '/media',
@@ -649,6 +656,11 @@ const AccountAddressesRoute = AccountAddressesRouteImport.update({
   path: '/addresses',
   getParentRoute: () => AccountRoute,
 } as any)
+const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
+  id: '/api/public/health',
+  path: '/api/public/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminStockWarehousesRoute = AdminStockWarehousesRouteImport.update({
   id: '/warehouses',
   path: '/warehouses',
@@ -819,6 +831,7 @@ export interface FileRoutesByFullPath {
   '/admin/login-attempts': typeof AdminLoginAttemptsRoute
   '/admin/loyalty': typeof AdminLoyaltyRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -876,6 +889,7 @@ export interface FileRoutesByFullPath {
   '/admin/stock/suppliers': typeof AdminStockSuppliersRoute
   '/admin/stock/transfers': typeof AdminStockTransfersRoute
   '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -942,6 +956,7 @@ export interface FileRoutesByTo {
   '/admin/login-attempts': typeof AdminLoginAttemptsRoute
   '/admin/loyalty': typeof AdminLoyaltyRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -999,6 +1014,7 @@ export interface FileRoutesByTo {
   '/admin/stock/suppliers': typeof AdminStockSuppliersRoute
   '/admin/stock/transfers': typeof AdminStockTransfersRoute
   '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1068,6 +1084,7 @@ export interface FileRoutesById {
   '/admin/login-attempts': typeof AdminLoginAttemptsRoute
   '/admin/loyalty': typeof AdminLoyaltyRoute
   '/admin/media': typeof AdminMediaRoute
+  '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -1125,6 +1142,7 @@ export interface FileRoutesById {
   '/admin/stock/suppliers': typeof AdminStockSuppliersRoute
   '/admin/stock/transfers': typeof AdminStockTransfersRoute
   '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1195,6 +1213,7 @@ export interface FileRouteTypes {
     | '/admin/login-attempts'
     | '/admin/loyalty'
     | '/admin/media'
+    | '/admin/monitoring'
     | '/admin/orders'
     | '/admin/pages'
     | '/admin/payments'
@@ -1252,6 +1271,7 @@ export interface FileRouteTypes {
     | '/admin/stock/suppliers'
     | '/admin/stock/transfers'
     | '/admin/stock/warehouses'
+    | '/api/public/health'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1318,6 +1338,7 @@ export interface FileRouteTypes {
     | '/admin/login-attempts'
     | '/admin/loyalty'
     | '/admin/media'
+    | '/admin/monitoring'
     | '/admin/orders'
     | '/admin/pages'
     | '/admin/payments'
@@ -1375,6 +1396,7 @@ export interface FileRouteTypes {
     | '/admin/stock/suppliers'
     | '/admin/stock/transfers'
     | '/admin/stock/warehouses'
+    | '/api/public/health'
   id:
     | '__root__'
     | '/'
@@ -1443,6 +1465,7 @@ export interface FileRouteTypes {
     | '/admin/login-attempts'
     | '/admin/loyalty'
     | '/admin/media'
+    | '/admin/monitoring'
     | '/admin/orders'
     | '/admin/pages'
     | '/admin/payments'
@@ -1500,6 +1523,7 @@ export interface FileRouteTypes {
     | '/admin/stock/suppliers'
     | '/admin/stock/transfers'
     | '/admin/stock/warehouses'
+    | '/api/public/health'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1533,6 +1557,7 @@ export interface RootRouteChildren {
   OrderConfirmedOrderIdRoute: typeof OrderConfirmedOrderIdRoute
   PageSlugRoute: typeof PageSlugRoute
   ProdusSlugRoute: typeof ProdusSlugRoute
+  ApiPublicHealthRoute: typeof ApiPublicHealthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1978,6 +2003,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/monitoring': {
+      id: '/admin/monitoring'
+      path: '/monitoring'
+      fullPath: '/admin/monitoring'
+      preLoaderRoute: typeof AdminMonitoringRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/media': {
       id: '/admin/media'
       path: '/media'
@@ -2257,6 +2289,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/account/addresses'
       preLoaderRoute: typeof AccountAddressesRouteImport
       parentRoute: typeof AccountRoute
+    }
+    '/api/public/health': {
+      id: '/api/public/health'
+      path: '/api/public/health'
+      fullPath: '/api/public/health'
+      preLoaderRoute: typeof ApiPublicHealthRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/stock/warehouses': {
       id: '/admin/stock/warehouses'
@@ -2561,6 +2600,7 @@ interface AdminRouteChildren {
   AdminLoginAttemptsRoute: typeof AdminLoginAttemptsRoute
   AdminLoyaltyRoute: typeof AdminLoyaltyRoute
   AdminMediaRoute: typeof AdminMediaRoute
+  AdminMonitoringRoute: typeof AdminMonitoringRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPagesRoute: typeof AdminPagesRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
@@ -2627,6 +2667,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminLoginAttemptsRoute: AdminLoginAttemptsRoute,
   AdminLoyaltyRoute: AdminLoyaltyRoute,
   AdminMediaRoute: AdminMediaRoute,
+  AdminMonitoringRoute: AdminMonitoringRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPagesRoute: AdminPagesRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
@@ -2703,6 +2744,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrderConfirmedOrderIdRoute: OrderConfirmedOrderIdRoute,
   PageSlugRoute: PageSlugRoute,
   ProdusSlugRoute: ProdusSlugRoute,
+  ApiPublicHealthRoute: ApiPublicHealthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

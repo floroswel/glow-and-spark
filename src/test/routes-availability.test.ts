@@ -33,8 +33,8 @@ const CRITICAL_ROUTES = [
   { file: "track-order.tsx", label: "Track Order" },
 
   // SEO
-  { file: "sitemap.xml.tsx", label: "Sitemap XML" },
-  { file: "robots.txt.tsx", label: "Robots.txt" },
+  { file: "sitemap[.]xml.tsx", label: "Sitemap XML" },
+  { file: "robots[.]txt.tsx", label: "Robots.txt" },
 
   // API
   { file: "api/public/health.ts", label: "Health Check API" },

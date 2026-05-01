@@ -315,9 +315,9 @@ function CanonicalDomainRedirect() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const host = window.location.hostname;
-    if (host === CANONICAL_HOST || host === `www.${CANONICAL_HOST}`) return;
+    if (host === CANONICAL_HOST) return;
     if (PREVIEW_HOST_PATTERNS.some((re) => re.test(host))) return;
-    // Redirect any other host (e.g. glow-and-spark.lovable.app) to canonical.
+    // Redirect www or any other host to canonical (client-side fallback for bots that miss server redirect)
     const target = `https://${CANONICAL_HOST}${window.location.pathname}${window.location.search}${window.location.hash}`;
     window.location.replace(target);
   }, []);

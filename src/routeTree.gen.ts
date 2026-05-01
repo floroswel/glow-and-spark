@@ -112,6 +112,7 @@ import { Route as AccountNotificationsRouteImport } from './routes/account/notif
 import { Route as AccountGdprRouteImport } from './routes/account/gdpr'
 import { Route as AccountFavoritesRouteImport } from './routes/account/favorites'
 import { Route as AccountAddressesRouteImport } from './routes/account/addresses'
+import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as AdminStockWarehousesRouteImport } from './routes/admin/stock.warehouses'
 import { Route as AdminStockTransfersRouteImport } from './routes/admin/stock.transfers'
 import { Route as AdminStockSuppliersRouteImport } from './routes/admin/stock.suppliers'
@@ -649,6 +650,11 @@ const AccountAddressesRoute = AccountAddressesRouteImport.update({
   path: '/addresses',
   getParentRoute: () => AccountRoute,
 } as any)
+const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
+  id: '/api/public/health',
+  path: '/api/public/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminStockWarehousesRoute = AdminStockWarehousesRouteImport.update({
   id: '/warehouses',
   path: '/warehouses',
@@ -876,6 +882,7 @@ export interface FileRoutesByFullPath {
   '/admin/stock/suppliers': typeof AdminStockSuppliersRoute
   '/admin/stock/transfers': typeof AdminStockTransfersRoute
   '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -999,6 +1006,7 @@ export interface FileRoutesByTo {
   '/admin/stock/suppliers': typeof AdminStockSuppliersRoute
   '/admin/stock/transfers': typeof AdminStockTransfersRoute
   '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1125,6 +1133,7 @@ export interface FileRoutesById {
   '/admin/stock/suppliers': typeof AdminStockSuppliersRoute
   '/admin/stock/transfers': typeof AdminStockTransfersRoute
   '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1252,6 +1261,7 @@ export interface FileRouteTypes {
     | '/admin/stock/suppliers'
     | '/admin/stock/transfers'
     | '/admin/stock/warehouses'
+    | '/api/public/health'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1375,6 +1385,7 @@ export interface FileRouteTypes {
     | '/admin/stock/suppliers'
     | '/admin/stock/transfers'
     | '/admin/stock/warehouses'
+    | '/api/public/health'
   id:
     | '__root__'
     | '/'
@@ -1500,6 +1511,7 @@ export interface FileRouteTypes {
     | '/admin/stock/suppliers'
     | '/admin/stock/transfers'
     | '/admin/stock/warehouses'
+    | '/api/public/health'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1533,6 +1545,7 @@ export interface RootRouteChildren {
   OrderConfirmedOrderIdRoute: typeof OrderConfirmedOrderIdRoute
   PageSlugRoute: typeof PageSlugRoute
   ProdusSlugRoute: typeof ProdusSlugRoute
+  ApiPublicHealthRoute: typeof ApiPublicHealthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -2258,6 +2271,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountAddressesRouteImport
       parentRoute: typeof AccountRoute
     }
+    '/api/public/health': {
+      id: '/api/public/health'
+      path: '/api/public/health'
+      fullPath: '/api/public/health'
+      preLoaderRoute: typeof ApiPublicHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/stock/warehouses': {
       id: '/admin/stock/warehouses'
       path: '/warehouses'
@@ -2703,6 +2723,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrderConfirmedOrderIdRoute: OrderConfirmedOrderIdRoute,
   PageSlugRoute: PageSlugRoute,
   ProdusSlugRoute: ProdusSlugRoute,
+  ApiPublicHealthRoute: ApiPublicHealthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

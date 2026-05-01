@@ -114,13 +114,27 @@ export const Route = createFileRoute("/api/public/health")({
           }
         );
       },
-      POST: async () => {
-        // pg_cron calls POST — same logic
-        const getHandler = Route.options?.server?.handlers;
-        if (getHandler && typeof getHandler === "object" && "GET" in getHandler) {
-          return (getHandler as any).GET({ request: new Request("https://mamalucica.ro/api/public/health") });
+      POST: async ({ request }: { request: Request }): Promise<Response> => {
+        // pg_cron calls POST — run same checks
+        const results: CheckResult[] = [];
+        for (const check of CHECKS) {
+          const result = await check.test();
+          results.push({ name: check.name, ...result });
         }
-        return new Response("OK");
+        try {
+          const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+          const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+          if (url && key) {
+            const supabase = createClient(url, key);
+            for (const r of results) {
+              await supabase.rpc("record_health_check", {
+                p_name: r.name, p_status: r.status, p_response_ms: r.response_time_ms, p_error: r.error || null,
+              });
+            }
+          }
+        } catch (_) {}
+        const overall = results.some((r) => r.status === "down") ? "down" : results.some((r) => r.status === "degraded") ? "degraded" : "ok";
+        return Response.json({ status: overall, checks: results, timestamp: new Date().toISOString() }, { status: overall === "ok" ? 200 : 503 });
       },
     },
   },

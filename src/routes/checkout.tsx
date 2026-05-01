@@ -376,14 +376,15 @@ function CheckoutPage() {
           address: orderData.shipping_address,
         },
       };
-      console.log("[checkout][netopia] Invoking netopia-payment with:", payloadBody);
+      // Payment payload logged only in dev for debugging
+      if (import.meta.env.DEV) console.log("[checkout][netopia] Invoking netopia-payment");
       try {
         const t0 = Date.now();
         const { data: payData, error: payErr } = await supabase.functions.invoke("netopia-payment", {
           body: payloadBody,
         });
         const elapsed = Date.now() - t0;
-        console.log(`[checkout][netopia] Response in ${elapsed}ms:`, { payData, payErr });
+        if (import.meta.env.DEV) console.log(`[checkout][netopia] Response in ${elapsed}ms`);
 
         if (payErr) {
           // Try to extract the response body from FunctionsHttpError
@@ -395,14 +396,12 @@ function CheckoutPage() {
             } else if (ctx && typeof ctx.text === "function") {
               serverDetails = await ctx.text();
             }
-          } catch (parseErr) {
-            console.warn("[checkout][netopia] Could not parse error context:", parseErr);
+          } catch {
+            // Silent — context parsing failure is not actionable
           }
-          console.error("[checkout][netopia] Edge function error:", {
-            name: payErr.name,
-            message: payErr.message,
-            serverDetails,
-          });
+          if (import.meta.env.DEV) {
+            console.error("[checkout][netopia] Edge function error:", { name: payErr.name, message: payErr.message });
+          }
           const debug = JSON.stringify(
             {
               step: "netopia-invoke",
@@ -426,18 +425,18 @@ function CheckoutPage() {
           return;
         }
         if (!payData?.paymentUrl) {
-          console.error("[checkout][netopia] Missing paymentUrl in response:", payData);
+          if (import.meta.env.DEV) console.error("[checkout][netopia] Missing paymentUrl in response");
           setDebugInfo(JSON.stringify({ step: "missing-payment-url", payData }, null, 2));
           setError("Răspunsul Netopia nu conține URL de plată. Verifică logurile.");
           setSubmitting(false);
           return;
         }
-        console.log("[checkout][netopia] Redirecting to:", payData.paymentUrl);
+        if (import.meta.env.DEV) console.log("[checkout][netopia] Redirecting to payment page");
         clearCart();
         window.location.href = payData.paymentUrl;
         return;
       } catch (e: any) {
-        console.error("[checkout][netopia] Exception:", e);
+        if (import.meta.env.DEV) console.error("[checkout][netopia] Exception:", e?.name);
         setDebugInfo(
           JSON.stringify(
             {

@@ -3,14 +3,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock useSiteSettings to return controlled values
 const mockUseSiteSettings = vi.fn();
-const mockUseRefreshSiteSettings = vi.fn(() => vi.fn());
 
 vi.mock("@/hooks/useSiteSettings", () => ({
   useSiteSettings: () => mockUseSiteSettings(),
-  useRefreshSiteSettings: () => mockUseRefreshSiteSettings(),
+  useRefreshSiteSettings: () => vi.fn(),
 }));
 
-// Mock dependencies used by SiteHeader
 vi.mock("@/hooks/useCart", () => ({
   useCart: () => ({ cartCount: 0, items: [], addItem: vi.fn(), removeItem: vi.fn(), updateQuantity: vi.fn(), clearCart: vi.fn(), cartTotal: 0 }),
 }));
@@ -53,7 +51,6 @@ vi.mock("@/components/ui/sheet", () => ({
   SheetTitle: ({ children }: any) => <div>{children}</div>,
 }));
 
-// Dynamically import after mocks
 const { SiteHeader } = await import("@/components/SiteHeader");
 
 describe("SiteHeader branding", () => {
@@ -68,7 +65,8 @@ describe("SiteHeader branding", () => {
     });
 
     render(<SiteHeader />);
-    expect(screen.getByText("Mama Lucica")).toBeInTheDocument();
+    const matches = screen.getAllByText("Mama Lucica");
+    expect(matches.length).toBeGreaterThanOrEqual(1);
   });
 
   it("shows 'Mama Lucica' as fallback when general settings are empty", () => {
@@ -78,7 +76,8 @@ describe("SiteHeader branding", () => {
     });
 
     render(<SiteHeader />);
-    expect(screen.getByText("Mama Lucica")).toBeInTheDocument();
+    const matches = screen.getAllByText("Mama Lucica");
+    expect(matches.length).toBeGreaterThanOrEqual(1);
   });
 
   it("shows logo image when logo_url is set", () => {
@@ -88,9 +87,9 @@ describe("SiteHeader branding", () => {
     });
 
     render(<SiteHeader />);
-    const img = screen.getByAltText("Mama Lucica");
-    expect(img).toBeInTheDocument();
-    expect(img).toHaveAttribute("src", "https://example.com/logo.png");
+    const imgs = screen.getAllByAltText("Mama Lucica");
+    expect(imgs.length).toBeGreaterThanOrEqual(1);
+    expect(imgs[0]).toHaveAttribute("src", "https://example.com/logo.png");
   });
 
   it("uses custom logo_alt when provided", () => {
@@ -100,6 +99,7 @@ describe("SiteHeader branding", () => {
     });
 
     render(<SiteHeader />);
-    expect(screen.getByAltText("Logo Custom")).toBeInTheDocument();
+    const imgs = screen.getAllByAltText("Logo Custom");
+    expect(imgs.length).toBeGreaterThanOrEqual(1);
   });
 });

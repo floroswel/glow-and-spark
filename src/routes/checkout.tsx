@@ -314,7 +314,31 @@ function CheckoutPage() {
       console.error("[checkout] gift card redemption failed:", e);
     }
 
-    if (newsletterOptIn && form.email) {
+    // Redeem loyalty points
+    if (useLoyalty && loyaltyInput && Number(loyaltyInput) > 0 && user?.id) {
+      try {
+        await supabase.rpc("redeem_loyalty_points" as any, {
+          p_user_id: user.id,
+          p_points: Math.min(Number(loyaltyInput), loyaltyBalance),
+          p_order_id: orderId,
+        });
+      } catch (e) { console.error("[checkout] loyalty redemption failed:", e); }
+    }
+
+    // Charge wallet
+    if (useWallet && walletDeduction > 0 && user?.id) {
+      try {
+        await supabase.rpc("charge_wallet" as any, {
+          p_user_id: user.id,
+          p_amount: walletDeduction,
+          p_order_id: orderId,
+        });
+      } catch (e) { console.error("[checkout] wallet charge failed:", e); }
+    }
+
+    // Affiliate attribution
+    attributeOrderToAffiliate(orderId).catch(() => {});
+
       supabase.from("newsletter_subscribers").upsert(
         { email: form.email, name: form.name, is_active: true, source: "checkout" },
         { onConflict: "email", ignoreDuplicates: true }

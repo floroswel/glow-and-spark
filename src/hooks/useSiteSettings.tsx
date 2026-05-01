@@ -38,10 +38,7 @@ const CACHE_KEY = "site_settings_cache";
 const CACHE_VERSION_KEY = "site_settings_cache_v";
 const CACHE_VERSION = "2";
 
-const SiteSettingsContext = createContext<SiteSettingsContextValue>({
-  settings: defaultSettings,
-  refreshSettings: () => {},
-});
+const SiteSettingsContext = createContext<SiteSettings>(defaultSettings);
 
 // Load Google Fonts dynamically
 function loadGoogleFont(fontName: string) {

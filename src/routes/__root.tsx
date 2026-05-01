@@ -309,6 +309,11 @@ function CanonicalUrlSync() {
   return null;
 }
 
+function AffiliateCapture() {
+  useEffect(() => { captureRefFromUrl(); }, []);
+  return null;
+}
+
 function RootComponent() {
   return (
     <ErrorBoundary variant="app">
@@ -322,6 +327,7 @@ function RootComponent() {
                 <SiteIdentitySync />
                 <TrackingInit />
                 <RedirectHandler />
+                <AffiliateCapture />
                 <MaintenanceGate>
                   <SiteBanners position="top" />
                   <div className="pb-14 md:pb-0">
@@ -333,6 +339,8 @@ function RootComponent() {
                 <ExitIntentPopup />
                 <LivePopups />
                 <InstallAppBanner />
+                <ChatWidget />
+                <PushNotificationManager />
               </CompareProvider>
             </FavoritesProvider>
           </CartProvider>

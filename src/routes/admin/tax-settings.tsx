@@ -18,7 +18,7 @@ const defaults = {
   company_county: "București",
   company_postal: "010101",
   company_phone: "+40 721 000 000",
-  company_email: "contact@glowandspark.ro",
+  company_email: "contact@mamalucica.ro",
   company_iban: "RO49INGB0000999903456789",
   company_bank: "ING Bank",
   invoice_prefix: "GS",

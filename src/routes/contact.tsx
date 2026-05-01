@@ -248,8 +248,8 @@ function ContactPage() {
                 <Mail className="h-5 w-5 text-accent mt-0.5 shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Email</p>
-                  <a href={`mailto:${general?.contact_email || "contact@lumini.ro"}`} className="text-sm text-accent hover:underline">
-                    {general?.contact_email || "contact@lumini.ro"}
+                  <a href={`mailto:${general?.contact_email || "contact@mamalucica.ro"}`} className="text-sm text-accent hover:underline">
+                    {general?.contact_email || "contact@mamalucica.ro"}
                   </a>
                 </div>
               </div>

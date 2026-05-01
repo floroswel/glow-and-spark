@@ -12,7 +12,7 @@ export function TopBar() {
   const phone = general?.contact_phone;
   const freeShippingThreshold = general?.free_shipping_min || "150";
   const welcomeText = header?.topbar_text || "Bine ai venit pe";
-  const siteName = general?.site_name || "Lumini.ro";
+  const siteName = general?.site_name || "Mama Lucica";
 
   return (
     <>

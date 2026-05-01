@@ -84,7 +84,7 @@ function StockAlerts() {
             </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground">Email notificare</label>
-              <input name="notify_email" type="email" placeholder="admin@lumini.ro" className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm" />
+              <input name="notify_email" type="email" placeholder="admin@mamalucica.ro" className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm" />
             </div>
             <button type="submit" className="w-full rounded-lg bg-foreground py-2.5 text-sm font-semibold text-background">Salvează</button>
           </form>

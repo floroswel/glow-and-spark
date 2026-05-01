@@ -1434,7 +1434,7 @@ function AdminProducts() {
                   <div className="rounded-lg bg-secondary/50 p-4">
                     <p className="text-xs font-medium text-muted-foreground mb-2">GOOGLE PREVIEW</p>
                     <p className="text-blue-600 text-base font-medium truncate">{editing.meta_title || editing.name || "Titlu produs"} — Mama Lucica</p>
-                    <p className="text-green-700 text-xs">lumini.ro/produs/{editing.slug || "..."}</p>
+                    <p className="text-green-700 text-xs">mamalucica.ro/produs/{editing.slug || "..."}</p>
                     <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{editing.meta_description || editing.short_description || "Descriere produs..."}</p>
                   </div>
                   <div>

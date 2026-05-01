@@ -235,16 +235,16 @@ export function SiteFooter() {
     { label: "SOL (Soluționare Online Litigii)", url: "https://ec.europa.eu/consumers/odr" },
   ];
 
-  /* Company info - from general or footer settings */
-  const companyName = general?.company_name || footer?.company_name || "";
-  const regCom = general?.reg_com || footer?.reg_com || "";
-  const cui = general?.company_cui || footer?.cui || "";
-  const companyAddress = general?.company_address || footer?.company_address || "";
-  const companyCity = general?.company_city || footer?.company_city || "";
-  const companyCounty = general?.company_county || footer?.company_county || "";
-  const companyPostalCode = general?.company_postal_code || footer?.company_postal_code || "";
-  const companyIban = general?.invoice_iban || footer?.company_iban || "";
-  const companyBank = general?.invoice_bank || footer?.company_bank || "";
+  /* Company info - from general or footer settings, with hardcoded fallbacks */
+  const companyName = general?.company_name || footer?.company_name || "SC Vomix Genius SRL";
+  const regCom = general?.reg_com || footer?.reg_com || "J2020000459343";
+  const cui = general?.company_cui || footer?.cui || "43025661";
+  const companyAddress = general?.company_address || footer?.company_address || "Strada Constructorilor Nr 39, sat Voievoda, comuna Furculești";
+  const companyCity = general?.company_city || footer?.company_city || "Furculești";
+  const companyCounty = general?.company_county || footer?.company_county || "Teleorman";
+  const companyPostalCode = general?.company_postal_code || footer?.company_postal_code || "147148";
+  const companyIban = general?.invoice_iban || footer?.company_iban || "RO50BTRLRONCRT0566231601";
+  const companyBank = general?.invoice_bank || footer?.company_bank || "BANCA TRANSILVANIA S.A.";
 
   const phone = general?.contact_phone || "";
   const emailAddr = general?.contact_email || "";

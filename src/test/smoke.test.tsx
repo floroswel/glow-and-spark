@@ -144,8 +144,8 @@ describe("Site Footer", () => {
 
   it("contains ANPC and SOL links", () => {
     render(<SiteFooter />);
-    expect(screen.getByText(/ANPC/)).toBeInTheDocument();
-    expect(screen.getByText(/SOL/)).toBeInTheDocument();
+    expect(screen.getAllByText(/ANPC/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/SOL/).length).toBeGreaterThan(0);
   });
 
   it("links to legal pages", () => {

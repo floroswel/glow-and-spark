@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { supabase } from "@/integrations/supabase/client";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Shield, Loader2 } from "lucide-react";
 
 async function logLoginAttempt(email: string, success: boolean, failure_reason?: string) {
   try {
@@ -40,6 +40,12 @@ function AuthPage() {
   const { general } = useSiteSettings();
   const navigate = useNavigate();
 
+  // MFA state
+  const [mfaStep, setMfaStep] = useState(false);
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
+  const [mfaCode, setMfaCode] = useState("");
+  const [mfaBusy, setMfaBusy] = useState(false);
+
   const siteName = general?.site_name || "LUMINI.RO";
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,12 +65,54 @@ function AuthPage() {
           await logLoginAttempt(email, false, error.message);
           setError("Email sau parolă incorectă");
         } else {
+          // Check if MFA is required
+          const { data: factorsData } = await supabase.auth.mfa.listFactors();
+          const verifiedFactors = factorsData?.totp?.filter((f) => f.status === "verified") || [];
+
+          if (verifiedFactors.length > 0) {
+            // User has MFA enrolled — need challenge
+            setMfaFactorId(verifiedFactors[0].id);
+            setMfaStep(true);
+            setLoading(false);
+            return;
+          }
+
           await logLoginAttempt(email, true);
           navigate({ to: "/" });
         }
       }
     } catch { setError("A apărut o eroare"); }
     finally { setLoading(false); }
+  };
+
+  const handleMfaVerify = async () => {
+    if (!mfaFactorId || mfaCode.length !== 6) return;
+    setMfaBusy(true);
+    setError("");
+    try {
+      const { data: challenge, error: chErr } = await supabase.auth.mfa.challenge({ factorId: mfaFactorId });
+      if (chErr) { setError(chErr.message); setMfaBusy(false); return; }
+
+      const { error: verifyErr } = await supabase.auth.mfa.verify({
+        factorId: mfaFactorId,
+        challengeId: challenge.id,
+        code: mfaCode,
+      });
+
+      if (verifyErr) {
+        setError("Cod invalid. Încearcă din nou.");
+        setMfaCode("");
+        setMfaBusy(false);
+        return;
+      }
+
+      await logLoginAttempt(email, true);
+      navigate({ to: "/" });
+    } catch {
+      setError("Eroare la verificarea codului.");
+    } finally {
+      setMfaBusy(false);
+    }
   };
 
   return (
@@ -75,7 +123,38 @@ function AuthPage() {
       </Link>
 
       <div className="w-full max-w-md bg-card border border-border rounded-xl shadow-lg p-8">
-        {registerSuccess ? (
+        {/* MFA Challenge Step */}
+        {mfaStep ? (
+          <div className="text-center space-y-5">
+            <Shield className="h-12 w-12 text-accent mx-auto" />
+            <div>
+              <h2 className="text-2xl font-heading font-bold text-foreground">Verificare 2FA</h2>
+              <p className="text-sm text-muted-foreground mt-1">Introdu codul de 6 cifre din aplicația de autentificare.</p>
+            </div>
+            <input
+              value={mfaCode}
+              onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              placeholder="000000"
+              autoFocus
+              onKeyDown={(e) => e.key === "Enter" && mfaCode.length === 6 && handleMfaVerify()}
+              className="w-full text-center text-3xl tracking-[0.5em] font-mono bg-background border border-border rounded-lg px-4 py-4 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+            />
+            {error && <p className="text-sm text-destructive bg-destructive/10 rounded-lg p-3">{error}</p>}
+            <button
+              onClick={handleMfaVerify}
+              disabled={mfaCode.length !== 6 || mfaBusy}
+              className="w-full h-12 bg-foreground text-primary-foreground rounded-lg font-semibold text-sm tracking-wide hover:bg-accent hover:text-accent-foreground disabled:opacity-50 transition flex items-center justify-center gap-2"
+            >
+              {mfaBusy ? <Loader2 className="h-5 w-5 animate-spin" /> : "Verifică"}
+            </button>
+            <button
+              onClick={() => { setMfaStep(false); setMfaFactorId(null); setMfaCode(""); setError(""); supabase.auth.signOut(); }}
+              className="text-sm text-muted-foreground hover:text-foreground transition"
+            >
+              ← Înapoi la autentificare
+            </button>
+          </div>
+        ) : registerSuccess ? (
           <div className="text-center">
             <p className="text-5xl mb-4">✅</p>
             <h1 className="text-2xl font-heading font-bold mb-2">Cont creat cu succes!</h1>

@@ -682,7 +682,7 @@ function MobileLink({
     <Link
       to={to}
       onClick={onClick}
-      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+      className="flex items-center gap-3 rounded-lg px-3 py-2.5 min-h-[44px] text-sm text-muted-foreground hover:bg-secondary hover:text-foreground transition"
       activeProps={{ className: "bg-accent/10 text-accent font-semibold" }}
       style={{
         color: highlight ? highlightColor : undefined,

@@ -98,6 +98,42 @@ for (const file of files) {
   }
 }
 
+/* ── Check 4: Footer — duplicate/conflicting return policy strings ── */
+const FOOTER_FILE = path.resolve(SRC, "components/SiteFooter.tsx");
+if (fs.existsSync(FOOTER_FILE)) {
+  const footerContent = fs.readFileSync(FOOTER_FILE, "utf-8");
+
+  // Must NOT have hardcoded "prețuri includ TVA" (must come from fiscal hook)
+  if (/prețuri.*includ.*TVA/i.test(footerContent)) {
+    console.error("❌ SiteFooter.tsx contains hardcoded TVA disclaimer — must use useFiscalInfo().priceDisclaimer");
+    errors++;
+  }
+
+  // Must have CMP reset via resetConsent (not direct localStorage)
+  if (/localStorage\.removeItem.*cookie_consent/i.test(footerContent)) {
+    console.error("❌ SiteFooter.tsx uses direct localStorage for cookie reset — must use resetConsent() from consentController");
+    errors++;
+  }
+
+  // Must link to formular-retragere
+  if (!footerContent.includes("/formular-retragere")) {
+    console.error("❌ SiteFooter.tsx missing /formular-retragere link (OUG 34/2014 withdrawal form)");
+    errors++;
+  }
+
+  // Must have ANPC link
+  if (!footerContent.includes("anpc.ro")) {
+    console.error("❌ SiteFooter.tsx missing ANPC link");
+    errors++;
+  }
+
+  // Must have SOL/ODR link
+  if (!footerContent.includes("ec.europa.eu/consumers/odr")) {
+    console.error("❌ SiteFooter.tsx missing SOL/ODR EU platform link");
+    errors++;
+  }
+}
+
 if (errors > 0) {
   console.error(`\n🚫 ${errors} compliance violation(s) found.`);
   if (FAIL_ON_ERROR) process.exit(1);

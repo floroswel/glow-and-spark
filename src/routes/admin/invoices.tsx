@@ -79,8 +79,6 @@ function AdminInvoices() {
     ...o,
     invoice_number: `GS-${new Date(o.created_at).getFullYear()}-${String(orders.length - i).padStart(5, "0")}`,
     invoice_status: o.payment_status === "paid" ? "paid" : o.status === "cancelled" ? "cancelled" : "pending",
-    subtotal_no_vat: (Number(o.subtotal || 0) / 1.19).toFixed(2),
-    vat_amount: (Number(o.subtotal || 0) - Number(o.subtotal || 0) / 1.19).toFixed(2),
   })), [orders]);
 
   const filtered = useMemo(() => invoices.filter(inv => {

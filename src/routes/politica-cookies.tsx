@@ -73,15 +73,19 @@ function CookiePolicyPage() {
 
       <h3 className="text-foreground font-semibold text-lg mt-6 mb-2">4.2. Cookie-uri analitice / de performanță</h3>
       <p>
-        Ne ajută să înțelegem cum interacționează vizitatorii cu site-ul. <strong>Sunt activate doar cu consimțământul dumneavoastră.</strong>
+        Aceste cookie-uri sunt setate <strong>doar dacă</strong> administratorul site-ului a configurat un ID Google Analytics (GA4 sau GTM) 
+        <strong> și</strong> dumneavoastră ați acceptat categoria „Analitice" în bannerul de consimțământ. 
+        Dacă niciun ID nu este configurat, scriptul Google Analytics nu se încarcă și niciun cookie analitic nu este plasat.
       </p>
 
-      <h3 className="text-foreground font-semibold text-lg mt-6 mb-2">4.3. Cookie-uri de marketing / publicitate</h3>
+      <h3 className="text-foreground font-semibold text-lg mt-6 mb-2">4.3. Cookie-uri de marketing</h3>
       <p>
-        Sunt utilizate pentru a vă afișa reclame relevante. <strong>Sunt activate doar cu consimțământul dumneavoastră.</strong>
+        Aceste cookie-uri sunt setate <strong>doar dacă</strong> administratorul site-ului a configurat un Facebook Pixel ID 
+        <strong> și</strong> dumneavoastră ați acceptat categoria „Marketing" în bannerul de consimțământ. 
+        Dacă niciun Pixel ID nu este configurat, scriptul Facebook nu se încarcă.
       </p>
       <p className="text-xs text-muted-foreground/70 italic">
-        [PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — verificați dacă utilizați efectiv toate cookie-urile de marketing listate; eliminați cele nefolosite]
+        [VERIFY_REAL_SCRIPTS — Dacă adăugați noi servicii terțe (ex: Google Ads, TikTok Pixel), actualizați această pagină și tabelul de mai jos]
       </p>
 
       <h2>5. Lista detaliată a cookie-urilor</h2>

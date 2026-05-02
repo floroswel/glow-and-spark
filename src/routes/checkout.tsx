@@ -657,23 +657,27 @@ function CheckoutPage() {
                 <div className="space-y-2">
                   <label className="flex items-start gap-2 text-sm">
                     <input type="checkbox" checked={form.acceptTerms} onChange={(e) => u("acceptTerms", e.target.checked)} className="mt-0.5 accent-accent" />
-                    <span>Accept <a href="/termeni-si-conditii" className="text-accent underline">termenii și condițiile</a> *</span>
+                    <span>
+                      Am citit și accept{" "}
+                      <Link to="/termeni-si-conditii" target="_blank" className="text-accent underline">Termenii și condițiile</Link>
+                      {" "}și{" "}
+                      <Link to="/politica-confidentialitate" target="_blank" className="text-accent underline">Politica de confidențialitate</Link> *
+                    </span>
                   </label>
-                  <label className="flex items-start gap-2 text-sm">
-                    <input type="checkbox" checked={form.acceptGdpr} onChange={(e) => u("acceptGdpr", e.target.checked)} className="mt-0.5 accent-accent" />
-                    <span>Accept <a href="/politica-confidentialitate" className="text-accent underline">politica de confidențialitate</a> *</span>
-                  </label>
+                  <p className="text-[11px] text-muted-foreground ml-6">
+                    Obligatoriu — necesar pentru procesarea comenzii și livrarea produselor.
+                  </p>
                   <label className="flex items-center gap-3 cursor-pointer pt-1">
                     <input type="checkbox" checked={newsletterOptIn} onChange={(e) => setNewsletterOptIn(e.target.checked)} className="w-4 h-4 rounded border-border accent-accent" />
-                    <span className="text-sm text-muted-foreground">Vreau să primesc oferte și noutăți pe email</span>
+                    <span className="text-sm text-muted-foreground">Doresc să primesc oferte și noutăți pe email (opțional)</span>
                   </label>
                   <div className="rounded-lg bg-secondary/50 border border-border p-3 space-y-1.5">
                     <p className="text-xs text-muted-foreground">
-                      🔒 Datele tale sunt protejate. Plata este procesată securizat prin conexiune SSL.
+                      🔒 Conexiune securizată SSL pentru protecția datelor tale.
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      ↩️ Ai dreptul de retragere în <strong>14 zile calendaristice</strong> de la primirea produsului, conform{" "}
-                      <a href="/politica-returnare" className="text-accent underline hover:opacity-80">OUG 34/2014</a>.
+                      ↩️ Ai dreptul de retragere în <strong>14 zile calendaristice</strong> de la primirea produsului — detalii în{" "}
+                      <Link to="/politica-returnare" className="text-accent underline hover:opacity-80">Politica de returnare</Link>.
                     </p>
                     <p className="text-xs text-muted-foreground">
                       📞 Asistență: <strong>contact@mamalucica.ro</strong> • Luni–Vineri 09:00–17:00

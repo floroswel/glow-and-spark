@@ -195,8 +195,8 @@ function CheckoutPage() {
   };
 
   const handleSubmit = async () => {
-    if (!form.acceptTerms || !form.acceptGdpr) {
-      setError("Trebuie să accepți termenii și politica de confidențialitate.");
+    if (!form.acceptTerms) {
+      setError("Trebuie să accepți termenii, condițiile și politica de confidențialitate.");
       return;
     }
     setSubmitting(true);

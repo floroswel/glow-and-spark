@@ -27,7 +27,7 @@ function AffiliatesPage() {
 
   const add = async () => {
     const code = "AFF" + Math.random().toString(36).slice(2, 8).toUpperCase();
-    const { error } = await supabase.from("affiliates").insert({ code, name: "Afiliat nou", email: "email@example.com", status: "pending" });
+    const { error } = await supabase.from("affiliates").insert({ code, name: "Afiliat nou", email: "", status: "pending" });
     if (error) return toast.error(error.message);
     toast.success("Afiliat adăugat");
     load();

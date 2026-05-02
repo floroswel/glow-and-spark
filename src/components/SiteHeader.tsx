@@ -260,52 +260,63 @@ export function SiteHeader() {
               </div>
             )}
 
-            {/* Desktop icons + mobile hamburger */}
-            <div className="flex items-center gap-3 md:gap-4 text-sm text-muted-foreground">
-              {header?.show_compare !== false && (
-                <Link to="/compare" className="hidden md:flex items-center gap-1 hover:text-foreground transition">
-                  <GitCompare className="h-5 w-5" />
-                  Compară
-                </Link>
-              )}
-              {header?.show_favorites !== false && (
-                <Link to="/account/favorites" className="hidden md:flex items-center gap-1 hover:text-foreground transition">
-                  <Heart className="h-5 w-5" />
-                  Favorite
-                </Link>
-              )}
-              {user && userPoints !== null && userPoints > 0 && (
-                <Link to="/account" className="hidden md:flex items-center gap-1 text-accent hover:text-foreground transition">
-                  <Star className="h-4 w-4 fill-accent" />
-                  <span className="text-xs font-semibold">{userPoints} pts</span>
-                </Link>
-              )}
+            {/* Desktop: Account → Wishlist → Cart | Mobile: Cart + Hamburger */}
+            <div className="flex items-center gap-1 md:gap-3 text-sm text-muted-foreground">
+              {/* Account — desktop only */}
+              <Link
+                to={user ? "/account" : "/auth"}
+                className="hidden md:flex items-center gap-1.5 hover:text-foreground transition min-h-[44px] min-w-[44px] justify-center"
+                aria-label="Contul meu"
+              >
+                <User className="h-5 w-5" />
+                <span className="text-sm">{user ? "Cont" : "Autentificare"}</span>
+              </Link>
+
+              {/* Notifications — desktop, logged in */}
               {user && (
-                <Link to="/account/notifications" className="relative flex items-center hover:text-foreground transition" aria-label="Notificări">
+                <Link to="/account/notifications" className="hidden md:flex relative items-center hover:text-foreground transition min-h-[44px] min-w-[44px] justify-center" aria-label="Notificări">
                   <Bell className="h-5 w-5" />
                   {unreadNotif > 0 && (
-                    <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white">
+                    <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white">
                       {unreadNotif > 9 ? "9+" : unreadNotif}
                     </span>
                   )}
                 </Link>
               )}
+
+              {/* Points — desktop, logged in */}
+              {user && userPoints !== null && userPoints > 0 && (
+                <Link to="/account" className="hidden md:flex items-center gap-1 text-accent hover:text-foreground transition min-h-[44px] justify-center">
+                  <Star className="h-4 w-4 fill-accent" />
+                  <span className="text-xs font-semibold">{userPoints} pts</span>
+                </Link>
+              )}
+
+              {/* Wishlist — desktop only */}
+              {header?.show_favorites !== false && (
+                <Link to="/account/favorites" className="hidden md:flex items-center gap-1.5 hover:text-foreground transition min-h-[44px] min-w-[44px] justify-center" aria-label="Favorite">
+                  <Heart className="h-5 w-5" />
+                  <span className="text-sm">Favorite</span>
+                </Link>
+              )}
+
+              {/* Cart — always visible, with badge */}
               {header?.show_cart !== false && (
-                <Link to="/cart" className="relative flex items-center gap-1 hover:text-foreground transition">
+                <Link to="/cart" className="relative flex items-center gap-1.5 hover:text-foreground transition min-h-[44px] min-w-[44px] justify-center" aria-label="Coș">
                   <ShoppingBag className="h-5 w-5" />
-                  <span className="hidden md:inline">Coș</span>
+                  <span className="hidden md:inline text-sm">Coș</span>
                   {cartCount > 0 && (
-                    <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
+                    <span className="absolute -right-1.5 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
                       {cartCount}
                     </span>
                   )}
                 </Link>
               )}
 
-              {/* Mobile hamburger */}
+              {/* Mobile hamburger — 44px tap target */}
               <button
                 onClick={() => setMobileOpen(true)}
-                className="md:hidden flex items-center justify-center rounded-md p-1.5 hover:bg-secondary transition"
+                className="md:hidden flex items-center justify-center rounded-md min-h-[44px] min-w-[44px] hover:bg-secondary transition"
                 aria-label="Deschide meniu"
               >
                 <Menu className="h-6 w-6" />

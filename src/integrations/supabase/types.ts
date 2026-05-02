@@ -1870,6 +1870,42 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_consents: {
+        Row: {
+          action: string
+          categories: Json
+          created_at: string
+          id: string
+          ip_address: string | null
+          policy_version: string
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action?: string
+          categories?: Json
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          policy_version: string
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          categories?: Json
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          policy_version?: string
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string | null

@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPageShell, CompanyIdentityBlock } from "@/components/LegalPageShell";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { formatDeadline, GDPR_RESPONSE_DAYS, GDPR_ACK_DAYS } from "@/lib/compliance";
+import { getEnabledPlatforms, CONSENT_POLICY_VERSION } from "@/config/marketing-tech";
 
 const LAST_UPDATE = "2026-05-02";
 
@@ -19,6 +21,8 @@ export const Route = createFileRoute("/politica-confidentialitate")({
 
 function PoliticaConfidentialitatePage() {
   const C = useCompanyInfo();
+  const { general } = useSiteSettings();
+  const allEnabled = getEnabledPlatforms(general);
 
   return (
     <LegalPageShell title="Politica de Confidențialitate" breadcrumb="Politica de Confidențialitate" lastUpdate={LAST_UPDATE}>
@@ -54,36 +58,47 @@ function PoliticaConfidentialitatePage() {
       </ul>
 
       <h2 id="publicitate">3a. Publicitate și măsurare</h2>
-      <p>
-        Pentru a măsura eficiența campaniilor publicitare și a optimiza conținutul reclamelor, 
-        utilizăm instrumente terțe de tracking furnizate de platformele publicitare enumerate mai jos. 
-        Aceste instrumente pot colecta date prin <strong>pixeli (scripturi)</strong> încărcate în browser 
-        și, unde este cazul, prin <strong>integrări server-to-server (Conversion API / CAPI)</strong>.
-      </p>
-      <p>Instrumentele sunt activate <strong>doar dacă</strong>:</p>
-      <ol className="list-decimal pl-5 space-y-1">
-        <li>Administratorul site-ului a configurat un ID de tracking valid pentru platforma respectivă;</li>
-        <li>Vizitatorul a acordat <strong>consimțământ explicit</strong> pentru categoria „Marketing" în bannerul de cookie-uri.</li>
-      </ol>
-      <p>Platforme utilizate sau care pot fi activate [VERIFICARE_AVOCAT — confirmați lista finală]:</p>
-      <div className="overflow-x-auto rounded-lg border border-border my-4">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-secondary/50">
-              <th className="text-left px-3 py-2 font-semibold">Platformă</th>
-              <th className="text-left px-3 py-2 font-semibold">Instrument</th>
-              <th className="text-left px-3 py-2 font-semibold">Tip date colectate</th>
-            </tr>
-          </thead>
-          <tbody className="text-sm">
-            <tr className="bg-card"><td className="px-3 py-2">Meta (Facebook/Instagram)</td><td className="px-3 py-2">Facebook Pixel + Conversions API</td><td className="px-3 py-2">Evenimente: PageView, ViewContent, AddToCart, Purchase; cookie _fbp, _fbc</td></tr>
-            <tr className="bg-secondary/20"><td className="px-3 py-2">Google</td><td className="px-3 py-2">Google Analytics 4 / Google Tag Manager / Google Ads</td><td className="px-3 py-2">Evenimente e-commerce GA4; cookies _ga, _gid, _gat, _gcl_au</td></tr>
-            <tr className="bg-card"><td className="px-3 py-2">TikTok</td><td className="px-3 py-2">TikTok Pixel + Events API</td><td className="px-3 py-2">Evenimente: PageView, ViewContent, AddToCart, CompletePayment; cookie _ttp</td></tr>
-          </tbody>
-        </table>
-      </div>
+      {allEnabled.length > 0 ? (
+        <>
+          <p>
+            Pentru a măsura eficiența campaniilor publicitare și a optimiza conținutul reclamelor, 
+            utilizăm instrumente terțe de tracking. Acestea sunt activate <strong>doar dacă</strong> administratorul 
+            a configurat un ID valid <strong>și</strong> vizitatorul a acordat consimțământ explicit.
+          </p>
+          <div className="overflow-x-auto rounded-lg border border-border my-4">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-secondary/50">
+                  <th className="text-left px-3 py-2 font-semibold">Platformă</th>
+                  <th className="text-left px-3 py-2 font-semibold">Entitate UE</th>
+                  <th className="text-left px-3 py-2 font-semibold">Categorie</th>
+                  <th className="text-left px-3 py-2 font-semibold">Documentație</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm">
+                {allEnabled.map((p, i) => (
+                  <tr key={p.key} className={i % 2 === 0 ? "bg-card" : "bg-secondary/20"}>
+                    <td className="px-3 py-2 font-medium">{p.label}</td>
+                    <td className="px-3 py-2">{p.euEntity}</td>
+                    <td className="px-3 py-2 capitalize">{p.consentCategory}</td>
+                    <td className="px-3 py-2">
+                      <a href={p.privacyUrl} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline text-xs">Privacy</a>
+                      {" / "}
+                      <a href={p.dpaUrl} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline text-xs">DPA</a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : (
+        <p className="text-muted-foreground italic">
+          În prezent, nicio platformă publicitară sau analitică terță nu este configurată pe site.
+        </p>
+      )}
       <p className="text-xs text-muted-foreground italic">
-        [VERIFICARE_AVOCAT — Dacă adăugați alte platforme publicitare (ex: Pinterest, Snapchat, Microsoft Ads), actualizați această secțiune și tabelul de cookie-uri din <Link to="/politica-cookies" className="text-accent hover:underline">Politica de Cookie-uri</Link>]
+        [VERIFICARE_AVOCAT — Confirmați lista finală de platforme și temeiurile legale aplicabile]
       </p>
 
       <h2 id="remarketing">3b. Audiențe și remarketing</h2>
@@ -153,20 +168,24 @@ function PoliticaConfidentialitatePage() {
         <li><strong>Autorități publice</strong> — când legea o impune (ANAF, ANPC, instanțe judecătorești)</li>
       </ul>
       <h3 className="text-foreground font-semibold text-lg mt-6 mb-2">6a. Parteneri publicitari și de analiză</h3>
-      <p>
-        Următorii furnizori pot primi date personale (identificatori de cookie, adrese IP trunchiate, date de evenimente) 
-        în calitate de <strong>operatori asociați sau operatori independenți</strong>, conform condițiilor contractuale proprii 
-        [VERIFICARE_AVOCAT — verificați dacă fiecare platformă acționează ca operator independent sau operator asociat]:
-      </p>
-      <ul className="list-disc pl-5 space-y-1">
-        <li><strong>Meta Platforms Ireland Ltd.</strong> — Facebook Pixel, Conversions API, Custom Audiences (sediu UE: Dublin, Irlanda)</li>
-        <li><strong>Google Ireland Ltd.</strong> — Google Analytics 4, Google Tag Manager, Google Ads (sediu UE: Dublin, Irlanda)</li>
-        <li><strong>TikTok Technology Ltd.</strong> — TikTok Pixel, TikTok Events API (sediu UE: Dublin, Irlanda) [VERIFICARE_AVOCAT — verificați transferurile de date către TikTok și mecanismele de protecție adecvate]</li>
-      </ul>
-      <p className="text-xs text-muted-foreground italic">
-        Datele sunt transmise către acești parteneri <strong>numai dacă</strong> vizitatorul a acordat consimțământ pentru cookie-uri de marketing. 
-        Transmiterile de date includ, după caz, hashing-ul datelor (SHA-256) înainte de upload.
-      </p>
+      {allEnabled.length > 0 ? (
+        <>
+          <p>
+            Următorii furnizori pot primi date personale în calitate de operatori asociați sau independenți 
+            [VERIFICARE_AVOCAT — verificați statutul fiecărui furnizor]:
+          </p>
+          <ul className="list-disc pl-5 space-y-1">
+            {allEnabled.map((p) => (
+              <li key={p.key}><strong>{p.euEntity}</strong> — {p.label}</li>
+            ))}
+          </ul>
+          <p className="text-xs text-muted-foreground italic mt-2">
+            Datele sunt transmise <strong>numai dacă</strong> vizitatorul a acordat consimțământ pentru cookie-uri de {allEnabled.some(p => p.consentCategory === "marketing") ? "marketing/" : ""}analiză.
+          </p>
+        </>
+      ) : (
+        <p className="text-muted-foreground italic">Niciun partener publicitar/analitic nu este configurat în prezent.</p>
+      )}
       <p className="mt-2"><strong>Nu vindem, nu închiriem și nu transmitem datele personale către terți în scopuri de marketing propriu, altele decât cele menționate mai sus.</strong></p>
 
       <h2>7. Drepturile tale conform GDPR</h2>

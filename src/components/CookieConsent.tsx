@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
 import { Cookie } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { CONSENT_POLICY_VERSION } from "@/config/marketing-tech";
 
 export const CONSENT_KEY = "cookie_consent";
 
-export interface CookieConsent {
+export interface CookieConsentData {
   essential: true;
   analytics: boolean;
   marketing: boolean;
   date: string;
+  version: string;
 }
 
-export function getConsent(): CookieConsent | null {
+export function getConsent(): CookieConsentData | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(CONSENT_KEY);
@@ -21,9 +24,43 @@ export function getConsent(): CookieConsent | null {
       analytics: !!parsed.analytics,
       marketing: !!parsed.marketing,
       date: parsed.date || new Date().toISOString(),
+      version: parsed.version || "unknown",
     };
   } catch {
     return null;
+  }
+}
+
+function getSessionId(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    let sid = sessionStorage.getItem("_consent_sid");
+    if (!sid) {
+      sid = crypto.randomUUID();
+      sessionStorage.setItem("_consent_sid", sid);
+    }
+    return sid;
+  } catch {
+    return crypto.randomUUID();
+  }
+}
+
+async function persistConsent(consent: CookieConsentData, action: string) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    await supabase.from("marketing_consents" as any).insert({
+      user_id: user?.id || null,
+      session_id: getSessionId(),
+      policy_version: consent.version,
+      categories: {
+        essential: true,
+        analytics: consent.analytics,
+        marketing: consent.marketing,
+      },
+      action,
+    });
+  } catch {
+    // Non-blocking — consent is still recorded in localStorage
   }
 }
 
@@ -44,19 +81,21 @@ export function CookieConsent() {
     }
   }, []);
 
-  const save = (c: CookieConsent) => {
+  const save = (c: CookieConsentData, action: string) => {
     try {
       localStorage.setItem(CONSENT_KEY, JSON.stringify(c));
-      // Notify same-tab listeners (storage event only fires cross-tab)
       window.dispatchEvent(new CustomEvent("cookie-consent-changed", { detail: c }));
     } catch {}
+    persistConsent(c, action);
     setVisible(false);
   };
 
   const now = () => new Date().toISOString();
-  const acceptAll = () => save({ essential: true, analytics: true, marketing: true, date: now() });
-  const acceptEssential = () => save({ essential: true, analytics: false, marketing: false, date: now() });
-  const saveCustom = () => save({ essential: true, analytics, marketing, date: now() });
+  const ver = CONSENT_POLICY_VERSION;
+
+  const acceptAll = () => save({ essential: true, analytics: true, marketing: true, date: now(), version: ver }, "accept_all");
+  const acceptEssential = () => save({ essential: true, analytics: false, marketing: false, date: now(), version: ver }, "reject_optional");
+  const saveCustom = () => save({ essential: true, analytics, marketing, date: now(), version: ver }, "custom");
 
   if (!visible) return null;
 
@@ -89,7 +128,7 @@ export function CookieConsent() {
             </label>
             <label className="flex items-center justify-between text-xs cursor-pointer">
               <span>
-                <strong>Analitice</strong> — Google Analytics (doar dacă este configurat de admin)
+                <strong>Analitice</strong> — analiză trafic (doar dacă sunt configurate de admin)
               </span>
               <input
                 type="checkbox"
@@ -100,7 +139,7 @@ export function CookieConsent() {
             </label>
             <label className="flex items-center justify-between text-xs cursor-pointer">
               <span>
-                <strong>Marketing</strong> — Facebook Pixel, TikTok Pixel, Google Ads (doar dacă sunt configurate de admin)
+                <strong>Marketing</strong> — pixeli publicitari (doar dacă sunt configurați de admin)
               </span>
               <input
                 type="checkbox"
@@ -143,6 +182,10 @@ export function CookieConsent() {
             </button>
           )}
         </div>
+
+        <p className="text-[10px] text-muted-foreground/60 mt-2 text-center">
+          Versiune politică: {CONSENT_POLICY_VERSION}
+        </p>
       </div>
     </div>
   );

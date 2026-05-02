@@ -24,7 +24,7 @@ function collectFiles(dir: string, exts = [".tsx", ".ts"]): string[] {
 }
 
 describe("Brand consistency audit", () => {
-  const srcFiles = collectFiles(path.join(SRC, "src"));
+  const srcFiles = collectFiles(path.join(SRC, "src")).filter(f => !f.includes("__tests__") && !f.includes(".test."));
 
   it("no leftover generic brand names in source", () => {
     const forbidden = [

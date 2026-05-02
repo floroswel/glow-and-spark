@@ -83,7 +83,7 @@ function TermeniPage() {
       <h2>7. Dreptul de retragere</h2>
       <p>
         Conform legislației privind drepturile consumatorilor, Cumpărătorul beneficiază de dreptul de retragere din contractul de vânzare la distanță 
-        în termen de <strong>14 zile calendaristice</strong> de la primirea produsului, fără a fi necesară justificarea deciziei.
+        în termen de <strong>{WITHDRAWAL_PERIOD_DAYS} zile calendaristice</strong> de la primirea produsului, fără a fi necesară justificarea deciziei.
       </p>
       <p>
         Detalii complete în <Link to="/politica-returnare" className="text-accent hover:underline">Politica de Returnare</Link>. 

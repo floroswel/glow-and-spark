@@ -59,7 +59,7 @@ function TermeniPage() {
       <h2>5. Prețuri și plată</h2>
       <p>
         Toate prețurile afișate pe site sunt exprimate în <strong>RON (lei românești)</strong> și sunt prețuri finale. 
-        [PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — specificați regimul TVA: neplătitor TVA / plătitor TVA cu prețuri inclusiv TVA]
+        [PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — specificați regimul fiscal aplicabil]
       </p>
       <p>
         Prețurile pot fi modificate oricând de către Vânzător, dar modificările nu afectează comenzile deja confirmate.

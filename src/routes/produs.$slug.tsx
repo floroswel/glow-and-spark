@@ -825,7 +825,7 @@ function ProductPage() {
               <div className="flex items-center gap-2 rounded-lg border border-border p-3">
                 <RotateCcw className="h-5 w-5 text-accent" />
                 <div>
-                  <p className="text-xs font-medium text-foreground">Retur gratuit</p>
+                  <p className="text-xs font-medium text-foreground">Drept de retragere</p>
                   <p className="text-xs text-muted-foreground">30 de zile</p>
                 </div>
               </div>

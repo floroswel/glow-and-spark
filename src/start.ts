@@ -21,6 +21,8 @@ const securityMiddleware = createMiddleware().server(
   },
 );
 
-export default createStart(() => ({
+export const startInstance = createStart(() => ({
   requestMiddleware: [securityMiddleware],
 }));
+
+export default startInstance;

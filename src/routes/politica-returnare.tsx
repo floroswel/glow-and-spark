@@ -143,6 +143,20 @@ Telefon: ${C.phone}`,
         Conform legislației privind drepturile consumatorilor
       </p>
 
+      {/* Prominent withdrawal form CTA — near top per legal best practice */}
+      <div className="rounded-2xl border border-accent/30 bg-accent/5 p-5 flex flex-col sm:flex-row items-center justify-between gap-3 not-prose -mt-2 mb-6">
+        <div>
+          <p className="font-semibold text-foreground text-sm">Dorești să returnezi un produs?</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Completează formularul de retragere online — 14 zile calendaristice de la primire.</p>
+        </div>
+        <Link
+          to="/formular-retragere"
+          className="shrink-0 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition"
+        >
+          Formular de retragere
+        </Link>
+      </div>
+
       <div className="space-y-1 not-prose">
         {sections.map((section, i) => {
           const isOpen = !!openItems[i];

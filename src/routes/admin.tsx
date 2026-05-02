@@ -220,6 +220,7 @@ const menuSections: MenuSection[] = [
       { icon: Webhook, label: "Webhook-uri", to: "/admin/webhooks" },
       { icon: UserCog, label: "Utilizatori", to: "/admin/users" },
       { icon: FileSpreadsheet, label: "Import / Export", to: "/admin/import-export" },
+      { icon: ClipboardCheck, label: "Pre-Launch Checklist", to: "/admin/pre-launch" },
     ],
   },
 ];

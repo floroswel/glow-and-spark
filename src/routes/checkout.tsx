@@ -248,7 +248,19 @@ function CheckoutPage() {
       return;
     }
 
-    // Save address if checked
+    // Log consent records [LEGAL_REVIEW]
+    const consentBase = {
+      email: form.email,
+      user_id: user?.id || null,
+      ip_address: null, // collected server-side if needed
+      metadata: { order_id: orderId, order_number: orderData.order_number, policy_version: "2025-05-02" },
+    };
+    supabase.from("gdpr_consents").insert([
+      { ...consentBase, consent_type: "terms_and_privacy", granted: true },
+      ...(newsletterOptIn ? [{ ...consentBase, consent_type: "marketing_email", granted: true }] : []),
+    ]).then(() => {});
+
+
     if (saveAddress && user) {
       supabase.from("addresses").insert({
         user_id: user.id,

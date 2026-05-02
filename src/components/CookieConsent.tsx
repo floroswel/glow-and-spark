@@ -89,7 +89,7 @@ export function CookieConsent() {
             </label>
             <label className="flex items-center justify-between text-xs cursor-pointer">
               <span>
-                <strong>Analitice</strong> — Google Analytics, ne ajută să îmbunătățim site-ul
+                <strong>Analitice</strong> — Google Analytics (doar dacă este configurat de admin)
               </span>
               <input
                 type="checkbox"
@@ -100,7 +100,7 @@ export function CookieConsent() {
             </label>
             <label className="flex items-center justify-between text-xs cursor-pointer">
               <span>
-                <strong>Marketing</strong> — Facebook Pixel, oferte personalizate
+                <strong>Marketing</strong> — Facebook Pixel (doar dacă este configurat de admin)
               </span>
               <input
                 type="checkbox"

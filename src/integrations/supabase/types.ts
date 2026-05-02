@@ -1035,6 +1035,36 @@ export type Database = {
         }
         Relationships: []
       }
+      cookie_consent_log: {
+        Row: {
+          action: string
+          categories: Json
+          created_at: string
+          id: string
+          policy_version: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          categories?: Json
+          created_at?: string
+          id?: string
+          policy_version: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          categories?: Json
+          created_at?: string
+          id?: string
+          policy_version?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
           active: boolean | null

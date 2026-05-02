@@ -554,16 +554,11 @@ export function SiteFooter() {
           {/* Reset cookies — GDPR right to withdraw consent */}
           <p className="text-xs text-center mt-2" style={{ color: textColor }}>
             <button
-              onClick={() => {
-                try {
-                  localStorage.removeItem("cookie_consent");
-                  window.dispatchEvent(new CustomEvent("cookie-consent-changed", { detail: null }));
-                  window.location.reload();
-                } catch {}
-              }}
+              onClick={() => resetConsent()}
+              aria-label="Resetează preferințele cookie"
               className="underline opacity-70 hover:opacity-100 transition"
             >
-              Resetează preferințele cookies
+              Resetează preferințele cookie
             </button>
           </p>
 

@@ -10,7 +10,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 import { CONSENT_POLICY_VERSION } from "@/config/marketing-tech";
 
-export const Route = createFileRoute("/admin/compliance-kit")({
+export const Route = createFileRoute("/admin/compliance-kit" as any)({
   component: ComplianceKitPage,
 });
 
@@ -362,7 +362,7 @@ function SectionTraining() {
         <h2 className="font-heading text-lg font-semibold flex items-center gap-2"><ClipboardCheck className="h-5 w-5" />Checklist Instruire Echipă</h2>
         <button onClick={printChecklist} className="rounded-md bg-secondary px-3 py-1.5 text-sm flex items-center gap-1 print:hidden"><Printer className="h-4 w-4" /> Printează</button>
       </div>
-      <p className="text-sm text-muted-foreground">{company.storeName} — Verificare periodică că scripturile CS corespund politicilor publicate. [PROCESS]</p>
+      <p className="text-sm text-muted-foreground">{company.name} — Verificare periodică că scripturile CS corespund politicilor publicate. [PROCESS]</p>
 
       <div className="rounded-xl border border-border bg-card divide-y divide-border">
         {TRAINING_CHECKLIST.map((item, i) => (

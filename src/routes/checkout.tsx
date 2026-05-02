@@ -100,7 +100,7 @@ function CheckoutPage() {
     paymentMethod: "ramburs",
     acceptTerms: false, acceptGdpr: false,
   });
-  const [newsletterOptIn, setNewsletterOptIn] = useState(true);
+  const [newsletterOptIn, setNewsletterOptIn] = useState(false);
 
   const u = (field: string, value: any) => setForm((p) => ({ ...p, [field]: value }));
 

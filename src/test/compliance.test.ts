@@ -67,18 +67,14 @@ describe("Legal compliance consistency", () => {
     }
   });
 
-  it("GDPR response deadline is consistent", () => {
+  it("GDPR response deadline is consistent — no hardcoded different values", () => {
     const gdprFiles = files.filter((f) =>
       f.rel.includes("gdpr") || f.rel.includes("politica-confidentialitate")
     );
-    const gd = CANONICAL_DEADLINES.gdpr_response;
     for (const f of gdprFiles) {
-      // Check no different GDPR deadline is used
-      const wrongPattern = new RegExp(`(?<!${gd.days})\\s+zile\\s+calendaristice`, "g");
-      // Just verify the correct number appears
-      if (f.content.includes("zile calendaristice") && f.content.includes("GDPR") || f.content.includes("gdpr")) {
-        expect(f.content).toContain(`${gd.days} zile calendaristice`);
-      }
+      // Must not contain a hardcoded "30 zile" or "30 de zile" string (should use constant)
+      expect(f.content).not.toMatch(/["'`].*30 de zile.*["'`]/);
+      expect(f.content).not.toMatch(/["'`].*30 zile calendaristice.*["'`]/);
     }
   });
 

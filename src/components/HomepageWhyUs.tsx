@@ -1,10 +1,11 @@
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { WITHDRAWAL_PERIOD_DAYS } from "@/lib/compliance";
 
 const defaultItems = [
   { icon: "🕯️", title: "100% Handmade", desc: "Fiecare lumânare este turnată manual cu grijă" },
   { icon: "🌿", title: "Ceară Naturală", desc: "Doar ceară de soia, fără parafină" },
   { icon: "🚚", title: "Livrare Rapidă", desc: "Comandă azi, primești în 24-48h" },
-  { icon: "🛡️", title: "Garanție și Retur Gratuit", desc: "Retur fără justificare în 14 zile (OUG 34/2014)" },
+  { icon: "🛡️", title: "Drept de Retragere", desc: `Returnare fără justificare în ${WITHDRAWAL_PERIOD_DAYS} zile calendaristice` },
 ];
 
 export function HomepageWhyUs() {

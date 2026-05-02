@@ -49,7 +49,7 @@ const defaults = {
   why_us_3_desc: "Comandă azi, primești în 24-48h",
   why_us_4_icon: "🛡️",
   why_us_4_title: "Garanție Calitate",
-  why_us_4_desc: "Returnare gratuită în 30 de zile",
+  why_us_4_desc: "Drept de retragere 14 zile (OUG 34/2014)",
 };
 
 function AdminHomepage() {

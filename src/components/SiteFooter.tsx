@@ -27,11 +27,15 @@ const PinterestIcon = ({ className }: { className?: string }) => (
 );
 
 /* ── Section Header (button-like pill) ── */
-function SectionHeader({ title, titleColor }: { title: string; titleColor: string }) {
+function SectionHeader({ title, titleColor, highlighted }: { title: string; titleColor: string; highlighted?: boolean }) {
   return (
     <div
       className="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest mb-4"
-      style={{ background: "rgba(255,255,255,0.08)", color: titleColor }}
+      style={{
+        background: highlighted ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.08)",
+        color: titleColor,
+        ...(highlighted ? { borderBottom: "2px solid rgba(255,255,255,0.3)" } : {}),
+      }}
     >
       {title}
     </div>
@@ -39,7 +43,7 @@ function SectionHeader({ title, titleColor }: { title: string; titleColor: strin
 }
 
 /* ── Accordion Column (mobile) ── */
-function FooterColumn({ title, children, titleColor }: { title: string; children: React.ReactNode; titleColor: string }) {
+function FooterColumn({ title, children, titleColor, highlighted }: { title: string; children: React.ReactNode; titleColor: string; highlighted?: boolean }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="border-b border-white/10 md:border-0">
@@ -50,14 +54,14 @@ function FooterColumn({ title, children, titleColor }: { title: string; children
         aria-expanded={open}
       >
         <div className="md:hidden">
-          <span className="text-sm font-bold uppercase tracking-wider" style={{ color: titleColor }}>{title}</span>
+          <span className={`text-sm font-bold uppercase tracking-wider ${highlighted ? "underline underline-offset-4 decoration-white/40" : ""}`} style={{ color: titleColor }}>{title}</span>
         </div>
         <div className="hidden md:block">
-          <SectionHeader title={title} titleColor={titleColor} />
+          <SectionHeader title={title} titleColor={titleColor} highlighted={highlighted} />
         </div>
         <ChevronDown className={`h-5 w-5 text-white/60 md:hidden transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
-      <div className={`${open ? "block" : "hidden"} md:block pb-4 md:pb-0`}>
+      <div className={`${open ? "block" : "hidden"} md:block pb-5 md:pb-0`}>
         {children}
       </div>
     </div>
@@ -203,16 +207,12 @@ export function SiteFooter() {
     { key: "social_pinterest", Icon: PinterestIcon, label: "Pinterest" },
   ].filter(s => general?.[s.key]);
 
-  // Page slugs (admin-overridable)
-  const termsSlug = general?.terms_page_slug || "termeni-si-conditii";
-  const privacySlug = general?.privacy_page_slug || "politica-confidentialitate";
-  const returnSlug = general?.return_policy_slug || "politica-retur";
   const logoUrl = general?.logo_url || "";
 
   const renderLink = (url: string, label: string, i: number) => {
     const isExternal = url.startsWith("http");
     const style = { color: linkColor };
-    const cls = "text-sm hover:text-white transition-colors block py-0.5";
+    const cls = "text-sm hover:text-white transition-colors block py-1";
     if (isExternal) {
       return (
         <li key={i}>
@@ -233,6 +233,7 @@ export function SiteFooter() {
     );
   };
 
+  /* ── Column 1: Informații utile ── */
   const col1Links = footer?.col1_links?.length > 0 ? footer.col1_links : [
     { label: "Despre noi", url: "/despre-noi" },
     { label: "Termeni și condiții", url: "/termeni-si-conditii" },
@@ -243,16 +244,15 @@ export function SiteFooter() {
     { label: "Card Cadou", url: "/gift-card" },
   ];
 
+  /* ── Column 2: Clienți (no ANPC/SOL here — they live in Suport) ── */
   const col2Links = footer?.col2_links?.length > 0 ? footer.col2_links : [
     { label: "Transport și Livrare", url: "/page/transport-livrare" },
     { label: "Metode de plată", url: "/page/metode-plata" },
     { label: "Politica de Retur", url: "/politica-returnare" },
     { label: "Garanția Produselor", url: "/page/garantie" },
-    { label: "ANPC", url: "https://anpc.ro/ce-este-anpc/" },
-    { label: "SOL (Soluționare Online Litigii)", url: "https://ec.europa.eu/consumers/odr" },
   ];
 
-  /* Company info - from general or footer settings, with hardcoded fallbacks */
+  /* Company info */
   const companyName = general?.company_name || footer?.company_name || "SC Vomix Genius SRL";
   const regCom = general?.reg_com || footer?.reg_com || "J2020000459343";
   const cui = general?.company_cui || footer?.cui || "43025661";
@@ -290,185 +290,187 @@ export function SiteFooter() {
             <img src={logoUrl} alt={general?.site_name || "Logo"} className="h-12 w-auto opacity-90" loading="lazy" />
           </div>
         )}
-        <div className="mx-auto max-w-7xl px-4 py-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-
+        <div className="mx-auto max-w-7xl px-4 py-10">
           {Array.isArray(footer?.columns) && footer.columns.length > 0 ? (
             /* DYNAMIC COLUMNS — admin-managed (footer.columns) */
-            footer.columns.map((col: any, idx: number) => {
-              if (col?.show === false) return null;
-              const title = col?.title || "";
-              const links: Array<{ label: string; url: string }> = Array.isArray(col?.links) ? col.links : [];
-              const html: string | undefined = col?.html;
-              return (
-                <FooterColumn key={idx} title={title} titleColor={titleColor}>
-                  {html ? (
-                    <div
-                      className="text-sm space-y-2 [&_a]:underline hover:[&_a]:text-white"
-                      style={{ color: textColor }}
-                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }}
-                    />
-                  ) : (
-                    <ul className="space-y-2">
-                      {links.map((l, i) => renderLink(l.url, l.label, i))}
-                    </ul>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {footer.columns.map((col: any, idx: number) => {
+                if (col?.show === false) return null;
+                const title = col?.title || "";
+                const links: Array<{ label: string; url: string }> = Array.isArray(col?.links) ? col.links : [];
+                const html: string | undefined = col?.html;
+                return (
+                  <FooterColumn key={idx} title={title} titleColor={titleColor}>
+                    {html ? (
+                      <div
+                        className="text-sm space-y-2 [&_a]:underline hover:[&_a]:text-white"
+                        style={{ color: textColor }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }}
+                      />
+                    ) : (
+                      <ul className="space-y-1">
+                        {links.map((l, i) => renderLink(l.url, l.label, i))}
+                      </ul>
+                    )}
+                  </FooterColumn>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-0 md:gap-y-8">
+              {/* COL 1 — Informații utile */}
+              {footer?.col1_show !== false && (
+                <FooterColumn title={footer?.col1_title || "Informații utile"} titleColor={titleColor}>
+                  <ul className="space-y-1">
+                    {col1Links.map((l: any, i: number) => renderLink(l.url, l.label, i))}
+                  </ul>
+                </FooterColumn>
+              )}
+
+              {/* COL 2 — Clienți */}
+              {footer?.col2_show !== false && (
+                <FooterColumn title={footer?.col2_title || "Clienți"} titleColor={titleColor}>
+                  <ul className="space-y-1">
+                    {col2Links.map((l: any, i: number) => renderLink(l.url, l.label, i))}
+                  </ul>
+                </FooterColumn>
+              )}
+
+              {/* COL 3 — Date comerciale (highlighted) */}
+              {footer?.col3_show !== false && (
+                <FooterColumn title="Date comerciale" titleColor={titleColor} highlighted>
+                  <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4 space-y-2.5 text-sm" style={{ color: textColor }}>
+                    {companyName && (
+                      <div className="flex items-start gap-2.5">
+                        <Building2 className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
+                        <span className="font-semibold text-white leading-tight">{companyName}</span>
+                      </div>
+                    )}
+                    <div className="pl-[26px] space-y-1 text-[13px]">
+                      {cui && <p><span className="text-white/50 mr-1">CUI:</span> {cui}</p>}
+                      {regCom && <p><span className="text-white/50 mr-1">Reg. Com.:</span> {regCom}</p>}
+                    </div>
+                    {fullAddress && (
+                      <div className="flex items-start gap-2.5">
+                        <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
+                        <span className="text-[13px] leading-snug">{fullAddress}</span>
+                      </div>
+                    )}
+                    <div className="border-t border-white/10 pt-2.5 pl-[26px] space-y-1 text-[13px]">
+                      {companyIban && <p><span className="text-white/50 mr-1">IBAN:</span> <span className="font-mono text-white/90 text-xs">{companyIban}</span></p>}
+                      {companyBank && <p><span className="text-white/50 mr-1">Banca:</span> {companyBank}</p>}
+                    </div>
+                  </div>
+
+                  {/* Company documents */}
+                  {showDocs && (
+                    <div className="mt-4 space-y-1.5">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-white/60 flex items-center gap-1.5">
+                        <FileText className="h-3.5 w-3.5" /> Documente
+                      </p>
+                      {companyDocs.map((doc, i) => (
+                        <a
+                          key={i}
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm hover:text-white transition-colors flex items-center gap-1.5 py-0.5"
+                          style={{ color: linkColor }}
+                          onMouseEnter={e => (e.target as HTMLElement).style.color = linkHover}
+                          onMouseLeave={e => (e.target as HTMLElement).style.color = linkColor}
+                        >
+                          <FileText className="h-3.5 w-3.5 shrink-0" />
+                          {doc.label}
+                        </a>
+                      ))}
+                    </div>
                   )}
                 </FooterColumn>
-              );
-            })
-          ) : (
-            <>
-          {/* COL 1 — Informații utile */}
-          {footer?.col1_show !== false && (
-            <FooterColumn title={footer?.col1_title || "Informații utile"} titleColor={titleColor}>
-              <ul className="space-y-2">
-                {col1Links.map((l: any, i: number) => renderLink(l.url, l.label, i))}
-              </ul>
-            </FooterColumn>
-          )}
+              )}
 
-          {/* COL 2 — Clienți */}
-          {footer?.col2_show !== false && (
-            <FooterColumn title={footer?.col2_title || "Clienți"} titleColor={titleColor}>
-              <ul className="space-y-2">
-                {col2Links.map((l: any, i: number) => renderLink(l.url, l.label, i))}
-              </ul>
-            </FooterColumn>
-          )}
-
-          {/* COL 3 — Date comerciale (highlighted block) */}
-          {footer?.col3_show !== false && (
-            <FooterColumn title="Date comerciale" titleColor={titleColor}>
-              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4 space-y-2.5 text-sm" style={{ color: textColor }}>
-                {companyName && (
-                  <div className="flex items-start gap-2.5">
-                    <Building2 className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
-                    <span className="font-semibold text-white leading-tight">{companyName}</span>
+              {/* COL 4 — Suport + ANPC/SOL */}
+              {footer?.col4_show !== false && (
+                <FooterColumn title={footer?.col4_title || "Suport"} titleColor={titleColor}>
+                  <div className="space-y-3 text-sm">
+                    {schedule && (
+                      <div className="flex items-start gap-2">
+                        <Clock className="h-4 w-4 mt-0.5 shrink-0 text-white/60" />
+                        <span style={{ color: textColor }}>{schedule}</span>
+                      </div>
+                    )}
+                    {phone && (
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 shrink-0 text-white/60" />
+                        <a href={`tel:${phone.replace(/\s/g, "")}`} className="hover:text-white transition-colors font-medium" style={{ color: linkColor }}>
+                          {phone}
+                        </a>
+                      </div>
+                    )}
+                    {emailAddr && (
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-4 w-4 shrink-0 text-white/60" />
+                        <a href={`mailto:${emailAddr}`} className="hover:text-white transition-colors break-all" style={{ color: linkColor }}>
+                          {emailAddr}
+                        </a>
+                      </div>
+                    )}
+                    {showWhatsapp && (
+                      <div className="flex items-center gap-2">
+                        <MessageCircle className="h-4 w-4 shrink-0 text-white/60" />
+                        <a
+                          href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(general?.whatsapp_message || "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-white transition-colors"
+                          style={{ color: linkColor }}
+                        >
+                          WhatsApp
+                        </a>
+                      </div>
+                    )}
                   </div>
-                )}
-                <div className="pl-[26px] space-y-1 text-[13px]">
-                  {cui && <p><span className="text-white/50 mr-1">CUI:</span> {cui}</p>}
-                  {regCom && <p><span className="text-white/50 mr-1">Reg. Com.:</span> {regCom}</p>}
-                </div>
-                {fullAddress && (
-                  <div className="flex items-start gap-2.5">
-                    <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
-                    <span className="text-[13px] leading-snug">{fullAddress}</span>
-                  </div>
-                )}
-                <div className="border-t border-white/10 pt-2.5 pl-[26px] space-y-1 text-[13px]">
-                  {companyIban && <p><span className="text-white/50 mr-1">IBAN:</span> <span className="font-mono text-white/90 text-xs">{companyIban}</span></p>}
-                  {companyBank && <p><span className="text-white/50 mr-1">Banca:</span> {companyBank}</p>}
-                </div>
-              </div>
 
-              {/* Company documents */}
-              {showDocs && (
-                <div className="mt-4 space-y-1.5">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-white/60 flex items-center gap-1.5">
-                    <FileText className="h-3.5 w-3.5" /> Documente
-                  </p>
-                  {companyDocs.map((doc, i) => (
+                  {/* ANPC & SOL — single canonical location */}
+                  <div className="mt-5 pt-4 border-t border-white/10 space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-2">Protecția consumatorilor</p>
                     <a
-                      key={i}
-                      href={doc.url}
+                      href="https://anpc.ro/ce-este-sal/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm hover:text-white transition-colors block py-0.5 flex items-center gap-1.5"
+                      className="flex items-center gap-2 text-sm hover:text-white transition-colors"
                       style={{ color: linkColor }}
                       onMouseEnter={e => (e.target as HTMLElement).style.color = linkHover}
                       onMouseLeave={e => (e.target as HTMLElement).style.color = linkColor}
                     >
-                      <FileText className="h-3.5 w-3.5 shrink-0" />
-                      {doc.label}
+                      <Shield className="h-4 w-4 shrink-0 text-white/60" />
+                      ANPC — Soluționarea Litigiilor
                     </a>
-                  ))}
-                </div>
-              )}
-            </FooterColumn>
-          )}
-
-          {/* COL 4 — Suport */}
-          {footer?.col4_show !== false && (
-            <FooterColumn title={footer?.col4_title || "Suport"} titleColor={titleColor}>
-              <div className="space-y-3 text-sm">
-                {schedule && (
-                  <div className="flex items-start gap-2">
-                    <Clock className="h-4 w-4 mt-0.5 shrink-0 text-white/60" />
-                    <span style={{ color: textColor }}>{schedule}</span>
-                  </div>
-                )}
-                {phone && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 shrink-0 text-white/60" />
-                    <a href={`tel:${phone.replace(/\s/g, "")}`} className="hover:text-white transition-colors font-medium" style={{ color: linkColor }}>
-                      {phone}
-                    </a>
-                  </div>
-                )}
-                {emailAddr && (
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 shrink-0 text-white/60" />
-                    <a href={`mailto:${emailAddr}`} className="hover:text-white transition-colors break-all" style={{ color: linkColor }}>
-                      {emailAddr}
-                    </a>
-                  </div>
-                )}
-                {showWhatsapp && (
-                  <div className="flex items-center gap-2">
-                    <MessageCircle className="h-4 w-4 shrink-0 text-white/60" />
                     <a
-                      href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(general?.whatsapp_message || "")}`}
+                      href="https://ec.europa.eu/consumers/odr"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-white transition-colors"
+                      className="flex items-center gap-2 text-sm hover:text-white transition-colors"
                       style={{ color: linkColor }}
+                      onMouseEnter={e => (e.target as HTMLElement).style.color = linkHover}
+                      onMouseLeave={e => (e.target as HTMLElement).style.color = linkColor}
                     >
-                      WhatsApp
+                      <Shield className="h-4 w-4 shrink-0 text-white/60" />
+                      SOL — Platformă Online Litigii
                     </a>
                   </div>
-                )}
-              </div>
 
-              {/* ANPC & SOL links within support column */}
-              <div className="mt-5 space-y-2">
-                <a
-                  href="https://anpc.ro/ce-este-sal/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm hover:text-white transition-colors"
-                  style={{ color: linkColor }}
-                  onMouseEnter={e => (e.target as HTMLElement).style.color = linkHover}
-                  onMouseLeave={e => (e.target as HTMLElement).style.color = linkColor}
-                >
-                  <Shield className="h-4 w-4 shrink-0 text-white/60" />
-                  ANPC — Soluționarea Litigiilor
-                </a>
-                <a
-                  href="https://ec.europa.eu/consumers/odr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm hover:text-white transition-colors"
-                  style={{ color: linkColor }}
-                  onMouseEnter={e => (e.target as HTMLElement).style.color = linkHover}
-                  onMouseLeave={e => (e.target as HTMLElement).style.color = linkColor}
-                >
-                  <Shield className="h-4 w-4 shrink-0 text-white/60" />
-                  SOL — Platformă Online Litigii
-                </a>
-              </div>
-
-              {/* Contact button */}
-              <a
-                href="/contact"
-                className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-lg text-white text-sm font-semibold hover:opacity-90 transition-opacity"
-                style={{ background: accentColor }}
-              >
-                <MessageCircle className="h-4 w-4" />
-                Contactează-ne
-              </a>
-            </FooterColumn>
-          )}
-            </>
+                  {/* Contact button */}
+                  <a
+                    href="/contact"
+                    className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-lg text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+                    style={{ background: accentColor }}
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    Contactează-ne
+                  </a>
+                </FooterColumn>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -493,70 +495,50 @@ export function SiteFooter() {
         </div>
       )}
 
-      {/* BOTTOM BAR — Copyright + Payment Icons + ANPC/SOL */}
+      {/* BOTTOM BAR — Payment + ANPC badges + Copyright */}
       <div style={{ background: bottomBg, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-        <div className="mx-auto max-w-7xl px-4 py-4">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-            {/* Payment + Badges */}
-            <div className="flex items-center gap-3 flex-wrap justify-center">
-              {footer?.show_payment_icons !== false && <PaymentIcons icons={paymentIcons} />}
+        <div className="mx-auto max-w-7xl px-4 py-5">
+          {/* Payment badges + ANPC/SOL badges row */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            {footer?.show_payment_icons !== false && <PaymentIcons icons={paymentIcons} />}
 
-              {/* ANPC SAL */}
-              {footer?.show_anpc_badges !== false && (
-                <a
-                  href="https://anpc.ro/ce-este-sal/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-white rounded px-2 py-1 hover:opacity-90"
-                >
-                  <img
-                    src="https://etamade-com.github.io/anpc-sal-sol-logo/anpc-sal.svg"
-                    alt="ANPC SAL"
-                    className="h-7"
-                    loading="lazy"
-                  />
-                </a>
-              )}
+            {/* ANPC SAL badge */}
+            {footer?.show_anpc_badges !== false && (
+              <a
+                href="https://anpc.ro/ce-este-sal/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-white rounded px-2 py-1 hover:opacity-90"
+              >
+                <img
+                  src="https://etamade-com.github.io/anpc-sal-sol-logo/anpc-sal.svg"
+                  alt="ANPC SAL"
+                  className="h-7"
+                  loading="lazy"
+                />
+              </a>
+            )}
 
-              {/* SOL */}
-              {footer?.show_sol_badge !== false && (
-                <a
-                  href="https://ec.europa.eu/consumers/odr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-white rounded px-2 py-1 hover:opacity-90"
-                >
-                  <img
-                    src="https://etamade-com.github.io/anpc-sal-sol-logo/anpc-sol.svg"
-                    alt="Soluționarea Online a Litigiilor"
-                    className="h-7"
-                    loading="lazy"
-                  />
-                </a>
-              )}
-            </div>
+            {/* SOL badge */}
+            {footer?.show_sol_badge !== false && (
+              <a
+                href="https://ec.europa.eu/consumers/odr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-white rounded px-2 py-1 hover:opacity-90"
+              >
+                <img
+                  src="https://etamade-com.github.io/anpc-sal-sol-logo/anpc-sol.svg"
+                  alt="Soluționarea Online a Litigiilor"
+                  className="h-7"
+                  loading="lazy"
+                />
+              </a>
+            )}
           </div>
 
-          {/* Legal compliance row */}
-          <div className="border-t border-white/10 mt-4 pt-3 flex flex-col sm:flex-row items-center justify-center gap-x-6 gap-y-1 text-[11px]" style={{ color: linkColor }}>
-            <a
-              href="https://anpc.ro/ce-este-sal/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors flex items-center gap-1"
-            >
-              <Shield className="h-3 w-3" />
-              ANPC — Soluționarea Alternativă a Litigiilor
-            </a>
-            <a
-              href="https://ec.europa.eu/consumers/odr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors flex items-center gap-1"
-            >
-              <Shield className="h-3 w-3" />
-              SOL — Platformă Online de Soluționare a Litigiilor
-            </a>
+          {/* Legal compliance — compact */}
+          <div className="border-t border-white/10 mt-4 pt-3 text-center text-[11px]" style={{ color: linkColor }}>
             <span className="opacity-90">Conform OUG 34/2014 și Regulamentului UE 524/2013</span>
           </div>
 

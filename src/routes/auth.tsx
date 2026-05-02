@@ -225,6 +225,7 @@ function AuthPage() {
                     <Link to="/politica-confidentialitate" target="_blank" className="text-accent underline">Politica de confidențialitate</Link> *
                   </span>
                 </label>
+              )}
               {mode === "login" && (
                 <div className="text-right">
                   <Link to="/forgot-password" className="text-xs text-accent font-semibold hover:underline">Ai uitat parola?</Link>

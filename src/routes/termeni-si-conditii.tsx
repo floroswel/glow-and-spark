@@ -41,6 +41,21 @@ function TermeniPage() {
         române aplicabile privind drepturile consumatorilor în cadrul contractelor încheiate la distanță.
       </p>
 
+      <h2>3a. Tipul clienților — B2C și B2B</h2>
+      <p>
+        Site-ul este destinat în principal <strong>consumatorilor</strong> (persoane fizice care achiziționează produse 
+        în scopuri personale, non-comerciale) — relație <strong>B2C</strong>.
+      </p>
+      <p>
+        Persoanele juridice sau persoanele fizice autorizate care plasează comenzi în scop profesional 
+        (relație <strong>B2B</strong>) beneficiază de aceleași condiții comerciale, cu următoarele excepții:
+      </p>
+      <ul className="list-disc pl-5 space-y-1">
+        <li>Dreptul de retragere prevăzut la secțiunea 7 se aplică <strong>exclusiv consumatorilor</strong> (persoane fizice) conform legislației privind protecția consumatorilor. Clienții B2B nu beneficiază de acest drept, cu excepția cazurilor în care legislația aplicabilă prevede altfel. [VERIFICARE_AVOCAT — confirmați aplicabilitatea]</li>
+        <li>Garanția legală de conformitate se aplică diferit pentru clienți B2B, conform Codului Civil. [VERIFICARE_AVOCAT]</li>
+        <li>Facturarea se face cu datele fiscale ale persoanei juridice (CUI, denumire, adresă sediu social)</li>
+      </ul>
+
       <h2>4. Plasarea și confirmarea comenzii</h2>
       <p>Prin plasarea unei comenzi pe site, Cumpărătorul confirmă că:</p>
       <ul className="list-disc pl-5 space-y-1">
@@ -82,8 +97,13 @@ function TermeniPage() {
 
       <h2>7. Dreptul de retragere</h2>
       <p>
-        Conform legislației privind drepturile consumatorilor, Cumpărătorul beneficiază de dreptul de retragere din contractul de vânzare la distanță 
+        Conform legislației privind drepturile consumatorilor, <strong>Consumatorul</strong> (persoană fizică, achiziție non-profesională) 
+        beneficiază de dreptul de retragere din contractul de vânzare la distanță 
         în termen de <strong>{WITHDRAWAL_PERIOD_DAYS} zile calendaristice</strong> de la primirea produsului, fără a fi necesară justificarea deciziei.
+      </p>
+      <p>
+        <strong>Clienții B2B</strong> (persoane juridice, PFA, II) nu beneficiază de dreptul de retragere, 
+        cu excepția cazurilor prevăzute expres de legislația aplicabilă. [VERIFICARE_AVOCAT]
       </p>
       <p>
         Detalii complete în <Link to="/politica-returnare" className="text-accent hover:underline">Politica de Returnare</Link>. 
@@ -134,15 +154,33 @@ function TermeniPage() {
         la <a href={`tel:${C.phone.replace(/\s/g, "")}`} className="text-accent hover:underline">{C.phone}</a>.
       </p>
       <p>
+        Vom confirma primirea reclamației în cel mult <strong>{COMPLAINT_RESPONSE_DAYS} zile lucrătoare</strong> și 
+        vom depune eforturi rezonabile pentru a o soluționa în cel mai scurt timp posibil.
+      </p>
+      <p>
         <strong>ANPC</strong> — Autoritatea Națională pentru Protecția Consumatorilor: {" "}
         <a href="https://anpc.ro" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">https://anpc.ro</a>
       </p>
       <p>
-        <strong>Platforma SOL/ODR</strong> — Soluționare Online a Litigiilor: {" "}
+        <strong>Platforma SOL/ODR</strong> — Soluționare Online a Litigiilor (pentru consumatori): {" "}
         <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
           https://ec.europa.eu/consumers/odr
         </a>
       </p>
+
+      <h3 className="text-foreground font-semibold text-lg mt-6 mb-2">13a. Procedura de soluționare a disputelor</h3>
+      <p>
+        În caz de litigiu, părțile vor încerca mai întâi soluționarea amiabilă, prin corespondență directă la {C.email}. 
+        Termenul de răspuns este de maximum <strong>{COMPLAINT_RESPONSE_DAYS} zile lucrătoare</strong>.
+      </p>
+      <p>
+        Dacă soluționarea amiabilă nu este posibilă:
+      </p>
+      <ul className="list-disc pl-5 space-y-1">
+        <li><strong>Consumatorii</strong> pot sesiza ANPC sau pot utiliza platforma ODR</li>
+        <li><strong>Clienții B2B</strong> pot recurge la medierea comercială sau la instanțele judecătorești competente conform secțiunii 15</li>
+        <li>Orice parte poate utiliza procedura de mediere conform legislației române [VERIFICARE_AVOCAT — specificați centrul de mediere, dacă este cazul]</li>
+      </ul>
 
       <h2>14. Forța majoră</h2>
       <p>
@@ -152,8 +190,15 @@ function TermeniPage() {
 
       <h2>15. Legea aplicabilă</h2>
       <p>
-        Prezentul contract este guvernat de legislația română. Orice litigiu va fi soluționat pe cale amiabilă, 
-        iar în caz de imposibilitate, de către instanțele competente din România, conform domiciliului consumatorului.
+        Prezentul contract este guvernat de legislația română. 
+      </p>
+      <p>
+        <strong>Pentru consumatori:</strong> Orice litigiu va fi soluționat de instanțele competente din România, 
+        conform domiciliului consumatorului, în conformitate cu legislația privind protecția consumatorilor.
+      </p>
+      <p>
+        <strong>Pentru clienți B2B:</strong> Competența revine instanțelor judecătorești de la sediul Vânzătorului, 
+        dacă părțile nu convin altfel. [VERIFICARE_AVOCAT — confirmați clauza de jurisdicție]
       </p>
 
       <h2>16. Modificări</h2>

@@ -13,10 +13,13 @@ const COOKIES_TABLE = [
   { name: "_ga, _ga_*", provider: "Google Analytics", purpose: "Identificare vizitatori unici, analiză trafic", type: "Analitic", duration: "2 ani" },
   { name: "_gid", provider: "Google Analytics", purpose: "Distingerea vizitatorilor", type: "Analitic", duration: "24 ore" },
   { name: "_gat", provider: "Google Analytics", purpose: "Limitarea ratei de solicitări", type: "Analitic", duration: "1 minut" },
-  // ── Marketing — încărcate DOAR dacă admin configurează un Facebook Pixel ID ȘI vizitatorul acceptă ──
+  // ── Marketing — încărcate DOAR dacă admin configurează Pixel ID ȘI vizitatorul acceptă ──
   { name: "_fbp", provider: "Meta (Facebook Pixel)", purpose: "Urmărire conversii, remarketing", type: "Marketing", duration: "3 luni" },
   { name: "_fbc", provider: "Meta (Facebook Pixel)", purpose: "Atribuirea click-urilor de pe Facebook", type: "Marketing", duration: "3 luni" },
-  // NOTA: Google Ads (_gcl_au) ELIMINAT — nu există script Google Ads pe site [VERIFY_REAL_SCRIPTS 2025-05-02]
+  { name: "_ttp", provider: "TikTok Pixel", purpose: "Identificare vizitatori unici pentru remarketing TikTok", type: "Marketing", duration: "13 luni" },
+  { name: "_tt_enable_cookie", provider: "TikTok Pixel", purpose: "Verificarea suportului de cookie-uri", type: "Marketing", duration: "13 luni" },
+  { name: "ttq_*", provider: "TikTok Pixel", purpose: "Urmărire conversii și atribuire TikTok Ads", type: "Marketing", duration: "Sesiune / 13 luni" },
+  // NOTA: Google Ads (_gcl_au) va fi adăugat DOAR dacă se configurează Google Ads. [VERIFY_REAL_SCRIPTS]
 ];
 
 export const Route = createFileRoute("/politica-cookies")({
@@ -53,7 +56,7 @@ function CookiePolicyPage() {
       </p>
 
       <h2>3. Temeiul legal</h2>
-      <p>[PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — temeiurile juridice exacte pentru cookie-uri trebuie confirmate de un avocat]</p>
+      <p>[VERIFICARE_AVOCAT — temeiurile juridice exacte pentru cookie-uri trebuie confirmate de un avocat]</p>
       <p>
         Utilizarea cookie-urilor pe acest site se face în conformitate cu legislația aplicabilă privind comunicațiile electronice și protecția datelor personale.
       </p>
@@ -80,12 +83,18 @@ function CookiePolicyPage() {
 
       <h3 className="text-foreground font-semibold text-lg mt-6 mb-2">4.3. Cookie-uri de marketing</h3>
       <p>
-        Aceste cookie-uri sunt setate <strong>doar dacă</strong> administratorul site-ului a configurat un Facebook Pixel ID 
-        <strong> și</strong> dumneavoastră ați acceptat categoria „Marketing" în bannerul de consimțământ. 
-        Dacă niciun Pixel ID nu este configurat, scriptul Facebook nu se încarcă.
+        Cookie-urile de marketing sunt utilizate pentru urmărirea conversiilor și remarketing. Acestea sunt setate 
+        <strong> doar dacă</strong> administratorul site-ului a configurat un Pixel ID pentru platforma respectivă 
+        <strong> și</strong> dumneavoastră ați acceptat categoria „Marketing" în bannerul de consimțământ.
       </p>
+      <p>Platformele de marketing configurabile:</p>
+      <ul className="list-disc pl-5 space-y-1">
+        <li><strong>Meta (Facebook/Instagram):</strong> Facebook Pixel — script de la connect.facebook.net, setează _fbp, _fbc</li>
+        <li><strong>Google Ads:</strong> dacă este configurat prin GTM, poate seta _gcl_au [VERIFY_REAL_SCRIPTS — adăugați doar dacă există ID Google Ads configurat]</li>
+        <li><strong>TikTok:</strong> TikTok Pixel — script de la analytics.tiktok.com, setează _ttp, _tt_enable_cookie, ttq_*</li>
+      </ul>
       <p className="text-xs text-muted-foreground/70 italic">
-        [VERIFY_REAL_SCRIPTS — Dacă adăugați noi servicii terțe (ex: Google Ads, TikTok Pixel), actualizați această pagină și tabelul de mai jos]
+        [VERIFY_REAL_SCRIPTS — Dacă adăugați noi servicii terțe (ex: Pinterest Pixel, Snapchat Pixel, Microsoft UET), actualizați această pagină și tabelul de mai jos]
       </p>
 
       <h2>5. Lista detaliată a cookie-urilor</h2>
@@ -130,7 +139,7 @@ function CookiePolicyPage() {
       <ul className="list-disc pl-5 space-y-2">
         <li>
           <strong>Bannerul de consimțământ:</strong> La prima vizită pe site, vi se afișează un banner prin care puteți 
-          accepta sau refuza categoriile opționale (analitice și marketing).
+          accepta sau refuza categoriile opționale (analitice și marketing). Consimțământul este jurnalizat cu timestamp și versiunea politicii.
         </li>
         <li>
           <strong>Setările browser-ului:</strong> Majoritatea browserelor vă permit să blocați sau să ștergeți cookie-urile.
@@ -140,6 +149,7 @@ function CookiePolicyPage() {
           <ul className="list-disc pl-5 mt-1 space-y-0.5">
             <li>Google Analytics: <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Google Analytics Opt-out</a></li>
             <li>Your Online Choices (EU): <a href="https://www.youronlinechoices.eu/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">www.youronlinechoices.eu</a></li>
+            <li>TikTok: <a href="https://www.tiktok.com/legal/page/global/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">TikTok Privacy Settings</a></li>
           </ul>
         </li>
       </ul>

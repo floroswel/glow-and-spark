@@ -4,6 +4,7 @@ import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteAlert } from "@/components/SiteAlert";
 import { HeroSection } from "@/components/HeroSection";
+import { TrustStrip } from "@/components/TrustStrip";
 import { ProductGrid } from "@/components/ProductGrid";
 import { CollectionBanners } from "@/components/CollectionBanners";
 import { StorySection } from "@/components/StorySection";
@@ -36,6 +37,7 @@ function Index() {
       <MarqueeBanner />
       <TopBar />
       <SiteHeader />
+      <TrustStrip />
       <HeroSection />
       <ProductGrid />
       <CollectionBanners />

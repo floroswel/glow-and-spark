@@ -224,7 +224,7 @@ function AdminSettings() {
                 </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <Field label="Plătitor de TVA">
-                    <Toggle value={s.is_vat_payer} onChange={(v) => u("is_vat_payer", v)} />
+                    <Toggle value={s.is_vat_payer} onChange={(v) => u("is_vat_payer", v)} label="Plătitor TVA" />
                     <p className="text-xs text-muted-foreground mt-1">
                       {s.is_vat_payer ? 'Prețurile vor afișa "TVA inclus"' : 'Prețurile vor afișa "Preț final" (neimpozabil TVA)'}
                     </p>

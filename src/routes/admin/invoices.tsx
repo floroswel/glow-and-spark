@@ -160,10 +160,11 @@ function AdminInvoices() {
         </tbody>
       </table>
       <div class="totals">
-        <div class="row"><span>Subtotal:</span><span>${Number(inv.subtotal || inv.subtotal_no_vat || 0).toFixed(2)} RON</span></div>
+        <div class="row"><span>Subtotal:</span><span>${Number(inv.subtotal || 0).toFixed(2)} RON</span></div>
         ${Number(inv.discount || 0) > 0 ? `<div class="row"><span>Reducere:</span><span>-${Number(inv.discount || inv.discount_amount || 0).toFixed(2)} RON</span></div>` : ""}
         <div class="row"><span>Livrare:</span><span>${Number(inv.shipping_cost || 0).toFixed(2)} RON</span></div>
         <div class="row total-final"><span>TOTAL:</span><span>${Number(inv.total).toFixed(2)} RON</span></div>
+        <div class="row" style="font-size:11px;color:#888;margin-top:4px"><span>Operatorul nu este plătitor de TVA conform art. 310 din Codul fiscal.</span></div>
       </div>
       <div class="footer">
         <p>SC Vomix Genius SRL • CUI 43025661 • Banca: ING Bank • IBAN: RO49INGB0000999903456789</p>

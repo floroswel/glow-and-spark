@@ -226,7 +226,7 @@ function AdminSettings() {
                   <Field label="Plătitor de TVA">
                     <Toggle value={s.is_vat_payer} onChange={(v) => u("is_vat_payer", v)} />
                     <p className="text-xs text-muted-foreground mt-1">
-                      {s.is_vat_payer ? "Prețurile vor afișa „TVA inclus"" : "Prețurile vor afișa „Preț final" (neimpozabil TVA)"}
+                      {s.is_vat_payer ? 'Prețurile vor afișa "TVA inclus"' : 'Prețurile vor afișa "Preț final" (neimpozabil TVA)'}
                     </p>
                   </Field>
                   {s.is_vat_payer && (

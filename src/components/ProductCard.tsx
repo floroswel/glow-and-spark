@@ -20,6 +20,8 @@ interface ProductCardProps {
   description: string;
   price: number;
   oldPrice?: number;
+  /** Omnibus Directive: lowest price in last 30 days. Required to show discount badges/strikethrough. */
+  lowestPrice30d?: number | null;
   rating: number;
   reviews: number;
   badge?: string;
@@ -28,7 +30,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({
-  id, slug, image, title, description, price, oldPrice, rating, reviews, badge, badgeType = "new", searchQuery,
+  id, slug, image, title, description, price, oldPrice, lowestPrice30d, rating, reviews, badge, badgeType = "new", searchQuery,
 }: ProductCardProps) {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);

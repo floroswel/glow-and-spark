@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";

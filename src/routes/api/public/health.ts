@@ -25,7 +25,7 @@ function getSupabaseClient() {
   return createClient(url, key);
 }
 
-async function checkDatabase(sb: ReturnType<typeof createClient>): Promise<CheckResult> {
+async function checkDatabase(sb: any): Promise<CheckResult> {
   const start = Date.now();
   try {
     const { error } = await sb.from("site_settings").select("key").limit(1);
@@ -37,7 +37,7 @@ async function checkDatabase(sb: ReturnType<typeof createClient>): Promise<Check
   }
 }
 
-async function checkProducts(sb: ReturnType<typeof createClient>): Promise<CheckResult> {
+async function checkProducts(sb: any): Promise<CheckResult> {
   const start = Date.now();
   try {
     const { count, error } = await sb
@@ -54,7 +54,7 @@ async function checkProducts(sb: ReturnType<typeof createClient>): Promise<Check
   }
 }
 
-async function checkCategories(sb: ReturnType<typeof createClient>): Promise<CheckResult> {
+async function checkCategories(sb: any): Promise<CheckResult> {
   const start = Date.now();
   try {
     const { count, error } = await sb
@@ -69,7 +69,7 @@ async function checkCategories(sb: ReturnType<typeof createClient>): Promise<Che
   }
 }
 
-async function checkSiteSettings(sb: ReturnType<typeof createClient>): Promise<CheckResult> {
+async function checkSiteSettings(sb: any): Promise<CheckResult> {
   const start = Date.now();
   try {
     const { data, error } = await sb.from("site_settings").select("key").limit(20);

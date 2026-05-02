@@ -249,7 +249,7 @@ function AdminSettings() {
               </Section>
             )}
 
-
+            {activeSection === "invoicing" && (
               <Section title="🏢 Firmă & Facturare">
                 <p className="text-sm text-muted-foreground mb-4">Aceste date apar automat în footer-ul site-ului și pe facturile generate</p>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

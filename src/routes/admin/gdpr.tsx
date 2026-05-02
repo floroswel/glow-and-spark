@@ -38,7 +38,7 @@ function AdminGdprPage() {
         <Shield className="h-7 w-7 text-accent" />
         <div>
           <h1 className="font-heading text-2xl font-bold">Cereri GDPR</h1>
-          <p className="text-sm text-muted-foreground">Răspuns obligatoriu în 30 zile (Reg. UE 2016/679)</p>
+          <p className="text-sm text-muted-foreground">Răspuns obligatoriu în {GDPR_RESPONSE_DAYS} zile calendaristice</p>
         </div>
       </div>
 

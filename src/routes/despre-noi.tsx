@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 import { ChevronRight, Heart, Leaf, Award, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/despre-noi")({
@@ -26,6 +27,7 @@ const values = [
 ];
 
 function DespreNoiPage() {
+  const C = useCompanyInfo();
   return (
     <div className="min-h-screen">
       <MarqueeBanner />
@@ -77,10 +79,10 @@ function DespreNoiPage() {
         </div>
 
         <div className="mt-8 rounded-2xl border border-border bg-card/50 p-6 text-xs text-muted-foreground space-y-1">
-          <p><strong className="text-foreground">SC Vomix Genius SRL</strong></p>
-          <p>CUI: 43025661</p>
-          <p>Sediu social: Județul Teleorman, România</p>
-          <p>Contact: <a href="mailto:contact@mamalucica.ro" className="text-accent hover:underline">contact@mamalucica.ro</a></p>
+          <p><strong className="text-foreground">{C.name}</strong></p>
+          <p>CUI: {C.cui}</p>
+          <p>Sediu social: {C.fullAddress}</p>
+          <p>Contact: <a href={`mailto:${C.email}`} className="text-accent hover:underline">{C.email}</a></p>
         </div>
       </div>
 

@@ -13,6 +13,7 @@ const CANONICAL_REDIRECTS: Record<string, string> = {
   "politica-confidentialitate": "/politica-confidentialitate",
   "termeni-si-conditii": "/termeni-si-conditii",
   "politica-cookies": "/politica-cookies",
+  "formular-retragere": "/formular-retragere",
 };
 
 export const Route = createFileRoute("/page/$slug")({

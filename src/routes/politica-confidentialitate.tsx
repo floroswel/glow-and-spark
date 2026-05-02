@@ -168,20 +168,24 @@ function PoliticaConfidentialitatePage() {
         <li><strong>Autorități publice</strong> — când legea o impune (ANAF, ANPC, instanțe judecătorești)</li>
       </ul>
       <h3 className="text-foreground font-semibold text-lg mt-6 mb-2">6a. Parteneri publicitari și de analiză</h3>
-      <p>
-        Următorii furnizori pot primi date personale (identificatori de cookie, adrese IP trunchiate, date de evenimente) 
-        în calitate de <strong>operatori asociați sau operatori independenți</strong>, conform condițiilor contractuale proprii 
-        [VERIFICARE_AVOCAT — verificați dacă fiecare platformă acționează ca operator independent sau operator asociat]:
-      </p>
-      <ul className="list-disc pl-5 space-y-1">
-        <li><strong>Meta Platforms Ireland Ltd.</strong> — Facebook Pixel, Conversions API, Custom Audiences (sediu UE: Dublin, Irlanda)</li>
-        <li><strong>Google Ireland Ltd.</strong> — Google Analytics 4, Google Tag Manager, Google Ads (sediu UE: Dublin, Irlanda)</li>
-        <li><strong>TikTok Technology Ltd.</strong> — TikTok Pixel, TikTok Events API (sediu UE: Dublin, Irlanda) [VERIFICARE_AVOCAT — verificați transferurile de date către TikTok și mecanismele de protecție adecvate]</li>
-      </ul>
-      <p className="text-xs text-muted-foreground italic">
-        Datele sunt transmise către acești parteneri <strong>numai dacă</strong> vizitatorul a acordat consimțământ pentru cookie-uri de marketing. 
-        Transmiterile de date includ, după caz, hashing-ul datelor (SHA-256) înainte de upload.
-      </p>
+      {allEnabled.length > 0 ? (
+        <>
+          <p>
+            Următorii furnizori pot primi date personale în calitate de operatori asociați sau independenți 
+            [VERIFICARE_AVOCAT — verificați statutul fiecărui furnizor]:
+          </p>
+          <ul className="list-disc pl-5 space-y-1">
+            {allEnabled.map((p) => (
+              <li key={p.key}><strong>{p.euEntity}</strong> — {p.label}</li>
+            ))}
+          </ul>
+          <p className="text-xs text-muted-foreground italic mt-2">
+            Datele sunt transmise <strong>numai dacă</strong> vizitatorul a acordat consimțământ pentru cookie-uri de {allEnabled.some(p => p.consentCategory === "marketing") ? "marketing/" : ""}analiză.
+          </p>
+        </>
+      ) : (
+        <p className="text-muted-foreground italic">Niciun partener publicitar/analitic nu este configurat în prezent.</p>
+      )}
       <p className="mt-2"><strong>Nu vindem, nu închiriem și nu transmitem datele personale către terți în scopuri de marketing propriu, altele decât cele menționate mai sus.</strong></p>
 
       <h2>7. Drepturile tale conform GDPR</h2>

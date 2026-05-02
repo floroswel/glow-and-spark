@@ -1,4 +1,5 @@
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { WITHDRAWAL_PERIOD_DAYS } from "@/lib/compliance";
 import heroImg from "@/assets/hero-candles.jpg";
 
 export function HeroSection() {
@@ -41,11 +42,11 @@ export function HeroSection() {
               {ctaText}
             </a>
             <p className="mt-4 flex items-center gap-4 text-xs text-primary-foreground/70">
-              <span>🕯️ Ceară de soia 100% naturală</span>
+              <span>🕯️ Ceară de soia naturală</span>
               <span>•</span>
               <span>🚚 Livrare în toată România</span>
               <span>•</span>
-              <span>↩️ Drept de retragere 14 zile</span>
+              <span>{`↩️ Drept de retragere ${WITHDRAWAL_PERIOD_DAYS} zile`}</span>
             </p>
           </div>
         </div>

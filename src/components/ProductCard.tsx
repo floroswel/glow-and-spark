@@ -114,9 +114,9 @@ export function ProductCard({
         style={{ boxShadow: "var(--product-card-shadow, 0 1px 2px 0 rgb(0 0 0 / 0.05))" }}
       >
         <Link to="/produs/$slug" params={{ slug }} className="block relative overflow-hidden">
-          {badge && (
+          {safeBadge && (
             <span className={`absolute left-3 top-3 z-10 rounded-md px-2.5 py-1 text-xs font-bold uppercase ${badgeColors[badgeType]}`}>
-              {badge}
+              {safeBadge}
             </span>
           )}
           <img src={image} alt={title} className="img-zoom aspect-square w-full object-cover" loading="lazy" width={640} height={640} />

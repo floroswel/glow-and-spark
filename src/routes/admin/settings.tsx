@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AdminSettingsEditor, Section, Field, TextInput, Toggle, TextArea } from "@/components/admin/AdminSettingsEditor";
 import { useState } from "react";
-import { Store, Phone, MessageCircle, CreditCard, Bell, Shield, Mail, Share2, AlertTriangle, Truck, BarChart3, Receipt } from "lucide-react";
+import { Store, Phone, MessageCircle, CreditCard, Bell, Shield, Mail, Share2, AlertTriangle, Truck, BarChart3, Receipt, Megaphone } from "lucide-react";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,
@@ -69,6 +69,17 @@ const defaults = {
   social_youtube: "",
   social_pinterest: "",
   social_twitter: "",
+  // Paid Traffic Disclaimer
+  paid_traffic_disclaimer: {
+    enabled: false,
+    promo_name: "",
+    valid_from: "",
+    valid_until: "",
+    stock_limited: false,
+    stock_note: "",
+    eligibility_note: "",
+    custom_note: "",
+  },
 };
 
 function AdminSettings() {
@@ -87,6 +98,7 @@ function AdminSettings() {
     { key: "tracking", label: "Tracking & Analytics", icon: BarChart3 },
     { key: "social", label: "Social Media", icon: Share2 },
     { key: "alert", label: "Alertă Site", icon: AlertTriangle },
+    { key: "promo", label: "Promoții Ads", icon: Megaphone },
   ];
 
   return (
@@ -351,6 +363,82 @@ function AdminSettings() {
                     </select>
                   </Field>
                   <Toggle value={s.site_alert_dismissible} onChange={(v) => u("site_alert_dismissible", v)} label="Poate fi închisă de utilizator" />
+                </div>
+              </Section>
+            )}
+
+            {activeSection === "promo" && (
+              <Section title="📢 Disclaimer Trafic Plătit (Promoții Ads)">
+                <div className="rounded-lg bg-blue-500/10 border border-blue-500/30 p-4 mb-4 text-sm text-blue-800 dark:text-blue-200">
+                  <strong>ℹ️ [ANPC_SAFE_LANGUAGE]</strong> — Acest disclaimer apare pe paginile promoționale și previne discrepanțe între ce promit reclamele și ce vede clientul pe site. 
+                  Textul final trebuie verificat de un avocat.
+                </div>
+                <div className="space-y-4">
+                  <Toggle 
+                    value={s.paid_traffic_disclaimer?.enabled} 
+                    onChange={(v: boolean) => u("paid_traffic_disclaimer", { ...s.paid_traffic_disclaimer, enabled: v })} 
+                    label="Activează disclaimer promoții" 
+                  />
+                  <Field label="Numele promoției">
+                    <TextInput 
+                      value={s.paid_traffic_disclaimer?.promo_name || ""} 
+                      onChange={(v: string) => u("paid_traffic_disclaimer", { ...s.paid_traffic_disclaimer, promo_name: v })} 
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Ex: „Reduceri de Vară 2026", „Black Friday 2026"</p>
+                  </Field>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <Field label="Valabil de la (dată)">
+                      <TextInput 
+                        value={s.paid_traffic_disclaimer?.valid_from || ""} 
+                        onChange={(v: string) => u("paid_traffic_disclaimer", { ...s.paid_traffic_disclaimer, valid_from: v })} 
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Format: 2026-06-01</p>
+                    </Field>
+                    <Field label="Valabil până la (dată)">
+                      <TextInput 
+                        value={s.paid_traffic_disclaimer?.valid_until || ""} 
+                        onChange={(v: string) => u("paid_traffic_disclaimer", { ...s.paid_traffic_disclaimer, valid_until: v })} 
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Format: 2026-06-30</p>
+                    </Field>
+                  </div>
+                  <Toggle 
+                    value={s.paid_traffic_disclaimer?.stock_limited} 
+                    onChange={(v: boolean) => u("paid_traffic_disclaimer", { ...s.paid_traffic_disclaimer, stock_limited: v })} 
+                    label="Stoc limitat" 
+                  />
+                  {s.paid_traffic_disclaimer?.stock_limited && (
+                    <Field label="Notă stoc (opțional)">
+                      <TextArea 
+                        value={s.paid_traffic_disclaimer?.stock_note || ""} 
+                        onChange={(v: string) => u("paid_traffic_disclaimer", { ...s.paid_traffic_disclaimer, stock_note: v })} 
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Lăsați gol pentru textul implicit: „Stocul este limitat. Disponibilitatea produselor poate varia."</p>
+                    </Field>
+                  )}
+                  <Field label="Eligibilitate (opțional)">
+                    <TextArea 
+                      value={s.paid_traffic_disclaimer?.eligibility_note || ""} 
+                      onChange={(v: string) => u("paid_traffic_disclaimer", { ...s.paid_traffic_disclaimer, eligibility_note: v })} 
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Ex: „Oferta se aplică doar comenzilor noi plasate pe site, nu și celor telefonice."</p>
+                  </Field>
+                  <Field label="Notă suplimentară [ANPC_SAFE_LANGUAGE]">
+                    <TextArea 
+                      value={s.paid_traffic_disclaimer?.custom_note || ""} 
+                      onChange={(v: string) => u("paid_traffic_disclaimer", { ...s.paid_traffic_disclaimer, custom_note: v })} 
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Text liber afișat la final. Evitați promisiuni absolute (ex: NU „garantat cel mai mic preț").</p>
+                  </Field>
+                </div>
+                <div className="mt-6 rounded-lg bg-secondary/50 border border-border p-4">
+                  <p className="text-sm font-semibold mb-2">📋 Utilizare în cod:</p>
+                  <code className="text-xs bg-card p-2 rounded block">{`import { PaidTrafficDisclaimer } from "@/components/PaidTrafficDisclaimer";`}</code>
+                  <code className="text-xs bg-card p-2 rounded block mt-1">{`<PaidTrafficDisclaimer />`}</code>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Adăugați componenta pe orice pagină promoțională. Datele (date, stoc, eligibilitate) sunt citite din această configurare — 
+                    nu le duplicați în alte componente (countdown, banner, etc.).
+                  </p>
                 </div>
               </Section>
             )}

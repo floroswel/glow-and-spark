@@ -56,10 +56,6 @@ export const Route = createFileRoute("/robots.txt")({
   server: {
     handlers: {
       GET: async () => {
-        // Force Content-Type via SSR utility to override framework default
-        setResponseHeader("Content-Type", "text/plain; charset=utf-8");
-        setResponseHeader("Cache-Control", "public, max-age=3600");
-
         let body = DEFAULT_BODY;
         try {
           const { data } = await supabaseAdmin

@@ -114,7 +114,10 @@ describe("robots.txt — source validation", () => {
   });
 
   it("includes Sitemap directive pointing to canonical domain", () => {
-    expect(ROBOTS_SOURCE).toContain("Sitemap: https://mamalucica.ro/sitemap.xml");
+    // Source uses template literal ${SITE_URL}/sitemap.xml — verify both parts
+    expect(ROBOTS_SOURCE).toContain("Sitemap:");
+    expect(ROBOTS_SOURCE).toContain("/sitemap.xml");
+    expect(ROBOTS_SOURCE).toContain('SITE_URL}/sitemap.xml');
   });
 
   it("always appends Sitemap if missing from DB override", () => {

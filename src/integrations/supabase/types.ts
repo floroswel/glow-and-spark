@@ -2483,9 +2483,11 @@ export type Database = {
           content: string | null
           created_at: string | null
           id: string
+          moderation_note: string | null
           photo_urls: string[] | null
           product_id: string
           rating: number
+          source: string
           status: string | null
           title: string | null
           user_id: string | null
@@ -2496,9 +2498,11 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          moderation_note?: string | null
           photo_urls?: string[] | null
           product_id: string
           rating: number
+          source?: string
           status?: string | null
           title?: string | null
           user_id?: string | null
@@ -2509,9 +2513,11 @@ export type Database = {
           content?: string | null
           created_at?: string | null
           id?: string
+          moderation_note?: string | null
           photo_urls?: string[] | null
           product_id?: string
           rating?: number
+          source?: string
           status?: string | null
           title?: string | null
           user_id?: string | null
@@ -2708,6 +2714,7 @@ export type Database = {
           is_digital: boolean | null
           is_featured: boolean | null
           length_cm: number | null
+          lowest_price_30d: number | null
           meta_description: string | null
           meta_title: string | null
           min_stock_alert: number | null
@@ -2716,6 +2723,7 @@ export type Database = {
           price: number
           promo_end: string | null
           promo_start: string | null
+          promo_started_at: string | null
           rating: number | null
           reviews_count: number | null
           short_description: string | null
@@ -2750,6 +2758,7 @@ export type Database = {
           is_digital?: boolean | null
           is_featured?: boolean | null
           length_cm?: number | null
+          lowest_price_30d?: number | null
           meta_description?: string | null
           meta_title?: string | null
           min_stock_alert?: number | null
@@ -2758,6 +2767,7 @@ export type Database = {
           price: number
           promo_end?: string | null
           promo_start?: string | null
+          promo_started_at?: string | null
           rating?: number | null
           reviews_count?: number | null
           short_description?: string | null
@@ -2792,6 +2802,7 @@ export type Database = {
           is_digital?: boolean | null
           is_featured?: boolean | null
           length_cm?: number | null
+          lowest_price_30d?: number | null
           meta_description?: string | null
           meta_title?: string | null
           min_stock_alert?: number | null
@@ -2800,6 +2811,7 @@ export type Database = {
           price?: number
           promo_end?: string | null
           promo_start?: string | null
+          promo_started_at?: string | null
           rating?: number | null
           reviews_count?: number | null
           short_description?: string | null
@@ -4267,6 +4279,7 @@ export type Database = {
           is_digital: boolean | null
           is_featured: boolean | null
           length_cm: number | null
+          lowest_price_30d: number | null
           meta_description: string | null
           meta_title: string | null
           min_stock_alert: number | null
@@ -4275,6 +4288,7 @@ export type Database = {
           price: number
           promo_end: string | null
           promo_start: string | null
+          promo_started_at: string | null
           rating: number | null
           reviews_count: number | null
           short_description: string | null

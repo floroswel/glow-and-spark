@@ -7,11 +7,11 @@
 
 const CSP_DIRECTIVES = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://www.google-analytics.com https://tagmanager.google.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://www.google-analytics.com https://tagmanager.google.com https://analytics.tiktok.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://tagmanager.google.com",
   "img-src 'self' data: blob: https:",
   "font-src 'self' https://fonts.gstatic.com",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://www.facebook.com https://region1.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://www.facebook.com https://region1.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://analytics.tiktok.com",
   "frame-src 'self' https://www.youtube.com https://player.vimeo.com https://secure.mobilpay.ro",
   "frame-ancestors 'self'",
   "object-src 'none'",

@@ -19,6 +19,7 @@ import { PushNotificationManager } from "@/components/PushNotificationManager";
 import { captureRefFromUrl } from "@/lib/affiliate-tracker";
 import { initGTM } from "@/lib/gtm";
 import { initPixel, trackPageView } from "@/lib/fbpixel";
+import { initTikTokPixel, trackTikTokPageView } from "@/lib/tiktok";
 import { updateSiteName } from "@/lib/seo";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { getConsent } from "@/components/CookieConsent";
@@ -102,7 +103,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
         {/* Enforcing CSP — strict baseline for HTML pages */}
-        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://www.google-analytics.com https://tagmanager.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://tagmanager.google.com; img-src 'self' data: blob: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://www.facebook.com https://region1.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net; frame-src 'self' https://www.youtube.com https://player.vimeo.com https://secure.mobilpay.ro; object-src 'none'; base-uri 'self'; form-action 'self' https://*.supabase.co https://secure.mobilpay.ro; upgrade-insecure-requests;" />
+        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://www.google-analytics.com https://tagmanager.google.com https://analytics.tiktok.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://tagmanager.google.com; img-src 'self' data: blob: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://www.facebook.com https://region1.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://analytics.tiktok.com; frame-src 'self' https://www.youtube.com https://player.vimeo.com https://secure.mobilpay.ro; object-src 'none'; base-uri 'self'; form-action 'self' https://*.supabase.co https://secure.mobilpay.ro; upgrade-insecure-requests;" />
         {/* Additional security headers (also set via server middleware for API routes) */}
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
         <meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
@@ -131,6 +132,7 @@ function TrackingInit() {
   const { general, seo_global } = useSiteSettings();
   const gtmInitialized = useRef(false);
   const pixelInitialized = useRef(false);
+  const tiktokInitialized = useRef(false);
 
   useEffect(() => {
     if (general?.site_name) updateSiteName(general.site_name);
@@ -139,6 +141,7 @@ function TrackingInit() {
       const consent = getConsent();
       const gtmId = import.meta.env.VITE_GTM_ID || general?.google_analytics_id;
       const pixelId = import.meta.env.VITE_FB_PIXEL_ID || general?.facebook_pixel_id;
+      const tiktokId = import.meta.env.VITE_TIKTOK_PIXEL_ID || general?.tiktok_pixel_id;
 
       if (consent?.analytics && gtmId && !gtmInitialized.current) {
         initGTM(gtmId);
@@ -147,6 +150,10 @@ function TrackingInit() {
       if (consent?.marketing && pixelId && !pixelInitialized.current) {
         initPixel(pixelId);
         pixelInitialized.current = true;
+      }
+      if (consent?.marketing && tiktokId && !tiktokInitialized.current) {
+        initTikTokPixel(tiktokId);
+        tiktokInitialized.current = true;
       }
     };
 
@@ -209,6 +216,7 @@ function TrackingInit() {
   useEffect(() => {
     const unsub = router.subscribe("onResolved", () => {
       trackPageView();
+      trackTikTokPageView();
     });
     return unsub;
   }, [router]);

@@ -100,7 +100,7 @@ export function CookieConsent() {
             </label>
             <label className="flex items-center justify-between text-xs cursor-pointer">
               <span>
-                <strong>Marketing</strong> — Facebook Pixel (doar dacă este configurat de admin)
+                <strong>Marketing</strong> — Facebook Pixel, TikTok Pixel, Google Ads (doar dacă sunt configurate de admin)
               </span>
               <input
                 type="checkbox"

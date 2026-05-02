@@ -11,7 +11,7 @@ export const checkSeoRedirect = createServerFn({ method: "GET" })
     const d = input as { path?: string };
     return { path: typeof d?.path === "string" ? d.path : "" };
   })
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: { path: string } }) => {
     const { path } = data;
     if (!path) return null;
 

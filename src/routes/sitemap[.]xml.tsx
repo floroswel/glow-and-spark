@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { setResponseHeader } from "@tanstack/react-start/server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const SITE_URL = "https://mamalucica.ro";
@@ -54,6 +55,9 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
+        // Force Content-Type via SSR utility to override framework default
+        setResponseHeader("Content-Type", "application/xml; charset=utf-8");
+
         try {
           const [productsRes, categoriesRes, postsRes] = await Promise.all([
             supabaseAdmin
@@ -82,6 +86,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             postsRes.data || [],
           );
 
+          setResponseHeader("Cache-Control", "public, max-age=3600, s-maxage=3600");
           return new Response(xml, {
             headers: {
               "Content-Type": "application/xml; charset=utf-8",
@@ -89,9 +94,9 @@ export const Route = createFileRoute("/sitemap.xml")({
             },
           });
         } catch (err) {
-          // Fallback: return sitemap with only static pages so crawlers never get a 500
           console.error("[sitemap.xml] DB fetch failed, returning static fallback:", err);
           const xml = buildXml(STATIC_PAGES, [], [], []);
+          setResponseHeader("Cache-Control", "public, max-age=300");
           return new Response(xml, {
             headers: {
               "Content-Type": "application/xml; charset=utf-8",

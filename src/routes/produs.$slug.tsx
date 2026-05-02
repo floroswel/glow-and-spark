@@ -839,7 +839,7 @@ function ProductPage() {
               <div className="flex items-center gap-2 rounded-lg border border-border p-3">
                 <Check className="h-5 w-5 text-accent" />
                 <div>
-                  <p className="text-xs font-medium text-foreground">100% Natural</p>
+                  <p className="text-xs font-medium text-foreground">Natural</p>
                   <p className="text-xs text-muted-foreground">Ceară de soia pură</p>
                 </div>
               </div>

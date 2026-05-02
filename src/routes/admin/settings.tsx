@@ -80,6 +80,7 @@ function AdminSettings() {
     { key: "whatsapp", label: "WhatsApp", icon: MessageCircle },
     { key: "notifications", label: "Notificări", icon: Bell },
     { key: "legal", label: "Legal", icon: Shield },
+    { key: "fiscal", label: "Fiscal & TVA", icon: Receipt },
     { key: "invoicing", label: "Firmă & Facturare", icon: CreditCard },
     { key: "email", label: "Email", icon: Mail },
     { key: "shipping", label: "Livrare & Cadou", icon: Truck },

@@ -85,7 +85,7 @@ Vă recomandăm să fotografiați produsul înainte de expediere pentru a evita 
     },
     {
       title: "5. Termenul de rambursare",
-      content: `Vă vom rambursa toate sumele primite ca plată, inclusiv costurile de livrare inițiale (cu excepția costurilor suplimentare generate de alegerea unui alt mod de livrare decât cel standard oferit de noi), **în cel mult 14 zile calendaristice** de la data la care primim produsele returnate sau dovada expedierii acestora.
+      content: `Vă vom rambursa toate sumele primite ca plată, inclusiv costurile de livrare inițiale (cu excepția costurilor suplimentare generate de alegerea unui alt mod de livrare decât cel standard oferit de noi), **în cel mult ${formatDeadline("refund")}** de la data la care primim produsele returnate sau dovada expedierii acestora.
 
 Rambursarea se va efectua utilizând **aceeași modalitate de plată** folosită la tranzacția inițială, cu excepția cazului în care ați acceptat în mod expres o altă modalitate de rambursare, fără a suporta costuri suplimentare.
 

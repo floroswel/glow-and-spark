@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPageShell, CompanyIdentityBlock } from "@/components/LegalPageShell";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
+import { WITHDRAWAL_PERIOD_DAYS, COMPLAINT_RESPONSE_DAYS } from "@/lib/compliance";
 
 const LAST_UPDATE = "2026-05-02";
 

@@ -88,16 +88,19 @@ function PoliticaConfidentialitatePage() {
 
       <h2 id="remarketing">3b. Audiențe și remarketing</h2>
       <p>
-        Putem utiliza datele colectate prin instrumentele descrise mai sus pentru a crea <strong>audiențe personalizate (custom audiences)</strong> și 
-        <strong> audiențe similare (lookalike audiences)</strong> pe platformele publicitare, în scopul afișării de reclame relevante persoanelor 
-        care au interacționat cu site-ul nostru sau care prezintă caracteristici similare.
+        Putem utiliza datele colectate prin instrumentele descrise mai sus pentru a crea <strong>audiențe personalizate (custom audiences)</strong> pe 
+        platformele publicitare, în scopul afișării de reclame relevante persoanelor care au interacționat cu site-ul nostru.
       </p>
       <p>Aceasta poate include:</p>
       <ul className="list-disc pl-5 space-y-1">
-        <li>Retargetarea vizitatorilor care au vizualizat produse, adăugat în coș sau finalizat comenzi</li>
-        <li>Crearea de segmente de audiență pe baza comportamentului pe site</li>
-        <li>Transmiterea de liste hashed (ex: adrese de e-mail hashed) către platforme pentru „Customer Match" / „Custom Audiences" [VERIFICARE_AVOCAT — confirmați temeiul legal pentru upload de liste]</li>
+        <li>Retargetarea vizitatorilor care au vizualizat produse, adăugat în coș sau finalizat comenzi (pe baza pixelilor instalați)</li>
+        <li>Crearea de segmente de audiență pe baza comportamentului pe site (audiențe de website visitors)</li>
       </ul>
+      <p className="text-xs text-muted-foreground italic">
+        [VERIFY_IMPLEMENTATION — Funcționalitățile „Customer Match" (Google) / „Custom Audiences din liste" (Meta) / upload de liste hashed de e-mail 
+        <strong> NU sunt implementate în prezent</strong> în cod. Dacă le activați manual în platformele publicitare, actualizați această secțiune 
+        și adăugați temeiul legal corespunzător cu [VERIFICARE_AVOCAT].]
+      </p>
       <p>
         Puteți opri afișarea reclamelor personalizate retragând consimțământul pentru cookie-uri de marketing 
         sau utilizând setările de confidențialitate ale fiecărei platforme (ex: „Your Ad Choices", setări Facebook Ads, Google Ad Settings, TikTok Privacy).
@@ -235,6 +238,129 @@ function PoliticaConfidentialitatePage() {
         Ne rezervăm dreptul de a actualiza această politică. Modificările vor fi publicate pe această pagină 
         cu data ultimei actualizări vizibilă în partea de sus. Pentru modificări substanțiale, vom notifica 
         utilizatorii prin e-mail sau prin banner pe site.
+      </p>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          ANEXĂ — Fișa de prelucrare date pentru platforme publicitare
+          (Data Processing Addendum — Appendix)
+          ═══════════════════════════════════════════════════════════════ */}
+      <h2 id="dpa-appendix">Anexă: Fișa de prelucrare date — Platforme publicitare</h2>
+      <p>
+        Tabelul de mai jos detaliază, pentru fiecare platformă publicitară integrată pe site, 
+        evenimentele și parametrii transmiși, scopul prelucrării, politica de retenție și 
+        documentația de confidențialitate a furnizorului.
+      </p>
+      <p className="text-xs text-muted-foreground italic mb-4">
+        Datele sunt transmise <strong>exclusiv</strong> după obținerea consimțământului vizitatorului pentru cookie-uri de marketing 
+        ȘI configurarea unui ID de tracking valid de către administrator.
+      </p>
+
+      <div className="overflow-x-auto rounded-lg border border-border my-4">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-secondary/50">
+              <th className="text-left px-3 py-2 font-semibold text-foreground">Platformă</th>
+              <th className="text-left px-3 py-2 font-semibold text-foreground">Evenimente transmise</th>
+              <th className="text-left px-3 py-2 font-semibold text-foreground">Parametri / Date</th>
+              <th className="text-left px-3 py-2 font-semibold text-foreground">Scop</th>
+              <th className="text-left px-3 py-2 font-semibold text-foreground">Retenție</th>
+              <th className="text-left px-3 py-2 font-semibold text-foreground">Documentație</th>
+            </tr>
+          </thead>
+          <tbody className="text-xs">
+            {/* ── Meta (Facebook / Instagram) ── */}
+            <tr className="bg-card align-top">
+              <td className="px-3 py-2 font-medium" rowSpan={2}>
+                <strong>Meta</strong><br />
+                <span className="text-muted-foreground">(Facebook / Instagram)</span>
+              </td>
+              <td className="px-3 py-2">
+                <code>PageView</code>, <code>ViewContent</code>, <code>AddToCart</code>, <code>InitiateCheckout</code>, <code>Purchase</code>
+              </td>
+              <td className="px-3 py-2">
+                content_type, content_ids, content_name, content_category, value, currency (RON), num_items.<br />
+                <strong>Nu se transmit</strong>: adrese de e-mail, nume, telefon prin pixel browser.
+              </td>
+              <td className="px-3 py-2">Măsurare conversii, optimizare campanii, retargetare vizitatori site</td>
+              <td className="px-3 py-2">[LEGAL — Conform politicii Meta; implicit 2 ani pentru date de evenimente. Verificați cu avocatul.]</td>
+              <td className="px-3 py-2">
+                <a href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Privacy Policy</a>{", "}
+                <a href="https://www.facebook.com/legal/terms/dataprocessing" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Data Processing Terms</a>
+              </td>
+            </tr>
+            <tr className="bg-card align-top border-t border-border/30">
+              <td className="px-3 py-2 text-muted-foreground" colSpan={5}>
+                <strong>Customer Match / Custom Audiences din liste:</strong> NU este implementat în codul site-ului. 
+                Dacă operatorul încarcă manual liste (email hashed SHA-256) în Meta Business Suite, 
+                această prelucrare trebuie documentată separat. [VERIFY_IMPLEMENTATION]
+              </td>
+            </tr>
+
+            {/* ── Google ── */}
+            <tr className="bg-secondary/20 align-top">
+              <td className="px-3 py-2 font-medium" rowSpan={2}>
+                <strong>Google</strong><br />
+                <span className="text-muted-foreground">(Analytics / Ads / GTM)</span>
+              </td>
+              <td className="px-3 py-2">
+                <code>view_item</code>, <code>add_to_cart</code>, <code>begin_checkout</code>, <code>purchase</code>
+              </td>
+              <td className="px-3 py-2">
+                item_id, item_name, price, quantity, currency (RON), transaction_id, value.<br />
+                <strong>Nu se transmit</strong>: date PII necriptate prin GA4/GTM.
+              </td>
+              <td className="px-3 py-2">Analiză trafic, măsurare conversii Google Ads, optimizare campanii</td>
+              <td className="px-3 py-2">[LEGAL — GA4 implicit 14 luni; Google Ads conform contractului. Verificați cu avocatul.]</td>
+              <td className="px-3 py-2">
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Privacy Policy</a>{", "}
+                <a href="https://business.safety.google/processorterms/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Data Processing Terms</a>
+              </td>
+            </tr>
+            <tr className="bg-secondary/20 align-top border-t border-border/30">
+              <td className="px-3 py-2 text-muted-foreground" colSpan={5}>
+                <strong>Customer Match:</strong> NU este implementat în codul site-ului. 
+                Dacă operatorul încarcă manual liste (email hashed) în Google Ads, 
+                documentați separat. [VERIFY_IMPLEMENTATION]
+              </td>
+            </tr>
+
+            {/* ── TikTok ── */}
+            <tr className="bg-card align-top">
+              <td className="px-3 py-2 font-medium">
+                <strong>TikTok</strong><br />
+                <span className="text-muted-foreground">(TikTok for Business)</span>
+              </td>
+              <td className="px-3 py-2">
+                <code>page</code> (PageView)<br />
+                <span className="text-muted-foreground">
+                  [VERIFY_IMPLEMENTATION — Evenimente suplimentare (ViewContent, AddToCart, CompletePayment) 
+                  pot fi adăugate prin <code>trackTikTokEvent()</code> în cod. La acest moment, doar PageView este activ automat.]
+                </span>
+              </td>
+              <td className="px-3 py-2">
+                Parametri impliciti SDK: URL pagină, referrer, user agent, IP (trunchiat de TikTok).<br />
+                <strong>Nu se transmit</strong>: date PII din cod.
+              </td>
+              <td className="px-3 py-2">Măsurare conversii TikTok Ads, retargetare vizitatori</td>
+              <td className="px-3 py-2">[LEGAL — Conform politicii TikTok; verificați cu avocatul. Cookie _ttp: 13 luni.]</td>
+              <td className="px-3 py-2">
+                <a href="https://www.tiktok.com/legal/page/global/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Privacy Policy</a>{", "}
+                <a href="https://ads.tiktok.com/i18n/official/policy/business-products-terms" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Business Products Terms</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p className="text-xs text-muted-foreground italic">
+        [VERIFICARE_AVOCAT — Acest tabel este documentație tehnică, nu consiliere juridică. 
+        Verificați cu avocatul dacă este necesară o anexă separată DPA (Data Processing Addendum) 
+        semnată cu fiecare furnizor. Majoritatea platformelor mari oferă DPA standard acceptat prin 
+        utilizarea serviciului (click-through).]
+      </p>
+      <p className="text-xs text-muted-foreground italic">
+        [VERIFY_IMPLEMENTATION — Dacă adăugați Conversion API (CAPI) server-side pentru Meta sau TikTok Events API, 
+        actualizați coloana „Parametri / Date" deoarece CAPI poate transmite date suplimentare (email hashed, IP server-side, user agent).]
       </p>
 
     </LegalPageShell>

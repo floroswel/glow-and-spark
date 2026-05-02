@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Shield, Download, Trash2, FileEdit, Check, X } from "lucide-react";
 import { toast } from "sonner";
+import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
 export const Route = createFileRoute("/admin/gdpr")({
   component: AdminGdprPage,

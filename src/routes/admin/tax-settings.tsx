@@ -61,7 +61,7 @@ function AdminTaxSettings() {
                 </div>
               )}
               <Field label="Disclaimer prețuri (afișat pe site)">
-                <TextArea value={s.legal_price_disclaimer_ro} onChange={v => u("legal_price_disclaimer_ro", v)} rows={2} />
+                <TextInput value={s.legal_price_disclaimer_ro} onChange={(v: string) => u("legal_price_disclaimer_ro", v)} />
               </Field>
             </div>
           </Section>

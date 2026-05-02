@@ -98,6 +98,7 @@ function AdminSettings() {
     { key: "tracking", label: "Tracking & Analytics", icon: BarChart3 },
     { key: "social", label: "Social Media", icon: Share2 },
     { key: "alert", label: "Alertă Site", icon: AlertTriangle },
+    { key: "promo", label: "Promoții Ads", icon: Megaphone },
   ];
 
   return (

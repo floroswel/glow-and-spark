@@ -115,7 +115,7 @@ async function probeDatabase(): Promise<ProbeResult> {
   }
 }
 
-export const Route = createFileRoute("/api/public/monitors/smoke")({
+export const Route = (createFileRoute as any)("/api/public/monitors/smoke")({
   server: {
     handlers: {
       GET: async ({ request }) => {

@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPageShell, CompanyIdentityBlock } from "@/components/LegalPageShell";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { formatDeadline, GDPR_RESPONSE_DAYS, GDPR_ACK_DAYS } from "@/lib/compliance";
+import { getEnabledPlatforms, CONSENT_POLICY_VERSION } from "@/config/marketing-tech";
 
 const LAST_UPDATE = "2026-05-02";
 

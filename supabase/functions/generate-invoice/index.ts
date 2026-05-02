@@ -11,10 +11,11 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
-function buildInvoiceHTML(order: any, invoiceNumber: string): string {
+function buildInvoiceHTML(order: any, invoiceNumber: string, taxSettings: any): string {
   const items = Array.isArray(order.items) ? order.items : [];
-  const subtotalNoVat = (Number(order.subtotal || 0) / 1.19).toFixed(2);
-  const vatAmount = (Number(order.subtotal || 0) - Number(order.subtotal || 0) / 1.19).toFixed(2);
+  const isVatPayer = taxSettings?.is_vat_payer === true;
+  const subtotalNoVat = isVatPayer ? (Number(order.subtotal || 0) / 1.19).toFixed(2) : null;
+  const vatAmount = isVatPayer ? (Number(order.subtotal || 0) - Number(order.subtotal || 0) / 1.19).toFixed(2) : null;
   const itemRows = items
     .map(
       (it: any, i: number) =>

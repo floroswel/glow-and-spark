@@ -5,15 +5,18 @@ import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 const LAST_UPDATE = "2026-05-02";
 
 const COOKIES_TABLE = [
+  // ── Necesare ──
   { name: "sb-*-auth-token", provider: "mamalucica.ro", purpose: "Sesiune de autentificare utilizator", type: "Necesar", duration: "1 an" },
   { name: "__cf_bm", provider: "Cloudflare", purpose: "Protecție anti-bot și securitate", type: "Necesar", duration: "30 min" },
-  { name: "cookie_consent", provider: "mamalucica.ro", purpose: "Memorarea preferințelor de cookie", type: "Necesar", duration: "1 an" },
+  { name: "cookie_consent", provider: "mamalucica.ro (localStorage)", purpose: "Memorarea preferințelor de cookie", type: "Necesar", duration: "Permanent (localStorage)" },
+  // ── Analitice — încărcate DOAR dacă admin configurează un ID GA4/GTM ȘI vizitatorul acceptă ──
   { name: "_ga, _ga_*", provider: "Google Analytics", purpose: "Identificare vizitatori unici, analiză trafic", type: "Analitic", duration: "2 ani" },
   { name: "_gid", provider: "Google Analytics", purpose: "Distingerea vizitatorilor", type: "Analitic", duration: "24 ore" },
   { name: "_gat", provider: "Google Analytics", purpose: "Limitarea ratei de solicitări", type: "Analitic", duration: "1 minut" },
-  { name: "_fbp", provider: "Meta (Facebook)", purpose: "Urmărire conversii, remarketing", type: "Marketing", duration: "3 luni" },
-  { name: "_fbc", provider: "Meta (Facebook)", purpose: "Atribuirea click-urilor de pe Facebook", type: "Marketing", duration: "3 luni" },
-  { name: "_gcl_au", provider: "Google Ads", purpose: "Urmărire conversii publicitare", type: "Marketing", duration: "3 luni" },
+  // ── Marketing — încărcate DOAR dacă admin configurează un Facebook Pixel ID ȘI vizitatorul acceptă ──
+  { name: "_fbp", provider: "Meta (Facebook Pixel)", purpose: "Urmărire conversii, remarketing", type: "Marketing", duration: "3 luni" },
+  { name: "_fbc", provider: "Meta (Facebook Pixel)", purpose: "Atribuirea click-urilor de pe Facebook", type: "Marketing", duration: "3 luni" },
+  // NOTA: Google Ads (_gcl_au) ELIMINAT — nu există script Google Ads pe site [VERIFY_REAL_SCRIPTS 2025-05-02]
 ];
 
 export const Route = createFileRoute("/politica-cookies")({

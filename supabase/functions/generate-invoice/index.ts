@@ -113,9 +113,13 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Read tax settings
+    const { data: taxRow } = await supabase.from("site_settings").select("value").eq("key", "tax_settings").single();
+    const taxSettings = taxRow?.value || { is_vat_payer: false };
+
     const year = new Date(order.created_at).getFullYear();
     const invoiceNumber = `ML-${year}-${String(order.order_number).replace(/\D/g, "").padStart(5, "0").slice(-5)}`;
-    const html = buildInvoiceHTML(order, invoiceNumber);
+    const html = buildInvoiceHTML(order, invoiceNumber, taxSettings);
 
     // Generate "PDF" — using HTML as PDF body via simple wrapper.
     // Note: native PDF rendering libraries are not Worker/Deno-compatible here,

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { resetConsent } from "@/lib/cmp/consentController";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 import { Link } from "@tanstack/react-router";

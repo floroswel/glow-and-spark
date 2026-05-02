@@ -98,7 +98,7 @@ function CheckoutPage() {
     name: "", email: "", phone: "", judet: "", localitate: "", adresa: "", codPostal: "", observatii: "",
     companyName: "", companyCui: "", companyReg: "",
     paymentMethod: "ramburs",
-    acceptTerms: false, acceptGdpr: false,
+    acceptTerms: false,
   });
   const [newsletterOptIn, setNewsletterOptIn] = useState(false);
 

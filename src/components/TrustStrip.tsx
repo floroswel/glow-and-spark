@@ -6,7 +6,7 @@ const items = [
     icon: Truck,
     title: "Transport & Livrare",
     subtitle: "Rapid in toata Romania",
-    to: "/transport-si-livrare",
+    to: "/page/transport-livrare",
   },
   {
     icon: RotateCcw,
@@ -24,7 +24,7 @@ const items = [
     icon: CreditCard,
     title: "Plata securizata",
     subtitle: "Card, ramburs, transfer",
-    to: "/contact",
+    to: "/page/metode-plata",
   },
 ];
 

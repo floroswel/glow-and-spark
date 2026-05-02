@@ -216,7 +216,40 @@ function AdminSettings() {
               </Section>
             )}
 
-            {activeSection === "invoicing" && (
+            {activeSection === "fiscal" && (
+              <Section title="🧾 Fiscal & TVA">
+                <div className="rounded-lg bg-amber-500/10 border border-amber-500/30 p-4 mb-4 text-sm text-amber-800 dark:text-amber-200">
+                  <strong>⚠️ [CONTABIL]</strong> — Aceste setări afectează modul în care sunt prezentate prețurile pe site, în facturi și emailuri.
+                  Modificările trebuie verificate de contabilul societății.
+                </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Field label="Plătitor de TVA">
+                    <Toggle value={s.is_vat_payer} onChange={(v) => u("is_vat_payer", v)} />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {s.is_vat_payer ? "Prețurile vor afișa „TVA inclus"" : "Prețurile vor afișa „Preț final" (neimpozabil TVA)"}
+                    </p>
+                  </Field>
+                  {s.is_vat_payer && (
+                    <Field label="Cota TVA (%)">
+                      <TextInput value={s.vat_rate} onChange={(v) => u("vat_rate", v.replace(/[^0-9]/g, ""))} />
+                    </Field>
+                  )}
+                </div>
+                <div className="mt-4">
+                  <Field label="Disclaimer preț (afișat pe site și facturi) [CONTABIL]">
+                    <TextArea
+                      value={s.legal_disclaimer_price_ro}
+                      onChange={(v) => u("legal_disclaimer_price_ro", v)}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Lăsați gol pentru textul implicit. Textul trebuie revizuit de contabil.
+                    </p>
+                  </Field>
+                </div>
+              </Section>
+            )}
+
+
               <Section title="🏢 Firmă & Facturare">
                 <p className="text-sm text-muted-foreground mb-4">Aceste date apar automat în footer-ul site-ului și pe facturile generate</p>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

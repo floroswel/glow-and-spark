@@ -175,8 +175,8 @@ function AdminInvoices() {
   };
 
   const exportCSV = () => {
-    const headers = ["Nr. Factură", "Nr. Comandă", "Client", "Email", "Subtotal fără TVA", "TVA", "Total", "Status", "Data"];
-    const rows = filtered.map(i => [i.invoice_number, i.order_number, i.customer_name, i.customer_email, i.subtotal_no_vat, i.vat_amount, i.total, i.invoice_status, new Date(i.created_at).toLocaleDateString("ro-RO")]);
+    const headers = ["Nr. Factură", "Nr. Comandă", "Client", "Email", "Total", "Status", "Data"];
+    const rows = filtered.map(i => [i.invoice_number, i.order_number, i.customer_name, i.customer_email, i.total, i.invoice_status, new Date(i.created_at).toLocaleDateString("ro-RO")]);
     const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -237,8 +237,6 @@ function AdminInvoices() {
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">Nr. Factură</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">Comandă</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">Client</th>
-            <th className="px-4 py-3 text-right font-medium text-muted-foreground">Subtotal</th>
-            <th className="px-4 py-3 text-right font-medium text-muted-foreground">TVA</th>
             <th className="px-4 py-3 text-right font-medium text-muted-foreground">Total</th>
             <th className="px-4 py-3 text-center font-medium text-muted-foreground">Status</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">Data</th>
@@ -255,8 +253,6 @@ function AdminInvoices() {
                     <p className="font-medium text-foreground text-xs">{inv.customer_name}</p>
                     <p className="text-[10px] text-muted-foreground">{inv.customer_email}</p>
                   </td>
-                  <td className="px-4 py-3 text-right text-xs">{inv.subtotal_no_vat} RON</td>
-                  <td className="px-4 py-3 text-right text-xs text-amber-500">{inv.vat_amount} RON</td>
                   <td className="px-4 py-3 text-right font-semibold">{Number(inv.total).toFixed(2)} RON</td>
                   <td className="px-4 py-3 text-center">
                     <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${cfg.color}`}>

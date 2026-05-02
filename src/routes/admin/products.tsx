@@ -22,6 +22,8 @@ interface Product {
   short_description: string;
   price: number;
   old_price: number | null;
+  lowest_price_30d: number | null;
+  promo_started_at: string | null;
   image_url: string;
   gallery: string[];
   category_id: string | null;

@@ -88,16 +88,19 @@ function PoliticaConfidentialitatePage() {
 
       <h2 id="remarketing">3b. Audiențe și remarketing</h2>
       <p>
-        Putem utiliza datele colectate prin instrumentele descrise mai sus pentru a crea <strong>audiențe personalizate (custom audiences)</strong> și 
-        <strong> audiențe similare (lookalike audiences)</strong> pe platformele publicitare, în scopul afișării de reclame relevante persoanelor 
-        care au interacționat cu site-ul nostru sau care prezintă caracteristici similare.
+        Putem utiliza datele colectate prin instrumentele descrise mai sus pentru a crea <strong>audiențe personalizate (custom audiences)</strong> pe 
+        platformele publicitare, în scopul afișării de reclame relevante persoanelor care au interacționat cu site-ul nostru.
       </p>
       <p>Aceasta poate include:</p>
       <ul className="list-disc pl-5 space-y-1">
-        <li>Retargetarea vizitatorilor care au vizualizat produse, adăugat în coș sau finalizat comenzi</li>
-        <li>Crearea de segmente de audiență pe baza comportamentului pe site</li>
-        <li>Transmiterea de liste hashed (ex: adrese de e-mail hashed) către platforme pentru „Customer Match" / „Custom Audiences" [VERIFICARE_AVOCAT — confirmați temeiul legal pentru upload de liste]</li>
+        <li>Retargetarea vizitatorilor care au vizualizat produse, adăugat în coș sau finalizat comenzi (pe baza pixelilor instalați)</li>
+        <li>Crearea de segmente de audiență pe baza comportamentului pe site (audiențe de website visitors)</li>
       </ul>
+      <p className="text-xs text-muted-foreground italic">
+        [VERIFY_IMPLEMENTATION — Funcționalitățile „Customer Match" (Google) / „Custom Audiences din liste" (Meta) / upload de liste hashed de e-mail 
+        <strong> NU sunt implementate în prezent</strong> în cod. Dacă le activați manual în platformele publicitare, actualizați această secțiune 
+        și adăugați temeiul legal corespunzător cu [VERIFICARE_AVOCAT].]
+      </p>
       <p>
         Puteți opri afișarea reclamelor personalizate retragând consimțământul pentru cookie-uri de marketing 
         sau utilizând setările de confidențialitate ale fiecărei platforme (ex: „Your Ad Choices", setări Facebook Ads, Google Ad Settings, TikTok Privacy).

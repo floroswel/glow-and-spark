@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminSettingsEditor, Section, Field, TextInput, Toggle, NumberInput, TextArea } from "@/components/admin/AdminSettingsEditor";
+import { AdminSettingsEditor, Section, Field, TextInput, Toggle, NumberInput } from "@/components/admin/AdminSettingsEditor";
 
 export const Route = createFileRoute("/admin/tax-settings")({
   component: AdminTaxSettings,

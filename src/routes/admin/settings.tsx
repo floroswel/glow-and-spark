@@ -69,6 +69,17 @@ const defaults = {
   social_youtube: "",
   social_pinterest: "",
   social_twitter: "",
+  // Paid Traffic Disclaimer
+  paid_traffic_disclaimer: {
+    enabled: false,
+    promo_name: "",
+    valid_from: "",
+    valid_until: "",
+    stock_limited: false,
+    stock_note: "",
+    eligibility_note: "",
+    custom_note: "",
+  },
 };
 
 function AdminSettings() {

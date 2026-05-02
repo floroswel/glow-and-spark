@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Shield, Download, Trash2, FileEdit, Clock, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
 export const Route = createFileRoute("/account/gdpr")({
   head: () => ({
@@ -55,7 +56,7 @@ function GdprPage() {
       toast.error("Nu am putut trimite cererea");
       return;
     }
-    toast.success("Cerere înregistrată. Te vom contacta în maxim 30 de zile (GDPR).");
+    toast.success(`Cerere înregistrată. Te vom contacta în maxim ${GDPR_RESPONSE_DAYS} de zile calendaristice.`);
     setDetails("");
     load();
   };
@@ -101,8 +102,8 @@ function GdprPage() {
           <div>
             <h1 className="font-heading text-2xl font-bold text-foreground">Datele Tale Personale (GDPR)</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Conform Regulamentului UE 2016/679, ai dreptul să accesezi, rectifici sau ștergi datele tale.
-              Răspundem în maxim 30 zile calendaristice.
+              Conform legislației privind protecția datelor personale, ai dreptul să accesezi, rectifici sau ștergi datele tale.
+              Răspundem în maxim {GDPR_RESPONSE_DAYS} zile calendaristice.
             </p>
           </div>
         </div>

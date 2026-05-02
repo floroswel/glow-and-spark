@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { LegalPageShell } from "@/components/LegalPageShell";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
+import { WITHDRAWAL_PERIOD_DAYS, formatDeadline } from "@/lib/compliance";
 
 const LAST_UPDATE = "2026-05-02";
 
@@ -28,9 +29,9 @@ function PoliticaReturnarePage() {
   const sections = [
     {
       title: "1. Dreptul de retragere",
-      content: `Conform legislației privind drepturile consumatorilor, aveți dreptul de a vă retrage din contractul de vânzare la distanță în termen de **14 zile calendaristice** de la data primirii produsului, fără a fi necesară justificarea deciziei și fără a suporta alte costuri decât cele de returnare.
+      content: `Conform legislației privind drepturile consumatorilor, aveți dreptul de a vă retrage din contractul de vânzare la distanță în termen de **${WITHDRAWAL_PERIOD_DAYS} zile calendaristice** de la data primirii produsului, fără a fi necesară justificarea deciziei și fără a suporta alte costuri decât cele de returnare.
 
-Termenul de retragere expiră după 14 zile calendaristice de la data la care dumneavoastră sau o terță parte desemnată de dumneavoastră, alta decât transportatorul, intră în posesia fizică a produselor.
+Termenul de retragere expiră după ${WITHDRAWAL_PERIOD_DAYS} zile calendaristice de la data la care dumneavoastră sau o terță parte desemnată de dumneavoastră, alta decât transportatorul, intră în posesia fizică a produselor.
 
 Pentru a vă exercita dreptul de retragere, trebuie să ne informați cu privire la decizia dumneavoastră printr-o declarație clară:
 • **E-mail:** ${C.email}
@@ -84,7 +85,7 @@ Vă recomandăm să fotografiați produsul înainte de expediere pentru a evita 
     },
     {
       title: "5. Termenul de rambursare",
-      content: `Vă vom rambursa toate sumele primite ca plată, inclusiv costurile de livrare inițiale (cu excepția costurilor suplimentare generate de alegerea unui alt mod de livrare decât cel standard oferit de noi), **în cel mult 14 zile calendaristice** de la data la care primim produsele returnate sau dovada expedierii acestora.
+      content: `Vă vom rambursa toate sumele primite ca plată, inclusiv costurile de livrare inițiale (cu excepția costurilor suplimentare generate de alegerea unui alt mod de livrare decât cel standard oferit de noi), **în cel mult ${formatDeadline("refund")}** de la data la care primim produsele returnate sau dovada expedierii acestora.
 
 Rambursarea se va efectua utilizând **aceeași modalitate de plată** folosită la tranzacția inițială, cu excepția cazului în care ați acceptat în mod expres o altă modalitate de rambursare, fără a suporta costuri suplimentare.
 

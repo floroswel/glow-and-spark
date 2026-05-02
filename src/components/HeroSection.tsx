@@ -45,7 +45,7 @@ export function HeroSection() {
               <span>•</span>
               <span>🚚 Livrare în toată România</span>
               <span>•</span>
-              <span>↩️ Retur gratuit 14 zile</span>
+              <span>↩️ Drept de retragere 14 zile</span>
             </p>
           </div>
         </div>

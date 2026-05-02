@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPageShell, CompanyIdentityBlock } from "@/components/LegalPageShell";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
+import { formatDeadline, GDPR_RESPONSE_DAYS, GDPR_ACK_DAYS } from "@/lib/compliance";
 
 const LAST_UPDATE = "2026-05-02";
 
@@ -102,8 +103,8 @@ function PoliticaConfidentialitatePage() {
         <li><strong>Poștă:</strong> la adresa {C.name}, {C.fullAddress}</li>
       </ul>
       <p>
-        Vom confirma primirea cererii în <strong>3 zile lucrătoare</strong> și vom răspunde complet 
-        în termenul legal aplicabil de la primire. [PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — verificați termenul exact conform GDPR]
+        Vom confirma primirea cererii în <strong>{formatDeadline("gdpr_ack")}</strong> și vom răspunde complet 
+        în maximum <strong>{formatDeadline("gdpr_response")}</strong> de la primire.
       </p>
 
       <h2>9. Transferuri internaționale de date</h2>

@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPageShell, CompanyIdentityBlock } from "@/components/LegalPageShell";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
+import { WITHDRAWAL_PERIOD_DAYS, COMPLAINT_RESPONSE_DAYS } from "@/lib/compliance";
 
 const LAST_UPDATE = "2026-05-02";
 
@@ -58,7 +59,7 @@ function TermeniPage() {
       <h2>5. Prețuri și plată</h2>
       <p>
         Toate prețurile afișate pe site sunt exprimate în <strong>RON (lei românești)</strong> și sunt prețuri finale. 
-        [PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — specificați regimul TVA: neplătitor TVA / plătitor TVA cu prețuri inclusiv TVA]
+        [PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — specificați regimul fiscal aplicabil]
       </p>
       <p>
         Prețurile pot fi modificate oricând de către Vânzător, dar modificările nu afectează comenzile deja confirmate.
@@ -82,7 +83,7 @@ function TermeniPage() {
       <h2>7. Dreptul de retragere</h2>
       <p>
         Conform legislației privind drepturile consumatorilor, Cumpărătorul beneficiază de dreptul de retragere din contractul de vânzare la distanță 
-        în termen de <strong>14 zile calendaristice</strong> de la primirea produsului, fără a fi necesară justificarea deciziei.
+        în termen de <strong>{WITHDRAWAL_PERIOD_DAYS} zile calendaristice</strong> de la primirea produsului, fără a fi necesară justificarea deciziei.
       </p>
       <p>
         Detalii complete în <Link to="/politica-returnare" className="text-accent hover:underline">Politica de Returnare</Link>. 

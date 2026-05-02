@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { TopBar } from "@/components/TopBar";
@@ -16,10 +16,28 @@ export const Route = createFileRoute("/page/$slug")({
   component: CmsPage,
 });
 
+/** Slugs that have dedicated routes — redirect to canonical URL */
+const CANONICAL_REDIRECTS: Record<string, string> = {
+  "politica-retur": "/politica-returnare",
+  "politica-returnare": "/politica-returnare",
+  "politica-confidentialitate": "/politica-confidentialitate",
+  "termeni-si-conditii": "/termeni-si-conditii",
+  "politica-cookies": "/politica-cookies",
+};
+
 function CmsPage() {
   const { slug } = Route.useParams();
+  const navigate = useNavigate();
   const [page, setPage] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  // Redirect canonical slugs to their dedicated routes
+  useEffect(() => {
+    const redirect = CANONICAL_REDIRECTS[slug];
+    if (redirect) {
+      navigate({ to: redirect, replace: true });
+    }
+  }, [slug, navigate]);
 
   useEffect(() => {
     supabase

@@ -55,7 +55,7 @@ const defaults = {
   // Legal pages
   terms_page_slug: "termeni-si-conditii",
   privacy_page_slug: "politica-confidentialitate",
-  return_policy_slug: "politica-retur",
+  return_policy_slug: "politica-returnare",
   invoice_address: "",
   invoice_bank: "",
   invoice_iban: "",

@@ -34,6 +34,7 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState("");
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const { signIn, signUp } = useAuth();
@@ -56,9 +57,19 @@ function AuthPage() {
       if (mode === "register") {
         if (password !== confirmPassword) { setError("Parolele nu se potrivesc"); setLoading(false); return; }
         if (password.length < 6) { setError("Parola trebuie să aibă minim 6 caractere"); setLoading(false); return; }
+        if (!acceptTerms) { setError("Trebuie să accepți termenii și politica de confidențialitate."); setLoading(false); return; }
         const { error } = await signUp(email, password, fullName);
         if (error) setError(error.message);
-        else setRegisterSuccess(true);
+        else {
+          // Log consent for registration [LEGAL_REVIEW]
+          supabase.from("gdpr_consents").insert({
+            email,
+            consent_type: "terms_and_privacy",
+            granted: true,
+            metadata: { context: "register", policy_version: "2025-05-02" },
+          }).then(() => {});
+          setRegisterSuccess(true);
+        }
       } else {
         const { error } = await signIn(email, password);
         if (error) {
@@ -203,6 +214,17 @@ function AuthPage() {
                   placeholder="Confirmă parola *" type="password" required
                   className="w-full h-11 px-3 border border-border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
                 />
+              )}
+              {mode === "register" && (
+                <label className="flex items-start gap-2 text-sm pt-1">
+                  <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 accent-accent" />
+                  <span className="text-muted-foreground">
+                    Am citit și accept{" "}
+                    <Link to="/termeni-si-conditii" target="_blank" className="text-accent underline">Termenii și condițiile</Link>
+                    {" "}și{" "}
+                    <Link to="/politica-confidentialitate" target="_blank" className="text-accent underline">Politica de confidențialitate</Link> *
+                  </span>
+                </label>
               )}
               {mode === "login" && (
                 <div className="text-right">

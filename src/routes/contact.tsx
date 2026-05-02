@@ -258,7 +258,7 @@ function ContactPage() {
                 <div>
                   <p className="text-sm font-medium text-foreground">Telefon</p>
                   <a href={`tel:${general?.contact_phone || ""}`} className="text-sm text-accent hover:underline">
-                    {general?.contact_phone || "+40753326405"}
+                    {general?.contact_phone || "+40 753 326 405"}
                   </a>
                 </div>
               </div>

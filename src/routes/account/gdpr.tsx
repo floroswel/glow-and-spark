@@ -102,8 +102,8 @@ function GdprPage() {
           <div>
             <h1 className="font-heading text-2xl font-bold text-foreground">Datele Tale Personale (GDPR)</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Conform Regulamentului UE 2016/679, ai dreptul să accesezi, rectifici sau ștergi datele tale.
-              Răspundem în maxim 30 zile calendaristice.
+              Conform legislației privind protecția datelor personale, ai dreptul să accesezi, rectifici sau ștergi datele tale.
+              Răspundem în maxim {GDPR_RESPONSE_DAYS} zile calendaristice.
             </p>
           </div>
         </div>

@@ -13,7 +13,8 @@ import {
   RotateCcw, Activity, User, Gift, Crown, Percent, FileSpreadsheet,
   Zap, Receipt, Calculator, Cookie, Star, Briefcase,
   Bot, FlaskConical, Megaphone, Sparkles, TrendingDown, Webhook,
-  Mail, ShieldAlert, Award, Users2, Wallet, ArrowRightLeft, Bell as BellIcon
+  Mail, ShieldAlert, Award, Users2, Wallet, ArrowRightLeft, Bell as BellIcon,
+  ClipboardCheck
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({

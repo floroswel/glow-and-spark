@@ -44,7 +44,7 @@ const faqCategories = [
     title: "Retururi & Schimburi",
     icon: "↩️",
     items: [
-      { q: "Care este politica de retur?", a: "Ai 30 de zile de la primirea produsului pentru a solicita un retur. Produsul trebuie să fie nefolosit și în ambalajul original." },
+      { q: "Care este politica de retur?", a: "Conform OUG 34/2014, ai dreptul de retragere în 14 zile calendaristice de la primirea produsului, fără a invoca vreun motiv. Produsul trebuie să fie nefolosit și în ambalajul original. Consultă pagina Politica de Returnare pentru detalii complete." },
       { q: "Cum returnez un produs?", a: "Contactează-ne prin email sau telefon, iar noi vom aranja ridicarea coletului prin curier. Costul returului este suportat de noi." },
       { q: "Când primesc banii înapoi?", a: "Rambursarea se face în 5-10 zile lucrătoare de la primirea produsului returnat, prin aceeași metodă de plată folosită la comandă." },
     ],

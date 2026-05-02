@@ -132,6 +132,7 @@ function TrackingInit() {
   const { general, seo_global } = useSiteSettings();
   const gtmInitialized = useRef(false);
   const pixelInitialized = useRef(false);
+  const tiktokInitialized = useRef(false);
 
   useEffect(() => {
     if (general?.site_name) updateSiteName(general.site_name);
@@ -140,6 +141,7 @@ function TrackingInit() {
       const consent = getConsent();
       const gtmId = import.meta.env.VITE_GTM_ID || general?.google_analytics_id;
       const pixelId = import.meta.env.VITE_FB_PIXEL_ID || general?.facebook_pixel_id;
+      const tiktokId = import.meta.env.VITE_TIKTOK_PIXEL_ID || general?.tiktok_pixel_id;
 
       if (consent?.analytics && gtmId && !gtmInitialized.current) {
         initGTM(gtmId);
@@ -148,6 +150,10 @@ function TrackingInit() {
       if (consent?.marketing && pixelId && !pixelInitialized.current) {
         initPixel(pixelId);
         pixelInitialized.current = true;
+      }
+      if (consent?.marketing && tiktokId && !tiktokInitialized.current) {
+        initTikTokPixel(tiktokId);
+        tiktokInitialized.current = true;
       }
     };
 

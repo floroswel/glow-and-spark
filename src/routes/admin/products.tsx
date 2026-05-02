@@ -86,7 +86,7 @@ interface RelatedProduct {
 }
 
 const emptyProduct: Omit<Product, "id" | "created_at" | "updated_at"> = {
-  name: "", slug: "", description: "", short_description: "", price: 0, old_price: null,
+  name: "", slug: "", description: "", short_description: "", price: 0, old_price: null, lowest_price_30d: null, promo_started_at: null,
   image_url: "", gallery: [], category_id: null, badge: "", badge_type: "new", rating: 0,
   reviews_count: 0, stock: 0, weight: "", sku: "", meta_title: "", meta_description: "",
   is_active: true, is_featured: false, sort_order: 0,

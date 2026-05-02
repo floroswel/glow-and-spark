@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { LegalPageShell } from "@/components/LegalPageShell";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
+import { WITHDRAWAL_PERIOD_DAYS, formatDeadline } from "@/lib/compliance";
 
 const LAST_UPDATE = "2026-05-02";
 

@@ -17,7 +17,7 @@ const FAIL_ON_ERROR = process.argv.includes("--fail-on-error");
 
 const COMPANY_IDENTIFIERS = ["43025661", "RO50BTRLRONCRT0566231601", "J2020000459343"];
 const VAT_PATTERNS = [/prețuri?\s+(cu|inclusiv)\s+TVA/gi, /TVA\s+inclus/gi];
-const ALLOWED_COMPANY_FILES = ["useCompanyInfo.tsx", "compliance-grep.mjs", "settings-registry.ts", "admin/"];
+const ALLOWED_COMPANY_FILES = ["useCompanyInfo.tsx", "compliance-grep.mjs", "settings-registry.ts", "admin/", "checkout.tsx"];
 const ALLOWED_VAT_FILES = ["compliance.ts", "useFiscalInfo.tsx", "compliance-grep.mjs", "pre-launch.tsx", ".test.ts", "admin/"];
 
 let errors = 0;

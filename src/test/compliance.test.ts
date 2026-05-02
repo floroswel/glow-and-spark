@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import fs from "fs";
 import path from "path";
-import { FORBIDDEN_PHRASES, CANONICAL_DEADLINES, IS_VAT_PAYER } from "@/lib/compliance";
+import { FORBIDDEN_PHRASES, CANONICAL_DEADLINES, IS_VAT_PAYER_DEFAULT as IS_VAT_PAYER } from "@/lib/compliance";
 
 const SRC = path.resolve(__dirname, "..");
 

@@ -25,10 +25,11 @@ export const GDPR_ACK_DAYS = 3;
 export const COMPLAINT_RESPONSE_DAYS = 5;
 
 // ─── VAT status ──────────────────────────────────────────────────────
-// The company is NOT a VAT payer. This flag drives conditional rendering.
+// Default compile-time constant used by tests and forbidden-phrase checks.
+// At runtime, prefer useFiscalInfo() hook which reads from site_settings.general.is_vat_payer.
 // When false, NO page/component may render "prețuri cu TVA inclus",
 // "TVA inclus", "inclusiv TVA", or similar.
-export const IS_VAT_PAYER = false;
+export const IS_VAT_PAYER_DEFAULT = false;
 
 // ─── Forbidden phrase pairs ──────────────────────────────────────────
 // Each entry: [context, forbiddenPhrase, reason]
@@ -117,6 +118,6 @@ export function formatDeadline(key: keyof typeof CANONICAL_DEADLINES): string {
 
 /** Check if a string contains VAT-inclusive language (should not appear when IS_VAT_PAYER=false) */
 export function containsVatClaim(text: string): boolean {
-  if (IS_VAT_PAYER) return false;
+  if (IS_VAT_PAYER_DEFAULT) return false;
   return /prețuri?\s+(cu|inclusiv)\s+TVA/i.test(text) || /TVA\s+inclus/i.test(text);
 }

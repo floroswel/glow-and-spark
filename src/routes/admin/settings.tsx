@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AdminSettingsEditor, Section, Field, TextInput, Toggle, TextArea } from "@/components/admin/AdminSettingsEditor";
 import { useState } from "react";
-import { Store, Phone, MessageCircle, CreditCard, Bell, Shield, Mail, Share2, AlertTriangle, Truck, BarChart3 } from "lucide-react";
+import { Store, Phone, MessageCircle, CreditCard, Bell, Shield, Mail, Share2, AlertTriangle, Truck, BarChart3, Receipt } from "lucide-react";
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettings,
@@ -27,8 +27,9 @@ const defaults = {
   gift_wrapping_price: "15",
   currency: "RON",
   language: "ro",
+  is_vat_payer: false,
   vat_rate: "19",
-  vat_included: true,
+  legal_disclaimer_price_ro: "",
   order_prefix: "GS",
   order_email_notifications: true,
   low_stock_threshold: "5",
@@ -79,6 +80,7 @@ function AdminSettings() {
     { key: "whatsapp", label: "WhatsApp", icon: MessageCircle },
     { key: "notifications", label: "Notificări", icon: Bell },
     { key: "legal", label: "Legal", icon: Shield },
+    { key: "fiscal", label: "Fiscal & TVA", icon: Receipt },
     { key: "invoicing", label: "Firmă & Facturare", icon: CreditCard },
     { key: "email", label: "Email", icon: Mail },
     { key: "shipping", label: "Livrare & Cadou", icon: Truck },
@@ -210,6 +212,39 @@ function AdminSettings() {
                   <Field label="Termeni și condiții (slug)"><TextInput value={s.terms_page_slug} onChange={(v) => u("terms_page_slug", v)} /></Field>
                   <Field label="Politica confidentialitate (slug)"><TextInput value={s.privacy_page_slug} onChange={(v) => u("privacy_page_slug", v)} /></Field>
                   <Field label="Politica retur (slug)"><TextInput value={s.return_policy_slug} onChange={(v) => u("return_policy_slug", v)} /></Field>
+                </div>
+              </Section>
+            )}
+
+            {activeSection === "fiscal" && (
+              <Section title="🧾 Fiscal & TVA">
+                <div className="rounded-lg bg-amber-500/10 border border-amber-500/30 p-4 mb-4 text-sm text-amber-800 dark:text-amber-200">
+                  <strong>⚠️ [CONTABIL]</strong> — Aceste setări afectează modul în care sunt prezentate prețurile pe site, în facturi și emailuri.
+                  Modificările trebuie verificate de contabilul societății.
+                </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Field label="Plătitor de TVA">
+                    <Toggle value={s.is_vat_payer} onChange={(v) => u("is_vat_payer", v)} label="Plătitor TVA" />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {s.is_vat_payer ? 'Prețurile vor afișa "TVA inclus"' : 'Prețurile vor afișa "Preț final" (neimpozabil TVA)'}
+                    </p>
+                  </Field>
+                  {s.is_vat_payer && (
+                    <Field label="Cota TVA (%)">
+                      <TextInput value={s.vat_rate} onChange={(v) => u("vat_rate", v.replace(/[^0-9]/g, ""))} />
+                    </Field>
+                  )}
+                </div>
+                <div className="mt-4">
+                  <Field label="Disclaimer preț (afișat pe site și facturi) [CONTABIL]">
+                    <TextArea
+                      value={s.legal_disclaimer_price_ro}
+                      onChange={(v) => u("legal_disclaimer_price_ro", v)}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Lăsați gol pentru textul implicit. Textul trebuie revizuit de contabil.
+                    </p>
+                  </Field>
                 </div>
               </Section>
             )}

@@ -118,7 +118,7 @@ async function probeDatabase(): Promise<ProbeResult> {
 export const Route = (createFileRoute as any)("/api/public/monitors/smoke")({
   server: {
     handlers: {
-      GET: async ({ request }) => {
+      GET: async ({ request }: { request: Request }) => {
         // Determine base URL from request or env
         const requestUrl = new URL(request.url);
         const origin = requestUrl.origin;

@@ -999,6 +999,42 @@ export type Database = {
           },
         ]
       }
+      compliance_vendors: {
+        Row: {
+          contact_email: string | null
+          created_at: string
+          dpa_notes: string | null
+          dpa_signed: boolean
+          id: string
+          privacy_url: string | null
+          updated_at: string
+          vendor_name: string
+          vendor_type: string
+        }
+        Insert: {
+          contact_email?: string | null
+          created_at?: string
+          dpa_notes?: string | null
+          dpa_signed?: boolean
+          id?: string
+          privacy_url?: string | null
+          updated_at?: string
+          vendor_name: string
+          vendor_type?: string
+        }
+        Update: {
+          contact_email?: string | null
+          created_at?: string
+          dpa_notes?: string | null
+          dpa_signed?: boolean
+          id?: string
+          privacy_url?: string | null
+          updated_at?: string
+          vendor_name?: string
+          vendor_type?: string
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
           active: boolean | null

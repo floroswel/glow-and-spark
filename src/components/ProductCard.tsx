@@ -184,7 +184,7 @@ export function ProductCard({
 
               {/* Price */}
               <div className="flex items-baseline gap-3">
-                {qvActiveOldPrice && (
+                {qvActiveOldPrice && lowestPrice30d != null && (
                   <span className="text-base text-muted-foreground line-through">{qvActiveOldPrice} RON</span>
                 )}
                 <span className="text-2xl font-bold text-foreground">{qvActivePrice} RON</span>

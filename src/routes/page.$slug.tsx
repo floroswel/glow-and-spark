@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { TopBar } from "@/components/TopBar";
@@ -6,17 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ArrowLeft } from "lucide-react";
 
-export const Route = createFileRoute("/page/$slug")({
-  head: () => ({
-    meta: [
-      { title: "Mama Lucica" },
-      { name: "description", content: "Pagină informativă Mama Lucica" },
-    ],
-  }),
-  component: CmsPage,
-});
-
-/** Slugs that have dedicated routes — redirect to canonical URL */
+/** Slugs that have dedicated routes — 301 redirect to canonical URL */
 const CANONICAL_REDIRECTS: Record<string, string> = {
   "politica-retur": "/politica-returnare",
   "politica-returnare": "/politica-returnare",
@@ -25,19 +15,27 @@ const CANONICAL_REDIRECTS: Record<string, string> = {
   "politica-cookies": "/politica-cookies",
 };
 
+export const Route = createFileRoute("/page/$slug")({
+  head: () => ({
+    meta: [
+      { title: "Mama Lucica" },
+      { name: "description", content: "Pagină informativă Mama Lucica" },
+    ],
+  }),
+  // SSR + client: redirect canonical slugs before rendering
+  beforeLoad: ({ params }) => {
+    const target = CANONICAL_REDIRECTS[params.slug];
+    if (target) {
+      throw redirect({ to: target, statusCode: 301 });
+    }
+  },
+  component: CmsPage,
+});
+
 function CmsPage() {
   const { slug } = Route.useParams();
-  const navigate = useNavigate();
   const [page, setPage] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
-  // Redirect canonical slugs to their dedicated routes
-  useEffect(() => {
-    const redirect = CANONICAL_REDIRECTS[slug];
-    if (redirect) {
-      navigate({ to: redirect, replace: true });
-    }
-  }, [slug, navigate]);
 
   useEffect(() => {
     supabase

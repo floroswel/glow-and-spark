@@ -27,6 +27,7 @@ const values = [
 ];
 
 function DespreNoiPage() {
+  const C = useCompanyInfo();
   return (
     <div className="min-h-screen">
       <MarqueeBanner />

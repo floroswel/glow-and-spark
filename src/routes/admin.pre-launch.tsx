@@ -52,7 +52,7 @@ const CHECKLIST_ITEMS: ChecklistItem[] = [
   {
     id: "verify-invoice-pdf",
     label: "Verifica factura PDF (daca este activata)",
-    description: "Daca facturarea PDF este activata, descarca factura din admin si verifica: date firma, CUI, nr. factura, TVA, totaluri corecte.",
+    description: "Daca facturarea PDF este activata, descarca factura din admin si verifica: date firma, CUI, nr. factura, totaluri corecte. Operatorul NU este platitor de TVA — factura NU trebuie sa contina linie TVA.",
     category: "Comunicare",
   },
   {

@@ -52,9 +52,8 @@ function ProfitReport() {
     const grossProfit = revenue - cogs;
     const netProfit = grossProfit - shipping;
     const margin = revenue ? (grossProfit / revenue) * 100 : 0;
-    const vat = revenue * 0.19 / 1.19;
 
-    return { revenue, cogs, grossProfit, netProfit, shipping, discounts, margin, vat, catProfit: Object.values(catProfit).sort((a, b) => (b.revenue - b.cost) - (a.revenue - a.cost)) };
+    return { revenue, cogs, grossProfit, netProfit, shipping, discounts, margin, catProfit: Object.values(catProfit).sort((a, b) => (b.revenue - b.cost) - (a.revenue - a.cost)) };
   }, [orders, products, categories]);
 
   const fmt = (n: number) => n.toLocaleString("ro-RO", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -84,7 +83,7 @@ function ProfitReport() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-xs text-muted-foreground">Cost livrare</p>
           <p className="text-xl font-bold text-foreground mt-1">{fmt(stats.shipping)} RON</p>
@@ -92,10 +91,6 @@ function ProfitReport() {
         <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-xs text-muted-foreground">Discount-uri acordate</p>
           <p className="text-xl font-bold text-foreground mt-1">{fmt(stats.discounts)} RON</p>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-4">
-          <p className="text-xs text-muted-foreground">TVA colectat (estimat)</p>
-          <p className="text-xl font-bold text-foreground mt-1">{fmt(stats.vat)} RON</p>
         </div>
       </div>
 

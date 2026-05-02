@@ -79,8 +79,6 @@ function AdminInvoices() {
     ...o,
     invoice_number: `GS-${new Date(o.created_at).getFullYear()}-${String(orders.length - i).padStart(5, "0")}`,
     invoice_status: o.payment_status === "paid" ? "paid" : o.status === "cancelled" ? "cancelled" : "pending",
-    subtotal_no_vat: (Number(o.subtotal || 0) / 1.19).toFixed(2),
-    vat_amount: (Number(o.subtotal || 0) - Number(o.subtotal || 0) / 1.19).toFixed(2),
   })), [orders]);
 
   const filtered = useMemo(() => invoices.filter(inv => {
@@ -97,7 +95,6 @@ function AdminInvoices() {
     paid: invoices.filter(i => i.invoice_status === "paid").length,
     pending: invoices.filter(i => i.invoice_status === "pending").length,
     totalValue: invoices.filter(i => i.invoice_status !== "cancelled").reduce((a, i) => a + Number(i.total || 0), 0),
-    totalVAT: invoices.filter(i => i.invoice_status !== "cancelled").reduce((a, i) => a + Number(i.vat_amount || 0), 0),
   }), [invoices]);
 
   const statusCfg: Record<string, { label: string; color: string; icon: any }> = {
@@ -163,10 +160,11 @@ function AdminInvoices() {
         </tbody>
       </table>
       <div class="totals">
-        <div class="row"><span>Subtotal:</span><span>${Number(inv.subtotal || inv.subtotal_no_vat || 0).toFixed(2)} RON</span></div>
+        <div class="row"><span>Subtotal:</span><span>${Number(inv.subtotal || 0).toFixed(2)} RON</span></div>
         ${Number(inv.discount || 0) > 0 ? `<div class="row"><span>Reducere:</span><span>-${Number(inv.discount || inv.discount_amount || 0).toFixed(2)} RON</span></div>` : ""}
         <div class="row"><span>Livrare:</span><span>${Number(inv.shipping_cost || 0).toFixed(2)} RON</span></div>
         <div class="row total-final"><span>TOTAL:</span><span>${Number(inv.total).toFixed(2)} RON</span></div>
+        <div class="row" style="font-size:11px;color:#888;margin-top:4px"><span>Operatorul nu este plătitor de TVA conform art. 310 din Codul fiscal.</span></div>
       </div>
       <div class="footer">
         <p>SC Vomix Genius SRL • CUI 43025661 • Banca: ING Bank • IBAN: RO49INGB0000999903456789</p>
@@ -178,8 +176,8 @@ function AdminInvoices() {
   };
 
   const exportCSV = () => {
-    const headers = ["Nr. Factură", "Nr. Comandă", "Client", "Email", "Subtotal fără TVA", "TVA", "Total", "Status", "Data"];
-    const rows = filtered.map(i => [i.invoice_number, i.order_number, i.customer_name, i.customer_email, i.subtotal_no_vat, i.vat_amount, i.total, i.invoice_status, new Date(i.created_at).toLocaleDateString("ro-RO")]);
+    const headers = ["Nr. Factură", "Nr. Comandă", "Client", "Email", "Total", "Status", "Data"];
+    const rows = filtered.map(i => [i.invoice_number, i.order_number, i.customer_name, i.customer_email, i.total, i.invoice_status, new Date(i.created_at).toLocaleDateString("ro-RO")]);
     const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -202,7 +200,7 @@ function AdminInvoices() {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs font-medium text-muted-foreground">Total Facturi</p>
           <p className="mt-1 text-2xl font-bold text-foreground">{stats.total}</p>
@@ -218,10 +216,6 @@ function AdminInvoices() {
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs font-medium text-muted-foreground">Valoare Totală</p>
           <p className="mt-1 text-2xl font-bold text-foreground">{stats.totalValue.toLocaleString("ro-RO", { maximumFractionDigits: 0 })} RON</p>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs font-medium text-muted-foreground">TVA Colectat</p>
-          <p className="mt-1 text-2xl font-bold text-amber-500">{stats.totalVAT.toLocaleString("ro-RO", { maximumFractionDigits: 0 })} RON</p>
         </div>
       </div>
 
@@ -244,8 +238,6 @@ function AdminInvoices() {
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">Nr. Factură</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">Comandă</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">Client</th>
-            <th className="px-4 py-3 text-right font-medium text-muted-foreground">Subtotal</th>
-            <th className="px-4 py-3 text-right font-medium text-muted-foreground">TVA</th>
             <th className="px-4 py-3 text-right font-medium text-muted-foreground">Total</th>
             <th className="px-4 py-3 text-center font-medium text-muted-foreground">Status</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">Data</th>
@@ -262,8 +254,6 @@ function AdminInvoices() {
                     <p className="font-medium text-foreground text-xs">{inv.customer_name}</p>
                     <p className="text-[10px] text-muted-foreground">{inv.customer_email}</p>
                   </td>
-                  <td className="px-4 py-3 text-right text-xs">{inv.subtotal_no_vat} RON</td>
-                  <td className="px-4 py-3 text-right text-xs text-amber-500">{inv.vat_amount} RON</td>
                   <td className="px-4 py-3 text-right font-semibold">{Number(inv.total).toFixed(2)} RON</td>
                   <td className="px-4 py-3 text-center">
                     <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${cfg.color}`}>

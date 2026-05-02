@@ -1,54 +1,68 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminSettingsEditor, Section, Field, TextInput, Toggle, NumberInput } from "@/components/admin/AdminSettingsEditor";
+import { AdminSettingsEditor, Section, Field, TextInput, Toggle, NumberInput, TextArea } from "@/components/admin/AdminSettingsEditor";
 
 export const Route = createFileRoute("/admin/tax-settings")({
   component: AdminTaxSettings,
 });
 
 const defaults = {
-  vat_enabled: true,
+  is_vat_payer: false,
+  show_vat_breakdown: false,
+  price_label_mode: "final_no_vat",
+  legal_price_disclaimer_ro: "Prețurile afișate sunt prețuri finale. Operatorul nu este plătitor de TVA.",
   default_vat_rate: 19,
   prices_include_vat: true,
-  show_vat_on_invoice: true,
+  show_vat_on_invoice: false,
   company_name: "SC Vomix Genius SRL",
   company_cui: "43025661",
-  company_reg_com: "",
+  company_reg_com: "J2020000459343",
   company_address: "Strada Constructorilor Nr 39, sat Voievoda, comuna Furculești",
   company_city: "Furculești",
   company_county: "Teleorman",
   company_postal: "147148",
   company_phone: "+40753326405",
   company_email: "contact@mamalucica.ro",
-  company_iban: "",
-  company_bank: "",
+  company_iban: "RO50BTRLRONCRT0566231601",
+  company_bank: "BANCA TRANSILVANIA S.A.",
   invoice_prefix: "ML",
   invoice_auto_generate: true,
-  invoice_footer: "Factură generată automat — nu necesită semnătură",
+  invoice_footer: "Document generat automat — nu necesită semnătură",
   fiscal_printer: false,
   anaf_efactura: false,
   anaf_spv_enabled: false,
   intrastat_enabled: false,
-  vat_rates: [
-    { name: "Standard", rate: 19, default: true },
-    { name: "Redus", rate: 9, default: false },
-    { name: "Super-redus", rate: 5, default: false },
-    { name: "Scutit", rate: 0, default: false },
-  ],
 };
 
 function AdminTaxSettings() {
   return (
-    <AdminSettingsEditor settingsKey="tax_settings" defaults={defaults} title="⚖️ Setări Fiscale & TVA">
+    <AdminSettingsEditor settingsKey="tax_settings" defaults={defaults} title="⚖️ Setări Fiscale">
       {(s, u) => (
         <>
-          <Section title="📊 TVA">
+          <Section title="📊 Regim fiscal">
             <div className="space-y-4">
-              <Toggle value={s.vat_enabled} onChange={v => u("vat_enabled", v)} label="TVA activ" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Field label="Cotă TVA implicită (%)"><NumberInput value={s.default_vat_rate} onChange={v => u("default_vat_rate", v)} min={0} max={30} /></Field>
-              </div>
-              <Toggle value={s.prices_include_vat} onChange={v => u("prices_include_vat", v)} label="Prețurile includ TVA" />
-              <Toggle value={s.show_vat_on_invoice} onChange={v => u("show_vat_on_invoice", v)} label="Afișează TVA detaliat pe factură" />
+              <Toggle value={s.is_vat_payer} onChange={v => u("is_vat_payer", v)} label="Plătitor de TVA" />
+              {!s.is_vat_payer && (
+                <div className="rounded-lg bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 p-4">
+                  <p className="text-sm text-green-700 dark:text-green-400 font-medium">✓ Neplătitor de TVA</p>
+                  <p className="text-xs text-green-600 dark:text-green-500 mt-1">
+                    Prețurile afișate sunt prețuri finale. Nu se aplică TVA, nu se afișează TVA pe facturi sau în magazin.
+                  </p>
+                </div>
+              )}
+              {s.is_vat_payer && (
+                <div className="space-y-4 rounded-lg border border-border p-4">
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Setări TVA (active doar pentru plătitori)</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Field label="Cotă TVA implicită (%)"><NumberInput value={s.default_vat_rate} onChange={v => u("default_vat_rate", v)} min={0} max={30} /></Field>
+                  </div>
+                  <Toggle value={s.prices_include_vat} onChange={v => u("prices_include_vat", v)} label="Prețurile includ TVA" />
+                  <Toggle value={s.show_vat_on_invoice} onChange={v => u("show_vat_on_invoice", v)} label="Afișează TVA detaliat pe factură" />
+                  <Toggle value={s.show_vat_breakdown} onChange={v => u("show_vat_breakdown", v)} label="Afișează detalii TVA pe site" />
+                </div>
+              )}
+              <Field label="Disclaimer prețuri (afișat pe site)">
+                <TextArea value={s.legal_price_disclaimer_ro} onChange={v => u("legal_price_disclaimer_ro", v)} rows={2} />
+              </Field>
             </div>
           </Section>
 
@@ -73,8 +87,8 @@ function AdminTaxSettings() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field label="Prefix factură"><TextInput value={s.invoice_prefix} onChange={v => u("invoice_prefix", v)} /></Field>
               </div>
-              <Toggle value={s.invoice_auto_generate} onChange={v => u("invoice_auto_generate", v)} label="Generare automată factură la comandă" />
-              <Field label="Footer factură"><TextInput value={s.invoice_footer} onChange={v => u("invoice_footer", v)} /></Field>
+              <Toggle value={s.invoice_auto_generate} onChange={v => u("invoice_auto_generate", v)} label="Generare automată document la comandă" />
+              <Field label="Footer document"><TextInput value={s.invoice_footer} onChange={v => u("invoice_footer", v)} /></Field>
             </div>
           </Section>
 

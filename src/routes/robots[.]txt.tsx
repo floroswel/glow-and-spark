@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { setResponseHeader } from "@tanstack/react-start/server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const SITE_URL = "https://mamalucica.ro";

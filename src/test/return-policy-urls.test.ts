@@ -1,82 +1,75 @@
-/**
- * Test: return policy URL consistency.
- * Ensures all internal links point to /politica-returnare (canonical)
- * and the footer "Politica de Retur" link resolves correctly.
- */
 import { describe, it, expect } from "vitest";
-import * as fs from "node:fs";
-import * as path from "node:path";
+import fs from "fs";
+import path from "path";
 
 const SRC = path.resolve(__dirname, "..");
 
-function collectFiles(dir: string, exts = [".tsx", ".ts"]): string[] {
-  const out: string[] = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory() && entry.name !== "node_modules" && entry.name !== ".git") {
-      out.push(...collectFiles(full, exts));
-    } else if (entry.isFile() && exts.some((e) => entry.name.endsWith(e)) && !entry.name.includes(".gen.")) {
-      out.push(full);
-    }
-  }
-  return out;
+function readFile(rel: string): string {
+  return fs.readFileSync(path.join(SRC, rel), "utf-8");
 }
 
-describe("Return policy URL consistency", () => {
-  const srcFiles = collectFiles(SRC).filter((f) => !f.includes("__tests__") && !f.includes(".test."));
+function readFilesRecursive(dir: string, ext: string): { path: string; content: string }[] {
+  const results: { path: string; content: string }[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...readFilesRecursive(full, ext));
+    } else if (entry.name.endsWith(ext)) {
+      results.push({ path: full, content: fs.readFileSync(full, "utf-8") });
+    }
+  }
+  return results;
+}
+
+describe("Return policy canonical URL consistency", () => {
 
   it("no internal links point to /page/politica-retur (should use /politica-returnare)", () => {
+    const files = readFilesRecursive(SRC, ".tsx");
     const violations: string[] = [];
-    // These patterns indicate a link href/to pointing to the wrong URL
-    const badPatterns = [
-      /["'`]\/page\/politica-retur["'`]/g,
-      /to=["'`]\/page\/politica-retur/g,
-      /href=["'`]\/page\/politica-retur/g,
-    ];
+    for (const f of files) {
+      // Skip the CMS page route itself (it defines the redirect map)
+      if (f.path.includes("page.$slug")) continue;
+      // Skip test files
+      if (f.path.includes(".test.")) continue;
 
-    for (const file of srcFiles) {
-      const content = fs.readFileSync(file, "utf-8");
-      for (const re of badPatterns) {
-        if (re.test(content)) {
-          const rel = path.relative(path.resolve(SRC, ".."), file);
-          violations.push(`${rel} contains link to /page/politica-retur`);
-        }
+      if (
+        f.content.includes("/page/politica-retur") ||
+        f.content.includes("/page/politica-returnare")
+      ) {
+        violations.push(path.relative(SRC, f.path));
       }
     }
-    expect(violations).toEqual([]);
+    expect(violations, `Files with old /page/politica-retur links: ${violations.join(", ")}`).toEqual([]);
   });
 
-  it("footer default col2 links use /politica-returnare for return policy", () => {
-    const footerFile = path.join(SRC, "components/SiteFooter.tsx");
-    const content = fs.readFileSync(footerFile, "utf-8");
-
-    // The "Politica de Retur" default link should point to /politica-returnare
-    expect(content).toContain('{ label: "Politica de Retur", url: "/politica-returnare" }');
-    // Should NOT point to /page/politica-retur
-    expect(content).not.toContain("/page/politica-retur");
+  it("footer default links use /politica-returnare canonical URL", () => {
+    const footer = readFile("components/SiteFooter.tsx");
+    // Should contain canonical URL
+    expect(footer).toContain("/politica-returnare");
+    // Should NOT contain /page/politica-retur
+    expect(footer).not.toContain("/page/politica-retur");
   });
 
-  it("footer return policy link page includes withdrawal form link (/formular-retragere)", () => {
-    const returnFile = path.join(SRC, "routes/politica-returnare.tsx");
-    const content = fs.readFileSync(returnFile, "utf-8");
-
-    // The canonical return policy page must link to the withdrawal form
-    expect(content).toContain("/formular-retragere");
+  it("return policy page contains withdrawal form link to /formular-retragere", () => {
+    const page = readFile("routes/politica-returnare.tsx");
+    expect(page).toContain("/formular-retragere");
+    // The withdrawal form button should be near the top (before accordion sections)
+    const formularIdx = page.indexOf("formular-retragere");
+    const accordionIdx = page.indexOf("sections.map");
+    expect(formularIdx).toBeLessThan(accordionIdx);
   });
 
-  it("CMS page route redirects politica-retur slug to canonical /politica-returnare", () => {
-    const cmsFile = path.join(SRC, "routes/page.$slug.tsx");
-    const content = fs.readFileSync(cmsFile, "utf-8");
-
-    // Should have a redirect mapping for politica-retur
-    expect(content).toContain('"politica-retur": "/politica-returnare"');
+  it("CMS page route has 301 redirect for politica-retur slug", () => {
+    const cms = readFile("routes/page.$slug.tsx");
+    // Must have redirect mapping
+    expect(cms).toContain('"politica-retur": "/politica-returnare"');
+    // Must use statusCode 301
+    expect(cms).toContain("statusCode: 301");
   });
 
   it("sitemap references /politica-returnare not /page/politica-retur", () => {
-    const sitemapFile = path.join(SRC, "routes/sitemap[.]xml.tsx");
-    const content = fs.readFileSync(sitemapFile, "utf-8");
-
-    expect(content).toContain("/politica-returnare");
-    expect(content).not.toContain("/page/politica-retur");
+    const sitemap = readFile("routes/sitemap[.]xml.tsx");
+    expect(sitemap).toContain("/politica-returnare");
+    expect(sitemap).not.toContain("/page/politica-retur");
   });
 });

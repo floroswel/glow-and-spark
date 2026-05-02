@@ -26,6 +26,18 @@ const PinterestIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
 );
 
+/* ── Section Header (button-like pill) ── */
+function SectionHeader({ title, titleColor }: { title: string; titleColor: string }) {
+  return (
+    <div
+      className="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest mb-4"
+      style={{ background: "rgba(255,255,255,0.08)", color: titleColor }}
+    >
+      {title}
+    </div>
+  );
+}
+
 /* ── Accordion Column (mobile) ── */
 function FooterColumn({ title, children, titleColor }: { title: string; children: React.ReactNode; titleColor: string }) {
   const [open, setOpen] = useState(false);
@@ -37,10 +49,15 @@ function FooterColumn({ title, children, titleColor }: { title: string; children
         className="w-full flex items-center justify-between py-4 md:py-0 md:pointer-events-none"
         aria-expanded={open}
       >
-        <h4 className="text-sm font-bold uppercase tracking-wider" style={{ color: titleColor }}>{title}</h4>
+        <div className="md:hidden">
+          <span className="text-sm font-bold uppercase tracking-wider" style={{ color: titleColor }}>{title}</span>
+        </div>
+        <div className="hidden md:block">
+          <SectionHeader title={title} titleColor={titleColor} />
+        </div>
         <ChevronDown className={`h-5 w-5 text-white/60 md:hidden transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
-      <div className={`${open ? "block" : "hidden"} md:block pb-4 md:pb-0 mt-0 md:mt-4`}>
+      <div className={`${open ? "block" : "hidden"} md:block pb-4 md:pb-0`}>
         {children}
       </div>
     </div>
@@ -318,26 +335,30 @@ export function SiteFooter() {
             </FooterColumn>
           )}
 
-          {/* COL 3 — Date comerciale */}
+          {/* COL 3 — Date comerciale (highlighted block) */}
           {footer?.col3_show !== false && (
             <FooterColumn title="Date comerciale" titleColor={titleColor}>
-              <div className="space-y-2 text-sm" style={{ color: textColor }}>
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4 space-y-2.5 text-sm" style={{ color: textColor }}>
                 {companyName && (
-                  <div className="flex items-start gap-2">
-                    <Building2 className="h-4 w-4 mt-0.5 shrink-0 text-white/60" />
-                    <span className="font-semibold text-white">{companyName}</span>
+                  <div className="flex items-start gap-2.5">
+                    <Building2 className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
+                    <span className="font-semibold text-white leading-tight">{companyName}</span>
                   </div>
                 )}
-                {regCom && <p className="pl-6">Reg. Com.: {regCom}</p>}
-                {cui && <p className="pl-6">CUI: {cui}</p>}
+                <div className="pl-[26px] space-y-1 text-[13px]">
+                  {cui && <p><span className="text-white/50 mr-1">CUI:</span> {cui}</p>}
+                  {regCom && <p><span className="text-white/50 mr-1">Reg. Com.:</span> {regCom}</p>}
+                </div>
                 {fullAddress && (
-                  <div className="flex items-start gap-2">
-                    <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-white/60" />
-                    <span>{fullAddress}</span>
+                  <div className="flex items-start gap-2.5">
+                    <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
+                    <span className="text-[13px] leading-snug">{fullAddress}</span>
                   </div>
                 )}
-                {companyIban && <p className="pl-6">IBAN: {companyIban}</p>}
-                {companyBank && <p className="pl-6">Banca: {companyBank}</p>}
+                <div className="border-t border-white/10 pt-2.5 pl-[26px] space-y-1 text-[13px]">
+                  {companyIban && <p><span className="text-white/50 mr-1">IBAN:</span> <span className="font-mono text-white/90 text-xs">{companyIban}</span></p>}
+                  {companyBank && <p><span className="text-white/50 mr-1">Banca:</span> {companyBank}</p>}
+                </div>
               </div>
 
               {/* Company documents */}
@@ -363,22 +384,12 @@ export function SiteFooter() {
                   ))}
                 </div>
               )}
-
-              {/* Contact button */}
-              <a
-                href="/contact"
-                className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-full text-white text-sm font-semibold hover:opacity-90 transition-opacity"
-                style={{ background: "#0058b3" }}
-              >
-                <MessageCircle className="h-4 w-4" />
-                Contactează-ne
-              </a>
             </FooterColumn>
           )}
 
-          {/* COL 4 — Suport clienți */}
+          {/* COL 4 — Suport */}
           {footer?.col4_show !== false && (
-            <FooterColumn title={footer?.col4_title || "Suport clienți"} titleColor={titleColor}>
+            <FooterColumn title={footer?.col4_title || "Suport"} titleColor={titleColor}>
               <div className="space-y-3 text-sm">
                 {schedule && (
                   <div className="flex items-start gap-2">
@@ -417,6 +428,44 @@ export function SiteFooter() {
                   </div>
                 )}
               </div>
+
+              {/* ANPC & SOL links within support column */}
+              <div className="mt-5 space-y-2">
+                <a
+                  href="https://anpc.ro/ce-este-sal/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm hover:text-white transition-colors"
+                  style={{ color: linkColor }}
+                  onMouseEnter={e => (e.target as HTMLElement).style.color = linkHover}
+                  onMouseLeave={e => (e.target as HTMLElement).style.color = linkColor}
+                >
+                  <Shield className="h-4 w-4 shrink-0 text-white/60" />
+                  ANPC — Soluționarea Litigiilor
+                </a>
+                <a
+                  href="https://ec.europa.eu/consumers/odr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm hover:text-white transition-colors"
+                  style={{ color: linkColor }}
+                  onMouseEnter={e => (e.target as HTMLElement).style.color = linkHover}
+                  onMouseLeave={e => (e.target as HTMLElement).style.color = linkColor}
+                >
+                  <Shield className="h-4 w-4 shrink-0 text-white/60" />
+                  SOL — Platformă Online Litigii
+                </a>
+              </div>
+
+              {/* Contact button */}
+              <a
+                href="/contact"
+                className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-lg text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+                style={{ background: accentColor }}
+              >
+                <MessageCircle className="h-4 w-4" />
+                Contactează-ne
+              </a>
             </FooterColumn>
           )}
             </>

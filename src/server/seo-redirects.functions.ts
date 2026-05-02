@@ -7,9 +7,12 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
  * Uses the admin client to bypass RLS (this is a read-only public lookup).
  */
 export const checkSeoRedirect = createServerFn({ method: "GET" })
-  .inputValidator((data: { path: string }) => data)
+  .inputValidator((input: unknown) => {
+    const d = input as { path?: string };
+    return { path: typeof d?.path === "string" ? d.path : "" };
+  })
   .handler(async ({ data }) => {
-    const { path } = data;
+    const { path } = data as { path: string };
     if (!path) return null;
 
     const { data: row, error } = await supabaseAdmin

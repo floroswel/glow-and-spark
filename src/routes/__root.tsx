@@ -19,6 +19,7 @@ import { PushNotificationManager } from "@/components/PushNotificationManager";
 import { captureRefFromUrl } from "@/lib/affiliate-tracker";
 import { initGTM } from "@/lib/gtm";
 import { initPixel, trackPageView } from "@/lib/fbpixel";
+import { initTikTokPixel, trackTikTokPageView } from "@/lib/tiktok";
 import { updateSiteName } from "@/lib/seo";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { getConsent } from "@/components/CookieConsent";

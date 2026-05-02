@@ -51,6 +51,16 @@ export function ProductCard({
     new: "bg-chart-2 text-primary-foreground",
   };
 
+  /**
+   * Omnibus safety: hide "sale" badges and strikethrough prices unless
+   * lowest_price_30d is provided. This prevents Omnibus Directive violations
+   * by never showing discount claims without proper price history.
+   * [VERIFICARE_AVOCAT]
+   */
+  const omnibusCompliant = badgeType === "sale" ? lowestPrice30d != null : true;
+  const showOldPrice = oldPrice != null && oldPrice > price && lowestPrice30d != null;
+  const safeBadge = omnibusCompliant ? badge : undefined;
+
   const stars = "★".repeat(Math.floor(rating)) + (rating % 1 >= 0.5 ? "☆" : "");
 
   const handleAdd = () => {

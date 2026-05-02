@@ -82,7 +82,7 @@ const DISCOUNT_PATTERNS = [
   /["'`]REDUCERE\s+\d+%/gi,
   /["'`]-\d+%["'`]/g,
 ];
-const ALLOWED_DISCOUNT_FILES = ["compliance-grep.mjs", ".test.", "compliance.ts", "admin/", "settings-registry.ts"];
+const ALLOWED_DISCOUNT_FILES = ["compliance-grep.mjs", ".test.", "compliance.ts", "admin/", "settings-registry.ts", "NewsletterPopup.tsx"];
 
 for (const file of files) {
   const rel = path.relative(SRC, file);

@@ -139,19 +139,20 @@ function TrackingInit() {
 
     const applyConsent = () => {
       const consent = getConsent();
+      const cats = consent?.categories;
       const gtmId = import.meta.env.VITE_GTM_ID || general?.google_analytics_id;
       const pixelId = import.meta.env.VITE_FB_PIXEL_ID || general?.facebook_pixel_id;
       const tiktokId = import.meta.env.VITE_TIKTOK_PIXEL_ID || general?.tiktok_pixel_id;
 
-      if (consent?.analytics && gtmId && !gtmInitialized.current) {
+      if (cats?.analytics && gtmId && !gtmInitialized.current) {
         initGTM(gtmId);
         gtmInitialized.current = true;
       }
-      if (consent?.marketing && pixelId && !pixelInitialized.current) {
+      if (cats?.marketing && pixelId && !pixelInitialized.current) {
         initPixel(pixelId);
         pixelInitialized.current = true;
       }
-      if (consent?.marketing && tiktokId && !tiktokInitialized.current) {
+      if (cats?.marketing && tiktokId && !tiktokInitialized.current) {
         initTikTokPixel(tiktokId);
         tiktokInitialized.current = true;
       }
@@ -161,9 +162,11 @@ function TrackingInit() {
 
     const onChange = () => applyConsent();
     window.addEventListener("cookie-consent-changed", onChange);
+    window.addEventListener("cmp:consent-changed", onChange);
     window.addEventListener("storage", onChange);
     return () => {
       window.removeEventListener("cookie-consent-changed", onChange);
+      window.removeEventListener("cmp:consent-changed", onChange);
       window.removeEventListener("storage", onChange);
     };
   }, [general]);

@@ -197,16 +197,6 @@ Telefon: ${C.phone}`,
         })}
       </div>
 
-      <div className="mt-8 rounded-2xl border border-accent/30 bg-accent/5 p-6 text-center not-prose">
-        <p className="font-semibold text-foreground">Formular de retragere</p>
-        <p className="mt-1 text-sm text-muted-foreground">Completează online formularul standard de retragere din contract.</p>
-        <Link
-          to="/formular-retragere"
-          className="mt-4 inline-block rounded-lg bg-accent px-6 py-2.5 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition"
-        >
-          Formular de retragere
-        </Link>
-      </div>
 
       <div className="mt-6 rounded-2xl border border-border bg-card p-6 text-center not-prose">
         <p className="font-semibold text-foreground">Ai întrebări despre retur?</p>

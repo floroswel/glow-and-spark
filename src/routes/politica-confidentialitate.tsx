@@ -58,36 +58,47 @@ function PoliticaConfidentialitatePage() {
       </ul>
 
       <h2 id="publicitate">3a. Publicitate și măsurare</h2>
-      <p>
-        Pentru a măsura eficiența campaniilor publicitare și a optimiza conținutul reclamelor, 
-        utilizăm instrumente terțe de tracking furnizate de platformele publicitare enumerate mai jos. 
-        Aceste instrumente pot colecta date prin <strong>pixeli (scripturi)</strong> încărcate în browser 
-        și, unde este cazul, prin <strong>integrări server-to-server (Conversion API / CAPI)</strong>.
-      </p>
-      <p>Instrumentele sunt activate <strong>doar dacă</strong>:</p>
-      <ol className="list-decimal pl-5 space-y-1">
-        <li>Administratorul site-ului a configurat un ID de tracking valid pentru platforma respectivă;</li>
-        <li>Vizitatorul a acordat <strong>consimțământ explicit</strong> pentru categoria „Marketing" în bannerul de cookie-uri.</li>
-      </ol>
-      <p>Platforme utilizate sau care pot fi activate [VERIFICARE_AVOCAT — confirmați lista finală]:</p>
-      <div className="overflow-x-auto rounded-lg border border-border my-4">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-secondary/50">
-              <th className="text-left px-3 py-2 font-semibold">Platformă</th>
-              <th className="text-left px-3 py-2 font-semibold">Instrument</th>
-              <th className="text-left px-3 py-2 font-semibold">Tip date colectate</th>
-            </tr>
-          </thead>
-          <tbody className="text-sm">
-            <tr className="bg-card"><td className="px-3 py-2">Meta (Facebook/Instagram)</td><td className="px-3 py-2">Facebook Pixel + Conversions API</td><td className="px-3 py-2">Evenimente: PageView, ViewContent, AddToCart, Purchase; cookie _fbp, _fbc</td></tr>
-            <tr className="bg-secondary/20"><td className="px-3 py-2">Google</td><td className="px-3 py-2">Google Analytics 4 / Google Tag Manager / Google Ads</td><td className="px-3 py-2">Evenimente e-commerce GA4; cookies _ga, _gid, _gat, _gcl_au</td></tr>
-            <tr className="bg-card"><td className="px-3 py-2">TikTok</td><td className="px-3 py-2">TikTok Pixel + Events API</td><td className="px-3 py-2">Evenimente: PageView, ViewContent, AddToCart, CompletePayment; cookie _ttp</td></tr>
-          </tbody>
-        </table>
-      </div>
+      {allEnabled.length > 0 ? (
+        <>
+          <p>
+            Pentru a măsura eficiența campaniilor publicitare și a optimiza conținutul reclamelor, 
+            utilizăm instrumente terțe de tracking. Acestea sunt activate <strong>doar dacă</strong> administratorul 
+            a configurat un ID valid <strong>și</strong> vizitatorul a acordat consimțământ explicit.
+          </p>
+          <div className="overflow-x-auto rounded-lg border border-border my-4">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-secondary/50">
+                  <th className="text-left px-3 py-2 font-semibold">Platformă</th>
+                  <th className="text-left px-3 py-2 font-semibold">Entitate UE</th>
+                  <th className="text-left px-3 py-2 font-semibold">Categorie</th>
+                  <th className="text-left px-3 py-2 font-semibold">Documentație</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm">
+                {allEnabled.map((p, i) => (
+                  <tr key={p.key} className={i % 2 === 0 ? "bg-card" : "bg-secondary/20"}>
+                    <td className="px-3 py-2 font-medium">{p.label}</td>
+                    <td className="px-3 py-2">{p.euEntity}</td>
+                    <td className="px-3 py-2 capitalize">{p.consentCategory}</td>
+                    <td className="px-3 py-2">
+                      <a href={p.privacyUrl} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline text-xs">Privacy</a>
+                      {" / "}
+                      <a href={p.dpaUrl} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline text-xs">DPA</a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : (
+        <p className="text-muted-foreground italic">
+          În prezent, nicio platformă publicitară sau analitică terță nu este configurată pe site.
+        </p>
+      )}
       <p className="text-xs text-muted-foreground italic">
-        [VERIFICARE_AVOCAT — Dacă adăugați alte platforme publicitare (ex: Pinterest, Snapchat, Microsoft Ads), actualizați această secțiune și tabelul de cookie-uri din <Link to="/politica-cookies" className="text-accent hover:underline">Politica de Cookie-uri</Link>]
+        [VERIFICARE_AVOCAT — Confirmați lista finală de platforme și temeiurile legale aplicabile]
       </p>
 
       <h2 id="remarketing">3b. Audiențe și remarketing</h2>

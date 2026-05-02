@@ -56,7 +56,7 @@ function GdprPage() {
       toast.error("Nu am putut trimite cererea");
       return;
     }
-    toast.success("Cerere înregistrată. Te vom contacta în maxim 30 de zile (GDPR).");
+    toast.success(`Cerere înregistrată. Te vom contacta în maxim ${GDPR_RESPONSE_DAYS} de zile calendaristice.`);
     setDetails("");
     load();
   };

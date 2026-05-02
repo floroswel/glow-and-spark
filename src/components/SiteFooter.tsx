@@ -250,6 +250,7 @@ export function SiteFooter() {
     { label: "Metode de plată", url: "/page/metode-plata" },
     { label: "Politica de Retur", url: "/politica-returnare" },
     { label: "Garanția Produselor", url: "/page/garantie" },
+    { label: "Urmărește comanda", url: "/track-order" },
   ];
 
   /* Company info */

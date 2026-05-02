@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 import { ChevronRight, Heart, Leaf, Award, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/despre-noi")({

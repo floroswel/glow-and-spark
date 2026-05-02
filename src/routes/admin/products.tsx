@@ -1084,6 +1084,20 @@ function AdminProducts() {
                       <p className="mt-1 text-xs text-chart-2 font-medium">🏷️ Reducere: -{Math.round((1 - editing.price / editing.old_price) * 100)}% ({(editing.old_price - editing.price).toFixed(2)} RON economie)</p>
                     )}
                   </div>
+                  {/* Omnibus Directive fields */}
+                  <div>
+                    <label className={labelClass}>Preț minim 30 zile (Omnibus) <span className="text-muted-foreground font-normal">[VERIFICARE_AVOCAT]</span></label>
+                    <input type="number" step="0.01" value={editing.lowest_price_30d || ""} onChange={(e) => updateField("lowest_price_30d", e.target.value ? Number(e.target.value) : null)} className={inputClass} placeholder="Cel mai mic preț din ultimele 30 zile" />
+                    <p className="mt-1 text-[10px] text-muted-foreground">
+                      {editing.lowest_price_30d != null
+                        ? "✅ Badge de reducere și preț tăiat vor fi afișate pe site."
+                        : "⚠ Fără acest câmp, badge-ul de reducere și prețul tăiat NU se afișează (conformitate Omnibus)."}
+                    </p>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Început promoție</label>
+                    <input type="datetime-local" value={editing.promo_started_at?.slice(0, 16) || ""} onChange={(e) => updateField("promo_started_at", e.target.value ? new Date(e.target.value).toISOString() : null)} className={inputClass} />
+                  </div>
                   <div>
                     <label className={labelClass}>Cost achiziție (RON)</label>
                     <input type="number" step="0.01" value={editing.cost_price || ""} onChange={(e) => updateField("cost_price", Number(e.target.value))} className={inputClass} placeholder="Preț de achiziție" />

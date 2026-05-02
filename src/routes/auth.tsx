@@ -57,9 +57,19 @@ function AuthPage() {
       if (mode === "register") {
         if (password !== confirmPassword) { setError("Parolele nu se potrivesc"); setLoading(false); return; }
         if (password.length < 6) { setError("Parola trebuie să aibă minim 6 caractere"); setLoading(false); return; }
+        if (!acceptTerms) { setError("Trebuie să accepți termenii și politica de confidențialitate."); setLoading(false); return; }
         const { error } = await signUp(email, password, fullName);
         if (error) setError(error.message);
-        else setRegisterSuccess(true);
+        else {
+          // Log consent for registration [LEGAL_REVIEW]
+          supabase.from("gdpr_consents").insert({
+            email,
+            consent_type: "terms_and_privacy",
+            granted: true,
+            metadata: { context: "register", policy_version: "2025-05-02" },
+          }).then(() => {});
+          setRegisterSuccess(true);
+        }
       } else {
         const { error } = await signIn(email, password);
         if (error) {

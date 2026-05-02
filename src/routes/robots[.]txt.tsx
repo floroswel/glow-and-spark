@@ -35,8 +35,11 @@ function ensureCriticalRules(body: string): string {
     if (!result.includes(`Disallow: ${path}`)) {
       // Insert after the last existing Disallow or after Allow
       const lines = result.split("\n");
-      const lastDisallowIdx = lines.findLastIndex((l) => l.startsWith("Disallow:"));
-      const insertIdx = lastDisallowIdx >= 0 ? lastDisallowIdx + 1 : lines.findIndex((l) => l.startsWith("Allow:")) + 1;
+      let lastDisallowIdx = -1;
+      for (let i = lines.length - 1; i >= 0; i--) {
+        if (lines[i].startsWith("Disallow:")) { lastDisallowIdx = i; break; }
+      }
+      const insertIdx = lastDisallowIdx >= 0 ? lastDisallowIdx + 1 : lines.findIndex((l: string) => l.startsWith("Allow:")) + 1;
       lines.splice(insertIdx, 0, `Disallow: ${path}`);
       result = lines.join("\n");
     }

@@ -37,6 +37,7 @@ function Index() {
       <MarqueeBanner />
       <TopBar />
       <SiteHeader />
+      <TrustStrip />
       <HeroSection />
       <ProductGrid />
       <CollectionBanners />

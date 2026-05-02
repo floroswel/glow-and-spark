@@ -144,7 +144,7 @@ export function ProductCard({
           </div>
           <div className="mt-3 flex items-center justify-between">
             <div className="flex items-baseline gap-2">
-              {oldPrice && <span className="text-sm text-muted-foreground line-through">{oldPrice} RON</span>}
+              {showOldPrice && <span className="text-sm text-muted-foreground line-through">{oldPrice} RON</span>}
               <span className="text-lg font-bold text-foreground">{price} RON</span>
             </div>
             <button

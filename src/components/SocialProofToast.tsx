@@ -126,13 +126,16 @@ export function SocialProofToast() {
           {emoji}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-muted-foreground">Acum {Math.floor(Math.random() * 15) + 1} minute</p>
+          <p className="text-xs text-muted-foreground">Recent</p>
           <p className="text-sm font-semibold text-foreground truncate">
             {current.name} din {current.city}
           </p>
           <p className="text-xs text-muted-foreground truncate">a cumpărat: {current.product}</p>
         </div>
-        <span className="shrink-0 rounded bg-accent/15 px-2 py-0.5 text-[10px] font-semibold text-accent">{badgeText}</span>
+        {/* [PROCESS] Badge should only say "Verificat" when sourced from real moderated orders */}
+        <span className="shrink-0 rounded bg-accent/15 px-2 py-0.5 text-[10px] font-semibold text-accent">
+          {useReal ? badgeText : "Exemplu"}
+        </span>
       </div>
     </div>
   );

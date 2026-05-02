@@ -94,6 +94,7 @@ export function ForYouRecommendations({ excludeIds = [], categoryId, limit = 4 }
             description={p.short_description || ""}
             price={p.price}
             oldPrice={p.old_price}
+              lowestPrice30d={(p as any).lowest_price_30d}
             rating={p.rating || 0}
             reviews={p.reviews_count || 0}
             badge={p.badge}

@@ -106,6 +106,61 @@ function ComplianceInventoryPage() {
         </div>
       </section>
 
+      {/* Conversion Events Documentation */}
+      <section className="border border-border rounded-lg p-4">
+        <h2 className="font-semibold mb-3">Evenimente de conversie — Ce date se trimit</h2>
+        <p className="text-xs text-muted-foreground mb-3">
+          Parametrii trimiși platformelor. <strong>Niciun PII</strong> (email, telefon, nume) nu este trimis în clar.
+          Dacă platformele cer email hashing, acesta trebuie implementat server-side. [VERIFICARE_IMPLEMENTARE]
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-border text-left text-muted-foreground">
+                <th className="py-1.5 pr-3">Eveniment</th>
+                <th className="py-1.5 pr-3">Parametri trimiși</th>
+                <th className="py-1.5 pr-3">Platforme</th>
+              </tr>
+            </thead>
+            <tbody className="text-muted-foreground">
+              <tr className="border-b border-border/30">
+                <td className="py-1.5 pr-3 font-medium text-foreground">PageView</td>
+                <td className="py-1.5 pr-3">URL, referrer, user-agent</td>
+                <td className="py-1.5 pr-3">Meta, GA4, TikTok</td>
+              </tr>
+              <tr className="border-b border-border/30">
+                <td className="py-1.5 pr-3 font-medium text-foreground">ViewContent</td>
+                <td className="py-1.5 pr-3">product_id, name, price, currency, category</td>
+                <td className="py-1.5 pr-3">Meta, GA4</td>
+              </tr>
+              <tr className="border-b border-border/30">
+                <td className="py-1.5 pr-3 font-medium text-foreground">AddToCart</td>
+                <td className="py-1.5 pr-3">product_id, name, price × quantity, currency</td>
+                <td className="py-1.5 pr-3">Meta, GA4</td>
+              </tr>
+              <tr className="border-b border-border/30">
+                <td className="py-1.5 pr-3 font-medium text-foreground">InitiateCheckout</td>
+                <td className="py-1.5 pr-3">content_ids[], total value, currency, num_items</td>
+                <td className="py-1.5 pr-3">Meta</td>
+              </tr>
+              <tr className="border-b border-border/30">
+                <td className="py-1.5 pr-3 font-medium text-foreground">Purchase</td>
+                <td className="py-1.5 pr-3">content_ids[], total value, currency</td>
+                <td className="py-1.5 pr-3">Meta, GA4</td>
+              </tr>
+              <tr>
+                <td className="py-1.5 pr-3 font-medium text-foreground">Lead (Newsletter)</td>
+                <td className="py-1.5 pr-3">event only, no PII</td>
+                <td className="py-1.5 pr-3">Meta, GA4</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="text-[10px] text-muted-foreground/60 mt-2">
+          ⚠ Nu se trimit: email, telefon, nume, adresă. IP-ul este colectat automat de platforme prin scripturi client-side.
+        </p>
+      </section>
+
       <p className="text-[10px] text-muted-foreground/60 text-center">
         Acest raport este destinat utilizării interne. Nu constituie certificare legală.
       </p>

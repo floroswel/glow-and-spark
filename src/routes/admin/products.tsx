@@ -22,6 +22,8 @@ interface Product {
   short_description: string;
   price: number;
   old_price: number | null;
+  lowest_price_30d: number | null;
+  promo_started_at: string | null;
   image_url: string;
   gallery: string[];
   category_id: string | null;
@@ -84,7 +86,7 @@ interface RelatedProduct {
 }
 
 const emptyProduct: Omit<Product, "id" | "created_at" | "updated_at"> = {
-  name: "", slug: "", description: "", short_description: "", price: 0, old_price: null,
+  name: "", slug: "", description: "", short_description: "", price: 0, old_price: null, lowest_price_30d: null, promo_started_at: null,
   image_url: "", gallery: [], category_id: null, badge: "", badge_type: "new", rating: 0,
   reviews_count: 0, stock: 0, weight: "", sku: "", meta_title: "", meta_description: "",
   is_active: true, is_featured: false, sort_order: 0,
@@ -1081,6 +1083,20 @@ function AdminProducts() {
                     {editing.old_price && editing.price < editing.old_price && (
                       <p className="mt-1 text-xs text-chart-2 font-medium">🏷️ Reducere: -{Math.round((1 - editing.price / editing.old_price) * 100)}% ({(editing.old_price - editing.price).toFixed(2)} RON economie)</p>
                     )}
+                  </div>
+                  {/* Omnibus Directive fields */}
+                  <div>
+                    <label className={labelClass}>Preț minim 30 zile (Omnibus) <span className="text-muted-foreground font-normal">[VERIFICARE_AVOCAT]</span></label>
+                    <input type="number" step="0.01" value={editing.lowest_price_30d || ""} onChange={(e) => updateField("lowest_price_30d", e.target.value ? Number(e.target.value) : null)} className={inputClass} placeholder="Cel mai mic preț din ultimele 30 zile" />
+                    <p className="mt-1 text-[10px] text-muted-foreground">
+                      {editing.lowest_price_30d != null
+                        ? "✅ Badge de reducere și preț tăiat vor fi afișate pe site."
+                        : "⚠ Fără acest câmp, badge-ul de reducere și prețul tăiat NU se afișează (conformitate Omnibus)."}
+                    </p>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Început promoție</label>
+                    <input type="datetime-local" value={editing.promo_started_at?.slice(0, 16) || ""} onChange={(e) => updateField("promo_started_at", e.target.value ? new Date(e.target.value).toISOString() : null)} className={inputClass} />
                   </div>
                   <div>
                     <label className={labelClass}>Cost achiziție (RON)</label>

@@ -75,6 +75,29 @@ if (!isVatPayer) {
   }
 }
 
+// Check 3: Hardcoded discount strings without data backing
+// Catch patterns like "50% REDUCERE", "-30%", "REDUCERE 20%" in JSX/template strings
+const DISCOUNT_PATTERNS = [
+  /["'`]\d+%\s*REDUCERE/gi,
+  /["'`]REDUCERE\s+\d+%/gi,
+  /["'`]-\d+%["'`]/g,
+];
+const ALLOWED_DISCOUNT_FILES = ["compliance-grep.mjs", ".test.", "compliance.ts", "admin/", "settings-registry.ts", "NewsletterPopup.tsx"];
+
+for (const file of files) {
+  const rel = path.relative(SRC, file);
+  if (ALLOWED_DISCOUNT_FILES.some((a) => rel.includes(a))) continue;
+  const content = fs.readFileSync(file, "utf-8");
+  for (const pattern of DISCOUNT_PATTERNS) {
+    pattern.lastIndex = 0;
+    const match = pattern.exec(content);
+    if (match) {
+      console.error(`❌ Hardcoded discount string "${match[0]}" in ${rel} — discount text must come from DB (lowest_price_30d)`);
+      errors++;
+    }
+  }
+}
+
 if (errors > 0) {
   console.error(`\n🚫 ${errors} compliance violation(s) found.`);
   if (FAIL_ON_ERROR) process.exit(1);

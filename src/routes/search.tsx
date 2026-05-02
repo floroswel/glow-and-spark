@@ -151,6 +151,7 @@ function SearchPage() {
                   description={p.short_description || ""}
                   price={Number(p.price)}
                   oldPrice={p.old_price ? Number(p.old_price) : undefined}
+                  lowestPrice30d={(p as any).lowest_price_30d != null ? Number((p as any).lowest_price_30d) : null}
                   rating={Number(p.rating || 0)}
                   reviews={p.reviews_count || 0}
                   badge={p.badge}

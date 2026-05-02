@@ -20,6 +20,8 @@ interface ProductCardProps {
   description: string;
   price: number;
   oldPrice?: number;
+  /** Omnibus Directive: lowest price in last 30 days. Required to show discount badges/strikethrough. */
+  lowestPrice30d?: number | null;
   rating: number;
   reviews: number;
   badge?: string;
@@ -28,7 +30,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({
-  id, slug, image, title, description, price, oldPrice, rating, reviews, badge, badgeType = "new", searchQuery,
+  id, slug, image, title, description, price, oldPrice, lowestPrice30d, rating, reviews, badge, badgeType = "new", searchQuery,
 }: ProductCardProps) {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
@@ -48,6 +50,16 @@ export function ProductCard({
     limited: "bg-foreground text-primary-foreground",
     new: "bg-chart-2 text-primary-foreground",
   };
+
+  /**
+   * Omnibus safety: hide "sale" badges and strikethrough prices unless
+   * lowest_price_30d is provided. This prevents Omnibus Directive violations
+   * by never showing discount claims without proper price history.
+   * [VERIFICARE_AVOCAT]
+   */
+  const omnibusCompliant = badgeType === "sale" ? lowestPrice30d != null : true;
+  const showOldPrice = oldPrice != null && oldPrice > price && lowestPrice30d != null;
+  const safeBadge = omnibusCompliant ? badge : undefined;
 
   const stars = "★".repeat(Math.floor(rating)) + (rating % 1 >= 0.5 ? "☆" : "");
 
@@ -102,9 +114,9 @@ export function ProductCard({
         style={{ boxShadow: "var(--product-card-shadow, 0 1px 2px 0 rgb(0 0 0 / 0.05))" }}
       >
         <Link to="/produs/$slug" params={{ slug }} className="block relative overflow-hidden">
-          {badge && (
+          {safeBadge && (
             <span className={`absolute left-3 top-3 z-10 rounded-md px-2.5 py-1 text-xs font-bold uppercase ${badgeColors[badgeType]}`}>
-              {badge}
+              {safeBadge}
             </span>
           )}
           <img src={image} alt={title} className="img-zoom aspect-square w-full object-cover" loading="lazy" width={640} height={640} />
@@ -132,7 +144,7 @@ export function ProductCard({
           </div>
           <div className="mt-3 flex items-center justify-between">
             <div className="flex items-baseline gap-2">
-              {oldPrice && <span className="text-sm text-muted-foreground line-through">{oldPrice} RON</span>}
+              {showOldPrice && <span className="text-sm text-muted-foreground line-through">{oldPrice} RON</span>}
               <span className="text-lg font-bold text-foreground">{price} RON</span>
             </div>
             <button
@@ -172,7 +184,7 @@ export function ProductCard({
 
               {/* Price */}
               <div className="flex items-baseline gap-3">
-                {qvActiveOldPrice && (
+                {qvActiveOldPrice && lowestPrice30d != null && (
                   <span className="text-base text-muted-foreground line-through">{qvActiveOldPrice} RON</span>
                 )}
                 <span className="text-2xl font-bold text-foreground">{qvActivePrice} RON</span>

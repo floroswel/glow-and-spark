@@ -13,7 +13,8 @@ import {
   RotateCcw, Activity, User, Gift, Crown, Percent, FileSpreadsheet,
   Zap, Receipt, Calculator, Cookie, Star, Briefcase,
   Bot, FlaskConical, Megaphone, Sparkles, TrendingDown, Webhook,
-  Mail, ShieldAlert, Award, Users2, Wallet, ArrowRightLeft, Bell as BellIcon
+  Mail, ShieldAlert, Award, Users2, Wallet, ArrowRightLeft, Bell as BellIcon,
+  ClipboardCheck
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -220,6 +221,7 @@ const menuSections: MenuSection[] = [
       { icon: Webhook, label: "Webhook-uri", to: "/admin/webhooks" },
       { icon: UserCog, label: "Utilizatori", to: "/admin/users" },
       { icon: FileSpreadsheet, label: "Import / Export", to: "/admin/import-export" },
+      { icon: ClipboardCheck, label: "Pre-Launch Checklist", to: "/admin/pre-launch" },
     ],
   },
 ];

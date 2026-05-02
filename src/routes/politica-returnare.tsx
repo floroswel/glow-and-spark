@@ -29,9 +29,9 @@ function PoliticaReturnarePage() {
   const sections = [
     {
       title: "1. Dreptul de retragere",
-      content: `Conform legislației privind drepturile consumatorilor, aveți dreptul de a vă retrage din contractul de vânzare la distanță în termen de **14 zile calendaristice** de la data primirii produsului, fără a fi necesară justificarea deciziei și fără a suporta alte costuri decât cele de returnare.
+      content: `Conform legislației privind drepturile consumatorilor, aveți dreptul de a vă retrage din contractul de vânzare la distanță în termen de **${WITHDRAWAL_PERIOD_DAYS} zile calendaristice** de la data primirii produsului, fără a fi necesară justificarea deciziei și fără a suporta alte costuri decât cele de returnare.
 
-Termenul de retragere expiră după 14 zile calendaristice de la data la care dumneavoastră sau o terță parte desemnată de dumneavoastră, alta decât transportatorul, intră în posesia fizică a produselor.
+Termenul de retragere expiră după ${WITHDRAWAL_PERIOD_DAYS} zile calendaristice de la data la care dumneavoastră sau o terță parte desemnată de dumneavoastră, alta decât transportatorul, intră în posesia fizică a produselor.
 
 Pentru a vă exercita dreptul de retragere, trebuie să ne informați cu privire la decizia dumneavoastră printr-o declarație clară:
 • **E-mail:** ${C.email}

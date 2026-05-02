@@ -1,30 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useRef } from "react";
+import { Printer, Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { LegalPageShell, DraftBanner } from "@/components/LegalPageShell";
+import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
-import { ChevronRight, Printer, Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
+import { ChevronRight } from "lucide-react";
 
-const C = {
-  name: "SC Vomix Genius SRL",
-  cui: "43025661",
-  regCom: "J2020000459343",
-  address: "Strada Constructorilor Nr 39, sat Voievoda, comuna Furculești, județul Teleorman, cod poștal 147148",
-  email: "contact@mamalucica.ro",
-  phone: "+40 753 326 405",
-  site: "mamalucica.ro",
-};
+const LAST_UPDATE = "2026-05-02";
 
 export const Route = createFileRoute("/formular-retragere")({
   head: () => ({
     meta: [
       { title: "Formular de Retragere — Mama Lucica" },
-      { name: "description", content: "Formular-tip de retragere din contract conform OUG 34/2014, Anexa 2. Completează online sau tipărește." },
+      { name: "description", content: "Formular-tip de retragere din contract conform legislației privind drepturile consumatorilor. Completează online sau tipărește." },
       { property: "og:title", content: "Formular de Retragere — Mama Lucica" },
       { property: "og:description", content: "Formular standard de retragere din contractul de vânzare la distanță." },
     ],
@@ -33,6 +28,7 @@ export const Route = createFileRoute("/formular-retragere")({
 });
 
 function FormularRetragerePage() {
+  const C = useCompanyInfo();
   const [form, setForm] = useState({
     customerName: "",
     customerAddress: "",
@@ -71,7 +67,7 @@ function FormularRetragerePage() {
         customer_phone: form.customerPhone.trim().slice(0, 20) || null,
         subject: `Formular retragere — Comanda ${form.orderNumber.trim().slice(0, 50)}`,
         description: [
-          `FORMULAR DE RETRAGERE (OUG 34/2014)`,
+          `FORMULAR DE RETRAGERE`,
           `Către: ${C.name}`,
           `---`,
           `Nume client: ${form.customerName}`,
@@ -118,11 +114,14 @@ function FormularRetragerePage() {
           <span className="text-foreground font-medium">Formular de retragere</span>
         </nav>
 
+        <DraftBanner />
+
         <div className="text-center mb-8">
           <h1 className="font-heading text-3xl font-bold text-foreground">Formular de Retragere</h1>
           <p className="mt-2 text-muted-foreground text-sm">
-            Conform OUG 34/2014, Anexa 2 — Formular-tip de retragere din contract
+            Formular-tip de retragere din contract conform legislației privind drepturile consumatorilor
           </p>
+          <p className="text-center text-xs text-muted-foreground mt-1">Ultima actualizare: {LAST_UPDATE}</p>
         </div>
 
         {/* Printable legal text */}
@@ -136,7 +135,7 @@ function FormularRetragerePage() {
             <p>
               <strong className="text-foreground print:text-black">Către:</strong><br />
               {C.name}<br />
-              Sediu: {C.address}<br />
+              Sediu: {C.fullAddress}<br />
               CUI: {C.cui} · Reg. Com.: {C.regCom}<br />
               E-mail: {C.email} · Tel: {C.phone}
             </p>
@@ -213,7 +212,7 @@ function FormularRetragerePage() {
             <div className="text-xs text-muted-foreground bg-secondary/30 rounded-lg p-4">
               <p>
                 Prin trimiterea acestui formular, declar că mă retrag din contractul de vânzare a produselor 
-                menționate mai sus, în conformitate cu art. 9 din OUG 34/2014.
+                menționate mai sus, în conformitate cu legislația privind drepturile consumatorilor.
               </p>
               <p className="mt-2">
                 Datele personale furnizate vor fi prelucrate conform{" "}
@@ -247,7 +246,7 @@ function FormularRetragerePage() {
 
         <div className="mt-8 text-xs text-muted-foreground text-center space-y-1 border-t border-border pt-6">
           <p><strong className="text-foreground">{C.name}</strong> · CUI: {C.cui} · Reg. Com.: {C.regCom}</p>
-          <p>{C.address}</p>
+          <p>{C.fullAddress}</p>
           <p>E-mail: {C.email} · Tel: {C.phone}</p>
         </div>
       </div>

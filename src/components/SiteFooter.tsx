@@ -335,26 +335,30 @@ export function SiteFooter() {
             </FooterColumn>
           )}
 
-          {/* COL 3 — Date comerciale */}
+          {/* COL 3 — Date comerciale (highlighted block) */}
           {footer?.col3_show !== false && (
             <FooterColumn title="Date comerciale" titleColor={titleColor}>
-              <div className="space-y-2 text-sm" style={{ color: textColor }}>
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4 space-y-2.5 text-sm" style={{ color: textColor }}>
                 {companyName && (
-                  <div className="flex items-start gap-2">
-                    <Building2 className="h-4 w-4 mt-0.5 shrink-0 text-white/60" />
-                    <span className="font-semibold text-white">{companyName}</span>
+                  <div className="flex items-start gap-2.5">
+                    <Building2 className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
+                    <span className="font-semibold text-white leading-tight">{companyName}</span>
                   </div>
                 )}
-                {regCom && <p className="pl-6">Reg. Com.: {regCom}</p>}
-                {cui && <p className="pl-6">CUI: {cui}</p>}
+                <div className="pl-[26px] space-y-1 text-[13px]">
+                  {cui && <p><span className="text-white/50 mr-1">CUI:</span> {cui}</p>}
+                  {regCom && <p><span className="text-white/50 mr-1">Reg. Com.:</span> {regCom}</p>}
+                </div>
                 {fullAddress && (
-                  <div className="flex items-start gap-2">
-                    <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-white/60" />
-                    <span>{fullAddress}</span>
+                  <div className="flex items-start gap-2.5">
+                    <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
+                    <span className="text-[13px] leading-snug">{fullAddress}</span>
                   </div>
                 )}
-                {companyIban && <p className="pl-6">IBAN: {companyIban}</p>}
-                {companyBank && <p className="pl-6">Banca: {companyBank}</p>}
+                <div className="border-t border-white/10 pt-2.5 pl-[26px] space-y-1 text-[13px]">
+                  {companyIban && <p><span className="text-white/50 mr-1">IBAN:</span> <span className="font-mono text-white/90 text-xs">{companyIban}</span></p>}
+                  {companyBank && <p><span className="text-white/50 mr-1">Banca:</span> {companyBank}</p>}
+                </div>
               </div>
 
               {/* Company documents */}
@@ -380,22 +384,12 @@ export function SiteFooter() {
                   ))}
                 </div>
               )}
-
-              {/* Contact button */}
-              <a
-                href="/contact"
-                className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-full text-white text-sm font-semibold hover:opacity-90 transition-opacity"
-                style={{ background: "#0058b3" }}
-              >
-                <MessageCircle className="h-4 w-4" />
-                Contactează-ne
-              </a>
             </FooterColumn>
           )}
 
-          {/* COL 4 — Suport clienți */}
+          {/* COL 4 — Suport */}
           {footer?.col4_show !== false && (
-            <FooterColumn title={footer?.col4_title || "Suport clienți"} titleColor={titleColor}>
+            <FooterColumn title={footer?.col4_title || "Suport"} titleColor={titleColor}>
               <div className="space-y-3 text-sm">
                 {schedule && (
                   <div className="flex items-start gap-2">
@@ -434,6 +428,44 @@ export function SiteFooter() {
                   </div>
                 )}
               </div>
+
+              {/* ANPC & SOL links within support column */}
+              <div className="mt-5 space-y-2">
+                <a
+                  href="https://anpc.ro/ce-este-sal/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm hover:text-white transition-colors"
+                  style={{ color: linkColor }}
+                  onMouseEnter={e => (e.target as HTMLElement).style.color = linkHover}
+                  onMouseLeave={e => (e.target as HTMLElement).style.color = linkColor}
+                >
+                  <Shield className="h-4 w-4 shrink-0 text-white/60" />
+                  ANPC — Soluționarea Litigiilor
+                </a>
+                <a
+                  href="https://ec.europa.eu/consumers/odr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm hover:text-white transition-colors"
+                  style={{ color: linkColor }}
+                  onMouseEnter={e => (e.target as HTMLElement).style.color = linkHover}
+                  onMouseLeave={e => (e.target as HTMLElement).style.color = linkColor}
+                >
+                  <Shield className="h-4 w-4 shrink-0 text-white/60" />
+                  SOL — Platformă Online Litigii
+                </a>
+              </div>
+
+              {/* Contact button */}
+              <a
+                href="/contact"
+                className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-lg text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+                style={{ background: accentColor }}
+              >
+                <MessageCircle className="h-4 w-4" />
+                Contactează-ne
+              </a>
             </FooterColumn>
           )}
             </>

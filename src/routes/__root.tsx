@@ -216,6 +216,7 @@ function TrackingInit() {
   useEffect(() => {
     const unsub = router.subscribe("onResolved", () => {
       trackPageView();
+      trackTikTokPageView();
     });
     return unsub;
   }, [router]);

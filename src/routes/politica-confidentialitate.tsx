@@ -363,5 +363,6 @@ function PoliticaConfidentialitatePage() {
         actualizați coloana „Parametri / Date" deoarece CAPI poate transmite date suplimentare (email hashed, IP server-side, user agent).]
       </p>
 
+    </LegalPageShell>
   );
 }

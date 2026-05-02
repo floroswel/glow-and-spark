@@ -72,15 +72,17 @@ function buildInvoiceHTML(order: any, invoiceNumber: string, taxSettings: any): 
       <tbody>${itemRows}</tbody>
     </table>
     <div class="totals">
-      <div class="row"><span>Subtotal (fără TVA):</span><span>${subtotalNoVat} RON</span></div>
-      <div class="row"><span>TVA 19%:</span><span>${vatAmount} RON</span></div>
+      ${isVatPayer ? `<div class="row"><span>Subtotal (fără TVA):</span><span>${subtotalNoVat} RON</span></div>` : ""}
+      ${isVatPayer ? `<div class="row"><span>TVA ${taxSettings?.default_vat_rate || 19}%:</span><span>${vatAmount} RON</span></div>` : ""}
+      ${!isVatPayer ? `<div class="row"><span>Subtotal:</span><span>${Number(order.subtotal || 0).toFixed(2)} RON</span></div>` : ""}
       ${Number(order.discount || order.discount_amount || 0) > 0 ? `<div class="row"><span>Reducere:</span><span>-${Number(order.discount || order.discount_amount || 0).toFixed(2)} RON</span></div>` : ""}
       <div class="row"><span>Livrare:</span><span>${Number(order.shipping_cost || 0).toFixed(2)} RON</span></div>
       <div class="row total-final"><span>TOTAL:</span><span>${Number(order.total).toFixed(2)} RON</span></div>
     </div>
     <div class="footer">
       <p>SC Vomix Genius SRL • CUI 43025661</p>
-      <p>Factură generată automat — nu necesită semnătură</p>
+      ${!isVatPayer ? `<p style="font-size:10px;margin-top:4px;">Operatorul nu este plătitor de TVA.</p>` : ""}
+      <p>Document generat automat — nu necesită semnătură</p>
     </div>
   </body></html>`;
 }

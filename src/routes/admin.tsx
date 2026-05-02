@@ -165,7 +165,7 @@ const menuSections: MenuSection[] = [
           { to: "/admin/payments", label: "Metode de Plată" },
           { to: "/admin/transactions", label: "Tranzacții" },
           { to: "/admin/invoices", label: "Facturi" },
-          { to: "/admin/tax-settings", label: "Setări Fiscale & TVA" },
+          { to: "/admin/tax-settings", label: "Setări Fiscale" },
         ],
       },
       {

@@ -5,15 +5,18 @@ import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 const LAST_UPDATE = "2026-05-02";
 
 const COOKIES_TABLE = [
+  // ── Necesare ──
   { name: "sb-*-auth-token", provider: "mamalucica.ro", purpose: "Sesiune de autentificare utilizator", type: "Necesar", duration: "1 an" },
   { name: "__cf_bm", provider: "Cloudflare", purpose: "Protecție anti-bot și securitate", type: "Necesar", duration: "30 min" },
-  { name: "cookie_consent", provider: "mamalucica.ro", purpose: "Memorarea preferințelor de cookie", type: "Necesar", duration: "1 an" },
+  { name: "cookie_consent", provider: "mamalucica.ro (localStorage)", purpose: "Memorarea preferințelor de cookie", type: "Necesar", duration: "Permanent (localStorage)" },
+  // ── Analitice — încărcate DOAR dacă admin configurează un ID GA4/GTM ȘI vizitatorul acceptă ──
   { name: "_ga, _ga_*", provider: "Google Analytics", purpose: "Identificare vizitatori unici, analiză trafic", type: "Analitic", duration: "2 ani" },
   { name: "_gid", provider: "Google Analytics", purpose: "Distingerea vizitatorilor", type: "Analitic", duration: "24 ore" },
   { name: "_gat", provider: "Google Analytics", purpose: "Limitarea ratei de solicitări", type: "Analitic", duration: "1 minut" },
-  { name: "_fbp", provider: "Meta (Facebook)", purpose: "Urmărire conversii, remarketing", type: "Marketing", duration: "3 luni" },
-  { name: "_fbc", provider: "Meta (Facebook)", purpose: "Atribuirea click-urilor de pe Facebook", type: "Marketing", duration: "3 luni" },
-  { name: "_gcl_au", provider: "Google Ads", purpose: "Urmărire conversii publicitare", type: "Marketing", duration: "3 luni" },
+  // ── Marketing — încărcate DOAR dacă admin configurează un Facebook Pixel ID ȘI vizitatorul acceptă ──
+  { name: "_fbp", provider: "Meta (Facebook Pixel)", purpose: "Urmărire conversii, remarketing", type: "Marketing", duration: "3 luni" },
+  { name: "_fbc", provider: "Meta (Facebook Pixel)", purpose: "Atribuirea click-urilor de pe Facebook", type: "Marketing", duration: "3 luni" },
+  // NOTA: Google Ads (_gcl_au) ELIMINAT — nu există script Google Ads pe site [VERIFY_REAL_SCRIPTS 2025-05-02]
 ];
 
 export const Route = createFileRoute("/politica-cookies")({
@@ -70,15 +73,19 @@ function CookiePolicyPage() {
 
       <h3 className="text-foreground font-semibold text-lg mt-6 mb-2">4.2. Cookie-uri analitice / de performanță</h3>
       <p>
-        Ne ajută să înțelegem cum interacționează vizitatorii cu site-ul. <strong>Sunt activate doar cu consimțământul dumneavoastră.</strong>
+        Aceste cookie-uri sunt setate <strong>doar dacă</strong> administratorul site-ului a configurat un ID Google Analytics (GA4 sau GTM) 
+        <strong> și</strong> dumneavoastră ați acceptat categoria „Analitice" în bannerul de consimțământ. 
+        Dacă niciun ID nu este configurat, scriptul Google Analytics nu se încarcă și niciun cookie analitic nu este plasat.
       </p>
 
-      <h3 className="text-foreground font-semibold text-lg mt-6 mb-2">4.3. Cookie-uri de marketing / publicitate</h3>
+      <h3 className="text-foreground font-semibold text-lg mt-6 mb-2">4.3. Cookie-uri de marketing</h3>
       <p>
-        Sunt utilizate pentru a vă afișa reclame relevante. <strong>Sunt activate doar cu consimțământul dumneavoastră.</strong>
+        Aceste cookie-uri sunt setate <strong>doar dacă</strong> administratorul site-ului a configurat un Facebook Pixel ID 
+        <strong> și</strong> dumneavoastră ați acceptat categoria „Marketing" în bannerul de consimțământ. 
+        Dacă niciun Pixel ID nu este configurat, scriptul Facebook nu se încarcă.
       </p>
       <p className="text-xs text-muted-foreground/70 italic">
-        [PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — verificați dacă utilizați efectiv toate cookie-urile de marketing listate; eliminați cele nefolosite]
+        [VERIFY_REAL_SCRIPTS — Dacă adăugați noi servicii terțe (ex: Google Ads, TikTok Pixel), actualizați această pagină și tabelul de mai jos]
       </p>
 
       <h2>5. Lista detaliată a cookie-urilor</h2>

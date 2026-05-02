@@ -86,13 +86,13 @@ function TermeniPage() {
           </ul>
           <p>
             Contractul de vânzare se consideră încheiat la momentul confirmării comenzii de către Vânzător prin e-mail. 
-            Confirmarea conține: numărul comenzii, produsele achiziționate, prețul total (inclusiv TVA și livrare), 
+            Confirmarea conține: numărul comenzii, produsele achiziționate, prețul total (inclusiv livrare), 
             termenul estimat de livrare și informații privind dreptul de retragere.
           </p>
 
           <h2>5. Prețuri și plată</h2>
           <p>
-            Toate prețurile afișate pe site sunt exprimate în <strong>RON (lei românești)</strong> și includ <strong>TVA (19%)</strong>. 
+            Toate prețurile afișate pe site sunt exprimate în <strong>RON (lei românești)</strong> și sunt prețuri finale. 
             Prețurile pot fi modificate oricând de către Vânzător, dar modificările nu afectează comenzile deja confirmate.
           </p>
           <p>Metodele de plată acceptate:</p>

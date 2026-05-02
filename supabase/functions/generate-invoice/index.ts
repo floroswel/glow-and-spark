@@ -11,10 +11,11 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
-function buildInvoiceHTML(order: any, invoiceNumber: string): string {
+function buildInvoiceHTML(order: any, invoiceNumber: string, taxSettings: any): string {
   const items = Array.isArray(order.items) ? order.items : [];
-  const subtotalNoVat = (Number(order.subtotal || 0) / 1.19).toFixed(2);
-  const vatAmount = (Number(order.subtotal || 0) - Number(order.subtotal || 0) / 1.19).toFixed(2);
+  const isVatPayer = taxSettings?.is_vat_payer === true;
+  const subtotalNoVat = isVatPayer ? (Number(order.subtotal || 0) / 1.19).toFixed(2) : null;
+  const vatAmount = isVatPayer ? (Number(order.subtotal || 0) - Number(order.subtotal || 0) / 1.19).toFixed(2) : null;
   const itemRows = items
     .map(
       (it: any, i: number) =>
@@ -71,15 +72,17 @@ function buildInvoiceHTML(order: any, invoiceNumber: string): string {
       <tbody>${itemRows}</tbody>
     </table>
     <div class="totals">
-      <div class="row"><span>Subtotal (fără TVA):</span><span>${subtotalNoVat} RON</span></div>
-      <div class="row"><span>TVA 19%:</span><span>${vatAmount} RON</span></div>
+      ${isVatPayer ? `<div class="row"><span>Subtotal (fără TVA):</span><span>${subtotalNoVat} RON</span></div>` : ""}
+      ${isVatPayer ? `<div class="row"><span>TVA ${taxSettings?.default_vat_rate || 19}%:</span><span>${vatAmount} RON</span></div>` : ""}
+      ${!isVatPayer ? `<div class="row"><span>Subtotal:</span><span>${Number(order.subtotal || 0).toFixed(2)} RON</span></div>` : ""}
       ${Number(order.discount || order.discount_amount || 0) > 0 ? `<div class="row"><span>Reducere:</span><span>-${Number(order.discount || order.discount_amount || 0).toFixed(2)} RON</span></div>` : ""}
       <div class="row"><span>Livrare:</span><span>${Number(order.shipping_cost || 0).toFixed(2)} RON</span></div>
       <div class="row total-final"><span>TOTAL:</span><span>${Number(order.total).toFixed(2)} RON</span></div>
     </div>
     <div class="footer">
       <p>SC Vomix Genius SRL • CUI 43025661</p>
-      <p>Factură generată automat — nu necesită semnătură</p>
+      ${!isVatPayer ? `<p style="font-size:10px;margin-top:4px;">Operatorul nu este plătitor de TVA.</p>` : ""}
+      <p>Document generat automat — nu necesită semnătură</p>
     </div>
   </body></html>`;
 }
@@ -110,9 +113,13 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Read tax settings
+    const { data: taxRow } = await supabase.from("site_settings").select("value").eq("key", "tax_settings").single();
+    const taxSettings = taxRow?.value || { is_vat_payer: false };
+
     const year = new Date(order.created_at).getFullYear();
     const invoiceNumber = `ML-${year}-${String(order.order_number).replace(/\D/g, "").padStart(5, "0").slice(-5)}`;
-    const html = buildInvoiceHTML(order, invoiceNumber);
+    const html = buildInvoiceHTML(order, invoiceNumber, taxSettings);
 
     // Generate "PDF" — using HTML as PDF body via simple wrapper.
     // Note: native PDF rendering libraries are not Worker/Deno-compatible here,

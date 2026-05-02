@@ -54,7 +54,7 @@ const defaults = {
   show_anpc_badges: true,
   show_sol_badge: true,
   show_legal_disclaimer: true,
-  legal_disclaimer: "Prețurile includ TVA. Imaginile produselor sunt cu titlu informativ și pot diferi de realitate.",
+  legal_disclaimer: "Prețurile afișate sunt prețuri finale. Imaginile produselor sunt cu titlu informativ și pot diferi de realitate.",
   show_company_documents: true,
   company_documents: [],
   footer_bg: "#1f1f1f",

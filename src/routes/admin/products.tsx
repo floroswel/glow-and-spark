@@ -1073,7 +1073,7 @@ function AdminProducts() {
                     <label className={labelClass}>Preț (RON) *</label>
                     <input type="number" step="0.01" value={editing.price} onChange={(e) => updateField("price", Number(e.target.value))} className={inputClass} />
                     {editing.price <= 0 && <p className="mt-1 text-xs text-destructive">Prețul trebuie să fie pozitiv</p>}
-                    {editing.price > 0 && <p className="mt-1 text-xs text-muted-foreground">Cu TVA (19%): {(editing.price * 1.19).toFixed(2)} RON</p>}
+                    {editing.price > 0 && <p className="mt-1 text-xs text-muted-foreground">Preț final afișat clientului</p>}
                   </div>
                   <div>
                     <label className={labelClass}>Preț vechi (RON)</label>

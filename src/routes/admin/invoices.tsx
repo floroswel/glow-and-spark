@@ -163,8 +163,7 @@ function AdminInvoices() {
         </tbody>
       </table>
       <div class="totals">
-        <div class="row"><span>Subtotal (fără TVA):</span><span>${inv.subtotal_no_vat} RON</span></div>
-        <div class="row"><span>TVA 19%:</span><span>${inv.vat_amount} RON</span></div>
+        <div class="row"><span>Subtotal:</span><span>${Number(inv.subtotal || inv.subtotal_no_vat || 0).toFixed(2)} RON</span></div>
         ${Number(inv.discount || 0) > 0 ? `<div class="row"><span>Reducere:</span><span>-${Number(inv.discount || inv.discount_amount || 0).toFixed(2)} RON</span></div>` : ""}
         <div class="row"><span>Livrare:</span><span>${Number(inv.shipping_cost || 0).toFixed(2)} RON</span></div>
         <div class="row total-final"><span>TOTAL:</span><span>${Number(inv.total).toFixed(2)} RON</span></div>

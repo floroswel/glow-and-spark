@@ -21,6 +21,8 @@ export const Route = createFileRoute("/politica-confidentialitate")({
 
 function PoliticaConfidentialitatePage() {
   const C = useCompanyInfo();
+  const { general } = useSiteSettings();
+  const allEnabled = getEnabledPlatforms(general);
 
   return (
     <LegalPageShell title="Politica de Confidențialitate" breadcrumb="Politica de Confidențialitate" lastUpdate={LAST_UPDATE}>

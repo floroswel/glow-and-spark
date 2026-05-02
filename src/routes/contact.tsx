@@ -32,20 +32,21 @@ function ContactPage() {
   const [consent, setConsent] = useState(false);
   const [sending, setSending] = useState(false);
 
-  /* ── Company data — same sources as SiteFooter ── */
-  const companyName = general?.company_name || footer?.company_name || "SC Vomix Genius SRL";
-  const cui = general?.company_cui || footer?.cui || "43025661";
-  const regCom = general?.reg_com || footer?.reg_com || "J2020000459343";
-  const companyAddress = general?.company_address || footer?.company_address || "Strada Constructorilor Nr 39, sat Voievoda, comuna Furculești";
-  const companyCity = general?.company_city || footer?.company_city || "Furculești";
-  const companyCounty = general?.company_county || footer?.company_county || "Teleorman";
-  const companyPostalCode = general?.company_postal_code || footer?.company_postal_code || "147148";
-  const companyIban = general?.invoice_iban || footer?.company_iban || "RO50BTRLRONCRT0566231601";
-  const companyBank = general?.invoice_bank || footer?.company_bank || "BANCA TRANSILVANIA S.A.";
-  const emailAddr = general?.contact_email || "contact@mamalucica.ro";
-  const phone = general?.contact_phone || "+40 753 326 405";
-  const schedule = general?.contact_schedule || "Luni - Vineri: 09:00 - 17:00";
-  const fullAddress = [companyAddress, companyCity, companyCounty, companyPostalCode].filter(Boolean).join(", ");
+  /* ── Company data — single source of truth ── */
+  const C = useCompanyInfo();
+  const companyName = C.name;
+  const cui = C.cui;
+  const regCom = C.regCom;
+  const companyAddress = C.address;
+  const companyCity = C.city;
+  const companyCounty = C.county;
+  const companyPostalCode = C.postalCode;
+  const companyIban = C.iban;
+  const companyBank = C.bank;
+  const emailAddr = C.email;
+  const phone = C.phone;
+  const schedule = C.schedule;
+  const fullAddress = C.fullAddress;
 
   /* CAEN codes */
   const caenCodes: string[] = general?.company_caen

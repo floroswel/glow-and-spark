@@ -95,7 +95,6 @@ function AdminInvoices() {
     paid: invoices.filter(i => i.invoice_status === "paid").length,
     pending: invoices.filter(i => i.invoice_status === "pending").length,
     totalValue: invoices.filter(i => i.invoice_status !== "cancelled").reduce((a, i) => a + Number(i.total || 0), 0),
-    totalVAT: invoices.filter(i => i.invoice_status !== "cancelled").reduce((a, i) => a + Number(i.vat_amount || 0), 0),
   }), [invoices]);
 
   const statusCfg: Record<string, { label: string; color: string; icon: any }> = {
@@ -200,7 +199,7 @@ function AdminInvoices() {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs font-medium text-muted-foreground">Total Facturi</p>
           <p className="mt-1 text-2xl font-bold text-foreground">{stats.total}</p>
@@ -216,10 +215,6 @@ function AdminInvoices() {
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs font-medium text-muted-foreground">Valoare Totală</p>
           <p className="mt-1 text-2xl font-bold text-foreground">{stats.totalValue.toLocaleString("ro-RO", { maximumFractionDigits: 0 })} RON</p>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-xs font-medium text-muted-foreground">TVA Colectat</p>
-          <p className="mt-1 text-2xl font-bold text-amber-500">{stats.totalVAT.toLocaleString("ro-RO", { maximumFractionDigits: 0 })} RON</p>
         </div>
       </div>
 

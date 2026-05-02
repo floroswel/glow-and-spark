@@ -11,8 +11,8 @@ export const checkSeoRedirect = createServerFn({ method: "GET" })
     const d = input as { path?: string };
     return { path: typeof d?.path === "string" ? d.path : "" };
   })
-  .handler(async ({ data }: { data: { path: string } }) => {
-    const { path } = data;
+  .handler(async ({ data }) => {
+    const { path } = data as { path: string };
     if (!path) return null;
 
     const { data: row, error } = await supabaseAdmin

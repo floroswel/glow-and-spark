@@ -215,6 +215,16 @@ function AuthPage() {
                   className="w-full h-11 px-3 border border-border rounded-lg text-sm bg-background text-foreground focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
                 />
               )}
+              {mode === "register" && (
+                <label className="flex items-start gap-2 text-sm pt-1">
+                  <input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 accent-accent" />
+                  <span className="text-muted-foreground">
+                    Am citit și accept{" "}
+                    <Link to="/termeni-si-conditii" target="_blank" className="text-accent underline">Termenii și condițiile</Link>
+                    {" "}și{" "}
+                    <Link to="/politica-confidentialitate" target="_blank" className="text-accent underline">Politica de confidențialitate</Link> *
+                  </span>
+                </label>
               {mode === "login" && (
                 <div className="text-right">
                   <Link to="/forgot-password" className="text-xs text-accent font-semibold hover:underline">Ai uitat parola?</Link>

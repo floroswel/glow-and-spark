@@ -18,7 +18,7 @@ function AccesibilitatePage() {
   const C = useCompanyInfo();
 
   return (
-    <LegalPageShell title="Accesibilitate" breadcrumb="Accesibilitate">
+    <LegalPageShell title="Accesibilitate" breadcrumb="Accesibilitate" lastUpdate="2026-05-03">
       <h2>Angajamentul nostru</h2>
       <p>
         Ne dorim ca site-ul <strong>mamalucica.ro</strong> să fie accesibil tuturor utilizatorilor,

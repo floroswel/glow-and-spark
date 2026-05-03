@@ -18,7 +18,7 @@ function SigurantaProdusePage() {
   const C = useCompanyInfo();
 
   return (
-    <LegalPageShell title="Siguranță și utilizare produse" breadcrumb="Siguranță produse">
+    <LegalPageShell title="Siguranță și utilizare produse" breadcrumb="Siguranță produse" lastUpdate="2026-05-03">
       <p>
         Produsele comercializate de <strong>{C.name}</strong> sunt destinate utilizării casnice.
         Vă rugăm să citiți cu atenție instrucțiunile de mai jos pentru o utilizare sigură.

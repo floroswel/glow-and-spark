@@ -385,11 +385,22 @@ export function SiteFooter() {
               <FooterColumn title={footer?.col2_title || "Clienți"} titleColor={titleColor}>
                 <nav aria-label="Informații pentru clienți">
                   <ul className="space-y-1">
-                    <li><FooterLink href="/page/transport-livrare" linkColor={linkColor}>Transport și livrare</FooterLink></li>
-                    <li><FooterLink href="/page/metode-plata" linkColor={linkColor}>Metode de plată</FooterLink></li>
-                    <li><FooterLink href="/page/garantie" linkColor={linkColor}>Garanția produselor</FooterLink></li>
-                    <li><FooterLink href="/track-order" linkColor={linkColor}>Urmărește comanda</FooterLink></li>
-                    <li><FooterLink href="/gift-card" linkColor={linkColor}>Card cadou</FooterLink></li>
+                    {(Array.isArray(footer?.col2_links) && footer.col2_links.length > 0
+                      ? footer.col2_links
+                      : [
+                          { label: "Transport și livrare", url: "/page/transport-livrare" },
+                          { label: "Metode de plată", url: "/page/metode-plata" },
+                          { label: "Garanția produselor", url: "/page/garantie" },
+                          { label: "Urmărește comanda", url: "/track-order" },
+                          { label: "Card cadou", url: "/gift-card" },
+                        ]
+                    ).map((link: any, i: number) => (
+                      <li key={i}>
+                        <FooterLink href={link.url} external={link.url?.startsWith("http")} linkColor={linkColor}>
+                          {link.label}
+                        </FooterLink>
+                      </li>
+                    ))}
                   </ul>
                 </nav>
 

@@ -10,7 +10,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 import { CONSENT_POLICY_VERSION } from "@/config/marketing-tech";
 
-export const Route = createFileRoute("/admin/compliance-kit" as any)({
+export const Route = createFileRoute("/admin/compliance-kit")({
   component: ComplianceKitPage,
 });
 

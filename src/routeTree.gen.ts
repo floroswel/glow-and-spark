@@ -67,6 +67,7 @@ import { Route as AdminPushNotificationsRouteImport } from './routes/admin/push-
 import { Route as AdminPromotionsRouteImport } from './routes/admin/promotions'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as AdminPriceAlertsRouteImport } from './routes/admin/price-alerts'
+import { Route as AdminPreLaunchRouteImport } from './routes/admin.pre-launch'
 import { Route as AdminPopupsManagerRouteImport } from './routes/admin/popups-manager'
 import { Route as AdminPopupRouteImport } from './routes/admin/popup'
 import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
@@ -90,6 +91,9 @@ import { Route as AdminCustomerGroupsRouteImport } from './routes/admin/customer
 import { Route as AdminCrmRouteImport } from './routes/admin/crm'
 import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
 import { Route as AdminContentRouteImport } from './routes/admin/content'
+import { Route as AdminComplianceReportRouteImport } from './routes/admin/compliance-report'
+import { Route as AdminComplianceKitRouteImport } from './routes/admin/compliance-kit'
+import { Route as AdminComplianceInventoryRouteImport } from './routes/admin/compliance-inventory'
 import { Route as AdminComplaintsRouteImport } from './routes/admin/complaints'
 import { Route as AdminChatbotRouteImport } from './routes/admin/chatbot'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
@@ -134,6 +138,7 @@ import { Route as AdminContentRedirectsRouteImport } from './routes/admin/conten
 import { Route as AdminContentFaqRouteImport } from './routes/admin/content.faq'
 import { Route as AdminContentEmailTemplatesRouteImport } from './routes/admin/content.email-templates'
 import { Route as AdminChatbotSessionsRouteImport } from './routes/admin/chatbot.sessions'
+import { Route as ApiPublicMonitorsSmokeRouteImport } from './routes/api/public/monitors/smoke'
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -426,6 +431,11 @@ const AdminPriceAlertsRoute = AdminPriceAlertsRouteImport.update({
   path: '/price-alerts',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPreLaunchRoute = AdminPreLaunchRouteImport.update({
+  id: '/pre-launch',
+  path: '/pre-launch',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPopupsManagerRoute = AdminPopupsManagerRouteImport.update({
   id: '/popups-manager',
   path: '/popups-manager',
@@ -541,6 +551,22 @@ const AdminContentRoute = AdminContentRouteImport.update({
   path: '/content',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminComplianceReportRoute = AdminComplianceReportRouteImport.update({
+  id: '/compliance-report',
+  path: '/compliance-report',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminComplianceKitRoute = AdminComplianceKitRouteImport.update({
+  id: '/compliance-kit',
+  path: '/compliance-kit',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminComplianceInventoryRoute =
+  AdminComplianceInventoryRouteImport.update({
+    id: '/compliance-inventory',
+    path: '/compliance-inventory',
+    getParentRoute: () => AdminRoute,
+  } as any)
 const AdminComplaintsRoute = AdminComplaintsRouteImport.update({
   id: '/complaints',
   path: '/complaints',
@@ -763,6 +789,11 @@ const AdminChatbotSessionsRoute = AdminChatbotSessionsRouteImport.update({
   path: '/sessions',
   getParentRoute: () => AdminChatbotRoute,
 } as any)
+const ApiPublicMonitorsSmokeRoute = ApiPublicMonitorsSmokeRouteImport.update({
+  id: '/api/public/monitors/smoke',
+  path: '/api/public/monitors/smoke',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -814,6 +845,9 @@ export interface FileRoutesByFullPath {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/chatbot': typeof AdminChatbotRouteWithChildren
   '/admin/complaints': typeof AdminComplaintsRoute
+  '/admin/compliance-inventory': typeof AdminComplianceInventoryRoute
+  '/admin/compliance-kit': typeof AdminComplianceKitRoute
+  '/admin/compliance-report': typeof AdminComplianceReportRoute
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/crm': typeof AdminCrmRoute
@@ -837,6 +871,7 @@ export interface FileRoutesByFullPath {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/popups-manager': typeof AdminPopupsManagerRoute
+  '/admin/pre-launch': typeof AdminPreLaunchRoute
   '/admin/price-alerts': typeof AdminPriceAlertsRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/promotions': typeof AdminPromotionsRoute
@@ -890,6 +925,7 @@ export interface FileRoutesByFullPath {
   '/admin/stock/transfers': typeof AdminStockTransfersRoute
   '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
   '/api/public/health': typeof ApiPublicHealthRoute
+  '/api/public/monitors/smoke': typeof ApiPublicMonitorsSmokeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -939,6 +975,9 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/chatbot': typeof AdminChatbotRouteWithChildren
   '/admin/complaints': typeof AdminComplaintsRoute
+  '/admin/compliance-inventory': typeof AdminComplianceInventoryRoute
+  '/admin/compliance-kit': typeof AdminComplianceKitRoute
+  '/admin/compliance-report': typeof AdminComplianceReportRoute
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/crm': typeof AdminCrmRoute
@@ -962,6 +1001,7 @@ export interface FileRoutesByTo {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/popups-manager': typeof AdminPopupsManagerRoute
+  '/admin/pre-launch': typeof AdminPreLaunchRoute
   '/admin/price-alerts': typeof AdminPriceAlertsRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/promotions': typeof AdminPromotionsRoute
@@ -1015,6 +1055,7 @@ export interface FileRoutesByTo {
   '/admin/stock/transfers': typeof AdminStockTransfersRoute
   '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
   '/api/public/health': typeof ApiPublicHealthRoute
+  '/api/public/monitors/smoke': typeof ApiPublicMonitorsSmokeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1067,6 +1108,9 @@ export interface FileRoutesById {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/chatbot': typeof AdminChatbotRouteWithChildren
   '/admin/complaints': typeof AdminComplaintsRoute
+  '/admin/compliance-inventory': typeof AdminComplianceInventoryRoute
+  '/admin/compliance-kit': typeof AdminComplianceKitRoute
+  '/admin/compliance-report': typeof AdminComplianceReportRoute
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/crm': typeof AdminCrmRoute
@@ -1090,6 +1134,7 @@ export interface FileRoutesById {
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/popups-manager': typeof AdminPopupsManagerRoute
+  '/admin/pre-launch': typeof AdminPreLaunchRoute
   '/admin/price-alerts': typeof AdminPriceAlertsRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/promotions': typeof AdminPromotionsRoute
@@ -1143,6 +1188,7 @@ export interface FileRoutesById {
   '/admin/stock/transfers': typeof AdminStockTransfersRoute
   '/admin/stock/warehouses': typeof AdminStockWarehousesRoute
   '/api/public/health': typeof ApiPublicHealthRoute
+  '/api/public/monitors/smoke': typeof ApiPublicMonitorsSmokeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1196,6 +1242,9 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/chatbot'
     | '/admin/complaints'
+    | '/admin/compliance-inventory'
+    | '/admin/compliance-kit'
+    | '/admin/compliance-report'
     | '/admin/content'
     | '/admin/coupons'
     | '/admin/crm'
@@ -1219,6 +1268,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/popup'
     | '/admin/popups-manager'
+    | '/admin/pre-launch'
     | '/admin/price-alerts'
     | '/admin/products'
     | '/admin/promotions'
@@ -1272,6 +1322,7 @@ export interface FileRouteTypes {
     | '/admin/stock/transfers'
     | '/admin/stock/warehouses'
     | '/api/public/health'
+    | '/api/public/monitors/smoke'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1321,6 +1372,9 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/chatbot'
     | '/admin/complaints'
+    | '/admin/compliance-inventory'
+    | '/admin/compliance-kit'
+    | '/admin/compliance-report'
     | '/admin/content'
     | '/admin/coupons'
     | '/admin/crm'
@@ -1344,6 +1398,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/popup'
     | '/admin/popups-manager'
+    | '/admin/pre-launch'
     | '/admin/price-alerts'
     | '/admin/products'
     | '/admin/promotions'
@@ -1397,6 +1452,7 @@ export interface FileRouteTypes {
     | '/admin/stock/transfers'
     | '/admin/stock/warehouses'
     | '/api/public/health'
+    | '/api/public/monitors/smoke'
   id:
     | '__root__'
     | '/'
@@ -1448,6 +1504,9 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/chatbot'
     | '/admin/complaints'
+    | '/admin/compliance-inventory'
+    | '/admin/compliance-kit'
+    | '/admin/compliance-report'
     | '/admin/content'
     | '/admin/coupons'
     | '/admin/crm'
@@ -1471,6 +1530,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/popup'
     | '/admin/popups-manager'
+    | '/admin/pre-launch'
     | '/admin/price-alerts'
     | '/admin/products'
     | '/admin/promotions'
@@ -1524,6 +1584,7 @@ export interface FileRouteTypes {
     | '/admin/stock/transfers'
     | '/admin/stock/warehouses'
     | '/api/public/health'
+    | '/api/public/monitors/smoke'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1558,6 +1619,7 @@ export interface RootRouteChildren {
   PageSlugRoute: typeof PageSlugRoute
   ProdusSlugRoute: typeof ProdusSlugRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
+  ApiPublicMonitorsSmokeRoute: typeof ApiPublicMonitorsSmokeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1968,6 +2030,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPriceAlertsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/pre-launch': {
+      id: '/admin/pre-launch'
+      path: '/pre-launch'
+      fullPath: '/admin/pre-launch'
+      preLoaderRoute: typeof AdminPreLaunchRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/popups-manager': {
       id: '/admin/popups-manager'
       path: '/popups-manager'
@@ -2127,6 +2196,27 @@ declare module '@tanstack/react-router' {
       path: '/content'
       fullPath: '/admin/content'
       preLoaderRoute: typeof AdminContentRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/compliance-report': {
+      id: '/admin/compliance-report'
+      path: '/compliance-report'
+      fullPath: '/admin/compliance-report'
+      preLoaderRoute: typeof AdminComplianceReportRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/compliance-kit': {
+      id: '/admin/compliance-kit'
+      path: '/compliance-kit'
+      fullPath: '/admin/compliance-kit'
+      preLoaderRoute: typeof AdminComplianceKitRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/compliance-inventory': {
+      id: '/admin/compliance-inventory'
+      path: '/compliance-inventory'
+      fullPath: '/admin/compliance-inventory'
+      preLoaderRoute: typeof AdminComplianceInventoryRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/complaints': {
@@ -2437,6 +2527,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminChatbotSessionsRouteImport
       parentRoute: typeof AdminChatbotRoute
     }
+    '/api/public/monitors/smoke': {
+      id: '/api/public/monitors/smoke'
+      path: '/api/public/monitors/smoke'
+      fullPath: '/api/public/monitors/smoke'
+      preLoaderRoute: typeof ApiPublicMonitorsSmokeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -2583,6 +2680,9 @@ interface AdminRouteChildren {
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminChatbotRoute: typeof AdminChatbotRouteWithChildren
   AdminComplaintsRoute: typeof AdminComplaintsRoute
+  AdminComplianceInventoryRoute: typeof AdminComplianceInventoryRoute
+  AdminComplianceKitRoute: typeof AdminComplianceKitRoute
+  AdminComplianceReportRoute: typeof AdminComplianceReportRoute
   AdminContentRoute: typeof AdminContentRouteWithChildren
   AdminCouponsRoute: typeof AdminCouponsRoute
   AdminCrmRoute: typeof AdminCrmRoute
@@ -2606,6 +2706,7 @@ interface AdminRouteChildren {
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminPopupRoute: typeof AdminPopupRoute
   AdminPopupsManagerRoute: typeof AdminPopupsManagerRoute
+  AdminPreLaunchRoute: typeof AdminPreLaunchRoute
   AdminPriceAlertsRoute: typeof AdminPriceAlertsRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminPromotionsRoute: typeof AdminPromotionsRoute
@@ -2650,6 +2751,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminChatbotRoute: AdminChatbotRouteWithChildren,
   AdminComplaintsRoute: AdminComplaintsRoute,
+  AdminComplianceInventoryRoute: AdminComplianceInventoryRoute,
+  AdminComplianceKitRoute: AdminComplianceKitRoute,
+  AdminComplianceReportRoute: AdminComplianceReportRoute,
   AdminContentRoute: AdminContentRouteWithChildren,
   AdminCouponsRoute: AdminCouponsRoute,
   AdminCrmRoute: AdminCrmRoute,
@@ -2673,6 +2777,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminPopupRoute: AdminPopupRoute,
   AdminPopupsManagerRoute: AdminPopupsManagerRoute,
+  AdminPreLaunchRoute: AdminPreLaunchRoute,
   AdminPriceAlertsRoute: AdminPriceAlertsRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminPromotionsRoute: AdminPromotionsRoute,
@@ -2745,17 +2850,8 @@ const rootRouteChildren: RootRouteChildren = {
   PageSlugRoute: PageSlugRoute,
   ProdusSlugRoute: ProdusSlugRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
+  ApiPublicMonitorsSmokeRoute: ApiPublicMonitorsSmokeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

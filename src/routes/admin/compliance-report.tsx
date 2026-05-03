@@ -15,7 +15,7 @@ import {
 } from "@/lib/compliance";
 import { Shield, Download, ExternalLink, CheckCircle2, AlertTriangle, Info } from "lucide-react";
 
-export const Route = createFileRoute("/admin/compliance-report" as any)({
+export const Route = createFileRoute("/admin/compliance-report")({
   component: ComplianceReportPage,
 });
 

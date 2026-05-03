@@ -18,6 +18,8 @@ const STATIC_PAGES = [
   { loc: "/politica-returnare", changefreq: "monthly", priority: "0.3" },
   { loc: "/formular-retragere", changefreq: "monthly", priority: "0.2" },
   { loc: "/politica-cookies", changefreq: "monthly", priority: "0.3" },
+  { loc: "/siguranta-produse", changefreq: "monthly", priority: "0.3" },
+  { loc: "/accesibilitate", changefreq: "monthly", priority: "0.2" },
 ];
 
 function buildXml(

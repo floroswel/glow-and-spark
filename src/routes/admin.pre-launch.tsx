@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ClipboardCheck, RotateCcw, CheckCircle2, Circle, AlertTriangle } from "lucide-react";
 
-export const Route = createFileRoute("/admin/pre-launch" as any)({
+export const Route = createFileRoute("/admin/pre-launch")({
   component: PreLaunchChecklist,
 });
 

@@ -338,39 +338,38 @@ export function SiteFooter() {
               <FooterColumn title={footer?.col1_title || "Informații utile"} titleColor={titleColor}>
                 <nav aria-label="Informații legale">
                   <ul className="space-y-1">
-                    <li><FooterLink href="/despre-noi" linkColor={linkColor}>Despre noi</FooterLink></li>
-                    <li><FooterLink href="/termeni-si-conditii" linkColor={linkColor}>Termeni și condiții</FooterLink></li>
-                    <li><FooterLink href="/politica-confidentialitate" linkColor={linkColor}>Politica de confidențialitate (GDPR)</FooterLink></li>
-                    <li><FooterLink href="/politica-cookies" linkColor={linkColor}>Politica cookie-uri</FooterLink></li>
-                    <li><FooterLink href="/politica-returnare" linkColor={linkColor}>Politica de returnare / drept de retragere</FooterLink></li>
-                    <li><FooterLink href="/formular-retragere" linkColor={linkColor}>Formular de retragere (OUG 34/2014)</FooterLink></li>
-                    <li><FooterLink href="/contact" linkColor={linkColor}>Contact</FooterLink></li>
-                    <li className="pt-2">
-                      <FooterLink
-                        href="https://anpc.ro/ce-este-sal/"
-                        external
-                        linkColor={linkColor}
-                      >
-                        <span className="flex items-center gap-1.5">
-                          <Shield className="h-3.5 w-3.5 shrink-0 text-white/50" />
-                          ANPC — Soluționarea alternativă a litigiilor
-                          <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
-                        </span>
-                      </FooterLink>
-                    </li>
-                    <li>
-                      <FooterLink
-                        href="https://ec.europa.eu/consumers/odr"
-                        external
-                        linkColor={linkColor}
-                      >
-                        <span className="flex items-center gap-1.5">
-                          <Shield className="h-3.5 w-3.5 shrink-0 text-white/50" />
-                          SOL — Platformă online litigii (UE)
-                          <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
-                        </span>
-                      </FooterLink>
-                    </li>
+                    {(Array.isArray(footer?.col1_links) && footer.col1_links.length > 0
+                      ? footer.col1_links
+                      : [
+                          { label: "Despre noi", url: "/despre-noi" },
+                          { label: "Termeni și condiții", url: "/termeni-si-conditii" },
+                          { label: "Politica de confidențialitate (GDPR)", url: "/politica-confidentialitate" },
+                          { label: "Politica cookie-uri", url: "/politica-cookies" },
+                          { label: "Politica de returnare / drept de retragere", url: "/politica-returnare" },
+                          { label: "Formular de retragere (OUG 34/2014)", url: "/formular-retragere" },
+                          { label: "Contact", url: "/contact" },
+                          { label: "ANPC — Soluționarea alternativă a litigiilor", url: "https://anpc.ro/ce-este-sal/" },
+                          { label: "SOL — Platformă online litigii (UE)", url: "https://ec.europa.eu/consumers/odr" },
+                        ]
+                    ).map((link: any, i: number) => {
+                      const isExternal = link.url?.startsWith("http");
+                      const isAnpcSol = /anpc|sol|odr/i.test(link.label || "");
+                      return (
+                        <li key={i} className={isAnpcSol && i > 0 ? "pt-2" : ""}>
+                          <FooterLink href={link.url} external={isExternal} linkColor={linkColor}>
+                            {isAnpcSol ? (
+                              <span className="flex items-center gap-1.5">
+                                <Shield className="h-3.5 w-3.5 shrink-0 text-white/50" />
+                                {link.label}
+                                {isExternal && <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />}
+                              </span>
+                            ) : (
+                              link.label
+                            )}
+                          </FooterLink>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </nav>
                 {/* Compliance microcopy */}

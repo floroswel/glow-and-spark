@@ -22,6 +22,8 @@ const defaults = {
     { label: "Politica Cookie-uri", url: "/politica-cookies" },
     { label: "Politica de returnare / drept de retragere", url: "/politica-returnare" },
     { label: "Formular de retragere (OUG 34/2014)", url: "/formular-retragere" },
+    { label: "Siguranță și utilizare produse", url: "/siguranta-produse" },
+    { label: "Accesibilitate", url: "/accesibilitate" },
     { label: "Contact", url: "/contact" },
     { label: "ANPC — Soluționarea alternativă a litigiilor", url: "https://anpc.ro/ce-este-sal/" },
     { label: "SOL — Platformă online litigii (UE)", url: "https://ec.europa.eu/consumers/odr" },
@@ -31,8 +33,8 @@ const defaults = {
   col2_links: [
     { label: "Transport și Livrare", url: "/page/transport-livrare" },
     { label: "Metode de plată", url: "/page/metode-plata" },
-    { label: "Politica de Retur", url: "/politica-returnare" },
     { label: "Garanția Produselor", url: "/page/garantie" },
+    { label: "Întrebări frecvente", url: "/faq" },
     { label: "ANPC", url: "https://anpc.ro/ce-este-anpc/" },
     { label: "SOL", url: "https://ec.europa.eu/consumers/odr" },
   ],

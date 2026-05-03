@@ -347,6 +347,8 @@ export function SiteFooter() {
                           { label: "Politica cookie-uri", url: "/politica-cookies" },
                           { label: "Politica de returnare / drept de retragere", url: "/politica-returnare" },
                           { label: "Formular de retragere (OUG 34/2014)", url: "/formular-retragere" },
+                          { label: "Siguranță și utilizare produse", url: "/siguranta-produse" },
+                          { label: "Accesibilitate", url: "/accesibilitate" },
                           { label: "Contact", url: "/contact" },
                           { label: "ANPC — Soluționarea alternativă a litigiilor", url: "https://anpc.ro/ce-este-sal/" },
                           { label: "SOL — Platformă online litigii (UE)", url: "https://ec.europa.eu/consumers/odr" },
@@ -391,8 +393,7 @@ export function SiteFooter() {
                           { label: "Transport și livrare", url: "/page/transport-livrare" },
                           { label: "Metode de plată", url: "/page/metode-plata" },
                           { label: "Garanția produselor", url: "/page/garantie" },
-                          { label: "Urmărește comanda", url: "/track-order" },
-                          { label: "Card cadou", url: "/gift-card" },
+                          { label: "Întrebări frecvente", url: "/faq" },
                         ]
                     ).map((link: any, i: number) => (
                       <li key={i}>

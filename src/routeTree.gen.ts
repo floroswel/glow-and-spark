@@ -13,6 +13,7 @@ import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as TermeniSiConditiiRouteImport } from './routes/termeni-si-conditii'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SigurantaProduseRouteImport } from './routes/siguranta-produse'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -34,6 +35,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AfiliatRouteImport } from './routes/afiliat'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
+import { Route as AccesibilitateRouteImport } from './routes/accesibilitate'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
@@ -160,6 +162,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SigurantaProduseRoute = SigurantaProduseRouteImport.update({
+  id: '/siguranta-produse',
+  path: '/siguranta-produse',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -264,6 +271,11 @@ const AdminRoute = AdminRouteImport.update({
 const AccountRoute = AccountRouteImport.update({
   id: '/account',
   path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccesibilitateRoute = AccesibilitateRouteImport.update({
+  id: '/accesibilitate',
+  path: '/accesibilitate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -797,6 +809,7 @@ const ApiPublicMonitorsSmokeRoute = ApiPublicMonitorsSmokeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accesibilitate': typeof AccesibilitateRoute
   '/account': typeof AccountRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/afiliat': typeof AfiliatRoute
@@ -818,6 +831,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
+  '/siguranta-produse': typeof SigurantaProduseRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/track-order': typeof TrackOrderRoute
@@ -929,6 +943,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accesibilitate': typeof AccesibilitateRoute
   '/afiliat': typeof AfiliatRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
@@ -948,6 +963,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
+  '/siguranta-produse': typeof SigurantaProduseRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/track-order': typeof TrackOrderRoute
@@ -1060,6 +1076,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/accesibilitate': typeof AccesibilitateRoute
   '/account': typeof AccountRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/afiliat': typeof AfiliatRoute
@@ -1081,6 +1098,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
+  '/siguranta-produse': typeof SigurantaProduseRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/track-order': typeof TrackOrderRoute
@@ -1194,6 +1212,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/accesibilitate'
     | '/account'
     | '/admin'
     | '/afiliat'
@@ -1215,6 +1234,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/robots.txt'
     | '/search'
+    | '/siguranta-produse'
     | '/sitemap.xml'
     | '/termeni-si-conditii'
     | '/track-order'
@@ -1326,6 +1346,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/accesibilitate'
     | '/afiliat'
     | '/auth'
     | '/blog'
@@ -1345,6 +1366,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/robots.txt'
     | '/search'
+    | '/siguranta-produse'
     | '/sitemap.xml'
     | '/termeni-si-conditii'
     | '/track-order'
@@ -1456,6 +1478,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/accesibilitate'
     | '/account'
     | '/admin'
     | '/afiliat'
@@ -1477,6 +1500,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/robots.txt'
     | '/search'
+    | '/siguranta-produse'
     | '/sitemap.xml'
     | '/termeni-si-conditii'
     | '/track-order'
@@ -1589,6 +1613,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccesibilitateRoute: typeof AccesibilitateRoute
   AccountRoute: typeof AccountRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
   AfiliatRoute: typeof AfiliatRoute
@@ -1610,6 +1635,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SearchRoute: typeof SearchRoute
+  SigurantaProduseRoute: typeof SigurantaProduseRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermeniSiConditiiRoute: typeof TermeniSiConditiiRoute
   TrackOrderRoute: typeof TrackOrderRoute
@@ -1650,6 +1676,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/siguranta-produse': {
+      id: '/siguranta-produse'
+      path: '/siguranta-produse'
+      fullPath: '/siguranta-produse'
+      preLoaderRoute: typeof SigurantaProduseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -1797,6 +1830,13 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account'
       preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accesibilitate': {
+      id: '/accesibilitate'
+      path: '/accesibilitate'
+      fullPath: '/accesibilitate'
+      preLoaderRoute: typeof AccesibilitateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -2820,6 +2860,7 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccesibilitateRoute: AccesibilitateRoute,
   AccountRoute: AccountRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
   AfiliatRoute: AfiliatRoute,
@@ -2841,6 +2882,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SearchRoute: SearchRoute,
+  SigurantaProduseRoute: SigurantaProduseRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermeniSiConditiiRoute: TermeniSiConditiiRoute,
   TrackOrderRoute: TrackOrderRoute,
@@ -2855,3 +2897,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

@@ -4,7 +4,7 @@ import { useFiscalInfo } from "@/hooks/useFiscalInfo";
 import { resolveEnabledPlatforms, CONSENT_POLICY_VERSION } from "@/config/marketing-tech";
 import { Shield, CheckCircle2, XCircle, Download } from "lucide-react";
 
-export const Route = createFileRoute("/admin/compliance-inventory")({
+export const Route = createFileRoute("/admin/compliance-inventory" as any)({
   component: ComplianceInventoryPage,
 });
 

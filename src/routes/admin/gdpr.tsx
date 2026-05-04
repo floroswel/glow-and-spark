@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink, ArrowUpDown, FileDown } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink, ArrowUpDown, FileDown, Bell, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
@@ -34,6 +34,9 @@ function AdminGdprPage() {
   const [dateTo, setDateTo] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
   const [sortBy, setSortBy] = useState<"created_desc" | "created_asc" | "processed_desc" | "processed_asc">("created_desc");
+  const [logOpen, setLogOpen] = useState(false);
+  const [logEntries, setLogEntries] = useState<any[]>([]);
+  const [logLoading, setLogLoading] = useState(false);
 
   const load = async () => {
     let q = supabase.from("gdpr_requests").select("*").order("created_at", { ascending: false });
@@ -50,6 +53,18 @@ function AdminGdprPage() {
   };
 
   useEffect(() => { load(); }, [statusFilter, typeFilter, dateFrom, dateTo]);
+
+  useEffect(() => {
+    if (!logOpen || logEntries.length > 0) return;
+    setLogLoading(true);
+    supabase
+      .from("admin_notifications")
+      .select("id, title, message, created_at, is_read")
+      .ilike("title", "%GDPR%")
+      .order("created_at", { ascending: false })
+      .limit(200)
+      .then(({ data }) => { setLogEntries(data ?? []); setLogLoading(false); });
+  }, [logOpen]);
 
   const filtered = useMemo(() => {
     let list = items;
@@ -307,6 +322,60 @@ function AdminGdprPage() {
             </div>
           );
         })}
+      </div>
+
+      {/* GDPR Notification Log */}
+      <div className="rounded-xl border border-border bg-card">
+        <button
+          onClick={() => setLogOpen((v) => !v)}
+          className="w-full flex items-center justify-between p-4 text-left hover:bg-secondary/30 transition"
+        >
+          <span className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
+            <Bell className="h-5 w-5 text-accent" /> Jurnal notificări GDPR
+          </span>
+          {logOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+        </button>
+
+        {logOpen && (
+          <div className="border-t border-border">
+            {logLoading ? (
+              <p className="p-6 text-center text-sm text-muted-foreground">Se încarcă…</p>
+            ) : logEntries.length === 0 ? (
+              <p className="p-6 text-center text-sm text-muted-foreground">Nicio notificare GDPR înregistrată.</p>
+            ) : (
+              <div className="divide-y divide-border max-h-[400px] overflow-y-auto">
+                {logEntries.map((n) => {
+                  // Extract GDPR ID from title
+                  const idMatch = n.title?.match(/\[GDPR-([A-Z0-9]+)\]/);
+                  const shortId = idMatch ? idMatch[1] : null;
+                  // Detect type from title
+                  const isNew = n.title?.includes("🆕");
+                  const isStatusChange = !isNew && n.title?.includes("GDPR");
+
+                  return (
+                    <div key={n.id} className={`px-4 py-3 flex items-start gap-3 ${n.is_read ? "" : "bg-accent/5"}`}>
+                      <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${n.is_read ? "bg-border" : "bg-accent"}`} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-medium text-foreground truncate">{n.title}</span>
+                          {shortId && (
+                            <code className="text-[10px] text-muted-foreground font-mono bg-secondary px-1.5 py-0.5 rounded">GDPR-{shortId}</code>
+                          )}
+                        </div>
+                        {n.message && (
+                          <p className="text-xs text-muted-foreground mt-0.5 whitespace-pre-line line-clamp-2">{n.message}</p>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-muted-foreground whitespace-nowrap shrink-0">
+                        {new Date(n.created_at).toLocaleString("ro-RO")}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

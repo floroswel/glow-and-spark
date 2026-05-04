@@ -31,6 +31,7 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DespreNoiRouteImport } from './routes/despre-noi'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CompareRouteImport } from './routes/compare'
+import { Route as ColaboreazaRouteImport } from './routes/colaboreaza'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as CartRouteImport } from './routes/cart'
@@ -254,6 +255,11 @@ const ContactRoute = ContactRouteImport.update({
 const CompareRoute = CompareRouteImport.update({
   id: '/compare',
   path: '/compare',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ColaboreazaRoute = ColaboreazaRouteImport.update({
+  id: '/colaboreaza',
+  path: '/colaboreaza',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -835,6 +841,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
+  '/colaboreaza': typeof ColaboreazaRoute
   '/compare': typeof CompareRoute
   '/contact': typeof ContactRoute
   '/despre-noi': typeof DespreNoiRoute
@@ -970,6 +977,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
+  '/colaboreaza': typeof ColaboreazaRoute
   '/compare': typeof CompareRoute
   '/contact': typeof ContactRoute
   '/despre-noi': typeof DespreNoiRoute
@@ -1108,6 +1116,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
+  '/colaboreaza': typeof ColaboreazaRoute
   '/compare': typeof CompareRoute
   '/contact': typeof ContactRoute
   '/despre-noi': typeof DespreNoiRoute
@@ -1247,6 +1256,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/catalog'
     | '/checkout'
+    | '/colaboreaza'
     | '/compare'
     | '/contact'
     | '/despre-noi'
@@ -1382,6 +1392,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/catalog'
     | '/checkout'
+    | '/colaboreaza'
     | '/compare'
     | '/contact'
     | '/despre-noi'
@@ -1519,6 +1530,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/catalog'
     | '/checkout'
+    | '/colaboreaza'
     | '/compare'
     | '/contact'
     | '/despre-noi'
@@ -1657,6 +1669,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CatalogRoute: typeof CatalogRoute
   CheckoutRoute: typeof CheckoutRoute
+  ColaboreazaRoute: typeof ColaboreazaRoute
   CompareRoute: typeof CompareRoute
   ContactRoute: typeof ContactRoute
   DespreNoiRoute: typeof DespreNoiRoute
@@ -1841,6 +1854,13 @@ declare module '@tanstack/react-router' {
       path: '/compare'
       fullPath: '/compare'
       preLoaderRoute: typeof CompareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/colaboreaza': {
+      id: '/colaboreaza'
+      path: '/colaboreaza'
+      fullPath: '/colaboreaza'
+      preLoaderRoute: typeof ColaboreazaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -2930,6 +2950,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CatalogRoute: CatalogRoute,
   CheckoutRoute: CheckoutRoute,
+  ColaboreazaRoute: ColaboreazaRoute,
   CompareRoute: CompareRoute,
   ContactRoute: ContactRoute,
   DespreNoiRoute: DespreNoiRoute,

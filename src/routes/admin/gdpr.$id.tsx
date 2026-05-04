@@ -28,17 +28,54 @@ function AdminGdprDetailPage() {
   const { id } = Route.useParams();
   const [req, setReq] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
-    const [{ data: r }, { data: h }] = await Promise.all([
+    const [{ data: r }, { data: h }, { data: docs }] = await Promise.all([
       supabase.from("gdpr_requests").select("*").eq("id", id).single(),
       supabase.from("gdpr_request_history" as any).select("*").eq("request_id", id).order("created_at", { ascending: true }) as any,
+      supabase.from("gdpr_documents" as any).select("*").eq("request_id", id).order("created_at", { ascending: true }) as any,
     ]);
     setReq(r);
     setHistory(h ?? []);
+    setDocuments(docs ?? []);
     setLoading(false);
+  };
+
+  const uploadDocument = async (file: globalThis.File) => {
+    if (!req) return;
+    setUploading(true);
+    const path = `admin/${id}/${Date.now()}_${file.name}`;
+    const { error: uploadErr } = await supabase.storage.from("gdpr-documents").upload(path, file);
+    if (uploadErr) { toast.error("Eroare la încărcare"); setUploading(false); return; }
+    const { error: dbErr } = await (supabase.from("gdpr_documents" as any).insert({
+      request_id: id,
+      file_name: file.name,
+      file_path: path,
+      file_size: file.size,
+      uploaded_by: (await supabase.auth.getUser()).data.user?.id,
+    }) as any);
+    if (dbErr) toast.error("Eroare la salvare");
+    else { toast.success("Document atașat"); load(); }
+    setUploading(false);
+  };
+
+  const downloadDoc = async (doc: any) => {
+    const { data, error } = await supabase.storage.from("gdpr-documents").download(doc.file_path);
+    if (error || !data) { toast.error("Eroare descărcare"); return; }
+    const url = URL.createObjectURL(data);
+    const a = document.createElement("a"); a.href = url; a.download = doc.file_name; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const formatSize = (bytes: number) => {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / 1048576).toFixed(1) + " MB";
   };
 
   useEffect(() => { load(); }, [id]);

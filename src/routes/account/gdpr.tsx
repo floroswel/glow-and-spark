@@ -207,7 +207,7 @@ function GdprPage() {
               const daysLeft = Math.max(0, GDPR_RESPONSE_DAYS - daysSince);
 
               return (
-                <div key={r.id} className="rounded-xl border border-border p-4 space-y-3">
+                <div key={r.id} className="rounded-xl border border-border p-4 space-y-3 cursor-pointer hover:border-accent/50 transition" onClick={() => setSelectedRequestId(r.id)}>
                   {/* Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">

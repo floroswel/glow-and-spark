@@ -1,8 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, ArrowLeft, Clock, Check, X, MessageSquare, Paperclip, Upload, File, Loader2, FileDown } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, ArrowLeft, Clock, Check, X, MessageSquare, Paperclip, Upload, File, Loader2, FileDown, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
 export const Route = createFileRoute("/admin/gdpr/$id")({

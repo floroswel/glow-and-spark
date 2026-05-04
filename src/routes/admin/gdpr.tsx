@@ -270,6 +270,25 @@ function AdminGdprPage() {
         <p className="text-xs text-muted-foreground">{filtered.length} cereri găsite</p>
         <button
           onClick={() => {
+            const sortLabels: Record<string, string> = {
+              created_desc: "Dată creare (nou → vechi)",
+              created_asc: "Dată creare (vechi → nou)",
+              processed_desc: "Dată procesare (nou → vechi)",
+              processed_asc: "Dată procesare (vechi → nou)",
+            };
+            const statusLabel = STATUS_OPTS.find((s) => s.value === statusFilter)?.label ?? statusFilter;
+            const typeLabel = TYPE_OPTS.find((t) => t.value === typeFilter)?.label ?? typeFilter;
+            const meta = [
+              `# Export GDPR — ${new Date().toLocaleString("ro-RO")}`,
+              `# Status: ${statusLabel}`,
+              `# Tip cerere: ${typeLabel}`,
+              searchEmail ? `# Căutare email: ${searchEmail}` : "",
+              dateFrom ? `# De la: ${dateFrom}` : "",
+              dateTo ? `# Până la: ${dateTo}` : "",
+              `# Sortare: ${sortLabels[sortBy] ?? sortBy}`,
+              `# Total rezultate: ${filtered.length}`,
+              "",
+            ].filter(Boolean).join("\n") + "\n";
             const header = "ID,Tip,Status,Email,Creat,Procesat,Detalii\n";
             const rows = filtered.map((r: any) => {
               const t = TYPE_LABEL[r.request_type] ?? r.request_type;
@@ -280,7 +299,7 @@ function AdminGdprPage() {
               return `GDPR-${r.id.slice(0, 8).toUpperCase()},"${t}","${s}","${r.email}","${created}","${processed}","${details}"`;
             }).join("\n");
             const bom = "\uFEFF";
-            const blob = new Blob([bom + header + rows], { type: "text/csv;charset=utf-8;" });
+            const blob = new Blob([bom + meta + header + rows], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;

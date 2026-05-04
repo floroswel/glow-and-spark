@@ -145,6 +145,17 @@ export function CookieConsent() {
                 className="accent-accent"
               />
             </label>
+            <label className="flex items-center justify-between text-xs cursor-pointer">
+              <span>
+                <strong>Preferințe</strong> — limba, tema, setări interfață
+              </span>
+              <input
+                type="checkbox"
+                checked={preferences}
+                onChange={(e) => setPreferences(e.target.checked)}
+                className="accent-accent"
+              />
+            </label>
           </div>
         )}
 

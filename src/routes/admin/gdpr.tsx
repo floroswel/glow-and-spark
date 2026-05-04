@@ -573,11 +573,20 @@ function AdminGdprPage() {
                         <span className="text-[10px] text-muted-foreground whitespace-nowrap">
                           {new Date(n.created_at).toLocaleString("ro-RO")}
                         </span>
-                        {n.link && (
-                          <Link to={n.link} className="text-[10px] text-primary hover:underline flex items-center gap-0.5">
-                            <ExternalLink className="h-2.5 w-2.5" /> Vezi detaliile
-                          </Link>
-                        )}
+                        {n.link && (() => {
+                          const linkIdMatch = n.link.match(/\/admin\/gdpr\/(.+)/);
+                          const linkTargetId = linkIdMatch ? linkIdMatch[1] : null;
+                          const requestExists = !linkTargetId || items.some((r) => r.id === linkTargetId);
+                          return requestExists ? (
+                            <Link to={n.link} className="text-[10px] text-primary hover:underline flex items-center gap-0.5">
+                              <ExternalLink className="h-2.5 w-2.5" /> Vezi detaliile
+                            </Link>
+                          ) : (
+                            <span className="text-[10px] text-destructive flex items-center gap-0.5">
+                              <X className="h-2.5 w-2.5" /> Cererea nu mai există
+                            </span>
+                          );
+                        })()}
                       </div>
                     </div>
                   );

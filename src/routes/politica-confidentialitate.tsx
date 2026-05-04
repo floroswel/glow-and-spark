@@ -282,10 +282,10 @@ function PoliticaConfidentialitatePage() {
                 {allEnabled.map((p, i) => (
                   <tr key={p.key} className={i % 2 === 0 ? "bg-card" : "bg-secondary/20"}>
                     <td className="px-2 py-1.5 font-medium">{p.label}</td>
-                    <td className="px-2 py-1.5">{p.events?.join(", ") || "PageView"}</td>
-                    <td className="px-2 py-1.5">{p.params?.join(", ") || "—"}</td>
+                    <td className="px-2 py-1.5">PageView, Purchase, AddToCart</td>
+                    <td className="px-2 py-1.5">URL, valoare, monedă</td>
                     <td className="px-2 py-1.5">Măsurare campanii, optimizare</td>
-                    <td className="px-2 py-1.5">{p.retention || "Conform politica furnizorului"}</td>
+                    <td className="px-2 py-1.5">Conform politica furnizorului</td>
                     <td className="px-2 py-1.5">
                       <a href={p.privacyUrl} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Privacy</a>
                       {" / "}

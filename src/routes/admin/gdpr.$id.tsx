@@ -260,8 +260,8 @@ function AdminGdprDetailPage() {
             <button
               onClick={() => setConfirmAction({
                 status: "processing",
-                label: "Marchează „În procesare"",
-                description: `Cererea GDPR-${shortId} (${req.email}) va fi marcată ca „În procesare". Solicitantul va fi notificat.`,
+                label: 'Marchează "În procesare"',
+                description: `Cererea GDPR-${shortId} (${req.email}) va fi marcată ca "În procesare". Solicitantul va fi notificat.`,
               })}
               className="rounded-lg bg-blue-500 text-white px-4 py-2 text-sm font-medium hover:bg-blue-600 transition"
             >

@@ -33,7 +33,6 @@ import { Route as CompareRouteImport } from './routes/compare'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as CartRouteImport } from './routes/cart'
-import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AfiliatRouteImport } from './routes/afiliat'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -46,7 +45,6 @@ import { Route as ProdusSlugRouteImport } from './routes/produs.$slug'
 import { Route as PageSlugRouteImport } from './routes/page.$slug'
 import { Route as OrderConfirmedOrderIdRouteImport } from './routes/order-confirmed.$orderId'
 import { Route as CategorieSlugRouteImport } from './routes/categorie.$slug'
-import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminWebhooksRouteImport } from './routes/admin/webhooks'
 import { Route as AdminWalletsRouteImport } from './routes/admin/wallets'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
@@ -266,11 +264,6 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -330,11 +323,6 @@ const CategorieSlugRoute = CategorieSlugRouteImport.update({
   id: '/categorie/$slug',
   path: '/categorie/$slug',
   getParentRoute: () => rootRouteImport,
-} as any)
-const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => BlogRoute,
 } as any)
 const AdminWebhooksRoute = AdminWebhooksRouteImport.update({
   id: '/webhooks',
@@ -832,7 +820,6 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/afiliat': typeof AfiliatRoute
   '/auth': typeof AuthRoute
-  '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
@@ -932,7 +919,6 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AdminUsersRoute
   '/admin/wallets': typeof AdminWalletsRoute
   '/admin/webhooks': typeof AdminWebhooksRoute
-  '/blog/$slug': typeof BlogSlugRoute
   '/categorie/$slug': typeof CategorieSlugRoute
   '/order-confirmed/$orderId': typeof OrderConfirmedOrderIdRoute
   '/page/$slug': typeof PageSlugRoute
@@ -967,7 +953,6 @@ export interface FileRoutesByTo {
   '/accesibilitate': typeof AccesibilitateRoute
   '/afiliat': typeof AfiliatRoute
   '/auth': typeof AuthRoute
-  '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
@@ -1067,7 +1052,6 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AdminUsersRoute
   '/admin/wallets': typeof AdminWalletsRoute
   '/admin/webhooks': typeof AdminWebhooksRoute
-  '/blog/$slug': typeof BlogSlugRoute
   '/categorie/$slug': typeof CategorieSlugRoute
   '/order-confirmed/$orderId': typeof OrderConfirmedOrderIdRoute
   '/page/$slug': typeof PageSlugRoute
@@ -1105,7 +1089,6 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/afiliat': typeof AfiliatRoute
   '/auth': typeof AuthRoute
-  '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
@@ -1205,7 +1188,6 @@ export interface FileRoutesById {
   '/admin/users': typeof AdminUsersRoute
   '/admin/wallets': typeof AdminWalletsRoute
   '/admin/webhooks': typeof AdminWebhooksRoute
-  '/blog/$slug': typeof BlogSlugRoute
   '/categorie/$slug': typeof CategorieSlugRoute
   '/order-confirmed/$orderId': typeof OrderConfirmedOrderIdRoute
   '/page/$slug': typeof PageSlugRoute
@@ -1244,7 +1226,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/afiliat'
     | '/auth'
-    | '/blog'
     | '/cart'
     | '/catalog'
     | '/checkout'
@@ -1344,7 +1325,6 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/admin/wallets'
     | '/admin/webhooks'
-    | '/blog/$slug'
     | '/categorie/$slug'
     | '/order-confirmed/$orderId'
     | '/page/$slug'
@@ -1379,7 +1359,6 @@ export interface FileRouteTypes {
     | '/accesibilitate'
     | '/afiliat'
     | '/auth'
-    | '/blog'
     | '/cart'
     | '/catalog'
     | '/checkout'
@@ -1479,7 +1458,6 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/admin/wallets'
     | '/admin/webhooks'
-    | '/blog/$slug'
     | '/categorie/$slug'
     | '/order-confirmed/$orderId'
     | '/page/$slug'
@@ -1516,7 +1494,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/afiliat'
     | '/auth'
-    | '/blog'
     | '/cart'
     | '/catalog'
     | '/checkout'
@@ -1616,7 +1593,6 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/admin/wallets'
     | '/admin/webhooks'
-    | '/blog/$slug'
     | '/categorie/$slug'
     | '/order-confirmed/$orderId'
     | '/page/$slug'
@@ -1654,7 +1630,6 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AfiliatRoute: typeof AfiliatRoute
   AuthRoute: typeof AuthRoute
-  BlogRoute: typeof BlogRouteWithChildren
   CartRoute: typeof CartRoute
   CatalogRoute: typeof CatalogRoute
   CheckoutRoute: typeof CheckoutRoute
@@ -1857,13 +1832,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -1947,13 +1915,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/categorie/$slug'
       preLoaderRoute: typeof CategorieSlugRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof BlogSlugRouteImport
-      parentRoute: typeof BlogRoute
     }
     '/admin/webhooks': {
       id: '/admin/webhooks'
@@ -2908,16 +2869,6 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
-interface BlogRouteChildren {
-  BlogSlugRoute: typeof BlogSlugRoute
-}
-
-const BlogRouteChildren: BlogRouteChildren = {
-  BlogSlugRoute: BlogSlugRoute,
-}
-
-const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccesibilitateRoute: AccesibilitateRoute,
@@ -2925,7 +2876,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AfiliatRoute: AfiliatRoute,
   AuthRoute: AuthRoute,
-  BlogRoute: BlogRouteWithChildren,
   CartRoute: CartRoute,
   CatalogRoute: CatalogRoute,
   CheckoutRoute: CheckoutRoute,

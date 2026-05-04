@@ -32,7 +32,7 @@ function SearchPage() {
   const navigate = useNavigate();
   const [input, setInput] = useState(q);
   const [products, setProducts] = useState<any[]>([]);
-  const [posts, setPosts] = useState<any[]>([]);
+  
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ function SearchPage() {
     const term = q.trim();
     if (!term) {
       setProducts([]);
-      setPosts([]);
+      
       return;
     }
     setLoading(true);
@@ -55,15 +55,8 @@ function SearchPage() {
         .eq("is_active", true)
         .or(`name.ilike.${like},description.ilike.${like},sku.ilike.${like}`)
         .limit(24),
-      supabase
-        .from("blog_posts")
-        .select("id,slug,title,excerpt,image_url,published_at")
-        .eq("status", "published")
-        .or(`title.ilike.${like},content.ilike.${like}`)
-        .limit(5),
-    ]).then(([prodRes, postRes]) => {
+    ]).then(([prodRes]) => {
       setProducts(prodRes.data || []);
-      setPosts(postRes.data || []);
       setLoading(false);
     });
   }, [q]);
@@ -75,7 +68,7 @@ function SearchPage() {
   };
 
   const term = q.trim();
-  const empty = !loading && term && products.length === 0 && posts.length === 0;
+  const empty = !loading && term && products.length === 0;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -163,38 +156,6 @@ function SearchPage() {
           </section>
         )}
 
-        {!loading && posts.length > 0 && (
-          <section className="mb-12">
-            <h2 className="font-heading text-2xl font-bold text-foreground mb-4">
-              Articole blog ({posts.length})
-            </h2>
-            <ul className="divide-y divide-border border border-border rounded-xl overflow-hidden bg-card">
-              {posts.map((post) => (
-                <li key={post.id}>
-                  <Link
-                    to="/blog/$slug"
-                    params={{ slug: post.slug }}
-                    className="flex items-center gap-4 p-4 hover:bg-secondary transition"
-                  >
-                    {post.image_url && (
-                      <img
-                        src={post.image_url}
-                        alt={post.title}
-                        className="h-16 w-16 rounded-lg object-cover bg-muted flex-shrink-0"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-foreground truncate">{post.title}</h3>
-                      {post.excerpt && (
-                        <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{post.excerpt}</p>
-                      )}
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
       </main>
       <SiteFooter />
     </div>

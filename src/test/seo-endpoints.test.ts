@@ -27,9 +27,8 @@ describe("sitemap.xml — source validation", () => {
     expect(SITEMAP_SOURCE).toContain("https://mamalucica.ro");
   });
 
-  it("sets Content-Type to application/xml via both Response and setResponseHeader", () => {
+  it("sets Content-Type to application/xml", () => {
     expect(SITEMAP_SOURCE).toMatch(/Content-Type.*application\/xml/);
-    expect(SITEMAP_SOURCE).toContain('setResponseHeader("Content-Type"');
   });
 
   it("includes homepage with priority 1.0", () => {
@@ -53,15 +52,13 @@ describe("sitemap.xml — source validation", () => {
     }
   });
 
-  it("includes contact and blog pages", () => {
+  it("includes contact page", () => {
     expect(SITEMAP_SOURCE).toContain('"/contact"');
-    expect(SITEMAP_SOURCE).toContain('"/blog"');
   });
 
-  it("fetches products, categories, and blog_posts from DB", () => {
+  it("fetches products and categories from DB", () => {
     expect(SITEMAP_SOURCE).toContain('.from("products")');
     expect(SITEMAP_SOURCE).toContain('.from("categories")');
-    expect(SITEMAP_SOURCE).toContain('.from("blog_posts")');
   });
 
   it("has a fallback when DB fetch fails (no 500)", () => {

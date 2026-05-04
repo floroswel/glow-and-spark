@@ -587,8 +587,14 @@ function AdminGdprPage() {
                   const isStatusChange = !isNew && n.title?.includes("GDPR");
 
                   return (
-                    <div key={n.id} className={`px-4 py-3 flex items-start gap-3 ${n.is_read ? "" : "bg-accent/5"}`}>
-                      <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${n.is_read ? "bg-border" : "bg-accent"}`} />
+                    <div key={n.id} className={`px-4 py-3 flex items-start gap-3 group ${n.is_read ? "" : "bg-accent/5"}`}>
+                      <button
+                        onClick={() => n.is_read ? markAsUnread(n.id) : markAsRead(n.id)}
+                        className="mt-0.5 shrink-0"
+                        title={n.is_read ? "Marchează ca necitit" : "Marchează ca citit"}
+                      >
+                        <div className={`w-2.5 h-2.5 rounded-full transition ${n.is_read ? "bg-border hover:bg-accent/50" : "bg-accent hover:bg-accent/70"}`} />
+                      </button>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-medium text-foreground truncate">{n.title}</span>

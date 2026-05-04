@@ -97,8 +97,22 @@ function AdminGdprDetailPage() {
     toast.success("Status actualizat");
     load();
   };
+  const saveFields = async () => {
+    setSavingFields(true);
+    const { error } = await supabase
+      .from("gdpr_requests")
+      .update({
+        details: editDetails.trim() || null,
+        admin_notes: editAdminNotes.trim() || null,
+      })
+      .eq("id", id);
+    setSavingFields(false);
+    if (error) { toast.error("Eroare la salvare"); return; }
+    toast.success("Salvat cu succes");
+    load();
+  };
 
-  const addNote = async () => {
+
     if (!note.trim()) return;
     const { error } = await (supabase.from("gdpr_request_history" as any).insert({
       request_id: id,

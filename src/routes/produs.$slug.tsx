@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ProductJsonLd } from "@/components/JsonLd";
 import { setPageMeta, setCanonical, removeCanonical } from "@/lib/seo";
 import { trackViewItem, trackAddToCart } from "@/lib/gtm";
 import { trackViewContent, trackAddToCart as fbTrackAddToCart } from "@/lib/fbpixel";
@@ -316,6 +317,7 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
 
 function ProductPage() {
   const { slug } = Route.useParams();
+  const navigate = useNavigate();
   const { addItem } = useCart();
   const { isFav, toggle: toggleFav } = useFavorites();
   const { has: hasCompare, toggle: toggleCompare } = useCompare();
@@ -493,6 +495,12 @@ function ProductPage() {
     setTimeout(() => setAdded(false), 2000);
   };
 
+  const handleBuyNow = () => {
+    if (!product) return;
+    handleAddToCart();
+    navigate({ to: "/checkout" });
+  };
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({ title: product?.name, url: window.location.href });
@@ -566,6 +574,7 @@ function ProductPage() {
     <div className="min-h-screen">
       <MarqueeBanner /><TopBar /><SiteHeader />
 
+      <ProductJsonLd product={product} category={category} />
       <div className="mx-auto max-w-7xl px-4 py-8">
         {/* Breadcrumb */}
         <nav className="mb-6 flex items-center gap-1 text-sm text-muted-foreground flex-wrap">
@@ -769,6 +778,15 @@ function ProductPage() {
               )}
             </div>
 
+            {/* Buy Now */}
+            {activeStock > 0 && (
+              <button
+                onClick={handleBuyNow}
+                className="mt-2 w-full rounded-lg border-2 border-accent bg-transparent py-3 text-sm font-semibold text-accent hover:bg-accent hover:text-accent-foreground transition"
+              >
+                CUMPĂRĂ ACUM
+              </button>
+            )}
 
             {activeStock > 0 && (
               <div className="mt-3">
@@ -821,7 +839,7 @@ function ProductPage() {
                 <RotateCcw className="h-5 w-5 text-accent" />
                 <div>
                   <p className="text-xs font-medium text-foreground">Drept de retragere</p>
-                  <p className="text-xs text-muted-foreground">30 de zile</p>
+                  <p className="text-xs text-muted-foreground">14 zile</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 rounded-lg border border-border p-3">
@@ -886,7 +904,7 @@ function ProductPage() {
               <div className="space-y-3">
                 <p><strong>Livrare:</strong> Comenzile plasate până la ora 14:00 sunt expediate în aceeași zi. Livrare în 24-48h prin Fan Courier, DPD sau Sameday.</p>
                 <p><strong>Livrare gratuită:</strong> Pentru comenzi peste 200 RON.</p>
-                <p><strong>Retur:</strong> Ai 30 de zile pentru a returna produsul dacă nu ești mulțumit. Produsul trebuie să fie nefolosit și în ambalajul original.</p>
+                <p><strong>Retur:</strong> Ai 14 zile calendaristice pentru a returna produsul conform OUG 34/2014. Produsul trebuie să fie nefolosit și în ambalajul original.</p>
               </div>
             )}
           </div>

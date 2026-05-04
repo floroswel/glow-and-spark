@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { OrganizationJsonLd } from "@/components/JsonLd";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -33,6 +34,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div className="min-h-screen">
+      <OrganizationJsonLd />
       <SiteAlert />
       <MarqueeBanner />
       <TopBar />

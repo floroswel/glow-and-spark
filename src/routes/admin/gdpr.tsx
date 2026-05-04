@@ -34,6 +34,9 @@ function AdminGdprPage() {
   const [dateTo, setDateTo] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
   const [sortBy, setSortBy] = useState<"created_desc" | "created_asc" | "processed_desc" | "processed_asc">("created_desc");
+  const [logOpen, setLogOpen] = useState(false);
+  const [logEntries, setLogEntries] = useState<any[]>([]);
+  const [logLoading, setLogLoading] = useState(false);
 
   const load = async () => {
     let q = supabase.from("gdpr_requests").select("*").order("created_at", { ascending: false });

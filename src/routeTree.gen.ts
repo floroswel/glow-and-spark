@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as TransportLivrareRouteImport } from './routes/transport-livrare'
 import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as TermeniSiConditiiRouteImport } from './routes/termeni-si-conditii'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -20,7 +21,9 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PoliticaReturnareRouteImport } from './routes/politica-returnare'
 import { Route as PoliticaCookiesRouteImport } from './routes/politica-cookies'
 import { Route as PoliticaConfidentialitateRouteImport } from './routes/politica-confidentialitate'
+import { Route as MetodePlataRouteImport } from './routes/metode-plata'
 import { Route as GiftCardRouteImport } from './routes/gift-card'
+import { Route as GarantieRouteImport } from './routes/garantie'
 import { Route as FormularRetragereRouteImport } from './routes/formular-retragere'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -147,6 +150,11 @@ const WishlistRoute = WishlistRouteImport.update({
   path: '/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TransportLivrareRoute = TransportLivrareRouteImport.update({
+  id: '/transport-livrare',
+  path: '/transport-livrare',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackOrderRoute = TrackOrderRouteImport.update({
   id: '/track-order',
   path: '/track-order',
@@ -198,9 +206,19 @@ const PoliticaConfidentialitateRoute =
     path: '/politica-confidentialitate',
     getParentRoute: () => rootRouteImport,
   } as any)
+const MetodePlataRoute = MetodePlataRouteImport.update({
+  id: '/metode-plata',
+  path: '/metode-plata',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GiftCardRoute = GiftCardRouteImport.update({
   id: '/gift-card',
   path: '/gift-card',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GarantieRoute = GarantieRouteImport.update({
+  id: '/garantie',
+  path: '/garantie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FormularRetragereRoute = FormularRetragereRouteImport.update({
@@ -824,7 +842,9 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/formular-retragere': typeof FormularRetragereRoute
+  '/garantie': typeof GarantieRoute
   '/gift-card': typeof GiftCardRoute
+  '/metode-plata': typeof MetodePlataRoute
   '/politica-confidentialitate': typeof PoliticaConfidentialitateRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
   '/politica-returnare': typeof PoliticaReturnareRoute
@@ -835,6 +855,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/track-order': typeof TrackOrderRoute
+  '/transport-livrare': typeof TransportLivrareRoute
   '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/favorites': typeof AccountFavoritesRoute
@@ -956,7 +977,9 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/formular-retragere': typeof FormularRetragereRoute
+  '/garantie': typeof GarantieRoute
   '/gift-card': typeof GiftCardRoute
+  '/metode-plata': typeof MetodePlataRoute
   '/politica-confidentialitate': typeof PoliticaConfidentialitateRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
   '/politica-returnare': typeof PoliticaReturnareRoute
@@ -967,6 +990,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/track-order': typeof TrackOrderRoute
+  '/transport-livrare': typeof TransportLivrareRoute
   '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/favorites': typeof AccountFavoritesRoute
@@ -1091,7 +1115,9 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/formular-retragere': typeof FormularRetragereRoute
+  '/garantie': typeof GarantieRoute
   '/gift-card': typeof GiftCardRoute
+  '/metode-plata': typeof MetodePlataRoute
   '/politica-confidentialitate': typeof PoliticaConfidentialitateRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
   '/politica-returnare': typeof PoliticaReturnareRoute
@@ -1102,6 +1128,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/track-order': typeof TrackOrderRoute
+  '/transport-livrare': typeof TransportLivrareRoute
   '/wishlist': typeof WishlistRoute
   '/account/addresses': typeof AccountAddressesRoute
   '/account/favorites': typeof AccountFavoritesRoute
@@ -1227,7 +1254,9 @@ export interface FileRouteTypes {
     | '/faq'
     | '/forgot-password'
     | '/formular-retragere'
+    | '/garantie'
     | '/gift-card'
+    | '/metode-plata'
     | '/politica-confidentialitate'
     | '/politica-cookies'
     | '/politica-returnare'
@@ -1238,6 +1267,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termeni-si-conditii'
     | '/track-order'
+    | '/transport-livrare'
     | '/wishlist'
     | '/account/addresses'
     | '/account/favorites'
@@ -1359,7 +1389,9 @@ export interface FileRouteTypes {
     | '/faq'
     | '/forgot-password'
     | '/formular-retragere'
+    | '/garantie'
     | '/gift-card'
+    | '/metode-plata'
     | '/politica-confidentialitate'
     | '/politica-cookies'
     | '/politica-returnare'
@@ -1370,6 +1402,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termeni-si-conditii'
     | '/track-order'
+    | '/transport-livrare'
     | '/wishlist'
     | '/account/addresses'
     | '/account/favorites'
@@ -1493,7 +1526,9 @@ export interface FileRouteTypes {
     | '/faq'
     | '/forgot-password'
     | '/formular-retragere'
+    | '/garantie'
     | '/gift-card'
+    | '/metode-plata'
     | '/politica-confidentialitate'
     | '/politica-cookies'
     | '/politica-returnare'
@@ -1504,6 +1539,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termeni-si-conditii'
     | '/track-order'
+    | '/transport-livrare'
     | '/wishlist'
     | '/account/addresses'
     | '/account/favorites'
@@ -1628,7 +1664,9 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   FormularRetragereRoute: typeof FormularRetragereRoute
+  GarantieRoute: typeof GarantieRoute
   GiftCardRoute: typeof GiftCardRoute
+  MetodePlataRoute: typeof MetodePlataRoute
   PoliticaConfidentialitateRoute: typeof PoliticaConfidentialitateRoute
   PoliticaCookiesRoute: typeof PoliticaCookiesRoute
   PoliticaReturnareRoute: typeof PoliticaReturnareRoute
@@ -1639,6 +1677,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermeniSiConditiiRoute: typeof TermeniSiConditiiRoute
   TrackOrderRoute: typeof TrackOrderRoute
+  TransportLivrareRoute: typeof TransportLivrareRoute
   WishlistRoute: typeof WishlistRoute
   CategorieSlugRoute: typeof CategorieSlugRoute
   OrderConfirmedOrderIdRoute: typeof OrderConfirmedOrderIdRoute
@@ -1655,6 +1694,13 @@ declare module '@tanstack/react-router' {
       path: '/wishlist'
       fullPath: '/wishlist'
       preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transport-livrare': {
+      id: '/transport-livrare'
+      path: '/transport-livrare'
+      fullPath: '/transport-livrare'
+      preLoaderRoute: typeof TransportLivrareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/track-order': {
@@ -1727,11 +1773,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PoliticaConfidentialitateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/metode-plata': {
+      id: '/metode-plata'
+      path: '/metode-plata'
+      fullPath: '/metode-plata'
+      preLoaderRoute: typeof MetodePlataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gift-card': {
       id: '/gift-card'
       path: '/gift-card'
       fullPath: '/gift-card'
       preLoaderRoute: typeof GiftCardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/garantie': {
+      id: '/garantie'
+      path: '/garantie'
+      fullPath: '/garantie'
+      preLoaderRoute: typeof GarantieRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/formular-retragere': {
@@ -2875,7 +2935,9 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   FormularRetragereRoute: FormularRetragereRoute,
+  GarantieRoute: GarantieRoute,
   GiftCardRoute: GiftCardRoute,
+  MetodePlataRoute: MetodePlataRoute,
   PoliticaConfidentialitateRoute: PoliticaConfidentialitateRoute,
   PoliticaCookiesRoute: PoliticaCookiesRoute,
   PoliticaReturnareRoute: PoliticaReturnareRoute,
@@ -2886,6 +2948,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermeniSiConditiiRoute: TermeniSiConditiiRoute,
   TrackOrderRoute: TrackOrderRoute,
+  TransportLivrareRoute: TransportLivrareRoute,
   WishlistRoute: WishlistRoute,
   CategorieSlugRoute: CategorieSlugRoute,
   OrderConfirmedOrderIdRoute: OrderConfirmedOrderIdRoute,

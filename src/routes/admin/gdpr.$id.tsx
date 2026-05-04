@@ -52,14 +52,16 @@ function AdminGdprDetailPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
-    const [{ data: r }, { data: h }, { data: docs }] = await Promise.all([
+    const [{ data: r }, { data: h }, { data: docs }, { data: audit }] = await Promise.all([
       supabase.from("gdpr_requests").select("*").eq("id", id).single(),
       supabase.from("gdpr_request_history" as any).select("*").eq("request_id", id).order("created_at", { ascending: true }) as any,
       supabase.from("gdpr_documents" as any).select("*").eq("request_id", id).order("created_at", { ascending: true }) as any,
+      supabase.from("gdpr_notification_audit" as any).select("*").eq("request_id", id).order("created_at", { ascending: false }) as any,
     ]);
     setReq(r);
     setHistory(h ?? []);
     setDocuments(docs ?? []);
+    setAuditLog(audit ?? []);
     if (r) {
       setEditDetails(r.details ?? "");
       setEditAdminNotes(r.admin_notes ?? "");

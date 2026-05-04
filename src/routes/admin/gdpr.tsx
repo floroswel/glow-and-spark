@@ -72,8 +72,7 @@ function AdminGdprPage() {
 
   useEffect(() => { load(); }, [statusFilter, typeFilter, dateFrom, dateTo]);
 
-  useEffect(() => {
-    if (!logOpen || logEntries.length > 0) return;
+  const loadLog = () => {
     setLogLoading(true);
     supabase
       .from("admin_notifications")
@@ -82,6 +81,25 @@ function AdminGdprPage() {
       .order("created_at", { ascending: false })
       .limit(200)
       .then(({ data }) => { setLogEntries(data ?? []); setLogLoading(false); });
+  };
+
+  useEffect(() => {
+    if (!logOpen) return;
+    loadLog();
+    // Realtime subscription for new GDPR notifications
+    const channel = supabase
+      .channel("gdpr-notif-log")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "admin_notifications" },
+        (payload: any) => {
+          if (payload.new?.title?.includes("GDPR")) {
+            setLogEntries((prev) => [payload.new, ...prev]);
+          }
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, [logOpen]);
 
   const filtered = useMemo(() => {

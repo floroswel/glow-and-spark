@@ -205,12 +205,38 @@ function AdminGdprDetailPage() {
           )}
         </div>
 
-        {req.details && (
-          <div>
-            <span className="text-xs text-muted-foreground">Detalii solicitant:</span>
-            <p className="mt-1 text-sm bg-secondary/50 rounded-lg p-3">{req.details}</p>
-          </div>
-        )}
+        {/* Editable details */}
+        <div>
+          <label className="text-xs text-muted-foreground font-medium">Detalii solicitant (editabil):</label>
+          <textarea
+            value={editDetails}
+            onChange={(e) => setEditDetails(e.target.value.slice(0, 2000))}
+            rows={3}
+            className="mt-1 w-full rounded-lg border border-border bg-background p-3 text-sm"
+            placeholder="Detalii cerere…"
+          />
+        </div>
+
+        {/* Admin processing notes */}
+        <div>
+          <label className="text-xs text-muted-foreground font-medium">Comentariu de procesare (admin):</label>
+          <textarea
+            value={editAdminNotes}
+            onChange={(e) => setEditAdminNotes(e.target.value.slice(0, 2000))}
+            rows={3}
+            className="mt-1 w-full rounded-lg border border-border bg-background p-3 text-sm"
+            placeholder="Notează aici detalii de procesare, rezoluție, pași urmați…"
+          />
+        </div>
+
+        <button
+          onClick={saveFields}
+          disabled={savingFields}
+          className="rounded-lg bg-accent text-white px-4 py-2 text-sm font-medium hover:bg-accent/90 transition disabled:opacity-50 flex items-center gap-1.5"
+        >
+          {savingFields ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+          Salvează modificările
+        </button>
       </div>
 
       {/* Actions */}

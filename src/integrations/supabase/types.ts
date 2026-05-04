@@ -2255,6 +2255,7 @@ export type Database = {
           gift_wrapping: boolean | null
           gift_wrapping_description: string | null
           gift_wrapping_price: number | null
+          gift_wrapping_quantity: number | null
           id: string
           items: Json
           notes: string | null
@@ -2294,6 +2295,7 @@ export type Database = {
           gift_wrapping?: boolean | null
           gift_wrapping_description?: string | null
           gift_wrapping_price?: number | null
+          gift_wrapping_quantity?: number | null
           id?: string
           items?: Json
           notes?: string | null
@@ -2333,6 +2335,7 @@ export type Database = {
           gift_wrapping?: boolean | null
           gift_wrapping_description?: string | null
           gift_wrapping_price?: number | null
+          gift_wrapping_quantity?: number | null
           id?: string
           items?: Json
           notes?: string | null

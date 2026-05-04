@@ -7,7 +7,7 @@ import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import {
-  LayoutDashboard, ShoppingBag, Heart, MapPin, Settings, LogOut, ChevronRight, Bell, Shield, Repeat,
+  LayoutDashboard, ShoppingBag, Heart, MapPin, Settings, LogOut, ChevronRight, Bell, Shield, Repeat, MessageSquare,
 } from "lucide-react";
 
 export const Route = createFileRoute("/account")({
@@ -25,6 +25,7 @@ const allNavItems = [
   { to: "/account/orders", icon: ShoppingBag, label: "Comenzile Mele" },
   { to: "/account/notifications", icon: Bell, label: "Notificări", badge: true },
   { to: "/account/favorites", icon: Heart, label: "Favorite" },
+  { to: "/account/reviews", icon: MessageSquare, label: "Recenziile Mele" },
   { to: "/account/addresses", icon: MapPin, label: "Adrese" },
   { to: "/account/settings", icon: Settings, label: "Setări Cont" },
   { to: "/account/gdpr", icon: Shield, label: "Date Personale (GDPR)", key: "gdpr" },

@@ -34,17 +34,19 @@ function AccountDashboard() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [ordersRes, addressesRes, pointsRes] = await Promise.all([
+      const [recentRes, orderCountRes, addressesRes, pointsRes] = await Promise.all([
         supabase.from("orders").select("id, order_number, total, status, created_at").eq("customer_email", user.email!).order("created_at", { ascending: false }).limit(5),
-        supabase.from("addresses").select("id").eq("user_id", user.id),
+        supabase.from("orders").select("id, total", { count: "exact" }).eq("customer_email", user.email!),
+        supabase.from("addresses").select("id", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("user_points").select("balance, lifetime_points, tier").eq("user_id", user.id).maybeSingle(),
       ]);
-      const orders = ordersRes.data || [];
-      setRecentOrders(orders);
+      const recentOrders = recentRes.data || [];
+      const allOrders = orderCountRes.data || [];
+      setRecentOrders(recentOrders);
       setStats({
-        orders: orders.length,
-        addresses: addressesRes.data?.length || 0,
-        totalSpent: orders.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0),
+        orders: orderCountRes.count || allOrders.length,
+        addresses: addressesRes.count || 0,
+        totalSpent: allOrders.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0),
       });
       if (pointsRes.data) setPoints(pointsRes.data);
     })();

@@ -41,22 +41,26 @@ function GdprPage() {
 
   useEffect(() => { load(); }, [user]);
 
+  const [lastConfirmation, setLastConfirmation] = useState<{ id: string; type: string } | null>(null);
+
   const submit = async (request_type: "export" | "delete" | "rectify") => {
     if (!user) return;
     if (request_type === "delete" && !confirm("Sigur dorești ștergerea contului și a tuturor datelor? Această acțiune este ireversibilă.")) return;
     setLoading(true);
-    const { error } = await supabase.from("gdpr_requests").insert({
+    const { data: inserted, error } = await supabase.from("gdpr_requests").insert({
       user_id: user.id,
       email: user.email!,
       request_type,
       details: details.trim() || null,
-    });
+    }).select("id").single();
     setLoading(false);
-    if (error) {
+    if (error || !inserted) {
       toast.error("Nu am putut trimite cererea");
       return;
     }
-    toast.success(`Cerere înregistrată. Te vom contacta în maxim ${GDPR_RESPONSE_DAYS} de zile calendaristice.`);
+    const shortId = inserted.id.slice(0, 8).toUpperCase();
+    setLastConfirmation({ id: shortId, type: request_type === "export" ? "Export date" : request_type === "delete" ? "Ștergere cont" : "Rectificare date" });
+    toast.success(`Cerere înregistrată — ID: ${shortId}`);
     setDetails("");
     load();
   };

@@ -15,6 +15,10 @@ export interface SiteSettings {
   redirects: any[];
   email_templates: any[];
   automations: any[];
+  payment_methods: any[];
+  shipping_carriers: any[];
+  tax_settings: Record<string, any>;
+  integrations: any[];
 }
 
 const RefreshContext = createContext<() => void>(() => {});

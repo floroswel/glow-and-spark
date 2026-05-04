@@ -10,6 +10,7 @@ const CRITICAL_DISALLOWS = [
   "/checkout",
   "/cart",
   "/auth",
+  "/api",
   "/forgot-password",
   "/reset-password",
   "/order-confirmed",

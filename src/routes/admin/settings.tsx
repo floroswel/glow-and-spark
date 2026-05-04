@@ -320,7 +320,7 @@ function AdminSettings() {
                     <TextInput value={s.express_shipping_cost} onChange={(v) => u("express_shipping_cost", v.replace(/[^0-9.]/g, ""))} />
                   </Field>
                   <Field label="Ambalaj cadou">
-                    <Toggle checked={s.gift_wrapping_enabled} onChange={(v) => u("gift_wrapping_enabled", v)} />
+                    <Toggle value={s.gift_wrapping_enabled} onChange={(v) => u("gift_wrapping_enabled", v)} label="Activează ambalaj cadou" />
                   </Field>
                   {s.gift_wrapping_enabled && (
                     <Field label="Preț ambalaj cadou (RON)">

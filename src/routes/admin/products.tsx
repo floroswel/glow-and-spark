@@ -7,8 +7,9 @@ import {
   ArrowUpDown, ExternalLink, GripVertical, Image as ImageIcon, Package,
   TrendingUp, DollarSign, BarChart3, Filter, RotateCcw, Percent, FolderOpen,
   Save, Check, ChevronDown, FileSpreadsheet, RefreshCw, Tag, Link2, Ruler,
-  FileDown, Layers, BoxIcon
+  FileDown, Layers, BoxIcon, Sparkles
 } from "lucide-react";
+import { toast as sonnerToast } from "sonner";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,

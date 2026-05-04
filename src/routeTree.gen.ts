@@ -137,6 +137,7 @@ import { Route as AdminReportsInventoryRouteImport } from './routes/admin/report
 import { Route as AdminReportsCustomersRouteImport } from './routes/admin/reports.customers'
 import { Route as AdminReportsConversionRouteImport } from './routes/admin/reports.conversion'
 import { Route as AdminGiftCardsHistoryRouteImport } from './routes/admin/gift-cards.history'
+import { Route as AdminGdprIdRouteImport } from './routes/admin/gdpr.$id'
 import { Route as AdminContentSeoRouteImport } from './routes/admin/content.seo'
 import { Route as AdminContentRedirectsRouteImport } from './routes/admin/content.redirects'
 import { Route as AdminContentFaqRouteImport } from './routes/admin/content.faq'
@@ -787,6 +788,11 @@ const AdminGiftCardsHistoryRoute = AdminGiftCardsHistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => AdminGiftCardsRoute,
 } as any)
+const AdminGdprIdRoute = AdminGdprIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminGdprRoute,
+} as any)
 const AdminContentSeoRoute = AdminContentSeoRouteImport.update({
   id: '/seo',
   path: '/seo',
@@ -884,7 +890,7 @@ export interface FileRoutesByFullPath {
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/email-logs': typeof AdminEmailLogsRoute
   '/admin/footer': typeof AdminFooterRoute
-  '/admin/gdpr': typeof AdminGdprRoute
+  '/admin/gdpr': typeof AdminGdprRouteWithChildren
   '/admin/gift-cards': typeof AdminGiftCardsRouteWithChildren
   '/admin/header': typeof AdminHeaderRoute
   '/admin/homepage': typeof AdminHomepageRoute
@@ -937,6 +943,7 @@ export interface FileRoutesByFullPath {
   '/admin/content/faq': typeof AdminContentFaqRoute
   '/admin/content/redirects': typeof AdminContentRedirectsRoute
   '/admin/content/seo': typeof AdminContentSeoRoute
+  '/admin/gdpr/$id': typeof AdminGdprIdRoute
   '/admin/gift-cards/history': typeof AdminGiftCardsHistoryRoute
   '/admin/reports/conversion': typeof AdminReportsConversionRoute
   '/admin/reports/customers': typeof AdminReportsCustomersRoute
@@ -1018,7 +1025,7 @@ export interface FileRoutesByTo {
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/email-logs': typeof AdminEmailLogsRoute
   '/admin/footer': typeof AdminFooterRoute
-  '/admin/gdpr': typeof AdminGdprRoute
+  '/admin/gdpr': typeof AdminGdprRouteWithChildren
   '/admin/gift-cards': typeof AdminGiftCardsRouteWithChildren
   '/admin/header': typeof AdminHeaderRoute
   '/admin/homepage': typeof AdminHomepageRoute
@@ -1071,6 +1078,7 @@ export interface FileRoutesByTo {
   '/admin/content/faq': typeof AdminContentFaqRoute
   '/admin/content/redirects': typeof AdminContentRedirectsRoute
   '/admin/content/seo': typeof AdminContentSeoRoute
+  '/admin/gdpr/$id': typeof AdminGdprIdRoute
   '/admin/gift-cards/history': typeof AdminGiftCardsHistoryRoute
   '/admin/reports/conversion': typeof AdminReportsConversionRoute
   '/admin/reports/customers': typeof AdminReportsCustomersRoute
@@ -1155,7 +1163,7 @@ export interface FileRoutesById {
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/email-logs': typeof AdminEmailLogsRoute
   '/admin/footer': typeof AdminFooterRoute
-  '/admin/gdpr': typeof AdminGdprRoute
+  '/admin/gdpr': typeof AdminGdprRouteWithChildren
   '/admin/gift-cards': typeof AdminGiftCardsRouteWithChildren
   '/admin/header': typeof AdminHeaderRoute
   '/admin/homepage': typeof AdminHomepageRoute
@@ -1208,6 +1216,7 @@ export interface FileRoutesById {
   '/admin/content/faq': typeof AdminContentFaqRoute
   '/admin/content/redirects': typeof AdminContentRedirectsRoute
   '/admin/content/seo': typeof AdminContentSeoRoute
+  '/admin/gdpr/$id': typeof AdminGdprIdRoute
   '/admin/gift-cards/history': typeof AdminGiftCardsHistoryRoute
   '/admin/reports/conversion': typeof AdminReportsConversionRoute
   '/admin/reports/customers': typeof AdminReportsCustomersRoute
@@ -1346,6 +1355,7 @@ export interface FileRouteTypes {
     | '/admin/content/faq'
     | '/admin/content/redirects'
     | '/admin/content/seo'
+    | '/admin/gdpr/$id'
     | '/admin/gift-cards/history'
     | '/admin/reports/conversion'
     | '/admin/reports/customers'
@@ -1480,6 +1490,7 @@ export interface FileRouteTypes {
     | '/admin/content/faq'
     | '/admin/content/redirects'
     | '/admin/content/seo'
+    | '/admin/gdpr/$id'
     | '/admin/gift-cards/history'
     | '/admin/reports/conversion'
     | '/admin/reports/customers'
@@ -1616,6 +1627,7 @@ export interface FileRouteTypes {
     | '/admin/content/faq'
     | '/admin/content/redirects'
     | '/admin/content/seo'
+    | '/admin/gdpr/$id'
     | '/admin/gift-cards/history'
     | '/admin/reports/conversion'
     | '/admin/reports/customers'
@@ -2573,6 +2585,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGiftCardsHistoryRouteImport
       parentRoute: typeof AdminGiftCardsRoute
     }
+    '/admin/gdpr/$id': {
+      id: '/admin/gdpr/$id'
+      path: '/$id'
+      fullPath: '/admin/gdpr/$id'
+      preLoaderRoute: typeof AdminGdprIdRouteImport
+      parentRoute: typeof AdminGdprRoute
+    }
     '/admin/content/seo': {
       id: '/admin/content/seo'
       path: '/seo'
@@ -2675,6 +2694,18 @@ const AdminContentRouteWithChildren = AdminContentRoute._addFileChildren(
   AdminContentRouteChildren,
 )
 
+interface AdminGdprRouteChildren {
+  AdminGdprIdRoute: typeof AdminGdprIdRoute
+}
+
+const AdminGdprRouteChildren: AdminGdprRouteChildren = {
+  AdminGdprIdRoute: AdminGdprIdRoute,
+}
+
+const AdminGdprRouteWithChildren = AdminGdprRoute._addFileChildren(
+  AdminGdprRouteChildren,
+)
+
 interface AdminGiftCardsRouteChildren {
   AdminGiftCardsHistoryRoute: typeof AdminGiftCardsHistoryRoute
 }
@@ -2771,7 +2802,7 @@ interface AdminRouteChildren {
   AdminCustomersRoute: typeof AdminCustomersRoute
   AdminEmailLogsRoute: typeof AdminEmailLogsRoute
   AdminFooterRoute: typeof AdminFooterRoute
-  AdminGdprRoute: typeof AdminGdprRoute
+  AdminGdprRoute: typeof AdminGdprRouteWithChildren
   AdminGiftCardsRoute: typeof AdminGiftCardsRouteWithChildren
   AdminHeaderRoute: typeof AdminHeaderRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
@@ -2842,7 +2873,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCustomersRoute: AdminCustomersRoute,
   AdminEmailLogsRoute: AdminEmailLogsRoute,
   AdminFooterRoute: AdminFooterRoute,
-  AdminGdprRoute: AdminGdprRoute,
+  AdminGdprRoute: AdminGdprRouteWithChildren,
   AdminGiftCardsRoute: AdminGiftCardsRouteWithChildren,
   AdminHeaderRoute: AdminHeaderRoute,
   AdminHomepageRoute: AdminHomepageRoute,

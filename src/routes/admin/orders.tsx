@@ -435,7 +435,10 @@ function AdminOrders() {
                           {items.length > 3 && <div className="h-7 w-7 rounded border-2 border-card bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground">+{items.length - 3}</div>}
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 font-semibold">{Number(o.total).toFixed(2)} RON</td>
+                      <td className="px-3 py-2.5 font-semibold">
+                        <span>{Number(o.total).toFixed(2)} RON</span>
+                        {o.gift_wrapping && <span className="ml-1.5 inline-flex items-center gap-0.5 text-[10px] font-medium text-accent bg-accent/10 px-1.5 py-0.5 rounded-full" title={`Ambalaj cadou${o.gift_wrapping_quantity > 1 ? ' ×' + o.gift_wrapping_quantity : ''}: ${(Number(o.gift_wrapping_price || 0) * (o.gift_wrapping_quantity || 1)).toFixed(2)} RON`}>🎁</span>}
+                      </td>
                       <td className="px-3 py-2.5">
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[o.status] || "bg-muted text-muted-foreground"}`}>
                           {statusLabels[o.status] || o.status}
@@ -540,8 +543,17 @@ function AdminOrders() {
                       <div className="flex justify-between"><span className="text-muted-foreground">Livrare</span><span>{Number(viewing.shipping_cost || 0).toFixed(2)} RON</span></div>
                       {Number(viewing.discount_amount) > 0 && (
                         <div className="flex justify-between text-chart-2"><span>Discount ({viewing.discount_code})</span><span>-{Number(viewing.discount_amount).toFixed(2)} RON</span></div>
-                      )}
-                      <div className="flex justify-between font-bold text-base pt-1 border-t border-border"><span>Total</span><span>{Number(viewing.total).toFixed(2)} RON</span></div>
+                       )}
+                       {viewing.gift_wrapping && (
+                         <div className="flex justify-between text-accent">
+                           <span>🎁 Ambalaj cadou{viewing.gift_wrapping_quantity > 1 ? ` ×${viewing.gift_wrapping_quantity}` : ''}</span>
+                           <span>+{(Number(viewing.gift_wrapping_price || 0) * (viewing.gift_wrapping_quantity || 1)).toFixed(2)} RON</span>
+                         </div>
+                       )}
+                       {viewing.gift_message && (
+                         <p className="text-xs italic text-muted-foreground pl-1">„{viewing.gift_message}"</p>
+                       )}
+                       <div className="flex justify-between font-bold text-base pt-1 border-t border-border"><span>Total</span><span>{Number(viewing.total).toFixed(2)} RON</span></div>
                     </div>
                   </div>
 

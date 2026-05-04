@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, Clock, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, Clock, CheckCircle2, XCircle, Loader2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 

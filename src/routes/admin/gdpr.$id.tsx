@@ -46,6 +46,10 @@ function AdminGdprDetailPage() {
     setReq(r);
     setHistory(h ?? []);
     setDocuments(docs ?? []);
+    if (r) {
+      setEditDetails(r.details ?? "");
+      setEditAdminNotes(r.admin_notes ?? "");
+    }
     setLoading(false);
   };
 

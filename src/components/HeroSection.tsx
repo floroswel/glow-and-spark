@@ -1,6 +1,6 @@
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { WITHDRAWAL_PERIOD_DAYS } from "@/lib/compliance";
-import heroImg from "@/assets/hero-candles.jpg";
+import heroImg from "@/assets/hero-mama-lucica.jpg";
 
 export function HeroSection() {
   const { homepage } = useSiteSettings();

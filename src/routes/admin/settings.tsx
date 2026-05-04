@@ -24,6 +24,7 @@ const defaults = {
   free_shipping_min: "200",
   default_shipping_cost: "15",
   express_shipping_cost: "30",
+  gift_wrapping_enabled: false,
   gift_wrapping_price: "15",
   currency: "RON",
   language: "ro",

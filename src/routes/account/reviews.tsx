@@ -66,9 +66,7 @@ function AccountReviews() {
         <div className="space-y-3">
           {reviews.map((review) => {
             const product = review.products;
-            const img = Array.isArray(product?.images) && product.images.length > 0
-              ? product.images[0]
-              : null;
+            const img = product?.image_url || null;
             return (
               <div
                 key={review.id}

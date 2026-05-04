@@ -7,8 +7,9 @@ import {
   ArrowUpDown, ExternalLink, GripVertical, Image as ImageIcon, Package,
   TrendingUp, DollarSign, BarChart3, Filter, RotateCcw, Percent, FolderOpen,
   Save, Check, ChevronDown, FileSpreadsheet, RefreshCw, Tag, Link2, Ruler,
-  FileDown, Layers, BoxIcon
+  FileDown, Layers, BoxIcon, Sparkles
 } from "lucide-react";
+import { toast as sonnerToast } from "sonner";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
@@ -207,6 +208,50 @@ function AdminProducts() {
   const paginated = products;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const hasActiveFilters = filterCat || filterStatus || filterStock || filterBadge || priceMin || priceMax;
+  const [aiLoading, setAiLoading] = useState<"descriptions" | "seo" | null>(null);
+
+  /**
+   * Generează texte AI pentru produsul curent (draft — necesită revizuire umană).
+   * Conformitatea ANPC/reclamații rămâne responsabilitatea operatorului.
+   */
+  const generateAiCopy = async (mode: "descriptions" | "seo") => {
+    if (!editing?.id || aiLoading) return;
+    setAiLoading(mode);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-generate-product-copy`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ productId: editing.id, mode }),
+        }
+      );
+      const result = await res.json();
+      if (!res.ok) {
+        sonnerToast.error(result.error || "Eroare la generarea textelor");
+        return;
+      }
+      // Populate form fields (user reviews & saves manually)
+      if (result.short_description) updateField("short_description", result.short_description);
+      if (result.description) updateField("description", result.description);
+      if (result.meta_title) updateField("meta_title", result.meta_title);
+      if (result.meta_description) updateField("meta_description", result.meta_description);
+      sonnerToast.success(
+        mode === "descriptions" ? "Descrieri generate (DRAFT)" : "SEO generat (DRAFT)",
+        { description: "Revizuiește textele înainte de salvare." }
+      );
+    } catch (e) {
+      console.error("AI generate error:", e);
+      sonnerToast.error("Eroare de rețea la generarea AI");
+    } finally {
+      setAiLoading(null);
+    }
+  };
 
 
   const handleSort = (field: string) => {
@@ -1056,16 +1101,31 @@ function AdminProducts() {
                     <label className={labelClass}>Brand</label>
                     <input value={editing.brand || ""} onChange={(e) => updateField("brand", e.target.value)} className={inputClass} placeholder="Mama Lucica" />
                   </div>
-                  <div className="col-span-2">
-                    <label className={labelClass}>Descriere scurtă</label>
-                    <input value={editing.short_description || ""} onChange={(e) => updateField("short_description", e.target.value)} className={inputClass} placeholder="Notă caldă de vanilie și lemn de santal" />
-                    <p className="mt-1 text-xs text-muted-foreground">{(editing.short_description || "").length} caractere</p>
-                  </div>
-                  <div className="col-span-2">
-                    <label className={labelClass}>Descriere completă (HTML acceptat)</label>
-                    <textarea value={editing.description || ""} onChange={(e) => updateField("description", e.target.value)} rows={8} className={inputClass + " font-mono text-xs"} placeholder="Descriere detaliată a produsului..." />
-                    <p className="mt-1 text-xs text-muted-foreground">{(editing.description || "").length} caractere</p>
-                  </div>
+                   {/* AI Generate Descriptions Button */}
+                   <div className="col-span-2 flex items-center justify-between">
+                     <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Descrieri produs</span>
+                     {editing.id && (
+                       <button
+                         type="button"
+                         onClick={() => generateAiCopy("descriptions")}
+                         disabled={!!aiLoading}
+                         className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-100 disabled:opacity-50"
+                       >
+                         {aiLoading === "descriptions" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                         Generează descrieri AI
+                       </button>
+                     )}
+                   </div>
+                   <div className="col-span-2">
+                     <label className={labelClass}>Descriere scurtă</label>
+                     <input value={editing.short_description || ""} onChange={(e) => updateField("short_description", e.target.value)} className={inputClass} placeholder="Notă caldă de vanilie și lemn de santal" />
+                     <p className="mt-1 text-xs text-muted-foreground">{(editing.short_description || "").length} caractere</p>
+                   </div>
+                   <div className="col-span-2">
+                     <label className={labelClass}>Descriere completă (HTML acceptat)</label>
+                     <textarea value={editing.description || ""} onChange={(e) => updateField("description", e.target.value)} rows={8} className={inputClass + " font-mono text-xs"} placeholder="Descriere detaliată a produsului..." />
+                     <p className="mt-1 text-xs text-muted-foreground">{(editing.description || "").length} caractere</p>
+                   </div>
                 </div>
               )}
 
@@ -1447,6 +1507,20 @@ function AdminProducts() {
 
               {activeTab === "seo" && (
                 <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Optimizare SEO</span>
+                    {editing.id && (
+                      <button
+                        type="button"
+                        onClick={() => generateAiCopy("seo")}
+                        disabled={!!aiLoading}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-100 disabled:opacity-50"
+                      >
+                        {aiLoading === "seo" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                        Generează SEO AI
+                      </button>
+                    )}
+                  </div>
                   <div className="rounded-lg bg-secondary/50 p-4">
                     <p className="text-xs font-medium text-muted-foreground mb-2">GOOGLE PREVIEW</p>
                     <p className="text-blue-600 text-base font-medium truncate">{editing.meta_title || editing.name || "Titlu produs"} — Mama Lucica</p>

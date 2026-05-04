@@ -569,10 +569,16 @@ function AdminGdprPage() {
                           <p className="text-xs text-muted-foreground mt-0.5 whitespace-pre-line line-clamp-2">{n.message}</p>
                         )}
                       </div>
-                      <span className="text-[10px] text-muted-foreground whitespace-nowrap shrink-0">
-                        {new Date(n.created_at).toLocaleString("ro-RO")}
-                      </span>
-                    </div>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                          {new Date(n.created_at).toLocaleString("ro-RO")}
+                        </span>
+                        {n.link && (
+                          <Link to={n.link} className="text-[10px] text-primary hover:underline flex items-center gap-0.5">
+                            <ExternalLink className="h-2.5 w-2.5" /> Vezi detaliile
+                          </Link>
+                        )}
+                      </div>
                   );
                 })}
               </div>

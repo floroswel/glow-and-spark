@@ -1,8 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, ArrowLeft, Clock, Check, X, MessageSquare, Paperclip, Upload, File, Loader2, FileDown } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, ArrowLeft, Clock, Check, X, MessageSquare, Paperclip, Upload, File, Loader2, FileDown, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
 export const Route = createFileRoute("/admin/gdpr/$id")({
@@ -35,6 +45,8 @@ function AdminGdprDetailPage() {
   const [editDetails, setEditDetails] = useState("");
   const [editAdminNotes, setEditAdminNotes] = useState("");
   const [savingFields, setSavingFields] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{ status: string; label: string; description: string } | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
@@ -88,13 +100,15 @@ function AdminGdprDetailPage() {
   useEffect(() => { load(); }, [id]);
 
   const updateStatus = async (status: string) => {
-    if (status === "rejected" && !confirm("Sigur vrei să respingi această cerere?")) return;
+    setActionLoading(true);
     const { error } = await supabase
       .from("gdpr_requests")
       .update({ status, processed_at: new Date().toISOString() })
       .eq("id", id);
-    if (error) { toast.error("Eroare"); return; }
-    toast.success("Status actualizat");
+    setActionLoading(false);
+    setConfirmAction(null);
+    if (error) { toast.error("Eroare la actualizarea statusului"); return; }
+    toast.success(`Status actualizat: ${STATUS_META[status]?.label ?? status}`);
     load();
   };
   const saveFields = async () => {
@@ -243,18 +257,63 @@ function AdminGdprDetailPage() {
       {req.status !== "completed" && req.status !== "rejected" && (
         <div className="flex flex-wrap gap-2">
           {req.status === "pending" && (
-            <button onClick={() => updateStatus("processing")} className="rounded-lg bg-blue-500 text-white px-4 py-2 text-sm font-medium hover:bg-blue-600 transition">
-              Marchează „În procesare"
+            <button
+              onClick={() => setConfirmAction({
+                status: "processing",
+                label: 'Marchează "În procesare"',
+                description: `Cererea GDPR-${shortId} (${req.email}) va fi marcată ca "În procesare". Solicitantul va fi notificat.`,
+              })}
+              className="rounded-lg bg-blue-500 text-white px-4 py-2 text-sm font-medium hover:bg-blue-600 transition"
+            >
+              Marchează &bdquo;În procesare&rdquo;
             </button>
           )}
-          <button onClick={() => updateStatus("completed")} className="rounded-lg bg-emerald-500 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-600 transition flex items-center gap-1.5">
+          <button
+            onClick={() => setConfirmAction({
+              status: "completed",
+              label: "Finalizează cererea",
+              description: `Cererea GDPR-${shortId} (${req.email}) va fi marcată ca finalizată. Asigură-te că ai procesat complet solicitarea înainte de confirmare.`,
+            })}
+            className="rounded-lg bg-emerald-500 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-600 transition flex items-center gap-1.5"
+          >
             <Check className="h-4 w-4" /> Finalizează
           </button>
-          <button onClick={() => updateStatus("rejected")} className="rounded-lg bg-red-500 text-white px-4 py-2 text-sm font-medium hover:bg-red-600 transition flex items-center gap-1.5">
+          <button
+            onClick={() => setConfirmAction({
+              status: "rejected",
+              label: "Respinge cererea",
+              description: `Cererea GDPR-${shortId} (${req.email}) va fi respinsă. Această acțiune este ireversibilă. Notează motivul în comentariul de procesare.`,
+            })}
+            className="rounded-lg bg-red-500 text-white px-4 py-2 text-sm font-medium hover:bg-red-600 transition flex items-center gap-1.5"
+          >
             <X className="h-4 w-4" /> Respinge
           </button>
         </div>
       )}
+
+      {/* Confirmation dialog */}
+      <AlertDialog open={!!confirmAction} onOpenChange={(open) => { if (!open) setConfirmAction(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              {confirmAction?.status === "rejected" && <AlertTriangle className="h-5 w-5 text-red-500" />}
+              {confirmAction?.label}
+            </AlertDialogTitle>
+            <AlertDialogDescription>{confirmAction?.description}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>Anulează</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={actionLoading}
+              onClick={() => confirmAction && updateStatus(confirmAction.status)}
+              className={confirmAction?.status === "rejected" ? "bg-red-500 hover:bg-red-600" : confirmAction?.status === "completed" ? "bg-emerald-500 hover:bg-emerald-600" : ""}
+            >
+              {actionLoading ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : null}
+              Confirmă
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Add note */}
       <div className="rounded-xl border border-border bg-card p-4 space-y-3">

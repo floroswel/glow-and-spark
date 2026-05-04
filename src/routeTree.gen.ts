@@ -89,6 +89,7 @@ import { Route as AdminImportExportRouteImport } from './routes/admin/import-exp
 import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
 import { Route as AdminHeaderRouteImport } from './routes/admin/header'
 import { Route as AdminGiftCardsRouteImport } from './routes/admin/gift-cards'
+import { Route as AdminGdprNotificationsRouteImport } from './routes/admin/gdpr-notifications'
 import { Route as AdminGdprRouteImport } from './routes/admin/gdpr'
 import { Route as AdminFooterRouteImport } from './routes/admin/footer'
 import { Route as AdminEmailLogsRouteImport } from './routes/admin/email-logs'
@@ -549,6 +550,11 @@ const AdminGiftCardsRoute = AdminGiftCardsRouteImport.update({
   path: '/gift-cards',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminGdprNotificationsRoute = AdminGdprNotificationsRouteImport.update({
+  id: '/gdpr-notifications',
+  path: '/gdpr-notifications',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminGdprRoute = AdminGdprRouteImport.update({
   id: '/gdpr',
   path: '/gdpr',
@@ -911,6 +917,7 @@ export interface FileRoutesByFullPath {
   '/admin/email-logs': typeof AdminEmailLogsRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/gdpr': typeof AdminGdprRouteWithChildren
+  '/admin/gdpr-notifications': typeof AdminGdprNotificationsRoute
   '/admin/gift-cards': typeof AdminGiftCardsRouteWithChildren
   '/admin/header': typeof AdminHeaderRoute
   '/admin/homepage': typeof AdminHomepageRoute
@@ -1049,6 +1056,7 @@ export interface FileRoutesByTo {
   '/admin/email-logs': typeof AdminEmailLogsRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/gdpr': typeof AdminGdprRouteWithChildren
+  '/admin/gdpr-notifications': typeof AdminGdprNotificationsRoute
   '/admin/gift-cards': typeof AdminGiftCardsRouteWithChildren
   '/admin/header': typeof AdminHeaderRoute
   '/admin/homepage': typeof AdminHomepageRoute
@@ -1190,6 +1198,7 @@ export interface FileRoutesById {
   '/admin/email-logs': typeof AdminEmailLogsRoute
   '/admin/footer': typeof AdminFooterRoute
   '/admin/gdpr': typeof AdminGdprRouteWithChildren
+  '/admin/gdpr-notifications': typeof AdminGdprNotificationsRoute
   '/admin/gift-cards': typeof AdminGiftCardsRouteWithChildren
   '/admin/header': typeof AdminHeaderRoute
   '/admin/homepage': typeof AdminHomepageRoute
@@ -1332,6 +1341,7 @@ export interface FileRouteTypes {
     | '/admin/email-logs'
     | '/admin/footer'
     | '/admin/gdpr'
+    | '/admin/gdpr-notifications'
     | '/admin/gift-cards'
     | '/admin/header'
     | '/admin/homepage'
@@ -1470,6 +1480,7 @@ export interface FileRouteTypes {
     | '/admin/email-logs'
     | '/admin/footer'
     | '/admin/gdpr'
+    | '/admin/gdpr-notifications'
     | '/admin/gift-cards'
     | '/admin/header'
     | '/admin/homepage'
@@ -1610,6 +1621,7 @@ export interface FileRouteTypes {
     | '/admin/email-logs'
     | '/admin/footer'
     | '/admin/gdpr'
+    | '/admin/gdpr-notifications'
     | '/admin/gift-cards'
     | '/admin/header'
     | '/admin/homepage'
@@ -2286,6 +2298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGiftCardsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/gdpr-notifications': {
+      id: '/admin/gdpr-notifications'
+      path: '/gdpr-notifications'
+      fullPath: '/admin/gdpr-notifications'
+      preLoaderRoute: typeof AdminGdprNotificationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/gdpr': {
       id: '/admin/gdpr'
       path: '/gdpr'
@@ -2863,6 +2882,7 @@ interface AdminRouteChildren {
   AdminEmailLogsRoute: typeof AdminEmailLogsRoute
   AdminFooterRoute: typeof AdminFooterRoute
   AdminGdprRoute: typeof AdminGdprRouteWithChildren
+  AdminGdprNotificationsRoute: typeof AdminGdprNotificationsRoute
   AdminGiftCardsRoute: typeof AdminGiftCardsRouteWithChildren
   AdminHeaderRoute: typeof AdminHeaderRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
@@ -2935,6 +2955,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEmailLogsRoute: AdminEmailLogsRoute,
   AdminFooterRoute: AdminFooterRoute,
   AdminGdprRoute: AdminGdprRouteWithChildren,
+  AdminGdprNotificationsRoute: AdminGdprNotificationsRoute,
   AdminGiftCardsRoute: AdminGiftCardsRouteWithChildren,
   AdminHeaderRoute: AdminHeaderRoute,
   AdminHomepageRoute: AdminHomepageRoute,

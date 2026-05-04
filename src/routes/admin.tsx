@@ -213,6 +213,7 @@ const menuSections: MenuSection[] = [
           { to: "/admin/login-attempts", label: "Încercări Login" },
           { to: "/admin/email-logs", label: "Jurnal Email" },
           { to: "/admin/gdpr", label: "Cereri GDPR" },
+          { to: "/admin/gdpr-notifications", label: "Notificări GDPR" },
           { to: "/admin/settings", label: "Setări Generale" },
           { to: "/admin/settings/checkout", label: "Checkout Config" },
         ],

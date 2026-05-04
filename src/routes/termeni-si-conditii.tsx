@@ -234,6 +234,51 @@ function TermeniPage() {
         <li>Pași tehnici de încheiere a contractului: selectare produse → adăugare în coș → completare date livrare → alegere metodă plată → confirmare comandă.</li>
       </ul>
 
+      <h2>18. Programul de puncte de loialitate</h2>
+      <p>
+        {C.site} oferă un program de puncte de loialitate prin care clienții înregistrați pot acumula 
+        și utiliza puncte în contul comenzilor plasate. Participarea la program presupune acceptarea 
+        regulilor descrise mai jos.
+      </p>
+
+      <h3>18.1. Acumularea punctelor</h3>
+      <ul className="list-disc pl-5 space-y-1">
+        <li>Punctele se acordă automat la finalizarea unei comenzi, în funcție de valoarea totală a acesteia.</li>
+        <li>Numărul de puncte acordate este egal cu valoarea comenzii rotunjită în jos (1 RON = 1 punct).</li>
+        <li>Punctele sunt vizibile în contul clientului imediat după plasarea comenzii.</li>
+      </ul>
+
+      <h3>18.2. Utilizarea punctelor</h3>
+      <ul className="list-disc pl-5 space-y-1">
+        <li>Punctele acumulate pot fi folosite pentru a obține un discount la o comandă viitoare.</li>
+        <li>Rata de conversie: 100 de puncte = 1 RON discount.</li>
+        <li><strong>Punctele pot fi utilizate 100% din valoarea unei comenzi</strong> — nu există o limită maximă de discount per comandă din puncte.</li>
+        <li><strong>Perioada de așteptare:</strong> punctele pot fi utilizate doar după 15 (cincisprezece) zile calendaristice de la data ultimei comenzi finalizate de client. Această regulă se aplică pentru a preveni abuzurile.</li>
+        <li>Dacă nu au trecut 15 zile de la ultima comandă, sistemul va afișa data la care punctele devin disponibile pentru utilizare.</li>
+      </ul>
+
+      <h3>18.3. Niveluri de loialitate</h3>
+      <ul className="list-disc pl-5 space-y-1">
+        <li><strong>Bronze</strong> — sub 500 de puncte acumulate cumulativ.</li>
+        <li><strong>Silver</strong> — între 500 și 1.999 de puncte acumulate cumulativ.</li>
+        <li><strong>Gold</strong> — 2.000 sau mai multe puncte acumulate cumulativ.</li>
+      </ul>
+      <p>Nivelul se calculează pe baza totalului de puncte acumulate în întreaga perioadă (puncte lifetime), nu pe baza soldului curent.</p>
+
+      <h3>18.4. Expirare și pierdere puncte</h3>
+      <ul className="list-disc pl-5 space-y-1">
+        <li>Punctele nu expiră atât timp cât contul clientului este activ.</li>
+        <li>Ștergerea contului (cerere GDPR sau la cerere) duce la pierderea tuturor punctelor acumulate.</li>
+        <li>Punctele nu sunt transferabile între conturi și nu pot fi convertite în numerar.</li>
+      </ul>
+
+      <h3>18.5. Modificări ale programului</h3>
+      <p>
+        {C.name} își rezervă dreptul de a modifica regulile programului de loialitate, ratele de 
+        conversie sau nivelurile, cu notificarea prealabilă a clienților prin email sau pe site. 
+        Punctele acumulate anterior modificării rămân valabile conform condițiilor de la momentul acumulării.
+      </p>
+
     </LegalPageShell>
   );
 }

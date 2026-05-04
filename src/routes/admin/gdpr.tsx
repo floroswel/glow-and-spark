@@ -323,6 +323,60 @@ function AdminGdprPage() {
           );
         })}
       </div>
+
+      {/* GDPR Notification Log */}
+      <div className="rounded-xl border border-border bg-card">
+        <button
+          onClick={() => setLogOpen((v) => !v)}
+          className="w-full flex items-center justify-between p-4 text-left hover:bg-secondary/30 transition"
+        >
+          <span className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
+            <Bell className="h-5 w-5 text-accent" /> Jurnal notificări GDPR
+          </span>
+          {logOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+        </button>
+
+        {logOpen && (
+          <div className="border-t border-border">
+            {logLoading ? (
+              <p className="p-6 text-center text-sm text-muted-foreground">Se încarcă…</p>
+            ) : logEntries.length === 0 ? (
+              <p className="p-6 text-center text-sm text-muted-foreground">Nicio notificare GDPR înregistrată.</p>
+            ) : (
+              <div className="divide-y divide-border max-h-[400px] overflow-y-auto">
+                {logEntries.map((n) => {
+                  // Extract GDPR ID from title
+                  const idMatch = n.title?.match(/\[GDPR-([A-Z0-9]+)\]/);
+                  const shortId = idMatch ? idMatch[1] : null;
+                  // Detect type from title
+                  const isNew = n.title?.includes("🆕");
+                  const isStatusChange = !isNew && n.title?.includes("GDPR");
+
+                  return (
+                    <div key={n.id} className={`px-4 py-3 flex items-start gap-3 ${n.is_read ? "" : "bg-accent/5"}`}>
+                      <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${n.is_read ? "bg-border" : "bg-accent"}`} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-medium text-foreground truncate">{n.title}</span>
+                          {shortId && (
+                            <code className="text-[10px] text-muted-foreground font-mono bg-secondary px-1.5 py-0.5 rounded">GDPR-{shortId}</code>
+                          )}
+                        </div>
+                        {n.message && (
+                          <p className="text-xs text-muted-foreground mt-0.5 whitespace-pre-line line-clamp-2">{n.message}</p>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-muted-foreground whitespace-nowrap shrink-0">
+                        {new Date(n.created_at).toLocaleString("ro-RO")}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

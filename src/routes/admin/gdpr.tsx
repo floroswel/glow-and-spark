@@ -637,7 +637,6 @@ function AdminGdprPage() {
                         >
                           {n.is_read ? <><EyeOff className="h-2.5 w-2.5" /> Necitit</> : <><Eye className="h-2.5 w-2.5" /> Citit</>}
                         </button>
-                        })()}
                       </div>
                     </div>
                   );

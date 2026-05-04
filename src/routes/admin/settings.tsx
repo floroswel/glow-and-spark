@@ -321,6 +321,9 @@ function AdminSettings() {
                   <Field label="Cost livrare express (RON)">
                     <TextInput value={s.express_shipping_cost} onChange={(v) => u("express_shipping_cost", v.replace(/[^0-9.]/g, ""))} />
                   </Field>
+                  <Field label="Card Cadou">
+                    <Toggle value={s.gift_card_enabled} onChange={(v) => u("gift_card_enabled", v)} label="Activează secțiunea Card Cadou" />
+                  </Field>
                   <Field label="Ambalaj cadou">
                     <Toggle value={s.gift_wrapping_enabled} onChange={(v) => u("gift_wrapping_enabled", v)} label="Activează ambalaj cadou" />
                   </Field>

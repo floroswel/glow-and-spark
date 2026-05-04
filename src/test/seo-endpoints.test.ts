@@ -77,6 +77,12 @@ describe("sitemap.xml — source validation", () => {
       expect(SITEMAP_SOURCE).not.toContain(p);
     }
   });
+
+  it("does not include removed features (blog, subscriptions/abonamente)", () => {
+    expect(SITEMAP_SOURCE).not.toContain("/blog");
+    expect(SITEMAP_SOURCE).not.toContain("subscription");
+    expect(SITEMAP_SOURCE).not.toContain("abonament");
+  });
 });
 
 // ─── robots.txt ─────────────────────────────────────────────────────────────

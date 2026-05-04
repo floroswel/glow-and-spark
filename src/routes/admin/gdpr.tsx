@@ -40,6 +40,7 @@ function AdminGdprPage() {
   const [gdprEnabled, setGdprEnabled] = useState(false);
   const [gdprToggleLoading, setGdprToggleLoading] = useState(false);
   const [testLoading, setTestLoading] = useState(false);
+  const [testMenuOpen, setTestMenuOpen] = useState(false);
 
   useEffect(() => {
     supabase.from("site_settings").select("value").eq("key", "gdpr_section_enabled").maybeSingle()
@@ -57,8 +58,16 @@ function AdminGdprPage() {
     setGdprToggleLoading(false);
   };
 
-  const runTest = async () => {
+  const TEST_TYPES = [
+    { value: "export", label: "Export date" },
+    { value: "delete", label: "Ștergere cont" },
+    { value: "rectify", label: "Rectificare date" },
+  ] as const;
+
+  const runTest = async (requestType: string = "export") => {
     setTestLoading(true);
+    setTestMenuOpen(false);
+    const typeLabel = TYPE_LABEL[requestType] || requestType;
     try {
       // 1. Get admin email from site_settings
       const { data: generalSettings } = await supabase
@@ -73,8 +82,8 @@ function AdminGdprPage() {
         .insert({
           user_id: user?.user?.id,
           email: testEmail,
-          request_type: "export",
-          details: "[TEST] Cerere GDPR de test — generată automat din admin la " + new Date().toLocaleString("ro-RO"),
+          request_type: requestType,
+          details: `[TEST] Cerere GDPR ${typeLabel} — generată automat din admin la ${new Date().toLocaleString("ro-RO")}`,
           status: "pending",
         })
         .select()
@@ -92,7 +101,7 @@ function AdminGdprPage() {
               to: adminEmail,
               data: {
                 testEmail,
-                requestType: "Export date",
+              requestType: typeLabel,
                 shortId,
                 requestId: inserted.id,
                 createdAt: new Date().toLocaleString("ro-RO"),
@@ -228,14 +237,30 @@ function AdminGdprPage() {
             <span className={`h-2 w-2 rounded-full ${gdprEnabled ? "bg-emerald-500" : "bg-red-500"}`} />
             {gdprEnabled ? "Secțiune client ACTIVĂ" : "Secțiune client DEZACTIVATĂ"}
           </button>
-          <button
-            onClick={runTest}
-            disabled={testLoading}
-            className="flex items-center gap-1.5 rounded-lg border border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100 px-3 py-2 text-xs font-medium transition disabled:opacity-50"
-          >
-            {testLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FlaskConical className="h-3.5 w-3.5" />}
-            Test complet
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setTestMenuOpen(!testMenuOpen)}
+              disabled={testLoading}
+              className="flex items-center gap-1.5 rounded-lg border border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100 px-3 py-2 text-xs font-medium transition disabled:opacity-50"
+            >
+              {testLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FlaskConical className="h-3.5 w-3.5" />}
+              Test complet
+              <ChevronDown className="h-3 w-3" />
+            </button>
+            {testMenuOpen && !testLoading && (
+              <div className="absolute top-full left-0 mt-1 z-50 bg-white border border-purple-200 rounded-lg shadow-lg py-1 min-w-[160px]">
+                {TEST_TYPES.map((t) => (
+                  <button
+                    key={t.value}
+                    onClick={() => runTest(t.value)}
+                    className="w-full text-left px-3 py-1.5 text-xs hover:bg-purple-50 text-purple-700"
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded-full font-medium">{stats.pending} noi</span>
             <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">{stats.processing} în lucru</span>

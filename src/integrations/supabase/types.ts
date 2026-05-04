@@ -1571,6 +1571,54 @@ export type Database = {
           },
         ]
       }
+      gdpr_notification_audit: {
+        Row: {
+          actor_id: string | null
+          content: string | null
+          created_at: string
+          delivery_status: string
+          event_type: string
+          id: string
+          notification_id: string | null
+          request_id: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          content?: string | null
+          created_at?: string
+          delivery_status?: string
+          event_type: string
+          id?: string
+          notification_id?: string | null
+          request_id?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          content?: string | null
+          created_at?: string
+          delivery_status?: string
+          event_type?: string
+          id?: string
+          notification_id?: string | null
+          request_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gdpr_notification_audit_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "admin_notifications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gdpr_notification_audit_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "gdpr_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gdpr_request_history: {
         Row: {
           changed_by: string | null

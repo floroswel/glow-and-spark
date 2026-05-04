@@ -237,6 +237,8 @@ function CheckoutPage() {
       payment_status: "pending",
       user_id: user?.id || null,
       gift_wrapping: giftWrapping,
+      gift_wrapping_price: giftWrapping ? giftWrappingPrice : 0,
+      gift_wrapping_description: giftWrapping ? (general?.gift_wrapping_description || null) : null,
       gift_message: giftWrapping ? giftMessage || null : null,
     };
 
@@ -294,6 +296,10 @@ function CheckoutPage() {
           county: orderData.county,
           postal_code: orderData.postal_code,
           customer_phone: orderData.customer_phone,
+          gift_wrapping: orderData.gift_wrapping,
+          gift_wrapping_price: orderData.gift_wrapping_price,
+          gift_wrapping_description: orderData.gift_wrapping_description,
+          gift_message: orderData.gift_message,
         },
       },
     }).catch(() => {});
@@ -596,7 +602,7 @@ function CheckoutPage() {
 
                 <div><label className="mb-1 block text-xs font-medium text-muted-foreground">Observații</label><textarea value={form.observatii} onChange={(e) => u("observatii", e.target.value)} rows={2} className={inputClass} /></div>
 
-                {/* Gift wrapping */}
+                {general?.gift_wrapping_enabled && (
                 <div className="rounded-lg border border-border bg-secondary/50 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -606,6 +612,9 @@ function CheckoutPage() {
                     </div>
                     <Switch checked={giftWrapping} onCheckedChange={setGiftWrapping} />
                   </div>
+                  {general?.gift_wrapping_description && (
+                    <p className="text-xs text-muted-foreground">{general.gift_wrapping_description}</p>
+                  )}
                   {giftWrapping && (
                     <textarea
                       value={giftMessage}
@@ -617,6 +626,7 @@ function CheckoutPage() {
                     />
                   )}
                 </div>
+                )}
 
                 <button onClick={() => { if (validateStep1()) setStep(2); }} className="w-full rounded-lg bg-accent py-3 font-bold text-accent-foreground transition hover:opacity-90">
                   Continuă → Metodă de plată

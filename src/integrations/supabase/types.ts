@@ -2253,6 +2253,8 @@ export type Database = {
           discount_code: string | null
           gift_message: string | null
           gift_wrapping: boolean | null
+          gift_wrapping_description: string | null
+          gift_wrapping_price: number | null
           id: string
           items: Json
           notes: string | null
@@ -2290,6 +2292,8 @@ export type Database = {
           discount_code?: string | null
           gift_message?: string | null
           gift_wrapping?: boolean | null
+          gift_wrapping_description?: string | null
+          gift_wrapping_price?: number | null
           id?: string
           items?: Json
           notes?: string | null
@@ -2327,6 +2331,8 @@ export type Database = {
           discount_code?: string | null
           gift_message?: string | null
           gift_wrapping?: boolean | null
+          gift_wrapping_description?: string | null
+          gift_wrapping_price?: number | null
           id?: string
           items?: Json
           notes?: string | null

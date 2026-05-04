@@ -13,13 +13,24 @@ const SESSION_KEY = "ml_chat_session";
 
 export function ChatWidget() {
   const { general } = useSiteSettings();
-  const enabled = general?.chatbot_enabled !== false;
+  const [enabled, setEnabled] = useState(true);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    supabase
+      .from("chatbot_settings")
+      .select("is_enabled")
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setEnabled(!!data.is_enabled);
+      });
+  }, []);
 
   useEffect(() => {
     if (!open || sessionId) return;

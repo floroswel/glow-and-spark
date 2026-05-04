@@ -73,6 +73,38 @@ function ChatbotPage() {
         </Link>
       </div>
 
+      {/* Enable/Disable toggle */}
+      <div className={`rounded-xl border p-4 flex items-center justify-between ${settings.is_enabled ? "border-accent/40 bg-accent/5" : "border-destructive/30 bg-destructive/5"}`}>
+        <div className="flex items-center gap-3">
+          <div className={`h-3 w-3 rounded-full ${settings.is_enabled ? "bg-green-500" : "bg-red-400"}`} />
+          <div>
+            <p className="text-sm font-semibold text-foreground">
+              Asistentul {settings.bot_name || "Mama Lucica"} este {settings.is_enabled ? "activ" : "dezactivat"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {settings.is_enabled ? "Vizitatorii pot folosi chatbot-ul pe site." : "Chatbot-ul nu este vizibil pe site."}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            const next = !settings.is_enabled;
+            setSettings({ ...settings, is_enabled: next });
+            if (settings.id) {
+              await supabase.from("chatbot_settings").update({ is_enabled: next }).eq("id", settings.id);
+              toast.success(next ? "Asistentul a fost activat" : "Asistentul a fost dezactivat");
+            }
+          }}
+          className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+            settings.is_enabled
+              ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              : "bg-accent text-accent-foreground hover:bg-accent/90"
+          }`}
+        >
+          {settings.is_enabled ? "Dezactivează" : "Activează"}
+        </button>
+      </div>
+
       <div className="rounded-xl border border-border bg-card p-6 space-y-4">
         <h2 className="font-semibold">Setări generale</h2>
         <div className="grid gap-4 md:grid-cols-2">
@@ -97,10 +129,7 @@ function ChatbotPage() {
               <option value="openai/gpt-5-mini">GPT-5 Mini</option>
             </select>
           </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={!!settings.is_enabled} onChange={e => setSettings({ ...settings, is_enabled: e.target.checked })} />
-            Chatbot activ pe site
-          </label>
+          {/* Toggle moved to prominent card above */}
           <label className="block text-sm md:col-span-2">
             <span className="text-muted-foreground">Prompt sistem (instrucțiuni AI)</span>
             <textarea rows={5} value={settings.system_prompt || ""} onChange={e => setSettings({ ...settings, system_prompt: e.target.value })} className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 font-mono text-xs" />

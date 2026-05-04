@@ -626,7 +626,9 @@ export function SiteHeader() {
             })}
 
             
-            <MobileLink to="/gift-card" icon={<Gift className="h-5 w-5" />} label="Card Cadou" onClick={() => setMobileOpen(false)} />
+            {general?.gift_card_enabled && (
+              <MobileLink to="/gift-card" icon={<Gift className="h-5 w-5" />} label="Card Cadou" onClick={() => setMobileOpen(false)} />
+            )}
           </div>
 
           <div className="mx-4 border-t border-border" />

@@ -36,6 +36,10 @@ const defaultSettings: SiteSettings = {
   redirects: [],
   email_templates: [],
   automations: [],
+  payment_methods: [],
+  shipping_carriers: [],
+  tax_settings: {},
+  integrations: [],
 };
 
 const CACHE_KEY = "site_settings_cache";

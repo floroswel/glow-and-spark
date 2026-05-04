@@ -327,7 +327,6 @@ function AdminSettings() {
                       <TextInput value={s.gift_wrapping_price} onChange={(v) => u("gift_wrapping_price", v.replace(/[^0-9.]/g, ""))} />
                     </Field>
                   )}
-                  </Field>
                 </div>
                 <div className="mt-4 rounded-lg bg-secondary/50 p-3 text-xs text-muted-foreground">
                   💡 Pragul de livrare gratuită apare în bara de sus (TopBar) și determină automat costul în coș când subtotalul îl depășește.

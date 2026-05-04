@@ -486,7 +486,7 @@ export function SiteFooter() {
                     {(footer?.capital_social || general?.capital_social) && (
                       <p>
                         <span className="text-white/50 mr-1">Capital social:</span>{" "}
-                        {footer?.capital_social || general?.capital_social} {/* [VERIFICARE_CONTABIL] */}
+                        {footer?.capital_social || general?.capital_social}
                       </p>
                     )}
                   </div>

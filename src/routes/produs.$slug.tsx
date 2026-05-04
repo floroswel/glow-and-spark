@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ProductJsonLd } from "@/components/JsonLd";
 import { setPageMeta, setCanonical, removeCanonical } from "@/lib/seo";
 import { trackViewItem, trackAddToCart } from "@/lib/gtm";
 import { trackViewContent, trackAddToCart as fbTrackAddToCart } from "@/lib/fbpixel";

@@ -37,6 +37,7 @@ export function CookieConsent() {
       setDetails(false);
       setAnalytics(false);
       setMarketing(false);
+      setPreferences(false);
       setVisible(true);
     };
     window.addEventListener("cmp:reset", onReset);

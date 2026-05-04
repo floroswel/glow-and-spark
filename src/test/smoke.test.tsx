@@ -58,6 +58,22 @@ vi.mock("@/hooks/useCart", () => ({
   useCart: () => ({ items: [], itemCount: 0, total: 0, addItem: vi.fn(), removeItem: vi.fn(), clearCart: vi.fn() }),
 }));
 
+vi.mock("@/hooks/useCompanyInfo", () => ({
+  useCompanyInfo: () => ({ name: "Mama Lucica", legalEntity: "SC Vomix Genius SRL", cui: "43025661", regCom: "J40/1234/2020", fullAddress: "București", iban: "", phone: "+40 753 326 405", email: "contact@mamalucica.ro" }),
+}));
+
+vi.mock("@/hooks/useFiscalInfo", () => ({
+  useFiscalInfo: () => ({ isVatPayer: false, vatRate: 0, priceDisclaimer: "Prețurile afișate sunt prețuri finale.", priceLabel: "Preț final" }),
+}));
+
+vi.mock("@/lib/cmp/consentController", () => ({
+  resetConsent: vi.fn(),
+}));
+
+vi.mock("@/lib/sanitize-html", () => ({
+  sanitizeHtml: (html: string) => html,
+}));
+
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ children, to, ...props }: any) => <a href={to} {...props}>{children}</a>,
   useNavigate: () => vi.fn(),

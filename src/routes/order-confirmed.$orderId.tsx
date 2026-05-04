@@ -211,6 +211,12 @@ function OrderConfirmedPage() {
                 {Number(order.discount_amount) > 0 && (
                   <div className="flex justify-between text-chart-2"><span>Reducere</span><span>-{order.discount_amount} RON</span></div>
                 )}
+                {order.gift_wrapping && (
+                  <div className="flex justify-between"><span className="text-muted-foreground">Ambalaj cadou</span><span>{Number(order.gift_wrapping_price || 0).toFixed(2)} RON</span></div>
+                )}
+                {order.gift_message && (
+                  <p className="text-xs text-muted-foreground italic">🎁 „{order.gift_message}"</p>
+                )}
                 <div className="flex justify-between border-t border-border pt-2 text-base font-bold">
                   <span>Total</span><span>{order.total} RON</span>
                 </div>

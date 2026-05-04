@@ -29,6 +29,7 @@ function GdprPage() {
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [details, setDetails] = useState("");
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
 
   const load = async () => {
     if (!user) return;

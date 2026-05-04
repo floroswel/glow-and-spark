@@ -279,6 +279,11 @@ function GdprPage() {
           </div>
         )}
       </div>
+
+      <GdprRequestDetailDialog
+        requestId={selectedRequestId}
+        onClose={() => setSelectedRequestId(null)}
+      />
     </div>
   );
 }

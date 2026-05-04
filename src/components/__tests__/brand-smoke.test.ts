@@ -65,14 +65,16 @@ describe("Brand consistency audit", () => {
     expect(conditionalLogo.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("footer copyright references SC Vomix Genius SRL", () => {
+  it("footer uses useCompanyInfo and shows brand fallback", () => {
     const footerFile = path.join(SRC, "src/components/SiteFooter.tsx");
     const content = fs.readFileSync(footerFile, "utf-8");
 
-    expect(content).toContain("SC Vomix Genius SRL");
+    // Footer uses dynamic company info from hook
+    expect(content).toContain("useCompanyInfo");
+    // Has Mama Lucica as fallback
     expect(content).toContain("Mama Lucica");
     // Copyright line should exist
-    expect(content).toMatch(/©.*Mama Lucica.*SC Vomix Genius SRL/);
+    expect(content).toMatch(/©.*Mama Lucica/);
   });
 
   it("root route defines correct og:title and og:site_name for Mama Lucica", () => {

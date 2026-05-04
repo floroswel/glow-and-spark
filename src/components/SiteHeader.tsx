@@ -422,9 +422,11 @@ export function SiteHeader() {
                 </a>
               );
             })}
-            <Link to="/gift-card" className="transition hover:text-foreground" activeProps={{ className: "text-accent font-semibold" }}>
-              Card Cadou
-            </Link>
+            {general?.gift_card_enabled && (
+              <Link to="/gift-card" className="transition hover:text-foreground" activeProps={{ className: "text-accent font-semibold" }}>
+                Card Cadou
+              </Link>
+            )}
             {header?.show_compare !== false && (
               <Link to="/compare" className="transition hover:text-foreground flex items-center gap-1" activeProps={{ className: "text-accent font-semibold" }}>
                 <GitCompare className="h-4 w-4" />

@@ -416,6 +416,34 @@ function priceAlertTemplate(data: any, cfg: SiteConfig): { subject: string; html
   };
 }
 
+function gdprTestNotificationTemplate(data: any, cfg: SiteConfig): { subject: string; html: string } {
+  return {
+    subject: `🧪 [TEST GDPR] Cerere ${data.requestType} — GDPR-${data.shortId}`,
+    html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f9f9f9;padding:20px">
+      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
+        <div style="background:#7c3aed;color:#fff;padding:24px;text-align:center">
+          <h1 style="margin:0;font-size:22px">🧪 Test GDPR — ${cfg.SITE_NAME}</h1>
+        </div>
+        <div style="padding:24px">
+          <h2 style="color:#1a1a1a;margin-top:0">Cerere GDPR de test</h2>
+          <p style="color:#555">Aceasta este o notificare de test pentru verificarea lanțului complet GDPR.</p>
+          <div style="background:#f9f9f9;border-radius:8px;padding:16px;margin:16px 0">
+            <p style="margin:0 0 6px"><strong>ID:</strong> GDPR-${data.shortId}</p>
+            <p style="margin:0 0 6px"><strong>Tip:</strong> ${data.requestType}</p>
+            <p style="margin:0 0 6px"><strong>Email solicitant:</strong> ${data.testEmail}</p>
+            <p style="margin:0"><strong>Data:</strong> ${data.createdAt}</p>
+          </div>
+          <a href="${cfg.SITE_URL}/admin/gdpr/${data.requestId}" style="display:inline-block;background:#7c3aed;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:bold;margin:16px 0">Deschide cererea</a>
+          <p style="color:#999;font-size:12px;margin-top:16px">⚠️ Aceasta este o cerere de test. Poți să o ștergi din admin.</p>
+        </div>
+        <div style="background:#f5f5f5;padding:16px;text-align:center;font-size:12px;color:#999">
+          © ${new Date().getFullYear()} ${cfg.SITE_NAME}
+        </div>
+      </div>
+    </body></html>`,
+  };
+}
+
 const templateMap: Record<string, (data: any, cfg: SiteConfig) => { subject: string; html: string }> = {
   order_confirmation: orderConfirmationTemplate,
   welcome: welcomeTemplate,
@@ -431,6 +459,7 @@ const templateMap: Record<string, (data: any, cfg: SiteConfig) => { subject: str
   low_stock_alert: lowStockAlertTemplate,
   back_in_stock: backInStockTemplate,
   price_alert: priceAlertTemplate,
+  gdpr_test_notification: gdprTestNotificationTemplate,
 };
 
 serve(async (req) => {

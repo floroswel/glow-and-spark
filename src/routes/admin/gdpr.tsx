@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink, ArrowUpDown, FileDown, Bell, ChevronDown, ChevronUp } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink, ArrowUpDown, FileDown, Bell, ChevronDown, ChevronUp, FlaskConical, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
@@ -39,6 +39,7 @@ function AdminGdprPage() {
   const [logLoading, setLogLoading] = useState(false);
   const [gdprEnabled, setGdprEnabled] = useState(false);
   const [gdprToggleLoading, setGdprToggleLoading] = useState(false);
+  const [testLoading, setTestLoading] = useState(false);
 
   useEffect(() => {
     supabase.from("site_settings").select("value").eq("key", "gdpr_section_enabled").maybeSingle()
@@ -54,6 +55,66 @@ function AdminGdprPage() {
     if (error) toast.error("Eroare la salvare");
     else { setGdprEnabled(newVal); toast.success(newVal ? "Secțiunea GDPR activată pentru clienți" : "Secțiunea GDPR dezactivată pentru clienți"); }
     setGdprToggleLoading(false);
+  };
+
+  const runTest = async () => {
+    setTestLoading(true);
+    try {
+      // 1. Get admin email from site_settings
+      const { data: generalSettings } = await supabase
+        .from("site_settings").select("value").eq("key", "general").maybeSingle();
+      const adminEmail = (generalSettings?.value as any)?.contact_email || "";
+
+      // 2. Insert test GDPR request
+      const { data: user } = await supabase.auth.getUser();
+      const testEmail = user?.user?.email || "test@gdpr-test.ro";
+      const { data: inserted, error: insertErr } = await supabase
+        .from("gdpr_requests")
+        .insert({
+          user_id: user?.user?.id,
+          email: testEmail,
+          request_type: "export",
+          details: "[TEST] Cerere GDPR de test — generată automat din admin la " + new Date().toLocaleString("ro-RO"),
+          status: "pending",
+        })
+        .select()
+        .single();
+
+      if (insertErr) throw insertErr;
+
+      // 3. Send email notification to admin
+      if (adminEmail) {
+        try {
+          const shortId = inserted.id.slice(0, 8).toUpperCase();
+          await supabase.functions.invoke("send-email", {
+            body: {
+              type: "gdpr_test_notification",
+              to: adminEmail,
+              data: {
+                testEmail,
+                requestType: "Export date",
+                shortId,
+                requestId: inserted.id,
+                createdAt: new Date().toLocaleString("ro-RO"),
+              },
+            },
+          });
+          toast.success("Test complet: cerere creată + email trimis la " + adminEmail);
+        } catch {
+          toast.success("Cerere test creată. Email-ul nu a putut fi trimis.");
+        }
+      } else {
+        toast.success("Cerere test creată. Setează contact_email în Setări Generale pentru notificări email.");
+      }
+
+      // 4. Refresh data & open log
+      load();
+      setLogOpen(true);
+      loadLog();
+    } catch (err: any) {
+      toast.error("Eroare test: " + (err?.message || "necunoscută"));
+    }
+    setTestLoading(false);
   };
 
   const load = async () => {
@@ -166,6 +227,14 @@ function AdminGdprPage() {
           >
             <span className={`h-2 w-2 rounded-full ${gdprEnabled ? "bg-emerald-500" : "bg-red-500"}`} />
             {gdprEnabled ? "Secțiune client ACTIVĂ" : "Secțiune client DEZACTIVATĂ"}
+          </button>
+          <button
+            onClick={runTest}
+            disabled={testLoading}
+            className="flex items-center gap-1.5 rounded-lg border border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100 px-3 py-2 text-xs font-medium transition disabled:opacity-50"
+          >
+            {testLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FlaskConical className="h-3.5 w-3.5" />}
+            Test complet
           </button>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded-full font-medium">{stats.pending} noi</span>

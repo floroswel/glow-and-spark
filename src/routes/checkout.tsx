@@ -301,6 +301,7 @@ function CheckoutPage() {
           customer_phone: orderData.customer_phone,
           gift_wrapping: orderData.gift_wrapping,
           gift_wrapping_price: orderData.gift_wrapping_price,
+          gift_wrapping_quantity: orderData.gift_wrapping_quantity,
           gift_wrapping_description: orderData.gift_wrapping_description,
           gift_message: orderData.gift_message,
         },

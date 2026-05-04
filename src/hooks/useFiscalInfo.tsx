@@ -19,9 +19,9 @@ export interface FiscalInfo {
 }
 
 const DEFAULT_DISCLAIMER_NON_VAT =
-  "Prețurile afișate sunt prețuri finale. Societatea nu este plătitoare de TVA conform art. 310 din Codul fiscal. [VERIFICARE_CONTABIL]";
+  "Prețurile afișate sunt prețuri finale. Societatea nu este plătitoare de TVA conform art. 310 din Codul fiscal.";
 const DEFAULT_DISCLAIMER_VAT =
-  "Prețurile includ TVA. [VERIFICARE_CONTABIL]";
+  "Prețurile includ TVA.";
 
 export function useFiscalInfo(): FiscalInfo {
   const { general } = useSiteSettings();

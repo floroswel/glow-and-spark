@@ -32,6 +32,9 @@ function AdminGdprDetailPage() {
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [editDetails, setEditDetails] = useState("");
+  const [editAdminNotes, setEditAdminNotes] = useState("");
+  const [savingFields, setSavingFields] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
@@ -43,6 +46,10 @@ function AdminGdprDetailPage() {
     setReq(r);
     setHistory(h ?? []);
     setDocuments(docs ?? []);
+    if (r) {
+      setEditDetails(r.details ?? "");
+      setEditAdminNotes(r.admin_notes ?? "");
+    }
     setLoading(false);
   };
 
@@ -88,6 +95,20 @@ function AdminGdprDetailPage() {
       .eq("id", id);
     if (error) { toast.error("Eroare"); return; }
     toast.success("Status actualizat");
+    load();
+  };
+  const saveFields = async () => {
+    setSavingFields(true);
+    const { error } = await supabase
+      .from("gdpr_requests")
+      .update({
+        details: editDetails.trim() || null,
+        admin_notes: editAdminNotes.trim() || null,
+      })
+      .eq("id", id);
+    setSavingFields(false);
+    if (error) { toast.error("Eroare la salvare"); return; }
+    toast.success("Salvat cu succes");
     load();
   };
 
@@ -184,12 +205,38 @@ function AdminGdprDetailPage() {
           )}
         </div>
 
-        {req.details && (
-          <div>
-            <span className="text-xs text-muted-foreground">Detalii solicitant:</span>
-            <p className="mt-1 text-sm bg-secondary/50 rounded-lg p-3">{req.details}</p>
-          </div>
-        )}
+        {/* Editable details */}
+        <div>
+          <label className="text-xs text-muted-foreground font-medium">Detalii solicitant (editabil):</label>
+          <textarea
+            value={editDetails}
+            onChange={(e) => setEditDetails(e.target.value.slice(0, 2000))}
+            rows={3}
+            className="mt-1 w-full rounded-lg border border-border bg-background p-3 text-sm"
+            placeholder="Detalii cerere…"
+          />
+        </div>
+
+        {/* Admin processing notes */}
+        <div>
+          <label className="text-xs text-muted-foreground font-medium">Comentariu de procesare (admin):</label>
+          <textarea
+            value={editAdminNotes}
+            onChange={(e) => setEditAdminNotes(e.target.value.slice(0, 2000))}
+            rows={3}
+            className="mt-1 w-full rounded-lg border border-border bg-background p-3 text-sm"
+            placeholder="Notează aici detalii de procesare, rezoluție, pași urmați…"
+          />
+        </div>
+
+        <button
+          onClick={saveFields}
+          disabled={savingFields}
+          className="rounded-lg bg-accent text-white px-4 py-2 text-sm font-medium hover:bg-accent/90 transition disabled:opacity-50 flex items-center gap-1.5"
+        >
+          {savingFields ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+          Salvează modificările
+        </button>
       </div>
 
       {/* Actions */}

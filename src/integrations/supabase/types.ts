@@ -1611,6 +1611,7 @@ export type Database = {
       }
       gdpr_requests: {
         Row: {
+          admin_notes: string | null
           created_at: string
           details: string | null
           email: string
@@ -1622,6 +1623,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          admin_notes?: string | null
           created_at?: string
           details?: string | null
           email: string
@@ -1633,6 +1635,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          admin_notes?: string | null
           created_at?: string
           details?: string | null
           email?: string

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink, ArrowUpDown } from "lucide-react";
 import { toast } from "sonner";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
@@ -33,6 +33,7 @@ function AdminGdprPage() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
+  const [sortBy, setSortBy] = useState<"created_desc" | "created_asc" | "processed_desc" | "processed_asc">("created_desc");
 
   const load = async () => {
     let q = supabase.from("gdpr_requests").select("*").order("created_at", { ascending: false });
@@ -51,10 +52,25 @@ function AdminGdprPage() {
   useEffect(() => { load(); }, [statusFilter, typeFilter, dateFrom, dateTo]);
 
   const filtered = useMemo(() => {
-    if (!searchEmail.trim()) return items;
-    const term = searchEmail.toLowerCase();
-    return items.filter((r) => r.email?.toLowerCase().includes(term));
-  }, [items, searchEmail]);
+    let list = items;
+    if (searchEmail.trim()) {
+      const term = searchEmail.toLowerCase();
+      list = list.filter((r) => r.email?.toLowerCase().includes(term));
+    }
+    list = [...list].sort((a, b) => {
+      switch (sortBy) {
+        case "created_asc":
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case "processed_desc":
+          return (b.processed_at ? new Date(b.processed_at).getTime() : 0) - (a.processed_at ? new Date(a.processed_at).getTime() : 0);
+        case "processed_asc":
+          return (a.processed_at ? new Date(a.processed_at).getTime() : 0) - (b.processed_at ? new Date(b.processed_at).getTime() : 0);
+        default: // created_desc
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+    });
+    return list;
+  }, [items, searchEmail, sortBy]);
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase
@@ -173,10 +189,27 @@ function AdminGdprPage() {
             />
           </div>
 
+          {/* Sort */}
+          <div className="flex flex-col gap-1">
+            <label className="text-xs text-muted-foreground flex items-center gap-1">
+              <ArrowUpDown className="h-3 w-3" /> Sortare
+            </label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm"
+            >
+              <option value="created_desc">Dată creare (nou → vechi)</option>
+              <option value="created_asc">Dată creare (vechi → nou)</option>
+              <option value="processed_desc">Dată procesare (nou → vechi)</option>
+              <option value="processed_asc">Dată procesare (vechi → nou)</option>
+            </select>
+          </div>
+
           {/* Reset */}
-          {(typeFilter !== "all" || dateFrom || dateTo || searchEmail) && (
+          {(typeFilter !== "all" || dateFrom || dateTo || searchEmail || sortBy !== "created_desc") && (
             <button
-              onClick={() => { setTypeFilter("all"); setDateFrom(""); setDateTo(""); setSearchEmail(""); }}
+              onClick={() => { setTypeFilter("all"); setDateFrom(""); setDateTo(""); setSearchEmail(""); setSortBy("created_desc"); }}
               className="text-xs text-accent hover:underline py-1.5"
             >
               Resetează

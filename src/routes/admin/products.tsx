@@ -1507,6 +1507,20 @@ function AdminProducts() {
 
               {activeTab === "seo" && (
                 <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Optimizare SEO</span>
+                    {editing.id && (
+                      <button
+                        type="button"
+                        onClick={() => generateAiCopy("seo")}
+                        disabled={!!aiLoading}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-100 disabled:opacity-50"
+                      >
+                        {aiLoading === "seo" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                        Generează SEO AI
+                      </button>
+                    )}
+                  </div>
                   <div className="rounded-lg bg-secondary/50 p-4">
                     <p className="text-xs font-medium text-muted-foreground mb-2">GOOGLE PREVIEW</p>
                     <p className="text-blue-600 text-base font-medium truncate">{editing.meta_title || editing.name || "Titlu produs"} — Mama Lucica</p>

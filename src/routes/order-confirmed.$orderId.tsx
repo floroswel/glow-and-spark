@@ -212,7 +212,10 @@ function OrderConfirmedPage() {
                   <div className="flex justify-between text-chart-2"><span>Reducere</span><span>-{order.discount_amount} RON</span></div>
                 )}
                 {order.gift_wrapping && (
-                  <div className="flex justify-between"><span className="text-muted-foreground">Ambalaj cadou</span><span>{Number(order.gift_wrapping_price || 0).toFixed(2)} RON</span></div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Ambalaj cadou{order.gift_wrapping_quantity > 1 ? ` ×${order.gift_wrapping_quantity}` : ''}</span>
+                    <span>{(Number(order.gift_wrapping_price || 0) * (order.gift_wrapping_quantity || 1)).toFixed(2)} RON</span>
+                  </div>
                 )}
                 {order.gift_message && (
                   <p className="text-xs text-muted-foreground italic">🎁 „{order.gift_message}"</p>

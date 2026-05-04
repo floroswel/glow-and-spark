@@ -46,6 +46,7 @@ function CheckoutPage() {
   const [error, setError] = useState("");
   const [debugInfo, setDebugInfo] = useState<string>("");
   const [giftWrapping, setGiftWrapping] = useState(false);
+  const [giftWrappingQty, setGiftWrappingQty] = useState(1);
   const [giftMessage, setGiftMessage] = useState("");
 
   // Loyalty / Wallet / Group discount
@@ -79,7 +80,8 @@ function CheckoutPage() {
 
   const giftWrappingPrice = Number(general?.gift_wrapping_price) || 15;
   const subtotalAfterGroupDiscount = cartSubtotal - groupDiscountAmount;
-  const preWalletTotal = subtotalAfterGroupDiscount + shippingCost - discountAmount - loyaltyDiscount + (giftWrapping ? giftWrappingPrice : 0);
+  const giftWrappingTotal = giftWrapping ? giftWrappingPrice * giftWrappingQty : 0;
+  const preWalletTotal = subtotalAfterGroupDiscount + shippingCost - discountAmount - loyaltyDiscount + giftWrappingTotal;
   const walletDeduction = useWallet ? Math.min(walletBalance, Math.max(preWalletTotal, 0)) : 0;
   const finalTotal = Math.max(preWalletTotal - walletDeduction, 0);
 
@@ -238,6 +240,7 @@ function CheckoutPage() {
       user_id: user?.id || null,
       gift_wrapping: giftWrapping,
       gift_wrapping_price: giftWrapping ? giftWrappingPrice : 0,
+      gift_wrapping_quantity: giftWrapping ? giftWrappingQty : 0,
       gift_wrapping_description: giftWrapping ? (general?.gift_wrapping_description || null) : null,
       gift_message: giftWrapping ? giftMessage || null : null,
     };
@@ -298,6 +301,7 @@ function CheckoutPage() {
           customer_phone: orderData.customer_phone,
           gift_wrapping: orderData.gift_wrapping,
           gift_wrapping_price: orderData.gift_wrapping_price,
+          gift_wrapping_quantity: orderData.gift_wrapping_quantity,
           gift_wrapping_description: orderData.gift_wrapping_description,
           gift_message: orderData.gift_message,
         },
@@ -608,22 +612,33 @@ function CheckoutPage() {
                     <div className="flex items-center gap-2">
                       <Gift className="h-4 w-4 text-accent" />
                       <span className="text-sm font-medium text-foreground">Ambalaj cadou</span>
-                      <span className="text-xs text-muted-foreground">(+{giftWrappingPrice} RON)</span>
+                      <span className="text-xs text-muted-foreground">(+{giftWrappingPrice} RON/buc)</span>
                     </div>
-                    <Switch checked={giftWrapping} onCheckedChange={setGiftWrapping} />
+                    <Switch checked={giftWrapping} onCheckedChange={(v) => { setGiftWrapping(v); if (!v) setGiftWrappingQty(1); }} />
                   </div>
                   {general?.gift_wrapping_description && (
                     <p className="text-xs text-muted-foreground">{general.gift_wrapping_description}</p>
                   )}
                   {giftWrapping && (
-                    <textarea
-                      value={giftMessage}
-                      onChange={(e) => setGiftMessage(e.target.value.slice(0, 150))}
-                      maxLength={150}
-                      rows={2}
-                      placeholder="Mesaj pentru card cadou..."
-                      className={inputClass}
-                    />
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs font-medium text-muted-foreground">Cantitate:</label>
+                        <div className="flex items-center gap-1">
+                          <button type="button" onClick={() => setGiftWrappingQty(Math.max(1, giftWrappingQty - 1))} className="h-7 w-7 rounded border border-border bg-card text-foreground text-sm flex items-center justify-center hover:bg-muted">−</button>
+                          <span className="w-8 text-center text-sm font-medium">{giftWrappingQty}</span>
+                          <button type="button" onClick={() => setGiftWrappingQty(Math.min(items.reduce((s, i) => s + i.quantity, 0), giftWrappingQty + 1))} className="h-7 w-7 rounded border border-border bg-card text-foreground text-sm flex items-center justify-center hover:bg-muted">+</button>
+                        </div>
+                        <span className="text-xs text-muted-foreground">= {giftWrappingTotal.toFixed(2)} RON</span>
+                      </div>
+                      <textarea
+                        value={giftMessage}
+                        onChange={(e) => setGiftMessage(e.target.value.slice(0, 150))}
+                        maxLength={150}
+                        rows={2}
+                        placeholder="Mesaj pentru card cadou..."
+                        className={inputClass}
+                      />
+                    </div>
                   )}
                 </div>
                 )}
@@ -736,7 +751,7 @@ function CheckoutPage() {
               {groupDiscountAmount > 0 && <div className="flex justify-between text-chart-2"><span>Discount grup (-{groupDiscount}%)</span><span>-{groupDiscountAmount.toFixed(2)} RON</span></div>}
               {loyaltyDiscount > 0 && <div className="flex justify-between text-chart-2"><span>Puncte fidelitate</span><span>-{loyaltyDiscount.toFixed(2)} RON</span></div>}
               {walletDeduction > 0 && <div className="flex justify-between text-chart-2"><span>Portofel</span><span>-{walletDeduction.toFixed(2)} RON</span></div>}
-              {giftWrapping && <div className="flex justify-between"><span className="text-muted-foreground">Ambalaj cadou</span><span>{giftWrappingPrice.toFixed(2)} RON</span></div>}
+              {giftWrapping && <div className="flex justify-between"><span className="text-muted-foreground">Ambalaj cadou ×{giftWrappingQty}</span><span>{giftWrappingTotal.toFixed(2)} RON</span></div>}
               <div className="flex justify-between border-t border-border pt-2 text-base font-bold"><span>Total</span><span>{finalTotal.toFixed(2)} RON</span></div>
             </div>
 

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, Clock, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, Clock, CheckCircle2, XCircle, Loader2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
@@ -41,22 +41,26 @@ function GdprPage() {
 
   useEffect(() => { load(); }, [user]);
 
+  const [lastConfirmation, setLastConfirmation] = useState<{ id: string; type: string } | null>(null);
+
   const submit = async (request_type: "export" | "delete" | "rectify") => {
     if (!user) return;
     if (request_type === "delete" && !confirm("Sigur dorești ștergerea contului și a tuturor datelor? Această acțiune este ireversibilă.")) return;
     setLoading(true);
-    const { error } = await supabase.from("gdpr_requests").insert({
+    const { data: inserted, error } = await supabase.from("gdpr_requests").insert({
       user_id: user.id,
       email: user.email!,
       request_type,
       details: details.trim() || null,
-    });
+    }).select("id").single();
     setLoading(false);
-    if (error) {
+    if (error || !inserted) {
       toast.error("Nu am putut trimite cererea");
       return;
     }
-    toast.success(`Cerere înregistrată. Te vom contacta în maxim ${GDPR_RESPONSE_DAYS} de zile calendaristice.`);
+    const shortId = inserted.id.slice(0, 8).toUpperCase();
+    setLastConfirmation({ id: shortId, type: request_type === "export" ? "Export date" : request_type === "delete" ? "Ștergere cont" : "Rectificare date" });
+    toast.success(`Cerere înregistrată — ID: ${shortId}`);
     setDetails("");
     load();
   };
@@ -140,6 +144,36 @@ function GdprPage() {
           <p className="mt-1 text-xs text-muted-foreground">Ștergere definitivă a contului și datelor.</p>
         </button>
       </div>
+
+      {/* Confirmation banner */}
+      {lastConfirmation && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 dark:border-emerald-800 p-5 space-y-2">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+            <span className="font-semibold text-emerald-800 dark:text-emerald-300">Cerere înregistrată cu succes!</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-emerald-700 dark:text-emerald-400">ID cerere:</span>
+            <code className="bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 px-3 py-1 rounded-md font-mono text-lg font-bold tracking-wider">
+              GDPR-{lastConfirmation.id}
+            </code>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(`GDPR-${lastConfirmation.id}`);
+                toast.success("ID copiat!");
+              }}
+              className="text-emerald-600 hover:text-emerald-800 transition"
+              title="Copiază ID"
+            >
+              <Copy className="h-4 w-4" />
+            </button>
+          </div>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400">
+            Tip: {lastConfirmation.type} · Vom răspunde în maxim {GDPR_RESPONSE_DAYS} zile calendaristice. Păstrează acest ID pentru referință.
+          </p>
+          <button onClick={() => setLastConfirmation(null)} className="text-xs text-emerald-500 hover:underline mt-1">Închide</button>
+        </div>
+      )}
 
       <div className="rounded-xl border border-border bg-card p-6">
         <label className="block text-sm font-medium text-foreground mb-2">

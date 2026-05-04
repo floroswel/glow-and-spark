@@ -631,6 +631,13 @@ function AdminGdprPage() {
                             </span>
                           );
                         })()}
+                        <button
+                          onClick={() => n.is_read ? markAsUnread(n.id) : markAsRead(n.id)}
+                          className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          {n.is_read ? <><EyeOff className="h-2.5 w-2.5" /> Necitit</> : <><Eye className="h-2.5 w-2.5" /> Citit</>}
+                        </button>
+                        })()}
                       </div>
                     </div>
                   );

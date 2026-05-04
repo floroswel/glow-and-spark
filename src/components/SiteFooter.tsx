@@ -347,6 +347,8 @@ export function SiteFooter() {
                           { label: "Politica cookie-uri", url: "/politica-cookies" },
                           { label: "Politica de returnare / drept de retragere", url: "/politica-returnare" },
                           { label: "Formular de retragere (OUG 34/2014)", url: "/formular-retragere" },
+                          { label: "Garanția produselor", url: "/garantie" },
+                          { label: "Reclamații", url: "/reclamatii" },
                           { label: "Siguranță și utilizare produse", url: "/siguranta-produse" },
                           { label: "Accesibilitate", url: "/accesibilitate" },
                           { label: "Contact", url: "/contact" },

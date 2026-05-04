@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LegalPageShell, CompanyIdentityBlock, DraftBanner } from "@/components/LegalPageShell";
+import { LegalPageShell, CompanyIdentityBlock } from "@/components/LegalPageShell";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 import { CANONICAL_DEADLINES } from "@/lib/compliance";
 
@@ -7,7 +7,7 @@ export const Route = createFileRoute("/garantie")({
   head: () => ({
     meta: [
       { title: "Garanția produselor — Mama Lucica" },
-      { name: "description", content: "Informații despre garanția și calitatea produselor Mama Lucica." },
+      { name: "description", content: "Informații despre garanția legală de conformitate și calitatea produselor Mama Lucica — 2 ani garanție conform legislației UE." },
     ],
   }),
   component: GarantiePage,
@@ -20,9 +20,8 @@ function GarantiePage() {
     <LegalPageShell
       title="Garanția produselor"
       breadcrumb="Garanție"
-      lastUpdate="2026-05-03"
+      lastUpdate="2026-05-04"
     >
-      <DraftBanner />
 
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">Calitatea produselor</h2>
@@ -32,12 +31,22 @@ function GarantiePage() {
           asigura că respectă standardele noastre de calitate.
         </p>
 
-        <h2 className="text-xl font-semibold">Garanție de conformitate</h2>
+        <h2 className="text-xl font-semibold">Garanție legală de conformitate</h2>
         <p>
-          Conform legislației românești (OUG 21/1992, Legea 449/2003), produsele trebuie să
-          corespundă descrierii de pe site. Dacă un produs prezintă defecte de fabricație sau
-          nu corespunde descrierii, aveți dreptul la reparare, înlocuire sau rambursare.
+          Conform legislației românești (OUG 21/1992, Legea 449/2003) și a Directivei UE 2019/771, 
+          produsele beneficiază de o garanție legală de conformitate de <strong>2 ani</strong> de la 
+          data livrării. Aceasta înseamnă că produsele trebuie să corespundă descrierii de pe site 
+          și să fie lipsite de defecte de fabricație.
         </p>
+        <p>
+          Dacă un produs prezintă defecte de conformitate în perioada de garanție, aveți dreptul la:
+        </p>
+        <ul className="list-disc pl-6 space-y-1">
+          <li><strong>Reparare gratuită</strong> a produsului</li>
+          <li><strong>Înlocuire</strong> cu un produs conform</li>
+          <li><strong>Reducere proporțională a prețului</strong></li>
+          <li><strong>Rambursare integrală</strong> (în cazul în care repararea sau înlocuirea nu sunt posibile)</li>
+        </ul>
 
         <h2 className="text-xl font-semibold">Dreptul de retragere</h2>
         <p>
@@ -50,13 +59,36 @@ function GarantiePage() {
           pentru detalii complete.
         </p>
 
-        <h2 className="text-xl font-semibold">Reclamații</h2>
+        <h2 className="text-xl font-semibold">Cum depui o reclamație</h2>
         <p>
-          Pentru orice problemă legată de calitatea produselor, ne puteți contacta la:
+          Pentru orice problemă legată de calitatea sau conformitatea produselor, ne puteți contacta la:
         </p>
         <ul className="list-none pl-0 space-y-0.5 text-sm">
           <li><strong>E-mail:</strong> <a href={`mailto:${C.email}`} className="text-accent hover:underline">{C.email}</a></li>
           <li><strong>Telefon:</strong> <a href={`tel:${C.phone.replace(/\s/g, "")}`} className="text-accent hover:underline">{C.phone}</a></li>
+        </ul>
+        <p className="text-sm text-muted-foreground mt-2">
+          Vă rugăm să includeți: numărul comenzii, fotografii ale produsului/defectului și o descriere 
+          a problemei. Vom răspunde în maximum 5 zile lucrătoare.
+        </p>
+
+        <h2 className="text-xl font-semibold">Autorități competente</h2>
+        <p>
+          Dacă nu sunteți mulțumit de soluția oferită, puteți contacta:
+        </p>
+        <ul className="list-disc pl-6 space-y-1">
+          <li>
+            <strong>ANPC</strong> — Autoritatea Națională pentru Protecția Consumatorilor:{" "}
+            <a href="https://anpc.ro" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">https://anpc.ro</a>
+          </li>
+          <li>
+            <strong>SAL</strong> — Soluționarea Alternativă a Litigiilor:{" "}
+            <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">https://anpc.ro/ce-este-sal/</a>
+          </li>
+          <li>
+            <strong>SOL/ODR</strong> — Platforma online a UE:{" "}
+            <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">https://ec.europa.eu/consumers/odr</a>
+          </li>
         </ul>
       </section>
 

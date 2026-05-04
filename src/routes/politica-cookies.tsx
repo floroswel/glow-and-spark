@@ -4,7 +4,7 @@ import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { getEnabledPlatforms, ESSENTIAL_COOKIES, CONSENT_POLICY_VERSION } from "@/config/marketing-tech";
 
-const LAST_UPDATE = "2026-05-02";
+const LAST_UPDATE = "2026-05-04";
 
 export const Route = createFileRoute("/politica-cookies")({
   head: () => ({
@@ -26,7 +26,6 @@ function CookiePolicyPage() {
   const marketingPlatforms = getEnabledPlatforms(general, "marketing");
   const allEnabled = getEnabledPlatforms(general);
 
-  // Build dynamic cookie table from enabled platforms + essential
   const cookieRows = [
     ...ESSENTIAL_COOKIES.map((c) => ({ ...c, type: "Necesar" as const })),
     ...analyticsPlatforms.flatMap((p) =>
@@ -52,11 +51,11 @@ function CookiePolicyPage() {
       </p>
 
       <h2>3. Temeiul legal</h2>
-      <p>[VERIFICARE_AVOCAT — temeiurile juridice exacte pentru cookie-uri trebuie confirmate de un avocat]</p>
       <p>
-        Cookie-urile <strong>necesare</strong> sunt plasate în baza interesului legitim — fără ele site-ul 
-        nu poate funcționa. Cookie-urile <strong>analitice</strong> și de <strong>marketing</strong> sunt plasate doar cu 
-        <strong> consimțământul dumneavoastră explicit</strong>, acordat prin bannerul de cookie-uri afișat la prima vizită.
+        Cookie-urile <strong>necesare</strong> sunt plasate în baza interesului legitim al operatorului (art. 6 alin. 1 lit. f GDPR) — 
+        fără ele site-ul nu poate funcționa corect. Cookie-urile <strong>analitice</strong> și de <strong>marketing</strong> sunt plasate doar cu 
+        <strong> consimțământul dumneavoastră explicit</strong> (art. 6 alin. 1 lit. a GDPR), acordat prin bannerul de cookie-uri afișat la prima vizită, 
+        conform Directivei ePrivacy și legislației române de transpunere.
       </p>
 
       <h2>4. Categorii de cookie-uri utilizate</h2>
@@ -105,10 +104,6 @@ function CookiePolicyPage() {
         </p>
       )}
 
-      <p className="text-xs text-muted-foreground/70 italic mt-4">
-        [VERIFY_REAL_SCRIPTS — Dacă adăugați noi servicii terțe, actualizați configurarea din admin și această pagină se va actualiza automat]
-      </p>
-
       <h2>5. Lista detaliată a cookie-urilor</h2>
       <div className="overflow-x-auto rounded-lg border border-border">
         <table className="w-full text-sm">
@@ -146,7 +141,7 @@ function CookiePolicyPage() {
       <h2>6. Cum vă gestionați preferințele</h2>
       <ul className="list-disc pl-5 space-y-2">
         <li><strong>Bannerul de consimțământ:</strong> La prima vizită, vi se afișează un banner prin care puteți accepta sau refuza categoriile opționale. Consimțământul este jurnalizat cu timestamp și versiunea politicii (v{CONSENT_POLICY_VERSION}).</li>
-        <li><strong>Setările browser-ului:</strong> Majoritatea browserelor vă permit să blocați sau să ștergeți cookie-urile.</li>
+        <li><strong>Setările browser-ului:</strong> Majoritatea browserelor vă permit să blocați sau să ștergeți cookie-urile. Rețineți că dezactivarea cookie-urilor esențiale poate afecta funcționalitatea site-ului.</li>
         <li>
           <strong>Instrumente de opt-out ale terților:</strong>
           <ul className="list-disc pl-5 mt-1 space-y-0.5">
@@ -161,9 +156,11 @@ function CookiePolicyPage() {
 
       <h2>7. Drepturile dumneavoastră</h2>
       <p>
-        Detalii complete în{" "}
+        Detalii complete privind drepturile conform GDPR sunt disponibile în{" "}
         <Link to="/politica-confidentialitate" className="text-accent hover:underline">Politica de Confidențialitate</Link>.
-        Plângeri la <strong>ANSPDCP</strong> — <a href="https://www.dataprotection.ro" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">www.dataprotection.ro</a>.
+      </p>
+      <p>
+        Aveți dreptul de a depune o plângere la <strong>ANSPDCP</strong> — <a href="https://www.dataprotection.ro" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">www.dataprotection.ro</a>.
       </p>
 
       <h2>8. Contact</h2>

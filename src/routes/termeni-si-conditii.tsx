@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPageShell, CompanyIdentityBlock } from "@/components/LegalPageShell";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
+import { useFiscalInfo } from "@/hooks/useFiscalInfo";
 import { WITHDRAWAL_PERIOD_DAYS, COMPLAINT_RESPONSE_DAYS } from "@/lib/compliance";
 
-const LAST_UPDATE = "2026-05-02";
+const LAST_UPDATE = "2026-05-04";
 
 export const Route = createFileRoute("/termeni-si-conditii")({
   head: () => ({
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/termeni-si-conditii")({
 
 function TermeniPage() {
   const C = useCompanyInfo();
+  const fiscal = useFiscalInfo();
 
   return (
     <LegalPageShell title="Termeni și Condiții" breadcrumb="Termeni și Condiții" lastUpdate={LAST_UPDATE}>
@@ -38,7 +40,8 @@ function TermeniPage() {
       <p>
         Prezentele Termeni și Condiții reglementează relația comercială dintre Vânzător și Cumpărător 
         privind vânzarea la distanță a produselor comercializate pe {C.site}, conform legislației 
-        române aplicabile privind drepturile consumatorilor în cadrul contractelor încheiate la distanță.
+        române aplicabile, în special OUG 34/2014 privind drepturile consumatorilor în cadrul 
+        contractelor încheiate la distanță.
       </p>
 
       <h2>3a. Tipul clienților — B2C și B2B</h2>
@@ -51,9 +54,9 @@ function TermeniPage() {
         (relație <strong>B2B</strong>) beneficiază de aceleași condiții comerciale, cu următoarele excepții:
       </p>
       <ul className="list-disc pl-5 space-y-1">
-        <li>Dreptul de retragere prevăzut la secțiunea 7 se aplică <strong>exclusiv consumatorilor</strong> (persoane fizice) conform legislației privind protecția consumatorilor. Clienții B2B nu beneficiază de acest drept, cu excepția cazurilor în care legislația aplicabilă prevede altfel. [VERIFICARE_AVOCAT — confirmați aplicabilitatea]</li>
-        <li>Garanția legală de conformitate se aplică diferit pentru clienți B2B, conform Codului Civil. [VERIFICARE_AVOCAT]</li>
-        <li>Facturarea se face cu datele fiscale ale persoanei juridice (CUI, denumire, adresă sediu social)</li>
+        <li>Dreptul de retragere prevăzut la secțiunea 7 se aplică <strong>exclusiv consumatorilor</strong> (persoane fizice) conform OUG 34/2014. Clienții B2B nu beneficiază de acest drept.</li>
+        <li>Garanția legală de conformitate se aplică diferit pentru clienți B2B, conform dispozițiilor Codului Civil.</li>
+        <li>Facturarea se face cu datele fiscale ale persoanei juridice (CUI, denumire, adresă sediu social).</li>
       </ul>
 
       <h2>4. Plasarea și confirmarea comenzii</h2>
@@ -73,22 +76,24 @@ function TermeniPage() {
 
       <h2>5. Prețuri și plată</h2>
       <p>
-        Toate prețurile afișate pe site sunt exprimate în <strong>RON (lei românești)</strong> și sunt prețuri finale. 
-        [PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — specificați regimul fiscal aplicabil]
+        Toate prețurile afișate pe site sunt exprimate în <strong>RON (lei românești)</strong> și sunt prețuri finale.{" "}
+        {fiscal.priceDisclaimer}
       </p>
       <p>
         Prețurile pot fi modificate oricând de către Vânzător, dar modificările nu afectează comenzile deja confirmate.
       </p>
       <p>Metodele de plată acceptate:</p>
       <ul className="list-disc pl-5 space-y-1">
-        <li><strong>Plata online cu cardul</strong> — prin procesatorul autorizat de plăți. Datele cardului sunt procesate exclusiv de procesator; {C.name} nu stochează datele cardului. [PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — identificați procesatorul]</li>
+        <li><strong>Plata online cu cardul</strong> — prin procesatorul autorizat de plăți <strong>Netopia Payments</strong>. Datele cardului sunt procesate exclusiv de Netopia; {C.name} nu stochează datele cardului.</li>
         <li><strong>Ramburs la livrare</strong> — plata se face la primirea coletului către curier.</li>
+        <li><strong>Transfer bancar</strong> — în contul afișat pe pagina <Link to="/metode-plata" className="text-accent hover:underline">Metode de plată</Link>.</li>
       </ul>
 
       <h2>6. Livrare</h2>
       <p>
         Livrarea se efectuează pe teritoriul României prin servicii de curierat. 
-        [PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — verificați termenele și costurile efective de livrare]
+        Detalii complete privind termenele și costurile de livrare sunt disponibile pe pagina{" "}
+        <Link to="/transport-livrare" className="text-accent hover:underline">Transport și livrare</Link>.
       </p>
       <p>
         La primirea coletului, verificați integritatea ambalajului. Dacă observați deteriorări vizibile, 
@@ -97,13 +102,13 @@ function TermeniPage() {
 
       <h2>7. Dreptul de retragere</h2>
       <p>
-        Conform legislației privind drepturile consumatorilor, <strong>Consumatorul</strong> (persoană fizică, achiziție non-profesională) 
+        Conform OUG 34/2014, <strong>Consumatorul</strong> (persoană fizică, achiziție non-profesională) 
         beneficiază de dreptul de retragere din contractul de vânzare la distanță 
         în termen de <strong>{WITHDRAWAL_PERIOD_DAYS} zile calendaristice</strong> de la primirea produsului, fără a fi necesară justificarea deciziei.
       </p>
       <p>
         <strong>Clienții B2B</strong> (persoane juridice, PFA, II) nu beneficiază de dreptul de retragere, 
-        cu excepția cazurilor prevăzute expres de legislația aplicabilă. [VERIFICARE_AVOCAT]
+        conform legislației aplicabile.
       </p>
       <p>
         Detalii complete în <Link to="/politica-returnare" className="text-accent hover:underline">Politica de Returnare</Link>. 
@@ -112,8 +117,9 @@ function TermeniPage() {
 
       <h2>8. Garanție și conformitate</h2>
       <p>
-        Produsele comercializate beneficiază de garanția legală de conformitate conform legislației aplicabile.
-        [PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — verificați durata garanției legale aplicabile produselor comercializate]
+        Produsele comercializate beneficiază de garanția legală de conformitate conform OUG 21/1992 
+        și Legii 449/2003. Garanția legală de conformitate este de <strong>2 ani</strong> de la data 
+        livrării produsului, conform legislației UE în vigoare.
       </p>
       <p>
         Dacă produsul nu este conform cu descrierea de pe site sau prezintă defecte, 
@@ -138,8 +144,9 @@ function TermeniPage() {
 
       <h2>11. Protecția datelor cu caracter personal</h2>
       <p>
-        Datele personale sunt prelucrate în conformitate cu legislația aplicabilă privind protecția datelor personale. 
-        Detalii complete în <Link to="/politica-confidentialitate" className="text-accent hover:underline">Politica de Confidențialitate</Link>.
+        Datele personale sunt prelucrate în conformitate cu Regulamentul (UE) 2016/679 (GDPR) și 
+        legislația română aplicabilă. Detalii complete în{" "}
+        <Link to="/politica-confidentialitate" className="text-accent hover:underline">Politica de Confidențialitate</Link>.
       </p>
 
       <h2>12. Cookie-uri</h2>
@@ -162,7 +169,13 @@ function TermeniPage() {
         <a href="https://anpc.ro" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">https://anpc.ro</a>
       </p>
       <p>
-        <strong>Platforma SOL/ODR</strong> — Soluționare Online a Litigiilor (pentru consumatori): {" "}
+        <strong>SAL</strong> — Soluționarea Alternativă a Litigiilor: {" "}
+        <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
+          https://anpc.ro/ce-este-sal/
+        </a>
+      </p>
+      <p>
+        <strong>Platforma SOL/ODR</strong> — Soluționare Online a Litigiilor (Regulamentul UE nr. 524/2013): {" "}
         <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
           https://ec.europa.eu/consumers/odr
         </a>
@@ -177,9 +190,9 @@ function TermeniPage() {
         Dacă soluționarea amiabilă nu este posibilă:
       </p>
       <ul className="list-disc pl-5 space-y-1">
-        <li><strong>Consumatorii</strong> pot sesiza ANPC sau pot utiliza platforma ODR</li>
+        <li><strong>Consumatorii</strong> pot sesiza ANPC sau pot utiliza platforma ODR (link mai sus)</li>
+        <li><strong>Consumatorii</strong> pot recurge la procedura SAL (Soluționarea Alternativă a Litigiilor) prin entitățile înscrise în registrul ANPC</li>
         <li><strong>Clienții B2B</strong> pot recurge la medierea comercială sau la instanțele judecătorești competente conform secțiunii 15</li>
-        <li>Orice parte poate utiliza procedura de mediere conform legislației române [VERIFICARE_AVOCAT — specificați centrul de mediere, dacă este cazul]</li>
       </ul>
 
       <h2>14. Forța majoră</h2>
@@ -188,17 +201,17 @@ function TermeniPage() {
         dacă aceasta se datorează unui eveniment de forță majoră, conform legislației civile aplicabile.
       </p>
 
-      <h2>15. Legea aplicabilă</h2>
+      <h2>15. Legea aplicabilă și jurisdicția</h2>
       <p>
         Prezentul contract este guvernat de legislația română. 
       </p>
       <p>
         <strong>Pentru consumatori:</strong> Orice litigiu va fi soluționat de instanțele competente din România, 
-        conform domiciliului consumatorului, în conformitate cu legislația privind protecția consumatorilor.
+        conform domiciliului consumatorului, în conformitate cu OUG 34/2014 și legislația privind protecția consumatorilor.
       </p>
       <p>
         <strong>Pentru clienți B2B:</strong> Competența revine instanțelor judecătorești de la sediul Vânzătorului, 
-        dacă părțile nu convin altfel. [VERIFICARE_AVOCAT — confirmați clauza de jurisdicție]
+        dacă părțile nu convin altfel prin acord scris.
       </p>
 
       <h2>16. Modificări</h2>
@@ -207,6 +220,19 @@ function TermeniPage() {
         Modificările sunt valabile de la data publicării pe site. Comenzile plasate anterior modificării rămân sub incidența 
         versiunii acceptate la momentul plasării.
       </p>
+
+      <h2>17. Informații suplimentare obligatorii</h2>
+      <p>
+        Conform OUG 34/2014 și Legii 365/2002 privind comerțul electronic, vă informăm:
+      </p>
+      <ul className="list-disc pl-5 space-y-1">
+        <li>Caracteristicile principale ale produselor sunt descrise pe fiecare pagină de produs.</li>
+        <li>Prețul total, inclusiv costurile de livrare, este afișat clar înainte de finalizarea comenzii.</li>
+        <li>Durata minimă a contractului: nu există o durată minimă — fiecare comandă este un contract individual.</li>
+        <li>Funcționalitatea conținutului digital: nu se aplică produselor fizice comercializate.</li>
+        <li>Limba contractului: română.</li>
+        <li>Pași tehnici de încheiere a contractului: selectare produse → adăugare în coș → completare date livrare → alegere metodă plată → confirmare comandă.</li>
+      </ul>
 
     </LegalPageShell>
   );

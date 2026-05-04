@@ -18,6 +18,7 @@ import { Route as SigurantaProduseRouteImport } from './routes/siguranta-produse
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ReclamatiiRouteImport } from './routes/reclamatii'
 import { Route as PoliticaReturnareRouteImport } from './routes/politica-returnare'
 import { Route as PoliticaCookiesRouteImport } from './routes/politica-cookies'
 import { Route as PoliticaConfidentialitateRouteImport } from './routes/politica-confidentialitate'
@@ -186,6 +187,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReclamatiiRoute = ReclamatiiRouteImport.update({
+  id: '/reclamatii',
+  path: '/reclamatii',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PoliticaReturnareRoute = PoliticaReturnareRouteImport.update({
@@ -835,6 +841,7 @@ export interface FileRoutesByFullPath {
   '/politica-confidentialitate': typeof PoliticaConfidentialitateRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
   '/politica-returnare': typeof PoliticaReturnareRoute
+  '/reclamatii': typeof ReclamatiiRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
@@ -968,6 +975,7 @@ export interface FileRoutesByTo {
   '/politica-confidentialitate': typeof PoliticaConfidentialitateRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
   '/politica-returnare': typeof PoliticaReturnareRoute
+  '/reclamatii': typeof ReclamatiiRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
@@ -1104,6 +1112,7 @@ export interface FileRoutesById {
   '/politica-confidentialitate': typeof PoliticaConfidentialitateRoute
   '/politica-cookies': typeof PoliticaCookiesRoute
   '/politica-returnare': typeof PoliticaReturnareRoute
+  '/reclamatii': typeof ReclamatiiRoute
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
@@ -1241,6 +1250,7 @@ export interface FileRouteTypes {
     | '/politica-confidentialitate'
     | '/politica-cookies'
     | '/politica-returnare'
+    | '/reclamatii'
     | '/reset-password'
     | '/robots.txt'
     | '/search'
@@ -1374,6 +1384,7 @@ export interface FileRouteTypes {
     | '/politica-confidentialitate'
     | '/politica-cookies'
     | '/politica-returnare'
+    | '/reclamatii'
     | '/reset-password'
     | '/robots.txt'
     | '/search'
@@ -1509,6 +1520,7 @@ export interface FileRouteTypes {
     | '/politica-confidentialitate'
     | '/politica-cookies'
     | '/politica-returnare'
+    | '/reclamatii'
     | '/reset-password'
     | '/robots.txt'
     | '/search'
@@ -1645,6 +1657,7 @@ export interface RootRouteChildren {
   PoliticaConfidentialitateRoute: typeof PoliticaConfidentialitateRoute
   PoliticaCookiesRoute: typeof PoliticaCookiesRoute
   PoliticaReturnareRoute: typeof PoliticaReturnareRoute
+  ReclamatiiRoute: typeof ReclamatiiRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SearchRoute: typeof SearchRoute
@@ -1725,6 +1738,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reclamatii': {
+      id: '/reclamatii'
+      path: '/reclamatii'
+      fullPath: '/reclamatii'
+      preLoaderRoute: typeof ReclamatiiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/politica-returnare': {
@@ -2891,6 +2911,7 @@ const rootRouteChildren: RootRouteChildren = {
   PoliticaConfidentialitateRoute: PoliticaConfidentialitateRoute,
   PoliticaCookiesRoute: PoliticaCookiesRoute,
   PoliticaReturnareRoute: PoliticaReturnareRoute,
+  ReclamatiiRoute: ReclamatiiRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SearchRoute: SearchRoute,

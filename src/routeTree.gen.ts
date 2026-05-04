@@ -76,6 +76,7 @@ import { Route as AdminPreLaunchRouteImport } from './routes/admin.pre-launch'
 import { Route as AdminPopupsManagerRouteImport } from './routes/admin/popups-manager'
 import { Route as AdminPopupRouteImport } from './routes/admin/popup'
 import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
+import { Route as AdminPartnersRouteImport } from './routes/admin/partners'
 import { Route as AdminPagesRouteImport } from './routes/admin/pages'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
 import { Route as AdminMonitoringRouteImport } from './routes/admin/monitoring'
@@ -480,6 +481,11 @@ const AdminPopupRoute = AdminPopupRouteImport.update({
 const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
   id: '/payments',
   path: '/payments',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPartnersRoute = AdminPartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPagesRoute = AdminPagesRouteImport.update({
@@ -910,6 +916,7 @@ export interface FileRoutesByFullPath {
   '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
+  '/admin/partners': typeof AdminPartnersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/popups-manager': typeof AdminPopupsManagerRoute
@@ -1046,6 +1053,7 @@ export interface FileRoutesByTo {
   '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
+  '/admin/partners': typeof AdminPartnersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/popups-manager': typeof AdminPopupsManagerRoute
@@ -1185,6 +1193,7 @@ export interface FileRoutesById {
   '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
+  '/admin/partners': typeof AdminPartnersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/popups-manager': typeof AdminPopupsManagerRoute
@@ -1325,6 +1334,7 @@ export interface FileRouteTypes {
     | '/admin/monitoring'
     | '/admin/orders'
     | '/admin/pages'
+    | '/admin/partners'
     | '/admin/payments'
     | '/admin/popup'
     | '/admin/popups-manager'
@@ -1461,6 +1471,7 @@ export interface FileRouteTypes {
     | '/admin/monitoring'
     | '/admin/orders'
     | '/admin/pages'
+    | '/admin/partners'
     | '/admin/payments'
     | '/admin/popup'
     | '/admin/popups-manager'
@@ -1599,6 +1610,7 @@ export interface FileRouteTypes {
     | '/admin/monitoring'
     | '/admin/orders'
     | '/admin/pages'
+    | '/admin/partners'
     | '/admin/payments'
     | '/admin/popup'
     | '/admin/popups-manager'
@@ -2169,6 +2181,13 @@ declare module '@tanstack/react-router' {
       path: '/payments'
       fullPath: '/admin/payments'
       preLoaderRoute: typeof AdminPaymentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/partners': {
+      id: '/admin/partners'
+      path: '/partners'
+      fullPath: '/admin/partners'
+      preLoaderRoute: typeof AdminPartnersRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/pages': {
@@ -2835,6 +2854,7 @@ interface AdminRouteChildren {
   AdminMonitoringRoute: typeof AdminMonitoringRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPagesRoute: typeof AdminPagesRoute
+  AdminPartnersRoute: typeof AdminPartnersRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminPopupRoute: typeof AdminPopupRoute
   AdminPopupsManagerRoute: typeof AdminPopupsManagerRoute
@@ -2906,6 +2926,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminMonitoringRoute: AdminMonitoringRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPagesRoute: AdminPagesRoute,
+  AdminPartnersRoute: AdminPartnersRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminPopupRoute: AdminPopupRoute,
   AdminPopupsManagerRoute: AdminPopupsManagerRoute,

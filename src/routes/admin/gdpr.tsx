@@ -202,10 +202,16 @@ function AdminGdprPage() {
               <Icon className="h-5 w-5 text-accent mt-0.5" />
               <div className="flex-1 min-w-[240px]">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-foreground">{TYPE_LABEL[r.request_type] ?? r.request_type}</span>
+                  <Link to="/admin/gdpr/$id" params={{ id: r.id }} className="font-semibold text-foreground hover:text-accent transition">
+                    {TYPE_LABEL[r.request_type] ?? r.request_type}
+                  </Link>
+                  <code className="text-[10px] text-muted-foreground font-mono">GDPR-{r.id.slice(0, 8).toUpperCase()}</code>
                   {overdue && (
                     <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded font-medium">TERMEN DEPĂȘIT</span>
                   )}
+                  <Link to="/admin/gdpr/$id" params={{ id: r.id }} className="text-accent hover:underline">
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </Link>
                 </div>
                 <div className="text-xs text-muted-foreground mt-0.5">
                   {r.email} · {new Date(r.created_at).toLocaleString("ro-RO")}

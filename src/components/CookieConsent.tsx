@@ -68,12 +68,12 @@ export function CookieConsent() {
   };
 
   const acceptEssential = () => {
-    setConsent({ analytics: false, marketing: false }, "reject_optional");
+    setConsent({ analytics: false, marketing: false, preferences: false }, "reject_optional");
     setVisible(false);
   };
 
   const saveCustom = () => {
-    setConsent({ analytics, marketing }, "custom");
+    setConsent({ analytics, marketing, preferences }, "custom");
     setVisible(false);
   };
 

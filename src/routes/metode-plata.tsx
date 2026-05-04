@@ -20,7 +20,8 @@ function MetodePlatPage() {
   return (
     <LegalPageShell
       title="Metode de plată"
-      breadcrumbs={[{ label: "Acasă", href: "/" }, { label: "Metode de plată" }]}
+      breadcrumb="Metode de plată"
+      lastUpdate="2026-05-03"
     >
       <DraftBanner />
 

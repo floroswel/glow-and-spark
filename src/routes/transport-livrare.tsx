@@ -17,7 +17,8 @@ function TransportPage() {
   return (
     <LegalPageShell
       title="Transport și livrare"
-      breadcrumbs={[{ label: "Acasă", href: "/" }, { label: "Transport și livrare" }]}
+      breadcrumb="Transport și livrare"
+      lastUpdate="2026-05-03"
     >
       <DraftBanner />
 

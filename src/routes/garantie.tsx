@@ -19,7 +19,8 @@ function GarantiePage() {
   return (
     <LegalPageShell
       title="Garanția produselor"
-      breadcrumbs={[{ label: "Acasă", href: "/" }, { label: "Garanție" }]}
+      breadcrumb="Garanție"
+      lastUpdate="2026-05-03"
     >
       <DraftBanner />
 

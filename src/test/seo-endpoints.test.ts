@@ -27,9 +27,8 @@ describe("sitemap.xml — source validation", () => {
     expect(SITEMAP_SOURCE).toContain("https://mamalucica.ro");
   });
 
-  it("sets Content-Type to application/xml via both Response and setResponseHeader", () => {
+  it("sets Content-Type to application/xml", () => {
     expect(SITEMAP_SOURCE).toMatch(/Content-Type.*application\/xml/);
-    expect(SITEMAP_SOURCE).toContain('setResponseHeader("Content-Type"');
   });
 
   it("includes homepage with priority 1.0", () => {

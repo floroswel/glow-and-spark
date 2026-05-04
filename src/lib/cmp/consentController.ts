@@ -75,6 +75,7 @@ export function getConsent(): ConsentRecord | null {
           necessary: true,
           analytics: !!old.analytics,
           marketing: !!old.marketing,
+          preferences: !!old.preferences,
         },
       };
       localStorage.setItem(CMP_KEY, JSON.stringify(migrated));

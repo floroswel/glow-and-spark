@@ -189,7 +189,7 @@ function AdminGdprPage() {
     return list;
   }, [logEntries, logFilterType, logFilterCategory]);
 
-
+  const filtered = useMemo(() => {
     let list = items;
     if (searchEmail.trim()) {
       const term = searchEmail.toLowerCase();

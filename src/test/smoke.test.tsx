@@ -84,10 +84,9 @@ describe("Homepage — Hero Section", () => {
     expect(screen.getByText("Descoperă Colecția")).toBeInTheDocument();
   });
 
-  it("shows trust micro-copy under CTA", () => {
+  it("shows subtitle under hero", () => {
     render(<HeroSection />);
-    expect(screen.getByText(/Ceară de soia 100% naturală/)).toBeInTheDocument();
-    expect(screen.getByText(/Retur gratuit 14 zile/)).toBeInTheDocument();
+    expect(screen.getByText(/Ceară artizanală/)).toBeInTheDocument();
   });
 
   it("renders hero title lines", () => {

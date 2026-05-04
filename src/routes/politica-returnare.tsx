@@ -5,13 +5,13 @@ import { LegalPageShell } from "@/components/LegalPageShell";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 import { WITHDRAWAL_PERIOD_DAYS, formatDeadline } from "@/lib/compliance";
 
-const LAST_UPDATE = "2026-05-02";
+const LAST_UPDATE = "2026-05-04";
 
 export const Route = createFileRoute("/politica-returnare")({
   head: () => ({
     meta: [
       { title: "Politică de Returnare — Mama Lucica" },
-      { name: "description", content: "Politica de returnare Mama Lucica — retur în 14 zile calendaristice, fără justificare, conform legislației privind drepturile consumatorilor." },
+      { name: "description", content: "Politica de returnare Mama Lucica — retur în 14 zile calendaristice, fără justificare, conform OUG 34/2014." },
       { property: "og:title", content: "Politică de Returnare — Mama Lucica" },
       { property: "og:description", content: "Informații complete despre dreptul de retur și procedura de returnare." },
     ],
@@ -29,7 +29,7 @@ function PoliticaReturnarePage() {
   const sections = [
     {
       title: "1. Dreptul de retragere",
-      content: `Conform legislației privind drepturile consumatorilor, aveți dreptul de a vă retrage din contractul de vânzare la distanță în termen de **${WITHDRAWAL_PERIOD_DAYS} zile calendaristice** de la data primirii produsului, fără a fi necesară justificarea deciziei și fără a suporta alte costuri decât cele de returnare.
+      content: `Conform OUG 34/2014, aveți dreptul de a vă retrage din contractul de vânzare la distanță în termen de **${WITHDRAWAL_PERIOD_DAYS} zile calendaristice** de la data primirii produsului, fără a fi necesară justificarea deciziei și fără a suporta alte costuri decât cele de returnare.
 
 Termenul de retragere expiră după ${WITHDRAWAL_PERIOD_DAYS} zile calendaristice de la data la care dumneavoastră sau o terță parte desemnată de dumneavoastră, alta decât transportatorul, intră în posesia fizică a produselor.
 
@@ -64,13 +64,14 @@ Recomandăm utilizarea unui serviciu de curierat cu confirmare de primire pentru
     },
     {
       title: "3. Produse excluse de la retur",
-      content: `[PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — verificați lista de excepții aplicabile produselor dumneavoastră conform legislației]
+      content: `Conform OUG 34/2014, dreptul de retragere NU se aplică în cazul:
 
-Dreptul de retragere NU se aplică în cazul:
 • **Produselor sigilate din motive de igienă sau de protecție a sănătății** care au fost desigilate după livrare.
 • **Produselor personalizate sau fabricate la comandă** conform specificațiilor consumatorului.
 • **Produselor care, prin natura lor, nu pot fi returnate** din cauza deteriorării rapide sau expirării.
-• **Produselor care au fost amestecate inseparabil** cu alte bunuri după livrare.`,
+• **Produselor care au fost amestecate inseparabil** cu alte bunuri după livrare.
+
+În cazul lumânărilor: produsele care au fost aprinse/utilizate pot fi considerate desigilate și pot fi excluse de la retur.`,
     },
     {
       title: "4. Starea produsului la retur",
@@ -79,7 +80,7 @@ Dreptul de retragere NU se aplică în cazul:
 • Să fie returnat în **ambalajul original**, complet, inclusiv accesoriile, etichetele și documentele care l-au însoțit.
 • Să nu prezinte **urme de utilizare**, zgârieturi, deteriorări sau modificări.
 
-**Important:** Produsele care au fost utilizate sau deteriorate de consumator pot fi supuse unei **reduceri proporționale a sumei rambursate**, corespunzătoare deprecierii bunurilor, conform legislației aplicabile.
+**Important:** Produsele care au fost utilizate sau deteriorate de consumator pot fi supuse unei **reduceri proporționale a sumei rambursate**, corespunzătoare deprecierii bunurilor, conform OUG 34/2014.
 
 Vă recomandăm să fotografiați produsul înainte de expediere pentru a evita eventualele neînțelegeri.`,
     },
@@ -99,7 +100,7 @@ Putem amâna rambursarea până la primirea produselor înapoi sau până la pri
 • Am livrat un **produs greșit** față de cel comandat.
 • Produsul a fost **deteriorat în timpul transportului** — vă rugăm să refuzați coletul la primire sau să ne contactați în termen de 48 de ore cu fotografii ale deteriorării.
 
-[PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — verificați costul estimativ al returului]`,
+Costul estimativ al expedierii unui colet de retur variază în funcție de curierul ales (de regulă între 15-30 RON).`,
     },
     {
       title: "7. Produse neconforme / garanție",
@@ -109,8 +110,7 @@ Putem amâna rambursarea până la primirea produselor înapoi sau până la pri
 • **Repararea gratuită** (dacă este posibil)
 • **Rambursarea integrală** a prețului, inclusiv costurile de livrare și retur
 
-Garanția legală de conformitate se aplică conform legislației în vigoare.
-[PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL — verificați durata garanției legale aplicabile]
+Garanția legală de conformitate este de **2 ani** de la data livrării, conform legislației UE și române în vigoare (OUG 21/1992, Legea 449/2003).
 
 Pentru sesizări privind produse neconforme, contactați-ne la **${C.email}** cu:
 • Fotografii ale produsului și defectului
@@ -124,8 +124,11 @@ Pentru sesizări privind produse neconforme, contactați-ne la **${C.email}** cu
 Website: https://anpc.ro
 Telefon InfoCons: 0219615 (linia consumatorului)
 
+**SAL — Soluționarea Alternativă a Litigiilor**
+Entități SAL înscrise în registrul ANPC: https://anpc.ro/ce-este-sal/
+
 **Platforma SOL (Soluționare Online a Litigiilor)**
-Consumatorii pot utiliza platforma europeană:
+Consumatorii pot utiliza platforma europeană conform Regulamentului UE nr. 524/2013:
 https://ec.europa.eu/consumers/odr
 
 **Date identificare vânzător:**
@@ -141,10 +144,9 @@ Telefon: ${C.phone}`,
   return (
     <LegalPageShell title="Politică de Returnare" breadcrumb="Politică de returnare" lastUpdate={LAST_UPDATE}>
       <p className="text-center text-muted-foreground -mt-4 mb-6">
-        Conform legislației privind drepturile consumatorilor
+        Conform OUG 34/2014 privind drepturile consumatorilor
       </p>
 
-      {/* Prominent withdrawal form CTA — near top per legal best practice */}
       <div className="rounded-2xl border border-accent/30 bg-accent/5 p-5 flex flex-col sm:flex-row items-center justify-between gap-3 not-prose -mt-2 mb-6">
         <div>
           <p className="font-semibold text-foreground text-sm">Dorești să returnezi un produs?</p>
@@ -197,7 +199,6 @@ Telefon: ${C.phone}`,
           );
         })}
       </div>
-
 
       <div className="mt-6 rounded-2xl border border-border bg-card p-6 text-center not-prose">
         <p className="font-semibold text-foreground">Ai întrebări despre retur?</p>

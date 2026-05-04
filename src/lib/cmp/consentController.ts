@@ -18,6 +18,7 @@ export interface ConsentCategories {
   necessary: true;
   analytics: boolean;
   marketing: boolean;
+  preferences: boolean;
 }
 
 export interface ConsentRecord {

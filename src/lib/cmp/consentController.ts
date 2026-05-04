@@ -330,7 +330,7 @@ export function hasConsent(): boolean {
   return getConsent() !== null;
 }
 
-export function isCategoryAllowed(category: "analytics" | "marketing"): boolean {
+export function isCategoryAllowed(category: "analytics" | "marketing" | "preferences"): boolean {
   const consent = getConsent();
   if (!consent) return false;
   return consent.categories[category] === true;

@@ -1101,16 +1101,31 @@ function AdminProducts() {
                     <label className={labelClass}>Brand</label>
                     <input value={editing.brand || ""} onChange={(e) => updateField("brand", e.target.value)} className={inputClass} placeholder="Mama Lucica" />
                   </div>
-                  <div className="col-span-2">
-                    <label className={labelClass}>Descriere scurtă</label>
-                    <input value={editing.short_description || ""} onChange={(e) => updateField("short_description", e.target.value)} className={inputClass} placeholder="Notă caldă de vanilie și lemn de santal" />
-                    <p className="mt-1 text-xs text-muted-foreground">{(editing.short_description || "").length} caractere</p>
-                  </div>
-                  <div className="col-span-2">
-                    <label className={labelClass}>Descriere completă (HTML acceptat)</label>
-                    <textarea value={editing.description || ""} onChange={(e) => updateField("description", e.target.value)} rows={8} className={inputClass + " font-mono text-xs"} placeholder="Descriere detaliată a produsului..." />
-                    <p className="mt-1 text-xs text-muted-foreground">{(editing.description || "").length} caractere</p>
-                  </div>
+                   {/* AI Generate Descriptions Button */}
+                   <div className="col-span-2 flex items-center justify-between">
+                     <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Descrieri produs</span>
+                     {editing.id && (
+                       <button
+                         type="button"
+                         onClick={() => generateAiCopy("descriptions")}
+                         disabled={!!aiLoading}
+                         className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-100 disabled:opacity-50"
+                       >
+                         {aiLoading === "descriptions" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                         Generează descrieri AI
+                       </button>
+                     )}
+                   </div>
+                   <div className="col-span-2">
+                     <label className={labelClass}>Descriere scurtă</label>
+                     <input value={editing.short_description || ""} onChange={(e) => updateField("short_description", e.target.value)} className={inputClass} placeholder="Notă caldă de vanilie și lemn de santal" />
+                     <p className="mt-1 text-xs text-muted-foreground">{(editing.short_description || "").length} caractere</p>
+                   </div>
+                   <div className="col-span-2">
+                     <label className={labelClass}>Descriere completă (HTML acceptat)</label>
+                     <textarea value={editing.description || ""} onChange={(e) => updateField("description", e.target.value)} rows={8} className={inputClass + " font-mono text-xs"} placeholder="Descriere detaliată a produsului..." />
+                     <p className="mt-1 text-xs text-muted-foreground">{(editing.description || "").length} caractere</p>
+                   </div>
                 </div>
               )}
 

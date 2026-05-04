@@ -31,6 +31,7 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DespreNoiRouteImport } from './routes/despre-noi'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CompareRouteImport } from './routes/compare'
+import { Route as ColaboreazaRouteImport } from './routes/colaboreaza'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as CartRouteImport } from './routes/cart'
@@ -75,6 +76,7 @@ import { Route as AdminPreLaunchRouteImport } from './routes/admin.pre-launch'
 import { Route as AdminPopupsManagerRouteImport } from './routes/admin/popups-manager'
 import { Route as AdminPopupRouteImport } from './routes/admin/popup'
 import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
+import { Route as AdminPartnersRouteImport } from './routes/admin/partners'
 import { Route as AdminPagesRouteImport } from './routes/admin/pages'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
 import { Route as AdminMonitoringRouteImport } from './routes/admin/monitoring'
@@ -254,6 +256,11 @@ const ContactRoute = ContactRouteImport.update({
 const CompareRoute = CompareRouteImport.update({
   id: '/compare',
   path: '/compare',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ColaboreazaRoute = ColaboreazaRouteImport.update({
+  id: '/colaboreaza',
+  path: '/colaboreaza',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -474,6 +481,11 @@ const AdminPopupRoute = AdminPopupRouteImport.update({
 const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
   id: '/payments',
   path: '/payments',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPartnersRoute = AdminPartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPagesRoute = AdminPagesRouteImport.update({
@@ -835,6 +847,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
+  '/colaboreaza': typeof ColaboreazaRoute
   '/compare': typeof CompareRoute
   '/contact': typeof ContactRoute
   '/despre-noi': typeof DespreNoiRoute
@@ -903,6 +916,7 @@ export interface FileRoutesByFullPath {
   '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
+  '/admin/partners': typeof AdminPartnersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/popups-manager': typeof AdminPopupsManagerRoute
@@ -970,6 +984,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
+  '/colaboreaza': typeof ColaboreazaRoute
   '/compare': typeof CompareRoute
   '/contact': typeof ContactRoute
   '/despre-noi': typeof DespreNoiRoute
@@ -1038,6 +1053,7 @@ export interface FileRoutesByTo {
   '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
+  '/admin/partners': typeof AdminPartnersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/popups-manager': typeof AdminPopupsManagerRoute
@@ -1108,6 +1124,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/catalog': typeof CatalogRoute
   '/checkout': typeof CheckoutRoute
+  '/colaboreaza': typeof ColaboreazaRoute
   '/compare': typeof CompareRoute
   '/contact': typeof ContactRoute
   '/despre-noi': typeof DespreNoiRoute
@@ -1176,6 +1193,7 @@ export interface FileRoutesById {
   '/admin/monitoring': typeof AdminMonitoringRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
+  '/admin/partners': typeof AdminPartnersRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/popup': typeof AdminPopupRoute
   '/admin/popups-manager': typeof AdminPopupsManagerRoute
@@ -1247,6 +1265,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/catalog'
     | '/checkout'
+    | '/colaboreaza'
     | '/compare'
     | '/contact'
     | '/despre-noi'
@@ -1315,6 +1334,7 @@ export interface FileRouteTypes {
     | '/admin/monitoring'
     | '/admin/orders'
     | '/admin/pages'
+    | '/admin/partners'
     | '/admin/payments'
     | '/admin/popup'
     | '/admin/popups-manager'
@@ -1382,6 +1402,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/catalog'
     | '/checkout'
+    | '/colaboreaza'
     | '/compare'
     | '/contact'
     | '/despre-noi'
@@ -1450,6 +1471,7 @@ export interface FileRouteTypes {
     | '/admin/monitoring'
     | '/admin/orders'
     | '/admin/pages'
+    | '/admin/partners'
     | '/admin/payments'
     | '/admin/popup'
     | '/admin/popups-manager'
@@ -1519,6 +1541,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/catalog'
     | '/checkout'
+    | '/colaboreaza'
     | '/compare'
     | '/contact'
     | '/despre-noi'
@@ -1587,6 +1610,7 @@ export interface FileRouteTypes {
     | '/admin/monitoring'
     | '/admin/orders'
     | '/admin/pages'
+    | '/admin/partners'
     | '/admin/payments'
     | '/admin/popup'
     | '/admin/popups-manager'
@@ -1657,6 +1681,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CatalogRoute: typeof CatalogRoute
   CheckoutRoute: typeof CheckoutRoute
+  ColaboreazaRoute: typeof ColaboreazaRoute
   CompareRoute: typeof CompareRoute
   ContactRoute: typeof ContactRoute
   DespreNoiRoute: typeof DespreNoiRoute
@@ -1841,6 +1866,13 @@ declare module '@tanstack/react-router' {
       path: '/compare'
       fullPath: '/compare'
       preLoaderRoute: typeof CompareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/colaboreaza': {
+      id: '/colaboreaza'
+      path: '/colaboreaza'
+      fullPath: '/colaboreaza'
+      preLoaderRoute: typeof ColaboreazaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -2149,6 +2181,13 @@ declare module '@tanstack/react-router' {
       path: '/payments'
       fullPath: '/admin/payments'
       preLoaderRoute: typeof AdminPaymentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/partners': {
+      id: '/admin/partners'
+      path: '/partners'
+      fullPath: '/admin/partners'
+      preLoaderRoute: typeof AdminPartnersRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/pages': {
@@ -2815,6 +2854,7 @@ interface AdminRouteChildren {
   AdminMonitoringRoute: typeof AdminMonitoringRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPagesRoute: typeof AdminPagesRoute
+  AdminPartnersRoute: typeof AdminPartnersRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminPopupRoute: typeof AdminPopupRoute
   AdminPopupsManagerRoute: typeof AdminPopupsManagerRoute
@@ -2886,6 +2926,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminMonitoringRoute: AdminMonitoringRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPagesRoute: AdminPagesRoute,
+  AdminPartnersRoute: AdminPartnersRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminPopupRoute: AdminPopupRoute,
   AdminPopupsManagerRoute: AdminPopupsManagerRoute,
@@ -2930,6 +2971,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CatalogRoute: CatalogRoute,
   CheckoutRoute: CheckoutRoute,
+  ColaboreazaRoute: ColaboreazaRoute,
   CompareRoute: CompareRoute,
   ContactRoute: ContactRoute,
   DespreNoiRoute: DespreNoiRoute,

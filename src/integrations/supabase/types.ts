@@ -2298,6 +2298,48 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_applications: {
+        Row: {
+          admin_notes: string | null
+          city: string | null
+          company_name: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          phone: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          city?: string | null
+          company_name?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          city?: string | null
+          company_name?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       points_transactions: {
         Row: {
           amount: number

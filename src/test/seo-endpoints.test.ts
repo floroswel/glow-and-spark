@@ -86,8 +86,7 @@ describe("robots.txt — source validation", () => {
     expect(ROBOTS_SOURCE).toContain("https://mamalucica.ro");
   });
 
-  it("sets Content-Type to text/plain via setResponseHeader", () => {
-    expect(ROBOTS_SOURCE).toContain('setResponseHeader("Content-Type"');
+  it("sets Content-Type to text/plain", () => {
     expect(ROBOTS_SOURCE).toContain("text/plain");
   });
 

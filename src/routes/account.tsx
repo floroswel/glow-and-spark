@@ -20,14 +20,14 @@ export const Route = createFileRoute("/account")({
   component: AccountLayout,
 });
 
-const navItems = [
+const allNavItems = [
   { to: "/account", icon: LayoutDashboard, label: "Dashboard", end: true },
   { to: "/account/orders", icon: ShoppingBag, label: "Comenzile Mele" },
   { to: "/account/notifications", icon: Bell, label: "Notificări", badge: true },
   { to: "/account/favorites", icon: Heart, label: "Favorite" },
   { to: "/account/addresses", icon: MapPin, label: "Adrese" },
   { to: "/account/settings", icon: Settings, label: "Setări Cont" },
-  { to: "/account/gdpr", icon: Shield, label: "Date Personale (GDPR)" },
+  { to: "/account/gdpr", icon: Shield, label: "Date Personale (GDPR)", key: "gdpr" },
 ];
 
 function AccountLayout() {

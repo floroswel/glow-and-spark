@@ -102,9 +102,9 @@ describe("Trust Badges", () => {
   it("renders all 4 trust badges", () => {
     render(<TrustBadges />);
     expect(screen.getByText("Plată securizată SSL")).toBeInTheDocument();
-    expect(screen.getByText(/Retur gratuit 14 zile/)).toBeInTheDocument();
-    expect(screen.getByText(/Livrare rapidă 24-48h/)).toBeInTheDocument();
-    expect(screen.getByText("100% Handmade")).toBeInTheDocument();
+    expect(screen.getByText(/Drept de retragere 14 zile/)).toBeInTheDocument();
+    expect(screen.getByText(/Livrare prin curier/)).toBeInTheDocument();
+    expect(screen.getByText("Fabricat Artizanal")).toBeInTheDocument();
   });
 
   it("shows legal-compliant 14-day return (not 30)", () => {

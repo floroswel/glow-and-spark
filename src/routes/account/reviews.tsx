@@ -18,7 +18,7 @@ function AccountReviews() {
     (async () => {
       const { data } = await supabase
         .from("product_reviews")
-        .select("*, products(name, slug, images)")
+        .select("*, products(name, slug, image_url)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       setReviews(data || []);

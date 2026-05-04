@@ -189,10 +189,27 @@ function AdminGdprPage() {
             />
           </div>
 
+          {/* Sort */}
+          <div className="flex flex-col gap-1">
+            <label className="text-xs text-muted-foreground flex items-center gap-1">
+              <ArrowUpDown className="h-3 w-3" /> Sortare
+            </label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm"
+            >
+              <option value="created_desc">Dată creare (nou → vechi)</option>
+              <option value="created_asc">Dată creare (vechi → nou)</option>
+              <option value="processed_desc">Dată procesare (nou → vechi)</option>
+              <option value="processed_asc">Dată procesare (vechi → nou)</option>
+            </select>
+          </div>
+
           {/* Reset */}
-          {(typeFilter !== "all" || dateFrom || dateTo || searchEmail) && (
+          {(typeFilter !== "all" || dateFrom || dateTo || searchEmail || sortBy !== "created_desc") && (
             <button
-              onClick={() => { setTypeFilter("all"); setDateFrom(""); setDateTo(""); setSearchEmail(""); }}
+              onClick={() => { setTypeFilter("all"); setDateFrom(""); setDateTo(""); setSearchEmail(""); setSortBy("created_desc"); }}
               className="text-xs text-accent hover:underline py-1.5"
             >
               Resetează

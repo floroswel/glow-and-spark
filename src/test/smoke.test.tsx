@@ -124,10 +124,10 @@ describe("Trust Badges", () => {
 describe("Homepage — Why Us", () => {
   it("renders 4 benefit items", () => {
     render(<HomepageWhyUs />);
-    expect(screen.getByText("100% Handmade")).toBeInTheDocument();
+    expect(screen.getByText("Handmade")).toBeInTheDocument();
     expect(screen.getByText("Ceară Naturală")).toBeInTheDocument();
-    expect(screen.getByText("Livrare Rapidă")).toBeInTheDocument();
-    expect(screen.getByText(/Garanție și Retur Gratuit/)).toBeInTheDocument();
+    expect(screen.getByText(/Livrare/)).toBeInTheDocument();
+    expect(screen.getByText(/Drept de Retragere/)).toBeInTheDocument();
   });
 
   it("uses consistent 14-day return claim", () => {

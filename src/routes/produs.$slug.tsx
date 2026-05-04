@@ -574,6 +574,7 @@ function ProductPage() {
     <div className="min-h-screen">
       <MarqueeBanner /><TopBar /><SiteHeader />
 
+      <ProductJsonLd product={product} category={category} />
       <div className="mx-auto max-w-7xl px-4 py-8">
         {/* Breadcrumb */}
         <nav className="mb-6 flex items-center gap-1 text-sm text-muted-foreground flex-wrap">

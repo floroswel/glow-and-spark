@@ -317,6 +317,7 @@ function ReviewsTab({ product, reviews, setReviews, avgRating }: { product: any;
 
 function ProductPage() {
   const { slug } = Route.useParams();
+  const navigate = useNavigate();
   const { addItem } = useCart();
   const { isFav, toggle: toggleFav } = useFavorites();
   const { has: hasCompare, toggle: toggleCompare } = useCompare();

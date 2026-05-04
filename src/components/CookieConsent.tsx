@@ -18,6 +18,7 @@ export function CookieConsent() {
   const [details, setDetails] = useState(false);
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
+  const [preferences, setPreferences] = useState(false);
   const bannerRef = useRef<HTMLDivElement>(null);
 
   const show = useCallback(() => setVisible(true), []);

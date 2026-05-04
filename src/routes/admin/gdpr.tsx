@@ -533,6 +533,11 @@ function AdminGdprPage() {
         >
           <span className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
             <Bell className="h-5 w-5 text-accent" /> Jurnal notificări GDPR
+            {logEntries.filter((n) => !n.is_read).length > 0 && (
+              <span className="bg-accent text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                {logEntries.filter((n) => !n.is_read).length}
+              </span>
+            )}
           </span>
           {logOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
         </button>

@@ -20,6 +20,9 @@ const STATIC_PAGES = [
   { loc: "/politica-cookies", changefreq: "monthly", priority: "0.3" },
   { loc: "/siguranta-produse", changefreq: "monthly", priority: "0.3" },
   { loc: "/accesibilitate", changefreq: "monthly", priority: "0.2" },
+  { loc: "/transport-livrare", changefreq: "monthly", priority: "0.4" },
+  { loc: "/metode-plata", changefreq: "monthly", priority: "0.4" },
+  { loc: "/garantie", changefreq: "monthly", priority: "0.3" },
 ];
 
 function buildXml(

@@ -101,7 +101,7 @@ function AdminGdprPage() {
               to: adminEmail,
               data: {
                 testEmail,
-                requestType: "Export date",
+              requestType: typeLabel,
                 shortId,
                 requestId: inserted.id,
                 createdAt: new Date().toLocaleString("ro-RO"),

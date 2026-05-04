@@ -47,6 +47,8 @@ function AdminGdprDetailPage() {
   const [savingFields, setSavingFields] = useState(false);
   const [confirmAction, setConfirmAction] = useState<{ status: string; label: string; description: string } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [auditLog, setAuditLog] = useState<any[]>([]);
+  const [auditOpen, setAuditOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {

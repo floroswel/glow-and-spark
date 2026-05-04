@@ -350,7 +350,8 @@ export function SiteFooter() {
                           { label: "Siguranță și utilizare produse", url: "/siguranta-produse" },
                           { label: "Accesibilitate", url: "/accesibilitate" },
                           { label: "Contact", url: "/contact" },
-                          { label: "ANPC — Soluționarea alternativă a litigiilor", url: "https://anpc.ro/ce-este-sal/" },
+                          { label: "ANPC — Autoritatea Națională pentru Protecția Consumatorilor", url: "https://anpc.ro" },
+                          { label: "ANPC — Soluționarea alternativă a litigiilor (SAL)", url: "https://anpc.ro/ce-este-sal/" },
                           { label: "SOL — Platformă online litigii (UE)", url: "https://ec.europa.eu/consumers/odr" },
                         ]
                     ).map((link: any, i: number) => {

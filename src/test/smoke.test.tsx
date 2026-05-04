@@ -113,9 +113,9 @@ describe("Trust Badges", () => {
     expect(screen.queryByText(/30 zile/)).not.toBeInTheDocument();
   });
 
-  it("shows OUG 34/2014 reference", () => {
+  it("shows legal-compliant return info", () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/OUG 34\/2014/)).toBeInTheDocument();
+    expect(screen.getByText(/Conform legislației în vigoare/)).toBeInTheDocument();
   });
 });
 

@@ -596,12 +596,12 @@ function AdminOrders() {
                       const w = window.open("", "_blank");
                       if (!w) return;
                       const items = Array.isArray(viewing.items) ? viewing.items : [];
-                      w.document.write(`<html><head><title>Factură ${viewing.order_number}</title><style>body{font-family:sans-serif;padding:40px;max-width:800px;margin:auto}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f5f5f5}.header{display:flex;justify-content:space-between}.total{font-size:18px;font-weight:bold;text-align:right}@media print{button{display:none}}</style></head><body>
-                        <div class="header"><div><h1>FACTURĂ PROFORMĂ</h1><p>${viewing.order_number}</p><p>Data: ${new Date(viewing.created_at).toLocaleDateString("ro-RO")}</p></div></div>
-                        <h3>Client</h3><p>${viewing.customer_name}<br>${viewing.customer_email}<br>${viewing.customer_phone || ""}<br>${viewing.shipping_address || ""}, ${viewing.city || ""}, ${viewing.county || ""}</p>
-                        ${viewing.billing_type === "company" ? `<p>Firmă: ${viewing.company_name || ""} | CUI: ${viewing.company_cui || ""} | Reg: ${viewing.company_reg || ""}</p>` : ""}
+                      w.document.write(`<html><head><title>Factură ${escapeHtml(viewing.order_number)}</title><style>body{font-family:sans-serif;padding:40px;max-width:800px;margin:auto}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f5f5f5}.header{display:flex;justify-content:space-between}.total{font-size:18px;font-weight:bold;text-align:right}@media print{button{display:none}}</style></head><body>
+                        <div class="header"><div><h1>FACTURĂ PROFORMĂ</h1><p>${escapeHtml(viewing.order_number)}</p><p>Data: ${new Date(viewing.created_at).toLocaleDateString("ro-RO")}</p></div></div>
+                        <h3>Client</h3><p>${escapeHtml(viewing.customer_name)}<br>${escapeHtml(viewing.customer_email)}<br>${escapeHtml(viewing.customer_phone)}<br>${escapeHtml(viewing.shipping_address)}, ${escapeHtml(viewing.city)}, ${escapeHtml(viewing.county)}</p>
+                        ${viewing.billing_type === "company" ? `<p>Firmă: ${escapeHtml(viewing.company_name)} | CUI: ${escapeHtml(viewing.company_cui)} | Reg: ${escapeHtml(viewing.company_reg)}</p>` : ""}
                         <table><thead><tr><th>#</th><th>Produs</th><th>Cant.</th><th>Preț</th><th>Total</th></tr></thead><tbody>
-                        ${items.map((it: any, i: number) => `<tr><td>${i+1}</td><td>${it.name||it.product_name||"Produs"}</td><td>${it.quantity||it.qty||1}</td><td>${Number(it.price||0).toFixed(2)} RON</td><td>${(Number(it.price||0)*Number(it.quantity||it.qty||1)).toFixed(2)} RON</td></tr>`).join("")}
+                        ${items.map((it: any, i: number) => `<tr><td>${i+1}</td><td>${escapeHtml(it.name||it.product_name||"Produs")}</td><td>${it.quantity||it.qty||1}</td><td>${Number(it.price||0).toFixed(2)} RON</td><td>${(Number(it.price||0)*Number(it.quantity||it.qty||1)).toFixed(2)} RON</td></tr>`).join("")}
                         </tbody></table>
                         <p>Subtotal: ${Number(viewing.subtotal).toFixed(2)} RON</p>
                         <p>Livrare: ${Number(viewing.shipping_cost||0).toFixed(2)} RON</p>

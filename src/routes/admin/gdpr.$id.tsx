@@ -227,6 +227,49 @@ function AdminGdprDetailPage() {
         </div>
       </div>
 
+      {/* Documents */}
+      <div className="rounded-xl border border-border bg-card p-6 space-y-3">
+        <h2 className="font-heading text-lg font-semibold text-foreground flex items-center gap-2">
+          <Paperclip className="h-5 w-5" /> Documente atașate
+        </h2>
+        {documents.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Niciun document atașat.</p>
+        ) : (
+          <div className="space-y-2">
+            {documents.map((doc: any) => (
+              <button
+                key={doc.id}
+                onClick={() => downloadDoc(doc)}
+                className="w-full flex items-center gap-2.5 rounded-lg border border-border p-3 text-left hover:bg-secondary/50 transition text-sm"
+              >
+                <File className="h-5 w-5 text-accent shrink-0" />
+                <span className="flex-1 truncate font-medium">{doc.file_name}</span>
+                <span className="text-xs text-muted-foreground shrink-0">{formatSize(doc.file_size)}</span>
+                <span className="text-xs text-muted-foreground shrink-0">{new Date(doc.created_at).toLocaleDateString("ro-RO")}</span>
+                <Download className="h-4 w-4 text-muted-foreground shrink-0" />
+              </button>
+            ))}
+          </div>
+        )}
+        <div>
+          <input
+            ref={fileRef}
+            type="file"
+            className="hidden"
+            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadDocument(f); e.target.value = ""; }}
+          />
+          <button
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-1.5 text-sm text-accent hover:underline disabled:opacity-50"
+          >
+            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            {uploading ? "Se încarcă…" : "Atașează document"}
+          </button>
+        </div>
+      </div>
+
       {/* History timeline */}
       <div className="rounded-xl border border-border bg-card p-6">
         <h2 className="font-heading text-lg font-semibold text-foreground mb-4 flex items-center gap-2">

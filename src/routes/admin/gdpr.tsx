@@ -37,6 +37,24 @@ function AdminGdprPage() {
   const [logOpen, setLogOpen] = useState(false);
   const [logEntries, setLogEntries] = useState<any[]>([]);
   const [logLoading, setLogLoading] = useState(false);
+  const [gdprEnabled, setGdprEnabled] = useState(false);
+  const [gdprToggleLoading, setGdprToggleLoading] = useState(false);
+
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", "gdpr_section_enabled").maybeSingle()
+      .then(({ data }) => {
+        if (data) setGdprEnabled(data.value === "true" || data.value === true);
+      });
+  }, []);
+
+  const toggleGdprSection = async () => {
+    setGdprToggleLoading(true);
+    const newVal = !gdprEnabled;
+    const { error } = await supabase.from("site_settings").update({ value: String(newVal) }).eq("key", "gdpr_section_enabled");
+    if (error) toast.error("Eroare la salvare");
+    else { setGdprEnabled(newVal); toast.success(newVal ? "Secțiunea GDPR activată pentru clienți" : "Secțiunea GDPR dezactivată pentru clienți"); }
+    setGdprToggleLoading(false);
+  };
 
   const load = async () => {
     let q = supabase.from("gdpr_requests").select("*").order("created_at", { ascending: false });

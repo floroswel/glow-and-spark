@@ -523,12 +523,14 @@ export function SiteFooter() {
                 {/* Company documents */}
                 {footer?.show_company_documents !== false &&
                   Array.isArray(footer?.company_documents) &&
-                  footer.company_documents.length > 0 && (
+                  footer.company_documents.filter((d: any) => d.url && d.label && d.label !== "Document nou").length > 0 && (
                     <div className="mt-4 space-y-1.5">
                       <p className="text-xs font-semibold uppercase tracking-wider text-white/60 flex items-center gap-1.5">
                         <FileText className="h-3.5 w-3.5" /> Documente
                       </p>
-                      {footer.company_documents.map((doc: any, i: number) => (
+                      {footer.company_documents
+                        .filter((doc: any) => doc.url && doc.label && doc.label !== "Document nou")
+                        .map((doc: any, i: number) => (
                         <a
                           key={i}
                           href={doc.url}

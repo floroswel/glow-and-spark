@@ -14,6 +14,11 @@ const CANONICAL_REDIRECTS: Record<string, string> = {
   "termeni-si-conditii": "/termeni-si-conditii",
   "politica-cookies": "/politica-cookies",
   "formular-retragere": "/formular-retragere",
+  "despre-noi": "/despre-noi",
+  "transport-livrare": "/transport-livrare",
+  "metode-plata": "/metode-plata",
+  "garantie": "/garantie",
+  "cum-cumpar": "/faq",
 };
 
 export const Route = createFileRoute("/page/$slug")({

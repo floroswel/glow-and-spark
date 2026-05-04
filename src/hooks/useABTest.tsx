@@ -1,6 +1,7 @@
 // useABTest — atribuie variantă consistent + permite track conversion
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { trackABConversion } from "@/server/ab-test.functions";
 
 const VISITOR_KEY = "ml_visitor_id";
 
@@ -93,11 +94,7 @@ export function useABTest(testName: string) {
   const trackConversion = async (value?: number) => {
     if (!testId) return;
     const visitor = getVisitorId();
-    await (supabase
-      .from("ab_test_assignments" as any)
-      .update({ converted: true, conversion_value: value, converted_at: new Date().toISOString() })
-      .eq("test_id", testId)
-      .eq("visitor_id", visitor) as any);
+    await trackABConversion({ data: { testId, visitorId: visitor, value } });
   };
 
   return { variant, loading, trackConversion };

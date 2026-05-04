@@ -58,8 +58,16 @@ function AdminGdprPage() {
     setGdprToggleLoading(false);
   };
 
-  const runTest = async () => {
+  const TEST_TYPES = [
+    { value: "export", label: "Export date" },
+    { value: "delete", label: "Ștergere cont" },
+    { value: "rectify", label: "Rectificare date" },
+  ] as const;
+
+  const runTest = async (requestType: string = "export") => {
     setTestLoading(true);
+    setTestMenuOpen(false);
+    const typeLabel = TYPE_LABEL[requestType] || requestType;
     try {
       // 1. Get admin email from site_settings
       const { data: generalSettings } = await supabase
@@ -74,8 +82,8 @@ function AdminGdprPage() {
         .insert({
           user_id: user?.user?.id,
           email: testEmail,
-          request_type: "export",
-          details: "[TEST] Cerere GDPR de test — generată automat din admin la " + new Date().toLocaleString("ro-RO"),
+          request_type: requestType,
+          details: `[TEST] Cerere GDPR ${typeLabel} — generată automat din admin la ${new Date().toLocaleString("ro-RO")}`,
           status: "pending",
         })
         .select()

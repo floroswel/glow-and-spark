@@ -100,13 +100,15 @@ function AdminGdprDetailPage() {
   useEffect(() => { load(); }, [id]);
 
   const updateStatus = async (status: string) => {
-    if (status === "rejected" && !confirm("Sigur vrei să respingi această cerere?")) return;
+    setActionLoading(true);
     const { error } = await supabase
       .from("gdpr_requests")
       .update({ status, processed_at: new Date().toISOString() })
       .eq("id", id);
-    if (error) { toast.error("Eroare"); return; }
-    toast.success("Status actualizat");
+    setActionLoading(false);
+    setConfirmAction(null);
+    if (error) { toast.error("Eroare la actualizarea statusului"); return; }
+    toast.success(`Status actualizat: ${STATUS_META[status]?.label ?? status}`);
     load();
   };
   const saveFields = async () => {

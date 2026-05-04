@@ -4416,6 +4416,10 @@ export type Database = {
         Args: { p_event: string; p_payload: Json }
         Returns: undefined
       }
+      gdpr_notif_allowed: {
+        Args: { p_event: string; p_request_type: string }
+        Returns: boolean
+      }
       generate_order_number: { Args: never; Returns: string }
       get_user_group_discount: { Args: { p_user_id: string }; Returns: number }
       has_role: {

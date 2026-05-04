@@ -54,6 +54,18 @@ function AdminGdprPage() {
 
   useEffect(() => { load(); }, [statusFilter, typeFilter, dateFrom, dateTo]);
 
+  useEffect(() => {
+    if (!logOpen || logEntries.length > 0) return;
+    setLogLoading(true);
+    supabase
+      .from("admin_notifications")
+      .select("id, title, message, created_at, is_read")
+      .ilike("title", "%GDPR%")
+      .order("created_at", { ascending: false })
+      .limit(200)
+      .then(({ data }) => { setLogEntries(data ?? []); setLogLoading(false); });
+  }, [logOpen]);
+
   const filtered = useMemo(() => {
     let list = items;
     if (searchEmail.trim()) {

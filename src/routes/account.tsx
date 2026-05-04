@@ -35,6 +35,15 @@ function AccountLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
+  const { settings } = useSiteSettings();
+
+  const navItems = useMemo(() => {
+    const gdprEnabled = settings?.gdpr_section_enabled === "true" || settings?.gdpr_section_enabled === true;
+    return allNavItems.filter((item) => {
+      if ((item as any).key === "gdpr" && !gdprEnabled) return false;
+      return true;
+    });
+  }, [settings]);
 
   useEffect(() => {
     if (!user) return;

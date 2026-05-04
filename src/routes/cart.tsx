@@ -146,7 +146,7 @@ function CartPage() {
                       {/* Product info */}
                       <div className="col-span-12 sm:col-span-6 flex gap-4">
                         {item.image_url ? (
-                          <Link to="/product/$slug" params={{ slug: (item as any).slug || item.id }}>
+                          <Link to="/produs/$slug" params={{ slug: (item as any).slug || item.id }}>
                             <img src={item.image_url} alt={item.name} className="h-20 w-20 rounded-lg object-cover border border-border hover:border-accent transition" />
                           </Link>
                         ) : (
@@ -156,7 +156,7 @@ function CartPage() {
                         )}
                         <div className="flex flex-col justify-between min-w-0">
                           <div>
-                            <Link to="/product/$slug" params={{ slug: (item as any).slug || item.id }} className="font-semibold text-foreground hover:text-accent transition line-clamp-2">
+                            <Link to="/produs/$slug" params={{ slug: (item as any).slug || item.id }} className="font-semibold text-foreground hover:text-accent transition line-clamp-2">
                               {item.name}
                             </Link>
                           </div>

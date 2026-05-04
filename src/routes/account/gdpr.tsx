@@ -30,6 +30,24 @@ function GdprPage() {
   const [loading, setLoading] = useState(false);
   const [details, setDetails] = useState("");
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+  const [sectionEnabled, setSectionEnabled] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", "gdpr_section_enabled").maybeSingle()
+      .then(({ data }) => {
+        setSectionEnabled(data?.value === "true" || data?.value === true);
+      });
+  }, []);
+
+  if (sectionEnabled === false) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <Shield className="h-12 w-12 text-muted-foreground/40 mb-4" />
+        <h2 className="font-heading text-lg font-bold text-foreground">Secțiune indisponibilă</h2>
+        <p className="text-sm text-muted-foreground mt-1">Această secțiune nu este activă momentan.</p>
+      </div>
+    );
+  }
 
   const load = async () => {
     if (!user) return;

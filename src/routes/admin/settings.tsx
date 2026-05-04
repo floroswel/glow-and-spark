@@ -319,8 +319,14 @@ function AdminSettings() {
                   <Field label="Cost livrare express (RON)">
                     <TextInput value={s.express_shipping_cost} onChange={(v) => u("express_shipping_cost", v.replace(/[^0-9.]/g, ""))} />
                   </Field>
-                  <Field label="Preț ambalaj cadou (RON)">
-                    <TextInput value={s.gift_wrapping_price} onChange={(v) => u("gift_wrapping_price", v.replace(/[^0-9.]/g, ""))} />
+                  <Field label="Ambalaj cadou">
+                    <Toggle checked={s.gift_wrapping_enabled} onChange={(v) => u("gift_wrapping_enabled", v)} />
+                  </Field>
+                  {s.gift_wrapping_enabled && (
+                    <Field label="Preț ambalaj cadou (RON)">
+                      <TextInput value={s.gift_wrapping_price} onChange={(v) => u("gift_wrapping_price", v.replace(/[^0-9.]/g, ""))} />
+                    </Field>
+                  )}
                   </Field>
                 </div>
                 <div className="mt-4 rounded-lg bg-secondary/50 p-3 text-xs text-muted-foreground">

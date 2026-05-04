@@ -540,8 +540,17 @@ function AdminOrders() {
                       <div className="flex justify-between"><span className="text-muted-foreground">Livrare</span><span>{Number(viewing.shipping_cost || 0).toFixed(2)} RON</span></div>
                       {Number(viewing.discount_amount) > 0 && (
                         <div className="flex justify-between text-chart-2"><span>Discount ({viewing.discount_code})</span><span>-{Number(viewing.discount_amount).toFixed(2)} RON</span></div>
-                      )}
-                      <div className="flex justify-between font-bold text-base pt-1 border-t border-border"><span>Total</span><span>{Number(viewing.total).toFixed(2)} RON</span></div>
+                       )}
+                       {viewing.gift_wrapping && (
+                         <div className="flex justify-between text-accent">
+                           <span>🎁 Ambalaj cadou{viewing.gift_wrapping_quantity > 1 ? ` ×${viewing.gift_wrapping_quantity}` : ''}</span>
+                           <span>+{(Number(viewing.gift_wrapping_price || 0) * (viewing.gift_wrapping_quantity || 1)).toFixed(2)} RON</span>
+                         </div>
+                       )}
+                       {viewing.gift_message && (
+                         <p className="text-xs italic text-muted-foreground pl-1">„{viewing.gift_message}"</p>
+                       )}
+                       <div className="flex justify-between font-bold text-base pt-1 border-t border-border"><span>Total</span><span>{Number(viewing.total).toFixed(2)} RON</span></div>
                     </div>
                   </div>
 

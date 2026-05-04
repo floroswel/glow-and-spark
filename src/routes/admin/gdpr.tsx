@@ -39,6 +39,7 @@ function AdminGdprPage() {
   const [logLoading, setLogLoading] = useState(false);
   const [logFilterType, setLogFilterType] = useState("all");
   const [logFilterCategory, setLogFilterCategory] = useState("all");
+  const [logReadFilter, setLogReadFilter] = useState<"all" | "unread" | "read">("all");
   const [gdprEnabled, setGdprEnabled] = useState(false);
   const [gdprToggleLoading, setGdprToggleLoading] = useState(false);
   const [testLoading, setTestLoading] = useState(false);

@@ -257,18 +257,63 @@ function AdminGdprDetailPage() {
       {req.status !== "completed" && req.status !== "rejected" && (
         <div className="flex flex-wrap gap-2">
           {req.status === "pending" && (
-            <button onClick={() => updateStatus("processing")} className="rounded-lg bg-blue-500 text-white px-4 py-2 text-sm font-medium hover:bg-blue-600 transition">
+            <button
+              onClick={() => setConfirmAction({
+                status: "processing",
+                label: "Marchează „În procesare"",
+                description: `Cererea GDPR-${shortId} (${req.email}) va fi marcată ca „În procesare". Solicitantul va fi notificat.`,
+              })}
+              className="rounded-lg bg-blue-500 text-white px-4 py-2 text-sm font-medium hover:bg-blue-600 transition"
+            >
               Marchează „În procesare"
             </button>
           )}
-          <button onClick={() => updateStatus("completed")} className="rounded-lg bg-emerald-500 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-600 transition flex items-center gap-1.5">
+          <button
+            onClick={() => setConfirmAction({
+              status: "completed",
+              label: "Finalizează cererea",
+              description: `Cererea GDPR-${shortId} (${req.email}) va fi marcată ca finalizată. Asigură-te că ai procesat complet solicitarea înainte de confirmare.`,
+            })}
+            className="rounded-lg bg-emerald-500 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-600 transition flex items-center gap-1.5"
+          >
             <Check className="h-4 w-4" /> Finalizează
           </button>
-          <button onClick={() => updateStatus("rejected")} className="rounded-lg bg-red-500 text-white px-4 py-2 text-sm font-medium hover:bg-red-600 transition flex items-center gap-1.5">
+          <button
+            onClick={() => setConfirmAction({
+              status: "rejected",
+              label: "Respinge cererea",
+              description: `Cererea GDPR-${shortId} (${req.email}) va fi respinsă. Această acțiune este ireversibilă. Notează motivul în comentariul de procesare.`,
+            })}
+            className="rounded-lg bg-red-500 text-white px-4 py-2 text-sm font-medium hover:bg-red-600 transition flex items-center gap-1.5"
+          >
             <X className="h-4 w-4" /> Respinge
           </button>
         </div>
       )}
+
+      {/* Confirmation dialog */}
+      <AlertDialog open={!!confirmAction} onOpenChange={(open) => { if (!open) setConfirmAction(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              {confirmAction?.status === "rejected" && <AlertTriangle className="h-5 w-5 text-red-500" />}
+              {confirmAction?.label}
+            </AlertDialogTitle>
+            <AlertDialogDescription>{confirmAction?.description}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>Anulează</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={actionLoading}
+              onClick={() => confirmAction && updateStatus(confirmAction.status)}
+              className={confirmAction?.status === "rejected" ? "bg-red-500 hover:bg-red-600" : confirmAction?.status === "completed" ? "bg-emerald-500 hover:bg-emerald-600" : ""}
+            >
+              {actionLoading ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : null}
+              Confirmă
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Add note */}
       <div className="rounded-xl border border-border bg-card p-4 space-y-3">

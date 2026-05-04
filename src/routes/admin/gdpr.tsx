@@ -40,6 +40,7 @@ function AdminGdprPage() {
   const [gdprEnabled, setGdprEnabled] = useState(false);
   const [gdprToggleLoading, setGdprToggleLoading] = useState(false);
   const [testLoading, setTestLoading] = useState(false);
+  const [testMenuOpen, setTestMenuOpen] = useState(false);
 
   useEffect(() => {
     supabase.from("site_settings").select("value").eq("key", "gdpr_section_enabled").maybeSingle()

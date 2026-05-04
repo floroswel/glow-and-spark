@@ -129,10 +129,7 @@ function ChatbotPage() {
               <option value="openai/gpt-5-mini">GPT-5 Mini</option>
             </select>
           </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={!!settings.is_enabled} onChange={e => setSettings({ ...settings, is_enabled: e.target.checked })} />
-            Chatbot activ pe site
-          </label>
+          {/* Toggle moved to prominent card above */}
           <label className="block text-sm md:col-span-2">
             <span className="text-muted-foreground">Prompt sistem (instrucțiuni AI)</span>
             <textarea rows={5} value={settings.system_prompt || ""} onChange={e => setSettings({ ...settings, system_prompt: e.target.value })} className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 font-mono text-xs" />

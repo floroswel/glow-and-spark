@@ -15,6 +15,10 @@ export interface SiteSettings {
   redirects: any[];
   email_templates: any[];
   automations: any[];
+  payment_methods: any[];
+  shipping_carriers: any[];
+  tax_settings: Record<string, any>;
+  integrations: any[];
 }
 
 const RefreshContext = createContext<() => void>(() => {});
@@ -32,6 +36,10 @@ const defaultSettings: SiteSettings = {
   redirects: [],
   email_templates: [],
   automations: [],
+  payment_methods: [],
+  shipping_carriers: [],
+  tax_settings: {},
+  integrations: [],
 };
 
 const CACHE_KEY = "site_settings_cache";

@@ -24,6 +24,7 @@ const defaults = {
   free_shipping_min: "200",
   default_shipping_cost: "15",
   express_shipping_cost: "30",
+  gift_card_enabled: false,
   gift_wrapping_enabled: false,
   gift_wrapping_price: "15",
   gift_wrapping_description: "Ambalaj cadou elegant cu panglică și felicitare personalizată.",
@@ -319,6 +320,9 @@ function AdminSettings() {
                   </Field>
                   <Field label="Cost livrare express (RON)">
                     <TextInput value={s.express_shipping_cost} onChange={(v) => u("express_shipping_cost", v.replace(/[^0-9.]/g, ""))} />
+                  </Field>
+                  <Field label="Card Cadou">
+                    <Toggle value={s.gift_card_enabled} onChange={(v) => u("gift_card_enabled", v)} label="Activează secțiunea Card Cadou" />
                   </Field>
                   <Field label="Ambalaj cadou">
                     <Toggle value={s.gift_wrapping_enabled} onChange={(v) => u("gift_wrapping_enabled", v)} label="Activează ambalaj cadou" />

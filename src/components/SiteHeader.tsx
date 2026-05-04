@@ -422,9 +422,11 @@ export function SiteHeader() {
                 </a>
               );
             })}
-            <Link to="/gift-card" className="transition hover:text-foreground" activeProps={{ className: "text-accent font-semibold" }}>
-              Card Cadou
-            </Link>
+            {general?.gift_card_enabled && (
+              <Link to="/gift-card" className="transition hover:text-foreground" activeProps={{ className: "text-accent font-semibold" }}>
+                Card Cadou
+              </Link>
+            )}
             {header?.show_compare !== false && (
               <Link to="/compare" className="transition hover:text-foreground flex items-center gap-1" activeProps={{ className: "text-accent font-semibold" }}>
                 <GitCompare className="h-4 w-4" />
@@ -624,7 +626,9 @@ export function SiteHeader() {
             })}
 
             
-            <MobileLink to="/gift-card" icon={<Gift className="h-5 w-5" />} label="Card Cadou" onClick={() => setMobileOpen(false)} />
+            {general?.gift_card_enabled && (
+              <MobileLink to="/gift-card" icon={<Gift className="h-5 w-5" />} label="Card Cadou" onClick={() => setMobileOpen(false)} />
+            )}
           </div>
 
           <div className="mx-4 border-t border-border" />

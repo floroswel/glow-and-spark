@@ -38,7 +38,7 @@ const JUDETE = [
 function CheckoutPage() {
   const { items, cartSubtotal, shippingCost, discountAmount, discountCode, cartTotal, clearCart } = useCart();
   const { user } = useAuth();
-  const { general } = useSiteSettings();
+  const { general, payment_methods: pmSettings } = useSiteSettings();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [billingType, setBillingType] = useState<"individual" | "company">("individual");
@@ -105,6 +105,14 @@ function CheckoutPage() {
   const [newsletterOptIn, setNewsletterOptIn] = useState(false);
 
   const u = (field: string, value: any) => setForm((p) => ({ ...p, [field]: value }));
+
+  // Auto-select first enabled payment method from settings
+  useEffect(() => {
+    if (Array.isArray(pmSettings) && pmSettings.length > 0) {
+      const first = pmSettings.find((m: any) => m.enabled);
+      if (first) setForm((p) => ({ ...p, paymentMethod: first.code }));
+    }
+  }, [pmSettings]);
 
   const [cuiLookup, setCuiLookup] = useState<{ loading: boolean; status: "idle" | "success" | "error"; message: string }>({ loading: false, status: "idle", message: "" });
 
@@ -653,19 +661,24 @@ function CheckoutPage() {
             {step === 2 && (
               <div className="space-y-4 rounded-xl border border-border bg-card p-6">
                 <h2 className="font-heading text-lg font-bold text-foreground">Metodă de plată</h2>
-                {[
-                  { value: "ramburs", label: "Ramburs", desc: "Plătești la livrare" },
-                  { value: "card", label: "Card online", desc: "Netopia Payments" },
-                  { value: "transfer", label: "Transfer bancar", desc: "Plată prin ordin de plată" },
-                ].map((m) => (
-                  <label key={m.value} className={`flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition ${form.paymentMethod === m.value ? "border-accent bg-accent/5" : "border-border"}`}>
-                    <input type="radio" name="payment" value={m.value} checked={form.paymentMethod === m.value} onChange={(e) => u("paymentMethod", e.target.value)} className="accent-accent" />
-                    <div>
-                      <p className="font-medium text-foreground">{m.label}</p>
-                      <p className="text-xs text-muted-foreground">{m.desc}</p>
-                    </div>
-                  </label>
-                ))}
+                {(() => {
+                  const enabledMethods = Array.isArray(pmSettings) && pmSettings.length > 0
+                    ? pmSettings.filter((m: any) => m.enabled).map((m: any) => ({ value: m.code, label: m.name, desc: m.description || "" }))
+                    : [
+                        { value: "ramburs", label: "Ramburs", desc: "Plătești la livrare" },
+                        { value: "card", label: "Card online", desc: "Netopia Payments" },
+                        { value: "transfer", label: "Transfer bancar", desc: "Plată prin ordin de plată" },
+                      ];
+                  return enabledMethods.map((m: any) => (
+                    <label key={m.value} className={`flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition ${form.paymentMethod === m.value ? "border-accent bg-accent/5" : "border-border"}`}>
+                      <input type="radio" name="payment" value={m.value} checked={form.paymentMethod === m.value} onChange={(e) => u("paymentMethod", e.target.value)} className="accent-accent" />
+                      <div>
+                        <p className="font-medium text-foreground">{m.label}</p>
+                        <p className="text-xs text-muted-foreground">{m.desc}</p>
+                      </div>
+                    </label>
+                  ));
+                })()}
                 <div className="flex gap-3 pt-2">
                   <button onClick={() => setStep(1)} className="rounded-lg border border-border px-6 py-3 font-medium text-muted-foreground transition hover:bg-secondary">← Înapoi</button>
                   <button onClick={() => setStep(3)} className="flex-1 rounded-lg bg-accent py-3 font-bold text-accent-foreground transition hover:opacity-90">Continuă → Confirmare</button>

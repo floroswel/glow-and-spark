@@ -8,7 +8,6 @@ const STATIC_PAGES = [
   { loc: "/catalog", changefreq: "daily", priority: "0.9" },
   { loc: "/contact", changefreq: "monthly", priority: "0.5" },
   { loc: "/faq", changefreq: "monthly", priority: "0.4" },
-  { loc: "/blog", changefreq: "weekly", priority: "0.7" },
   { loc: "/despre-noi", changefreq: "monthly", priority: "0.5" },
   { loc: "/afiliat", changefreq: "monthly", priority: "0.4" },
   { loc: "/gift-card", changefreq: "monthly", priority: "0.4" },
@@ -29,7 +28,6 @@ function buildXml(
   staticPages: typeof STATIC_PAGES,
   products: { slug: string; updated_at?: string | null }[],
   categories: { slug: string }[],
-  posts: { slug: string; updated_at?: string | null }[],
 ) {
   const today = new Date().toISOString().split("T")[0];
 
@@ -46,10 +44,6 @@ function buildXml(
       (c) =>
         `  <url>\n    <loc>${SITE_URL}/categorie/${c.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`,
     ),
-    ...posts.map(
-      (p) =>
-        `  <url>\n    <loc>${SITE_URL}/blog/${p.slug}</loc>\n    <lastmod>${p.updated_at ? new Date(p.updated_at).toISOString().split("T")[0] : today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`,
-    ),
   ];
 
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>`;
@@ -60,7 +54,7 @@ export const Route = createFileRoute("/sitemap.xml")({
     handlers: {
       GET: async () => {
         try {
-          const [productsRes, categoriesRes, postsRes] = await Promise.all([
+          const [productsRes, categoriesRes] = await Promise.all([
             supabaseAdmin
               .from("products")
               .select("slug, updated_at")
@@ -72,19 +66,12 @@ export const Route = createFileRoute("/sitemap.xml")({
               .select("slug")
               .eq("visible", true)
               .limit(200),
-            supabaseAdmin
-              .from("blog_posts")
-              .select("slug, updated_at")
-              .eq("status", "published")
-              .order("updated_at", { ascending: false })
-              .limit(500),
           ]);
 
           const xml = buildXml(
             STATIC_PAGES,
             productsRes.data || [],
             categoriesRes.data || [],
-            postsRes.data || [],
           );
 
           return new Response(xml, {
@@ -95,7 +82,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           });
         } catch (err) {
           console.error("[sitemap.xml] DB fetch failed, returning static fallback:", err);
-          const xml = buildXml(STATIC_PAGES, [], [], []);
+          const xml = buildXml(STATIC_PAGES, [], []);
           return new Response(xml, {
             headers: {
               "Content-Type": "application/xml; charset=utf-8",

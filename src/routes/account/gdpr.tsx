@@ -147,7 +147,31 @@ function GdprPage() {
         </button>
       </div>
 
-      {/* Confirmation banner */}
+      {/* Test button */}
+      {user && (
+        <button
+          onClick={async () => {
+            setLoading(true);
+            const { data: inserted, error } = await supabase.from("gdpr_requests").insert({
+              user_id: user.id,
+              email: user.email!,
+              request_type: "rectify",
+              details: "[TEST] Cerere de rectificare generată automat pentru verificare notificări admin.",
+            }).select("id").single();
+            setLoading(false);
+            if (error || !inserted) { toast.error("Eroare la crearea cererii de test"); return; }
+            const shortId = inserted.id.slice(0, 8).toUpperCase();
+            toast.success(`Cerere de test creată — GDPR-${shortId}. Verifică notificarea în admin!`);
+            load();
+          }}
+          disabled={loading}
+          className="flex items-center gap-2 rounded-lg border border-dashed border-amber-400 bg-amber-50 dark:bg-amber-950/20 px-4 py-2.5 text-sm font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-950/40 transition disabled:opacity-50"
+        >
+          <FlaskConical className="h-4 w-4" />
+          Generează cerere de test (rectificare)
+        </button>
+      )}
+
       {lastConfirmation && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 dark:border-emerald-800 p-5 space-y-2">
           <div className="flex items-center gap-2">

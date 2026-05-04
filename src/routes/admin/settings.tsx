@@ -324,9 +324,14 @@ function AdminSettings() {
                     <Toggle value={s.gift_wrapping_enabled} onChange={(v) => u("gift_wrapping_enabled", v)} label="Activează ambalaj cadou" />
                   </Field>
                   {s.gift_wrapping_enabled && (
-                    <Field label="Preț ambalaj cadou (RON)">
-                      <TextInput value={s.gift_wrapping_price} onChange={(v) => u("gift_wrapping_price", v.replace(/[^0-9.]/g, ""))} />
-                    </Field>
+                    <>
+                      <Field label="Preț ambalaj cadou (RON)">
+                        <TextInput value={s.gift_wrapping_price} onChange={(v) => u("gift_wrapping_price", v.replace(/[^0-9.]/g, ""))} />
+                      </Field>
+                      <Field label="Descriere ambalaj cadou">
+                        <TextArea value={s.gift_wrapping_description} onChange={(v) => u("gift_wrapping_description", v)} />
+                      </Field>
+                    </>
                   )}
                 </div>
                 <div className="mt-4 rounded-lg bg-secondary/50 p-3 text-xs text-muted-foreground">

@@ -112,7 +112,7 @@ function AdminGdprDetailPage() {
     load();
   };
 
-
+  const addNote = async () => {
     if (!note.trim()) return;
     const { error } = await (supabase.from("gdpr_request_history" as any).insert({
       request_id: id,

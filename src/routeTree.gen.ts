@@ -118,6 +118,7 @@ import { Route as AdminAbTestsRouteImport } from './routes/admin/ab-tests'
 import { Route as AccountTwofaRouteImport } from './routes/account/twofa'
 import { Route as AccountSubscriptionsRouteImport } from './routes/account/subscriptions'
 import { Route as AccountSettingsRouteImport } from './routes/account/settings'
+import { Route as AccountReviewsRouteImport } from './routes/account/reviews'
 import { Route as AccountOrdersRouteImport } from './routes/account/orders'
 import { Route as AccountNotificationsRouteImport } from './routes/account/notifications'
 import { Route as AccountGdprRouteImport } from './routes/account/gdpr'
@@ -694,6 +695,11 @@ const AccountSettingsRoute = AccountSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AccountRoute,
 } as any)
+const AccountReviewsRoute = AccountReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => AccountRoute,
+} as any)
 const AccountOrdersRoute = AccountOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -875,6 +881,7 @@ export interface FileRoutesByFullPath {
   '/account/gdpr': typeof AccountGdprRoute
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
+  '/account/reviews': typeof AccountReviewsRoute
   '/account/settings': typeof AccountSettingsRoute
   '/account/subscriptions': typeof AccountSubscriptionsRoute
   '/account/twofa': typeof AccountTwofaRoute
@@ -1012,6 +1019,7 @@ export interface FileRoutesByTo {
   '/account/gdpr': typeof AccountGdprRoute
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
+  '/account/reviews': typeof AccountReviewsRoute
   '/account/settings': typeof AccountSettingsRoute
   '/account/subscriptions': typeof AccountSubscriptionsRoute
   '/account/twofa': typeof AccountTwofaRoute
@@ -1152,6 +1160,7 @@ export interface FileRoutesById {
   '/account/gdpr': typeof AccountGdprRoute
   '/account/notifications': typeof AccountNotificationsRoute
   '/account/orders': typeof AccountOrdersRoute
+  '/account/reviews': typeof AccountReviewsRoute
   '/account/settings': typeof AccountSettingsRoute
   '/account/subscriptions': typeof AccountSubscriptionsRoute
   '/account/twofa': typeof AccountTwofaRoute
@@ -1293,6 +1302,7 @@ export interface FileRouteTypes {
     | '/account/gdpr'
     | '/account/notifications'
     | '/account/orders'
+    | '/account/reviews'
     | '/account/settings'
     | '/account/subscriptions'
     | '/account/twofa'
@@ -1430,6 +1440,7 @@ export interface FileRouteTypes {
     | '/account/gdpr'
     | '/account/notifications'
     | '/account/orders'
+    | '/account/reviews'
     | '/account/settings'
     | '/account/subscriptions'
     | '/account/twofa'
@@ -1569,6 +1580,7 @@ export interface FileRouteTypes {
     | '/account/gdpr'
     | '/account/notifications'
     | '/account/orders'
+    | '/account/reviews'
     | '/account/settings'
     | '/account/subscriptions'
     | '/account/twofa'
@@ -2477,6 +2489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountSettingsRouteImport
       parentRoute: typeof AccountRoute
     }
+    '/account/reviews': {
+      id: '/account/reviews'
+      path: '/reviews'
+      fullPath: '/account/reviews'
+      preLoaderRoute: typeof AccountReviewsRouteImport
+      parentRoute: typeof AccountRoute
+    }
     '/account/orders': {
       id: '/account/orders'
       path: '/orders'
@@ -2682,6 +2701,7 @@ interface AccountRouteChildren {
   AccountGdprRoute: typeof AccountGdprRoute
   AccountNotificationsRoute: typeof AccountNotificationsRoute
   AccountOrdersRoute: typeof AccountOrdersRoute
+  AccountReviewsRoute: typeof AccountReviewsRoute
   AccountSettingsRoute: typeof AccountSettingsRoute
   AccountSubscriptionsRoute: typeof AccountSubscriptionsRoute
   AccountTwofaRoute: typeof AccountTwofaRoute
@@ -2694,6 +2714,7 @@ const AccountRouteChildren: AccountRouteChildren = {
   AccountGdprRoute: AccountGdprRoute,
   AccountNotificationsRoute: AccountNotificationsRoute,
   AccountOrdersRoute: AccountOrdersRoute,
+  AccountReviewsRoute: AccountReviewsRoute,
   AccountSettingsRoute: AccountSettingsRoute,
   AccountSubscriptionsRoute: AccountSubscriptionsRoute,
   AccountTwofaRoute: AccountTwofaRoute,

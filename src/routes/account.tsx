@@ -7,7 +7,7 @@ import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import {
-  LayoutDashboard, ShoppingBag, Heart, MapPin, Settings, LogOut, ChevronRight, Bell, Shield, Repeat,
+  LayoutDashboard, ShoppingBag, Heart, MapPin, Settings, LogOut, ChevronRight, Bell, Shield, Repeat, MessageSquare,
 } from "lucide-react";
 
 export const Route = createFileRoute("/account")({

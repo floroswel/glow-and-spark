@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink, ArrowUpDown } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink, ArrowUpDown, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
@@ -218,8 +218,35 @@ function AdminGdprPage() {
         </div>
       </div>
 
-      {/* Results count */}
-      <p className="text-xs text-muted-foreground">{filtered.length} cereri găsite</p>
+      {/* Results count + CSV export */}
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">{filtered.length} cereri găsite</p>
+        <button
+          onClick={() => {
+            const header = "ID,Tip,Status,Email,Creat,Procesat,Detalii\n";
+            const rows = filtered.map((r: any) => {
+              const t = TYPE_LABEL[r.request_type] ?? r.request_type;
+              const s = r.status;
+              const created = new Date(r.created_at).toLocaleString("ro-RO");
+              const processed = r.processed_at ? new Date(r.processed_at).toLocaleString("ro-RO") : "";
+              const details = (r.details ?? "").replace(/"/g, '""');
+              return `GDPR-${r.id.slice(0, 8).toUpperCase()},"${t}","${s}","${r.email}","${created}","${processed}","${details}"`;
+            }).join("\n");
+            const bom = "\uFEFF";
+            const blob = new Blob([bom + header + rows], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `gdpr-export-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          disabled={filtered.length === 0}
+          className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80 transition disabled:opacity-50"
+        >
+          <FileDown className="h-3.5 w-3.5" /> Export CSV
+        </button>
+      </div>
 
       {/* List */}
       <div className="rounded-xl border border-border bg-card divide-y divide-border">

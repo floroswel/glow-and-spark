@@ -380,7 +380,15 @@ export function SiteFooter() {
                 </nav>
                 {/* Compliance microcopy */}
                 <p className="text-[10px] mt-3 leading-relaxed opacity-60" style={{ color: textColor }}>
-                  Conform OUG 34/2014 privind drepturile consumatorilor și Regulamentul UE nr. 524/2013
+                  Conform OUG 34/2014 privind drepturile consumatorilor și{" "}
+                  <a
+                    href="https://ec.europa.eu/consumers/odr"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-white"
+                  >
+                    Regulamentul UE nr. 524/2013
+                  </a>{" "}
                   privind soluționarea online a litigiilor în materie de consum.
                 </p>
               </FooterColumn>

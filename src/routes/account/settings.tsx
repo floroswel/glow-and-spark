@@ -173,6 +173,24 @@ function AccountSettings() {
         </button>
       </form>
 
+      {/* Security — 2FA */}
+      <div className="rounded-xl border border-border bg-card p-5 space-y-3">
+        <h2 className="font-heading text-lg font-semibold text-foreground flex items-center gap-2">
+          <ShieldCheck className="h-4.5 w-4.5" /> Securitate Cont
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Protejează-ți contul cu autentificarea în doi pași (2FA) pentru o securitate sporită.
+        </p>
+        <Link
+          to="/account/twofa"
+          className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground hover:bg-secondary transition"
+        >
+          <ShieldCheck className="h-4 w-4" />
+          Configurează 2FA
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+        </Link>
+      </div>
+
       {/* GDPR & Data */}
       <div className="rounded-xl border border-border bg-card p-5 space-y-4">
         <h2 className="font-heading text-lg font-semibold text-foreground flex items-center gap-2">

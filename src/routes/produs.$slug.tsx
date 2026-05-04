@@ -495,6 +495,12 @@ function ProductPage() {
     setTimeout(() => setAdded(false), 2000);
   };
 
+  const handleBuyNow = () => {
+    if (!product) return;
+    handleAddToCart();
+    navigate({ to: "/checkout" });
+  };
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({ title: product?.name, url: window.location.href });

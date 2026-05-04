@@ -156,24 +156,79 @@ function GdprPage() {
       </div>
 
       <div className="rounded-xl border border-border bg-card p-6">
-        <h2 className="font-heading text-lg font-semibold text-foreground">Cererile tale</h2>
+        <h2 className="font-heading text-lg font-semibold text-foreground mb-4">Cererile tale</h2>
         {requests.length === 0 ? (
-          <p className="mt-3 text-sm text-muted-foreground">Nu ai trimis încă nicio cerere.</p>
+          <p className="text-sm text-muted-foreground">Nu ai trimis încă nicio cerere.</p>
         ) : (
-          <div className="mt-4 space-y-2">
+          <div className="space-y-4">
             {requests.map((r) => {
               const s = STATUS_LABEL[r.status] ?? STATUS_LABEL.pending;
               const Icon = s.Icon;
+              const STEPS = ["pending", "processing", "completed"];
+              const stepIndex = r.status === "rejected" ? -1 : STEPS.indexOf(r.status);
+              const typeLabel = r.request_type === "export" ? "Export date" : r.request_type === "delete" ? "Ștergere cont" : "Rectificare date";
+              const daysSince = Math.floor((Date.now() - new Date(r.created_at).getTime()) / 86400000);
+              const daysLeft = Math.max(0, GDPR_RESPONSE_DAYS - daysSince);
+
               return (
-                <div key={r.id} className="flex items-center justify-between rounded-lg border border-border p-3 text-sm">
-                  <div>
-                    <div className="font-medium text-foreground capitalize">{r.request_type === "export" ? "Export date" : r.request_type === "delete" ? "Ștergere cont" : "Rectificare"}</div>
-                    <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString("ro-RO")}</div>
+                <div key={r.id} className="rounded-xl border border-border p-4 space-y-3">
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {r.request_type === "export" ? <Download className="h-5 w-5 text-accent" /> : r.request_type === "delete" ? <Trash2 className="h-5 w-5 text-red-500" /> : <FileEdit className="h-5 w-5 text-blue-500" />}
+                      <div>
+                        <div className="font-semibold text-foreground">{typeLabel}</div>
+                        <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString("ro-RO")}</div>
+                      </div>
+                    </div>
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${s.cls}`}>
+                      <Icon className="h-3.5 w-3.5" />
+                      {s.label}
+                    </span>
                   </div>
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs ${s.cls}`}>
-                    <Icon className="h-3 w-3" />
-                    {s.label}
-                  </span>
+
+                  {/* Details */}
+                  {r.details && (
+                    <p className="text-sm text-muted-foreground bg-secondary/50 rounded-lg p-2.5">{r.details}</p>
+                  )}
+
+                  {/* Progress stepper */}
+                  {r.status !== "rejected" ? (
+                    <div className="flex items-center gap-1">
+                      {STEPS.map((step, i) => {
+                        const done = i <= stepIndex;
+                        const labels = ["Trimisă", "În procesare", "Finalizată"];
+                        return (
+                          <div key={step} className="flex-1 flex flex-col items-center gap-1">
+                            <div className={`w-full h-1.5 rounded-full ${done ? "bg-accent" : "bg-border"}`} />
+                            <span className={`text-[10px] ${done ? "text-accent font-medium" : "text-muted-foreground"}`}>{labels[i]}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5 text-xs text-red-600 bg-red-50 dark:bg-red-950/30 rounded-lg p-2">
+                      <XCircle className="h-3.5 w-3.5" />
+                      Cererea a fost respinsă. Te rugăm să ne contactezi pentru detalii.
+                    </div>
+                  )}
+
+                  {/* Time estimate */}
+                  {r.status !== "completed" && r.status !== "rejected" && (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      {daysLeft > 0
+                        ? `Termen legal de răspuns: ${daysLeft} zile rămase din ${GDPR_RESPONSE_DAYS}`
+                        : "Termenul legal de răspuns a expirat. Te rugăm să ne contactezi."}
+                    </div>
+                  )}
+
+                  {/* Processed info */}
+                  {r.processed_at && (
+                    <div className="text-xs text-muted-foreground">
+                      Procesat la: {new Date(r.processed_at).toLocaleString("ro-RO")}
+                    </div>
+                  )}
                 </div>
               );
             })}

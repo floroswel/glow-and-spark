@@ -9,6 +9,7 @@ import { createClient } from "@supabase/supabase-js";
  *
  * Does NOT self-fetch pages (avoids Worker→Worker 522 loops).
  * Does NOT expose secrets, internal errors, or PII.
+ * Persists results via record_health_check() for the admin monitoring page.
  */
 
 type CheckResult = {
@@ -88,10 +89,7 @@ async function checkSiteSettings(sb: any): Promise<CheckResult> {
   }
 }
 
-/** Validate sitemap config exists in code (static check — no self-fetch) */
 function checkSitemapConfig(): CheckResult {
-  // We verify the route source has static pages at build time via tests.
-  // Here we just confirm the route is registered by checking the import resolved.
   return { name: "sitemap_route", status: "ok", latency_ms: 0, detail: "/sitemap.xml registered" };
 }
 
@@ -99,7 +97,6 @@ function checkRobotsConfig(): CheckResult {
   return { name: "robots_route", status: "ok", latency_ms: 0, detail: "/robots.txt registered" };
 }
 
-/** Verify critical legal routes exist (file-system check via route tree) */
 function checkLegalRoutes(): CheckResult {
   const legalPaths = [
     "/termeni-si-conditii",
@@ -114,6 +111,23 @@ function checkLegalRoutes(): CheckResult {
     latency_ms: 0,
     detail: `${legalPaths.length} legal routes configured`,
   };
+}
+
+/** Persist each check result via record_health_check() so the admin monitoring page stays updated */
+async function persistResults(sb: any, checks: CheckResult[]) {
+  try {
+    for (const c of checks) {
+      await sb.rpc("record_health_check", {
+        p_name: c.name,
+        p_status: c.status,
+        p_response_ms: c.latency_ms > 0 ? c.latency_ms : null,
+        p_error: c.status !== "ok" ? (c.detail || c.status) : null,
+      });
+    }
+  } catch (e) {
+    // Non-critical — don't fail the health response if persistence fails
+    console.error("[health] Failed to persist results:", e);
+  }
 }
 
 export const Route = createFileRoute("/api/public/health")({
@@ -137,6 +151,9 @@ export const Route = createFileRoute("/api/public/health")({
 
         // Add static config checks
         checks.push(checkSitemapConfig(), checkRobotsConfig(), checkLegalRoutes());
+
+        // Persist to DB for monitoring page (non-blocking)
+        persistResults(sb, checks).catch(() => {});
 
         const downCount = checks.filter((c) => c.status === "down").length;
         const degradedCount = checks.filter((c) => c.status === "degraded").length;

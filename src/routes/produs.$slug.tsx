@@ -777,6 +777,15 @@ function ProductPage() {
               )}
             </div>
 
+            {/* Buy Now */}
+            {activeStock > 0 && (
+              <button
+                onClick={handleBuyNow}
+                className="mt-2 w-full rounded-lg border-2 border-accent bg-transparent py-3 text-sm font-semibold text-accent hover:bg-accent hover:text-accent-foreground transition"
+              >
+                CUMPĂRĂ ACUM
+              </button>
+            )}
 
             {activeStock > 0 && (
               <div className="mt-3">

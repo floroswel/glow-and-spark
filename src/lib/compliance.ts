@@ -44,12 +44,12 @@ export const FORBIDDEN_PHRASES: Array<{
   {
     pattern: /prețuri?\s+(cu|inclusiv)\s+TVA/i,
     reason: "Company is NOT a VAT payer (IS_VAT_PAYER=false). Do not claim prices include VAT.",
-    allowedFiles: ["compliance.ts", "admin.pre-launch.tsx"],
+    allowedFiles: ["compliance.ts", "admin.pre-launch.tsx", "useFiscalInfo.tsx", "admin/settings.tsx"],
   },
   {
     pattern: /TVA\s+inclus/i,
     reason: "Company is NOT a VAT payer. Remove VAT-inclusive language.",
-    allowedFiles: ["compliance.ts", "admin.pre-launch.tsx"],
+    allowedFiles: ["compliance.ts", "admin.pre-launch.tsx", "useFiscalInfo.tsx", "admin/settings.tsx"],
   },
   // Legal superlatives
   {

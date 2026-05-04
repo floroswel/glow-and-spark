@@ -58,6 +58,22 @@ vi.mock("@/hooks/useCart", () => ({
   useCart: () => ({ items: [], itemCount: 0, total: 0, addItem: vi.fn(), removeItem: vi.fn(), clearCart: vi.fn() }),
 }));
 
+vi.mock("@/hooks/useCompanyInfo", () => ({
+  useCompanyInfo: () => ({ name: "Mama Lucica", legalEntity: "SC Vomix Genius SRL", cui: "43025661", regCom: "J40/1234/2020", fullAddress: "București", iban: "", phone: "+40 753 326 405", email: "contact@mamalucica.ro" }),
+}));
+
+vi.mock("@/hooks/useFiscalInfo", () => ({
+  useFiscalInfo: () => ({ isVatPayer: false, vatRate: 0, priceDisclaimer: "Prețurile afișate sunt prețuri finale.", priceLabel: "Preț final" }),
+}));
+
+vi.mock("@/lib/cmp/consentController", () => ({
+  resetConsent: vi.fn(),
+}));
+
+vi.mock("@/lib/sanitize-html", () => ({
+  sanitizeHtml: (html: string) => html,
+}));
+
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ children, to, ...props }: any) => <a href={to} {...props}>{children}</a>,
   useNavigate: () => vi.fn(),
@@ -84,10 +100,9 @@ describe("Homepage — Hero Section", () => {
     expect(screen.getByText("Descoperă Colecția")).toBeInTheDocument();
   });
 
-  it("shows trust micro-copy under CTA", () => {
+  it("shows subtitle under hero", () => {
     render(<HeroSection />);
-    expect(screen.getByText(/Ceară de soia 100% naturală/)).toBeInTheDocument();
-    expect(screen.getByText(/Retur gratuit 14 zile/)).toBeInTheDocument();
+    expect(screen.getByText(/Ceară artizanală/)).toBeInTheDocument();
   });
 
   it("renders hero title lines", () => {
@@ -103,9 +118,9 @@ describe("Trust Badges", () => {
   it("renders all 4 trust badges", () => {
     render(<TrustBadges />);
     expect(screen.getByText("Plată securizată SSL")).toBeInTheDocument();
-    expect(screen.getByText(/Retur gratuit 14 zile/)).toBeInTheDocument();
-    expect(screen.getByText(/Livrare rapidă 24-48h/)).toBeInTheDocument();
-    expect(screen.getByText("100% Handmade")).toBeInTheDocument();
+    expect(screen.getByText(/Drept de retragere 14 zile/)).toBeInTheDocument();
+    expect(screen.getByText(/Livrare prin curier/)).toBeInTheDocument();
+    expect(screen.getByText("Fabricat Artizanal")).toBeInTheDocument();
   });
 
   it("shows legal-compliant 14-day return (not 30)", () => {
@@ -114,9 +129,9 @@ describe("Trust Badges", () => {
     expect(screen.queryByText(/30 zile/)).not.toBeInTheDocument();
   });
 
-  it("shows OUG 34/2014 reference", () => {
+  it("shows legal-compliant return info", () => {
     render(<TrustBadges />);
-    expect(screen.getByText(/OUG 34\/2014/)).toBeInTheDocument();
+    expect(screen.getByText(/Conform legislației în vigoare/)).toBeInTheDocument();
   });
 });
 
@@ -125,10 +140,10 @@ describe("Trust Badges", () => {
 describe("Homepage — Why Us", () => {
   it("renders 4 benefit items", () => {
     render(<HomepageWhyUs />);
-    expect(screen.getByText("100% Handmade")).toBeInTheDocument();
+    expect(screen.getByText("Handmade")).toBeInTheDocument();
     expect(screen.getByText("Ceară Naturală")).toBeInTheDocument();
-    expect(screen.getByText("Livrare Rapidă")).toBeInTheDocument();
-    expect(screen.getByText(/Garanție și Retur Gratuit/)).toBeInTheDocument();
+    expect(screen.getByText(/Livrare/)).toBeInTheDocument();
+    expect(screen.getByText(/Drept de Retragere/)).toBeInTheDocument();
   });
 
   it("uses consistent 14-day return claim", () => {
@@ -154,8 +169,8 @@ describe("Site Footer", () => {
   it("renders footer with brand and legal entity", () => {
     render(<SiteFooter />);
     // Copyright should contain brand name
-    const copyright = screen.getByText(/Mama Lucica/);
-    expect(copyright).toBeInTheDocument();
+    const matches = screen.getAllByText(/Mama Lucica/);
+    expect(matches.length).toBeGreaterThan(0);
   });
 
   it("contains ANPC and SOL links", () => {

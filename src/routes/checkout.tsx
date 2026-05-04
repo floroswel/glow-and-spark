@@ -106,6 +106,14 @@ function CheckoutPage() {
 
   const u = (field: string, value: any) => setForm((p) => ({ ...p, [field]: value }));
 
+  // Auto-select first enabled payment method from settings
+  useEffect(() => {
+    if (Array.isArray(pmSettings) && pmSettings.length > 0) {
+      const first = pmSettings.find((m: any) => m.enabled);
+      if (first) setForm((p) => ({ ...p, paymentMethod: first.code }));
+    }
+  }, [pmSettings]);
+
   const [cuiLookup, setCuiLookup] = useState<{ loading: boolean; status: "idle" | "success" | "error"; message: string }>({ loading: false, status: "idle", message: "" });
 
   const lookupCui = async () => {

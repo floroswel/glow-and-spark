@@ -237,6 +237,8 @@ function CheckoutPage() {
       payment_status: "pending",
       user_id: user?.id || null,
       gift_wrapping: giftWrapping,
+      gift_wrapping_price: giftWrapping ? giftWrappingPrice : 0,
+      gift_wrapping_description: giftWrapping ? (general?.gift_wrapping_description || null) : null,
       gift_message: giftWrapping ? giftMessage || null : null,
     };
 

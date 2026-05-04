@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Save, Lock, Download, Trash2, ShieldAlert } from "lucide-react";
+import { Save, Lock, Download, Trash2, ShieldAlert, ShieldCheck, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,

@@ -390,9 +390,9 @@ export function SiteFooter() {
                     {(Array.isArray(footer?.col2_links) && footer.col2_links.length > 0
                       ? footer.col2_links
                       : [
-                          { label: "Transport și livrare", url: "/page/transport-livrare" },
-                          { label: "Metode de plată", url: "/page/metode-plata" },
-                          { label: "Garanția produselor", url: "/page/garantie" },
+                          { label: "Transport și livrare", url: "/transport-livrare" },
+                          { label: "Metode de plată", url: "/metode-plata" },
+                          { label: "Garanția produselor", url: "/garantie" },
                           { label: "Întrebări frecvente", url: "/faq" },
                         ]
                     ).map((link: any, i: number) => (

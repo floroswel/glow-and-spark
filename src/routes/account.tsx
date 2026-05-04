@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, Link, useLocation, useNavigate } from "@tansta
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
+
 import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";

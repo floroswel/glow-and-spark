@@ -147,17 +147,17 @@ function AdminInvoices() {
         </div>
         <div class="party">
           <h3>Client</h3>
-          <p><strong>${inv.customer_name}</strong></p>
-          ${inv.billing_type === "company" ? `<p>CUI: ${inv.company_cui || "—"}</p><p>${inv.company_name || ""}</p>` : ""}
-          <p>${inv.shipping_address || ""}, ${inv.city || ""}, ${inv.county || ""}</p>
-          <p>${inv.customer_email}</p>
-          <p>${inv.customer_phone || ""}</p>
+           <p><strong>${escapeHtml(inv.customer_name)}</strong></p>
+          ${inv.billing_type === "company" ? `<p>CUI: ${escapeHtml(inv.company_cui) || "—"}</p><p>${escapeHtml(inv.company_name)}</p>` : ""}
+          <p>${escapeHtml(inv.shipping_address)}, ${escapeHtml(inv.city)}, ${escapeHtml(inv.county)}</p>
+          <p>${escapeHtml(inv.customer_email)}</p>
+          <p>${escapeHtml(inv.customer_phone)}</p>
         </div>
       </div>
       <table>
         <thead><tr><th>#</th><th>Produs</th><th>Cantitate</th><th>Preț unitar</th><th>Total</th></tr></thead>
         <tbody>
-          ${items.map((it: any, i: number) => `<tr><td>${i + 1}</td><td>${it.name || it.title || "Produs"}</td><td>${it.quantity || it.qty || 1}</td><td>${Number(it.price || 0).toFixed(2)} RON</td><td>${(Number(it.price || 0) * Number(it.quantity || it.qty || 1)).toFixed(2)} RON</td></tr>`).join("")}
+          ${items.map((it: any, i: number) => `<tr><td>${i + 1}</td><td>${escapeHtml(it.name || it.title || "Produs")}</td><td>${it.quantity || it.qty || 1}</td><td>${Number(it.price || 0).toFixed(2)} RON</td><td>${(Number(it.price || 0) * Number(it.quantity || it.qty || 1)).toFixed(2)} RON</td></tr>`).join("")}
         </tbody>
       </table>
       <div class="totals">

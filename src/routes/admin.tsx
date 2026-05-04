@@ -121,6 +121,7 @@ const menuSections: MenuSection[] = [
           { to: "/admin/loyalty", label: "Program Fidelitate" },
           { to: "/admin/push-notifications", label: "Notificări Push" },
           { to: "/admin/affiliates", label: "Afiliați" },
+          { to: "/admin/partners", label: "Cereri Parteneriat" },
           { to: "/admin/ab-tests", label: "A/B Tests" },
         ],
       },

@@ -289,7 +289,7 @@ function revokeVendorConsent(): void {
     if (Array.isArray((window as any).dataLayer)) {
       (window as any).dataLayer.push({
         event: "consent_revoked",
-        consent_categories: { analytics: false, marketing: false },
+        consent_categories: { analytics: false, marketing: false, preferences: false },
       });
       debugLog("GTM dataLayer: consent_revoked pushed");
     }

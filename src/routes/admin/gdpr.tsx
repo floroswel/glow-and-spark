@@ -57,7 +57,66 @@ function AdminGdprPage() {
     setGdprToggleLoading(false);
   };
 
-  const load = async () => {
+  const runTest = async () => {
+    setTestLoading(true);
+    try {
+      // 1. Get admin email from site_settings
+      const { data: generalSettings } = await supabase
+        .from("site_settings").select("value").eq("key", "general").maybeSingle();
+      const adminEmail = (generalSettings?.value as any)?.contact_email || "";
+
+      // 2. Insert test GDPR request
+      const { data: user } = await supabase.auth.getUser();
+      const testEmail = user?.user?.email || "test@gdpr-test.ro";
+      const { data: inserted, error: insertErr } = await supabase
+        .from("gdpr_requests")
+        .insert({
+          user_id: user?.user?.id,
+          email: testEmail,
+          request_type: "export",
+          details: "[TEST] Cerere GDPR de test — generată automat din admin la " + new Date().toLocaleString("ro-RO"),
+          status: "pending",
+        })
+        .select()
+        .single();
+
+      if (insertErr) throw insertErr;
+
+      // 3. Send email notification to admin
+      if (adminEmail) {
+        try {
+          const shortId = inserted.id.slice(0, 8).toUpperCase();
+          await supabase.functions.invoke("send-email", {
+            body: {
+              type: "gdpr_test_notification",
+              to: adminEmail,
+              data: {
+                testEmail,
+                requestType: "Export date",
+                shortId,
+                requestId: inserted.id,
+                createdAt: new Date().toLocaleString("ro-RO"),
+              },
+            },
+          });
+          toast.success("Test complet: cerere creată + email trimis la " + adminEmail);
+        } catch {
+          toast.success("Cerere test creată. Email-ul nu a putut fi trimis.");
+        }
+      } else {
+        toast.success("Cerere test creată. Setează contact_email în Setări Generale pentru notificări email.");
+      }
+
+      // 4. Refresh data & open log
+      load();
+      setLogOpen(true);
+      loadLog();
+    } catch (err: any) {
+      toast.error("Eroare test: " + (err?.message || "necunoscută"));
+    }
+    setTestLoading(false);
+  };
+
     let q = supabase.from("gdpr_requests").select("*").order("created_at", { ascending: false });
     if (statusFilter !== "all") q = q.eq("status", statusFilter);
     if (typeFilter !== "all") q = q.eq("request_type", typeFilter);

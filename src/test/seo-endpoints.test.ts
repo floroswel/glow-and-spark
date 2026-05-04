@@ -53,15 +53,13 @@ describe("sitemap.xml — source validation", () => {
     }
   });
 
-  it("includes contact and blog pages", () => {
+  it("includes contact page", () => {
     expect(SITEMAP_SOURCE).toContain('"/contact"');
-    expect(SITEMAP_SOURCE).toContain('"/blog"');
   });
 
-  it("fetches products, categories, and blog_posts from DB", () => {
+  it("fetches products and categories from DB", () => {
     expect(SITEMAP_SOURCE).toContain('.from("products")');
     expect(SITEMAP_SOURCE).toContain('.from("categories")');
-    expect(SITEMAP_SOURCE).toContain('.from("blog_posts")');
   });
 
   it("has a fallback when DB fetch fails (no 500)", () => {

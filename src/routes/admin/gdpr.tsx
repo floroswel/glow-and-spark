@@ -117,6 +117,7 @@ function AdminGdprPage() {
     setTestLoading(false);
   };
 
+  const load = async () => {
     let q = supabase.from("gdpr_requests").select("*").order("created_at", { ascending: false });
     if (statusFilter !== "all") q = q.eq("status", statusFilter);
     if (typeFilter !== "all") q = q.eq("request_type", typeFilter);

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 

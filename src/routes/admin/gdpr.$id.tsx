@@ -32,6 +32,9 @@ function AdminGdprDetailPage() {
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [editDetails, setEditDetails] = useState("");
+  const [editAdminNotes, setEditAdminNotes] = useState("");
+  const [savingFields, setSavingFields] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {

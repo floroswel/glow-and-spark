@@ -579,6 +579,7 @@ function AdminGdprPage() {
                           </Link>
                         )}
                       </div>
+                    </div>
                   );
                 })}
               </div>

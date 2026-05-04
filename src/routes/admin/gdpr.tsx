@@ -558,7 +558,19 @@ function AdminGdprPage() {
                 <option value="status">Schimbări status</option>
                 <option value="note">📝 Note interne</option>
               </select>
-              <span className="text-[10px] text-muted-foreground self-center ml-auto">{filteredLog.length} / {logEntries.length} notificări</span>
+              <select value={logReadFilter} onChange={(e) => setLogReadFilter(e.target.value as any)} className="text-xs rounded-md border border-border bg-background px-2 py-1">
+                <option value="all">Citite + Necitite</option>
+                <option value="unread">Doar necitite</option>
+                <option value="read">Doar citite</option>
+              </select>
+              <button
+                onClick={markAllAsRead}
+                disabled={filteredLog.filter((n) => !n.is_read).length === 0}
+                className="text-xs text-accent hover:underline disabled:opacity-40 disabled:no-underline flex items-center gap-1 ml-auto"
+              >
+                <CheckCheck className="h-3 w-3" /> Marchează toate ca citite
+              </button>
+              <span className="text-[10px] text-muted-foreground self-center">{filteredLog.length} / {logEntries.length}</span>
             </div>
             {logLoading ? (
               <p className="p-6 text-center text-sm text-muted-foreground">Se încarcă…</p>

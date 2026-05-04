@@ -265,6 +265,14 @@ function GdprPage() {
                       Procesat la: {new Date(r.processed_at).toLocaleString("ro-RO")}
                     </div>
                   )}
+
+                  {/* Detail button */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setSelectedRequestId(r.id); }}
+                    className="flex items-center gap-1 text-xs text-accent hover:underline"
+                  >
+                    <Eye className="h-3.5 w-3.5" /> Vezi detalii și istoric
+                  </button>
                 </div>
               );
             })}

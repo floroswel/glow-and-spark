@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink, ArrowUpDown, FileDown, Bell, ChevronDown, ChevronUp, FlaskConical, Loader2 } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink, ArrowUpDown, FileDown, Bell, ChevronDown, ChevronUp, FlaskConical, Loader2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
@@ -555,7 +555,14 @@ function AdminGdprPage() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-medium text-foreground truncate">{n.title}</span>
                           {shortId && (
-                            <code className="text-[10px] text-muted-foreground font-mono bg-secondary px-1.5 py-0.5 rounded">GDPR-{shortId}</code>
+                            <button
+                              onClick={() => { navigator.clipboard.writeText("GDPR-" + shortId); toast.success("ID copiat: GDPR-" + shortId); }}
+                              className="inline-flex items-center gap-1 text-[10px] text-muted-foreground font-mono bg-secondary px-1.5 py-0.5 rounded hover:bg-secondary/80 transition cursor-pointer"
+                              title="Copiază ID"
+                            >
+                              GDPR-{shortId}
+                              <Copy className="h-2.5 w-2.5" />
+                            </button>
                           )}
                         </div>
                         {n.message && (

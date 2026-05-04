@@ -114,9 +114,9 @@ function AccountReviews() {
                   </div>
 
                   {/* Review text */}
-                  {review.comment && (
+                  {review.content && (
                     <p className="mt-1.5 text-sm text-muted-foreground line-clamp-3">
-                      {review.comment}
+                      {review.content}
                     </p>
                   )}
 

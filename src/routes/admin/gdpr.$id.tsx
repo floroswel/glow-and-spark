@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, ArrowLeft, Clock, Check, X, MessageSquare } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, ArrowLeft, Clock, Check, X, MessageSquare, Paperclip, Upload, File, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
@@ -28,17 +28,54 @@ function AdminGdprDetailPage() {
   const { id } = Route.useParams();
   const [req, setReq] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
-    const [{ data: r }, { data: h }] = await Promise.all([
+    const [{ data: r }, { data: h }, { data: docs }] = await Promise.all([
       supabase.from("gdpr_requests").select("*").eq("id", id).single(),
       supabase.from("gdpr_request_history" as any).select("*").eq("request_id", id).order("created_at", { ascending: true }) as any,
+      supabase.from("gdpr_documents" as any).select("*").eq("request_id", id).order("created_at", { ascending: true }) as any,
     ]);
     setReq(r);
     setHistory(h ?? []);
+    setDocuments(docs ?? []);
     setLoading(false);
+  };
+
+  const uploadDocument = async (file: globalThis.File) => {
+    if (!req) return;
+    setUploading(true);
+    const path = `admin/${id}/${Date.now()}_${file.name}`;
+    const { error: uploadErr } = await supabase.storage.from("gdpr-documents").upload(path, file);
+    if (uploadErr) { toast.error("Eroare la încărcare"); setUploading(false); return; }
+    const { error: dbErr } = await (supabase.from("gdpr_documents" as any).insert({
+      request_id: id,
+      file_name: file.name,
+      file_path: path,
+      file_size: file.size,
+      uploaded_by: (await supabase.auth.getUser()).data.user?.id,
+    }) as any);
+    if (dbErr) toast.error("Eroare la salvare");
+    else { toast.success("Document atașat"); load(); }
+    setUploading(false);
+  };
+
+  const downloadDoc = async (doc: any) => {
+    const { data, error } = await supabase.storage.from("gdpr-documents").download(doc.file_path);
+    if (error || !data) { toast.error("Eroare descărcare"); return; }
+    const url = URL.createObjectURL(data);
+    const a = document.createElement("a"); a.href = url; a.download = doc.file_name; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const formatSize = (bytes: number) => {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / 1048576).toFixed(1) + " MB";
   };
 
   useEffect(() => { load(); }, [id]);
@@ -186,6 +223,49 @@ function AdminGdprDetailPage() {
           />
           <button onClick={addNote} disabled={!note.trim()} className="rounded-lg bg-foreground text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50">
             Salvează
+          </button>
+        </div>
+      </div>
+
+      {/* Documents */}
+      <div className="rounded-xl border border-border bg-card p-6 space-y-3">
+        <h2 className="font-heading text-lg font-semibold text-foreground flex items-center gap-2">
+          <Paperclip className="h-5 w-5" /> Documente atașate
+        </h2>
+        {documents.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Niciun document atașat.</p>
+        ) : (
+          <div className="space-y-2">
+            {documents.map((doc: any) => (
+              <button
+                key={doc.id}
+                onClick={() => downloadDoc(doc)}
+                className="w-full flex items-center gap-2.5 rounded-lg border border-border p-3 text-left hover:bg-secondary/50 transition text-sm"
+              >
+                <File className="h-5 w-5 text-accent shrink-0" />
+                <span className="flex-1 truncate font-medium">{doc.file_name}</span>
+                <span className="text-xs text-muted-foreground shrink-0">{formatSize(doc.file_size)}</span>
+                <span className="text-xs text-muted-foreground shrink-0">{new Date(doc.created_at).toLocaleDateString("ro-RO")}</span>
+                <Download className="h-4 w-4 text-muted-foreground shrink-0" />
+              </button>
+            ))}
+          </div>
+        )}
+        <div>
+          <input
+            ref={fileRef}
+            type="file"
+            className="hidden"
+            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadDocument(f); e.target.value = ""; }}
+          />
+          <button
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-1.5 text-sm text-accent hover:underline disabled:opacity-50"
+          >
+            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            {uploading ? "Se încarcă…" : "Atașează document"}
           </button>
         </div>
       </div>

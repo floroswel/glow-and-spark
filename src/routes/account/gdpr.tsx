@@ -2,8 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, Clock, CheckCircle2, XCircle, Loader2, Copy } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, Clock, CheckCircle2, XCircle, Loader2, Copy, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { GdprRequestDetailDialog } from "@/components/account/GdprRequestDetailDialog";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
 export const Route = createFileRoute("/account/gdpr")({
@@ -28,6 +29,7 @@ function GdprPage() {
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [details, setDetails] = useState("");
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
 
   const load = async () => {
     if (!user) return;
@@ -205,7 +207,7 @@ function GdprPage() {
               const daysLeft = Math.max(0, GDPR_RESPONSE_DAYS - daysSince);
 
               return (
-                <div key={r.id} className="rounded-xl border border-border p-4 space-y-3">
+                <div key={r.id} className="rounded-xl border border-border p-4 space-y-3 cursor-pointer hover:border-accent/50 transition" onClick={() => setSelectedRequestId(r.id)}>
                   {/* Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -263,12 +265,25 @@ function GdprPage() {
                       Procesat la: {new Date(r.processed_at).toLocaleString("ro-RO")}
                     </div>
                   )}
+
+                  {/* Detail button */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setSelectedRequestId(r.id); }}
+                    className="flex items-center gap-1 text-xs text-accent hover:underline"
+                  >
+                    <Eye className="h-3.5 w-3.5" /> Vezi detalii și istoric
+                  </button>
                 </div>
               );
             })}
           </div>
         )}
       </div>
+
+      <GdprRequestDetailDialog
+        requestId={selectedRequestId}
+        onClose={() => setSelectedRequestId(null)}
+      />
     </div>
   );
 }

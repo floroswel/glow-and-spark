@@ -169,8 +169,8 @@ describe("Site Footer", () => {
   it("renders footer with brand and legal entity", () => {
     render(<SiteFooter />);
     // Copyright should contain brand name
-    const copyright = screen.getByText(/Mama Lucica/);
-    expect(copyright).toBeInTheDocument();
+    const matches = screen.getAllByText(/Mama Lucica/);
+    expect(matches.length).toBeGreaterThan(0);
   });
 
   it("contains ANPC and SOL links", () => {

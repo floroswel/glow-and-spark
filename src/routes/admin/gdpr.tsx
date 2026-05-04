@@ -37,6 +37,8 @@ function AdminGdprPage() {
   const [logOpen, setLogOpen] = useState(false);
   const [logEntries, setLogEntries] = useState<any[]>([]);
   const [logLoading, setLogLoading] = useState(false);
+  const [logFilterType, setLogFilterType] = useState("all");
+  const [logFilterCategory, setLogFilterCategory] = useState("all");
   const [gdprEnabled, setGdprEnabled] = useState(false);
   const [gdprToggleLoading, setGdprToggleLoading] = useState(false);
   const [testLoading, setTestLoading] = useState(false);
@@ -171,6 +173,21 @@ function AdminGdprPage() {
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [logOpen]);
+
+  const filteredLog = useMemo(() => {
+    let list = logEntries;
+    if (logFilterType !== "all") {
+      const typeLabels: Record<string, string> = { export: "Export date", delete: "Ștergere cont", rectify: "Rectificare" };
+      const label = typeLabels[logFilterType] || logFilterType;
+      list = list.filter((n) => n.title?.includes(label) || n.message?.includes(label));
+    }
+    if (logFilterCategory !== "all") {
+      if (logFilterCategory === "new") list = list.filter((n) => n.title?.includes("🆕"));
+      else if (logFilterCategory === "status") list = list.filter((n) => !n.title?.includes("🆕") && !n.title?.includes("📝") && n.title?.includes("GDPR"));
+      else if (logFilterCategory === "note") list = list.filter((n) => n.title?.includes("📝"));
+    }
+    return list;
+  }, [logEntries, logFilterType, logFilterCategory]);
 
   const filtered = useMemo(() => {
     let list = items;
@@ -501,13 +518,29 @@ function AdminGdprPage() {
 
         {logOpen && (
           <div className="border-t border-border">
+            {/* Log filters */}
+            <div className="flex flex-wrap gap-2 px-4 py-3 border-b border-border bg-secondary/20">
+              <select value={logFilterType} onChange={(e) => setLogFilterType(e.target.value)} className="text-xs rounded-md border border-border bg-background px-2 py-1">
+                <option value="all">Toate tipurile</option>
+                <option value="export">Export date</option>
+                <option value="delete">Ștergere cont</option>
+                <option value="rectify">Rectificare</option>
+              </select>
+              <select value={logFilterCategory} onChange={(e) => setLogFilterCategory(e.target.value)} className="text-xs rounded-md border border-border bg-background px-2 py-1">
+                <option value="all">Toate categoriile</option>
+                <option value="new">🆕 Cereri noi</option>
+                <option value="status">Schimbări status</option>
+                <option value="note">📝 Note interne</option>
+              </select>
+              <span className="text-[10px] text-muted-foreground self-center ml-auto">{filteredLog.length} / {logEntries.length} notificări</span>
+            </div>
             {logLoading ? (
               <p className="p-6 text-center text-sm text-muted-foreground">Se încarcă…</p>
-            ) : logEntries.length === 0 ? (
-              <p className="p-6 text-center text-sm text-muted-foreground">Nicio notificare GDPR înregistrată.</p>
+            ) : filteredLog.length === 0 ? (
+              <p className="p-6 text-center text-sm text-muted-foreground">Nicio notificare GDPR pentru filtrele selectate.</p>
             ) : (
               <div className="divide-y divide-border max-h-[400px] overflow-y-auto">
-                {logEntries.map((n) => {
+                {filteredLog.map((n) => {
                   // Extract GDPR ID from title
                   const idMatch = n.title?.match(/\[GDPR-([A-Z0-9]+)\]/);
                   const shortId = idMatch ? idMatch[1] : null;

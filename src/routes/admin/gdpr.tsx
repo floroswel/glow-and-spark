@@ -175,6 +175,24 @@ function AdminGdprPage() {
     return () => { supabase.removeChannel(channel); };
   }, [logOpen]);
 
+  const markAsRead = async (notifId: string) => {
+    await supabase.from("admin_notifications").update({ is_read: true }).eq("id", notifId);
+    setLogEntries((prev) => prev.map((n) => n.id === notifId ? { ...n, is_read: true } : n));
+  };
+
+  const markAsUnread = async (notifId: string) => {
+    await supabase.from("admin_notifications").update({ is_read: false }).eq("id", notifId);
+    setLogEntries((prev) => prev.map((n) => n.id === notifId ? { ...n, is_read: false } : n));
+  };
+
+  const markAllAsRead = async () => {
+    const unreadIds = filteredLog.filter((n) => !n.is_read).map((n) => n.id);
+    if (unreadIds.length === 0) return;
+    await supabase.from("admin_notifications").update({ is_read: true }).in("id", unreadIds);
+    setLogEntries((prev) => prev.map((n) => unreadIds.includes(n.id) ? { ...n, is_read: true } : n));
+    toast.success(`${unreadIds.length} notificări marcate ca citite`);
+  };
+
   const filteredLog = useMemo(() => {
     let list = logEntries;
     if (logFilterType !== "all") {
@@ -187,8 +205,10 @@ function AdminGdprPage() {
       else if (logFilterCategory === "status") list = list.filter((n) => !n.title?.includes("🆕") && !n.title?.includes("📝") && n.title?.includes("GDPR"));
       else if (logFilterCategory === "note") list = list.filter((n) => n.title?.includes("📝"));
     }
+    if (logReadFilter === "unread") list = list.filter((n) => !n.is_read);
+    else if (logReadFilter === "read") list = list.filter((n) => n.is_read);
     return list;
-  }, [logEntries, logFilterType, logFilterCategory]);
+  }, [logEntries, logFilterType, logFilterCategory, logReadFilter]);
 
   const filtered = useMemo(() => {
     let list = items;

@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
-import { ChevronRight, AlertTriangle } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useCompanyInfo, type CompanyInfo } from "@/hooks/useCompanyInfo";
 
 /** Shared company identity block for legal pages */
@@ -21,21 +21,9 @@ export function CompanyIdentityBlock({ C }: { C: CompanyInfo }) {
   );
 }
 
-/** DRAFT_FOR_LEGAL_REVIEW banner */
+/** @deprecated No longer used — kept as empty stub for existing imports */
 export function DraftBanner() {
-  return (
-    <div className="mb-6 rounded-lg border-2 border-yellow-500/50 bg-yellow-500/10 p-4 flex items-start gap-3">
-      <AlertTriangle className="h-5 w-5 text-yellow-600 shrink-0 mt-0.5" />
-      <div className="text-sm">
-        <p className="font-bold text-yellow-700 dark:text-yellow-400">DRAFT_FOR_LEGAL_REVIEW</p>
-        <p className="text-muted-foreground mt-1">
-          Acest document este un proiect tehnic și <strong>nu constituie consiliere juridică</strong>. 
-          Conținutul trebuie verificat și aprobat de un avocat autorizat înainte de publicare. 
-          Corectitudinea juridică necesită revizuire de avocat cu competențe în dreptul consumatorilor din România.
-        </p>
-      </div>
-    </div>
-  );
+  return null;
 }
 
 /** Footer company identity block */
@@ -53,14 +41,10 @@ export function LegalPageFooterBlock({ C }: { C: CompanyInfo }) {
 export function ModificariSection({ lastUpdate }: { lastUpdate: string }) {
   return (
     <div className="mt-8 rounded-lg border border-border bg-secondary/20 p-5 text-sm">
-      <h2 className="text-foreground font-heading font-bold text-lg mb-2">Modificări</h2>
-      <p className="text-muted-foreground text-xs mb-2">Ultima actualizare: {lastUpdate}</p>
+      <h2 className="text-foreground font-heading font-bold text-lg mb-2">Istoricul modificărilor</h2>
       <ul className="list-disc pl-5 space-y-1 text-muted-foreground text-xs">
-        <li><strong>{lastUpdate}</strong> — Versiune inițială (DRAFT_FOR_LEGAL_REVIEW). Necesită verificare avocat.</li>
+        <li><strong>{lastUpdate}</strong> — Versiune actualizată și publicată.</li>
       </ul>
-      <p className="text-xs text-muted-foreground/70 mt-3 italic">
-        [PLACEHOLDER_VERIFICARE_AVOCAT_CONTABIL] — Secțiunea de modificări va fi completată la fiecare actualizare aprobată juridic.
-      </p>
     </div>
   );
 }
@@ -91,8 +75,6 @@ export function LegalPageShell({
           <ChevronRight className="h-3.5 w-3.5" />
           <span className="text-foreground font-medium">{breadcrumb}</span>
         </nav>
-
-        <DraftBanner />
 
         <h1 className="font-heading text-3xl font-bold text-foreground mb-2 text-center">{title}</h1>
         <p className="text-center text-sm text-muted-foreground mb-8">Ultima actualizare: {lastUpdate}</p>

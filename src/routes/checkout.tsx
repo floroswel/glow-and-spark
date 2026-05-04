@@ -296,6 +296,10 @@ function CheckoutPage() {
           county: orderData.county,
           postal_code: orderData.postal_code,
           customer_phone: orderData.customer_phone,
+          gift_wrapping: orderData.gift_wrapping,
+          gift_wrapping_price: orderData.gift_wrapping_price,
+          gift_wrapping_description: orderData.gift_wrapping_description,
+          gift_message: orderData.gift_message,
         },
       },
     }).catch(() => {});

@@ -112,8 +112,11 @@ function AccountReviews() {
                   </div>
 
                   {/* Review text */}
+                  {review.title && (
+                    <p className="mt-1.5 text-sm font-medium text-foreground">{review.title}</p>
+                  )}
                   {review.content && (
-                    <p className="mt-1.5 text-sm text-muted-foreground line-clamp-3">
+                    <p className={`${review.title ? "mt-0.5" : "mt-1.5"} text-sm text-muted-foreground line-clamp-3`}>
                       {review.content}
                     </p>
                   )}

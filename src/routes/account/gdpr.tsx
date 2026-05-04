@@ -145,6 +145,36 @@ function GdprPage() {
         </button>
       </div>
 
+      {/* Confirmation banner */}
+      {lastConfirmation && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 dark:border-emerald-800 p-5 space-y-2">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+            <span className="font-semibold text-emerald-800 dark:text-emerald-300">Cerere înregistrată cu succes!</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-emerald-700 dark:text-emerald-400">ID cerere:</span>
+            <code className="bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 px-3 py-1 rounded-md font-mono text-lg font-bold tracking-wider">
+              GDPR-{lastConfirmation.id}
+            </code>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(`GDPR-${lastConfirmation.id}`);
+                toast.success("ID copiat!");
+              }}
+              className="text-emerald-600 hover:text-emerald-800 transition"
+              title="Copiază ID"
+            >
+              <Copy className="h-4 w-4" />
+            </button>
+          </div>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400">
+            Tip: {lastConfirmation.type} · Vom răspunde în maxim {GDPR_RESPONSE_DAYS} zile calendaristice. Păstrează acest ID pentru referință.
+          </p>
+          <button onClick={() => setLastConfirmation(null)} className="text-xs text-emerald-500 hover:underline mt-1">Închide</button>
+        </div>
+      )}
+
       <div className="rounded-xl border border-border bg-card p-6">
         <label className="block text-sm font-medium text-foreground mb-2">
           Detalii suplimentare (opțional)

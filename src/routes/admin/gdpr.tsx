@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink, ArrowUpDown, FileDown, Bell, ChevronDown, ChevronUp, FlaskConical, Loader2, Copy } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, Check, X, Clock, Search, CalendarDays, Filter, ExternalLink, ArrowUpDown, FileDown, Bell, ChevronDown, ChevronUp, FlaskConical, Loader2, Copy, CheckCheck, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
@@ -39,6 +39,7 @@ function AdminGdprPage() {
   const [logLoading, setLogLoading] = useState(false);
   const [logFilterType, setLogFilterType] = useState("all");
   const [logFilterCategory, setLogFilterCategory] = useState("all");
+  const [logReadFilter, setLogReadFilter] = useState<"all" | "unread" | "read">("all");
   const [gdprEnabled, setGdprEnabled] = useState(false);
   const [gdprToggleLoading, setGdprToggleLoading] = useState(false);
   const [testLoading, setTestLoading] = useState(false);
@@ -174,6 +175,24 @@ function AdminGdprPage() {
     return () => { supabase.removeChannel(channel); };
   }, [logOpen]);
 
+  const markAsRead = async (notifId: string) => {
+    await supabase.from("admin_notifications").update({ is_read: true }).eq("id", notifId);
+    setLogEntries((prev) => prev.map((n) => n.id === notifId ? { ...n, is_read: true } : n));
+  };
+
+  const markAsUnread = async (notifId: string) => {
+    await supabase.from("admin_notifications").update({ is_read: false }).eq("id", notifId);
+    setLogEntries((prev) => prev.map((n) => n.id === notifId ? { ...n, is_read: false } : n));
+  };
+
+  const markAllAsRead = async () => {
+    const unreadIds = filteredLog.filter((n) => !n.is_read).map((n) => n.id);
+    if (unreadIds.length === 0) return;
+    await supabase.from("admin_notifications").update({ is_read: true }).in("id", unreadIds);
+    setLogEntries((prev) => prev.map((n) => unreadIds.includes(n.id) ? { ...n, is_read: true } : n));
+    toast.success(`${unreadIds.length} notificări marcate ca citite`);
+  };
+
   const filteredLog = useMemo(() => {
     let list = logEntries;
     if (logFilterType !== "all") {
@@ -186,8 +205,10 @@ function AdminGdprPage() {
       else if (logFilterCategory === "status") list = list.filter((n) => !n.title?.includes("🆕") && !n.title?.includes("📝") && n.title?.includes("GDPR"));
       else if (logFilterCategory === "note") list = list.filter((n) => n.title?.includes("📝"));
     }
+    if (logReadFilter === "unread") list = list.filter((n) => !n.is_read);
+    else if (logReadFilter === "read") list = list.filter((n) => n.is_read);
     return list;
-  }, [logEntries, logFilterType, logFilterCategory]);
+  }, [logEntries, logFilterType, logFilterCategory, logReadFilter]);
 
   const filtered = useMemo(() => {
     let list = items;
@@ -512,6 +533,11 @@ function AdminGdprPage() {
         >
           <span className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
             <Bell className="h-5 w-5 text-accent" /> Jurnal notificări GDPR
+            {logEntries.filter((n) => !n.is_read).length > 0 && (
+              <span className="bg-accent text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                {logEntries.filter((n) => !n.is_read).length}
+              </span>
+            )}
           </span>
           {logOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
         </button>
@@ -532,7 +558,19 @@ function AdminGdprPage() {
                 <option value="status">Schimbări status</option>
                 <option value="note">📝 Note interne</option>
               </select>
-              <span className="text-[10px] text-muted-foreground self-center ml-auto">{filteredLog.length} / {logEntries.length} notificări</span>
+              <select value={logReadFilter} onChange={(e) => setLogReadFilter(e.target.value as any)} className="text-xs rounded-md border border-border bg-background px-2 py-1">
+                <option value="all">Citite + Necitite</option>
+                <option value="unread">Doar necitite</option>
+                <option value="read">Doar citite</option>
+              </select>
+              <button
+                onClick={markAllAsRead}
+                disabled={filteredLog.filter((n) => !n.is_read).length === 0}
+                className="text-xs text-accent hover:underline disabled:opacity-40 disabled:no-underline flex items-center gap-1 ml-auto"
+              >
+                <CheckCheck className="h-3 w-3" /> Marchează toate ca citite
+              </button>
+              <span className="text-[10px] text-muted-foreground self-center">{filteredLog.length} / {logEntries.length}</span>
             </div>
             {logLoading ? (
               <p className="p-6 text-center text-sm text-muted-foreground">Se încarcă…</p>
@@ -549,8 +587,14 @@ function AdminGdprPage() {
                   const isStatusChange = !isNew && n.title?.includes("GDPR");
 
                   return (
-                    <div key={n.id} className={`px-4 py-3 flex items-start gap-3 ${n.is_read ? "" : "bg-accent/5"}`}>
-                      <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${n.is_read ? "bg-border" : "bg-accent"}`} />
+                    <div key={n.id} className={`px-4 py-3 flex items-start gap-3 group ${n.is_read ? "" : "bg-accent/5"}`}>
+                      <button
+                        onClick={() => n.is_read ? markAsUnread(n.id) : markAsRead(n.id)}
+                        className="mt-0.5 shrink-0"
+                        title={n.is_read ? "Marchează ca necitit" : "Marchează ca citit"}
+                      >
+                        <div className={`w-2.5 h-2.5 rounded-full transition ${n.is_read ? "bg-border hover:bg-accent/50" : "bg-accent hover:bg-accent/70"}`} />
+                      </button>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-medium text-foreground truncate">{n.title}</span>
@@ -587,6 +631,12 @@ function AdminGdprPage() {
                             </span>
                           );
                         })()}
+                        <button
+                          onClick={() => n.is_read ? markAsUnread(n.id) : markAsRead(n.id)}
+                          className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          {n.is_read ? <><EyeOff className="h-2.5 w-2.5" /> Necitit</> : <><Eye className="h-2.5 w-2.5" /> Citit</>}
+                        </button>
                       </div>
                     </div>
                   );

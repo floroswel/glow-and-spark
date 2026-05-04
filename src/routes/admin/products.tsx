@@ -208,6 +208,50 @@ function AdminProducts() {
   const paginated = products;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const hasActiveFilters = filterCat || filterStatus || filterStock || filterBadge || priceMin || priceMax;
+  const [aiLoading, setAiLoading] = useState<"descriptions" | "seo" | null>(null);
+
+  /**
+   * Generează texte AI pentru produsul curent (draft — necesită revizuire umană).
+   * Conformitatea ANPC/reclamații rămâne responsabilitatea operatorului.
+   */
+  const generateAiCopy = async (mode: "descriptions" | "seo") => {
+    if (!editing?.id || aiLoading) return;
+    setAiLoading(mode);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-generate-product-copy`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ productId: editing.id, mode }),
+        }
+      );
+      const result = await res.json();
+      if (!res.ok) {
+        sonnerToast.error(result.error || "Eroare la generarea textelor");
+        return;
+      }
+      // Populate form fields (user reviews & saves manually)
+      if (result.short_description) updateField("short_description", result.short_description);
+      if (result.description) updateField("description", result.description);
+      if (result.meta_title) updateField("meta_title", result.meta_title);
+      if (result.meta_description) updateField("meta_description", result.meta_description);
+      sonnerToast.success(
+        mode === "descriptions" ? "Descrieri generate (DRAFT)" : "SEO generat (DRAFT)",
+        { description: "Revizuiește textele înainte de salvare." }
+      );
+    } catch (e) {
+      console.error("AI generate error:", e);
+      sonnerToast.error("Eroare de rețea la generarea AI");
+    } finally {
+      setAiLoading(null);
+    }
+  };
 
 
   const handleSort = (field: string) => {

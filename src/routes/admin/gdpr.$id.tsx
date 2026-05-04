@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, Download, Trash2, FileEdit, ArrowLeft, Clock, Check, X, MessageSquare, Paperclip, Upload, File, Loader2 } from "lucide-react";
+import { Shield, Download, Trash2, FileEdit, ArrowLeft, Clock, Check, X, MessageSquare, Paperclip, Upload, File, Loader2, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { GDPR_RESPONSE_DAYS } from "@/lib/compliance";
 
@@ -319,9 +319,40 @@ function AdminGdprDetailPage() {
 
       {/* History timeline */}
       <div className="rounded-xl border border-border bg-card p-6">
-        <h2 className="font-heading text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Clock className="h-5 w-5" /> Istoric cerere
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-heading text-lg font-semibold text-foreground flex items-center gap-2">
+            <Clock className="h-5 w-5" /> Istoric cerere
+          </h2>
+          {history.length > 0 && (
+            <button
+              onClick={() => {
+                const bom = "\uFEFF";
+                const header = "Data,Eveniment,Notă\n";
+                const rows = history.map((h: any) => {
+                  const isNote = h.old_status === h.new_status && h.note;
+                  const date = new Date(h.created_at).toLocaleString("ro-RO");
+                  const event = isNote
+                    ? "Notă internă"
+                    : h.old_status
+                      ? `${STATUS_META[h.old_status]?.label ?? h.old_status} → ${STATUS_META[h.new_status]?.label ?? h.new_status}`
+                      : `Cerere creată (${STATUS_META[h.new_status]?.label ?? h.new_status})`;
+                  const note = (h.note ?? "").replace(/"/g, '""');
+                  return `"${date}","${event}","${note}"`;
+                }).join("\n");
+                const blob = new Blob([bom + header + rows], { type: "text/csv;charset=utf-8;" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `gdpr-${shortId}-istoric.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80 transition"
+            >
+              <FileDown className="h-3.5 w-3.5" /> Export CSV
+            </button>
+          )}
+        </div>
         {history.length === 0 ? (
           <p className="text-sm text-muted-foreground">Niciun eveniment înregistrat.</p>
         ) : (

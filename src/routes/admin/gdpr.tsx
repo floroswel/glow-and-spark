@@ -174,7 +174,22 @@ function AdminGdprPage() {
     return () => { supabase.removeChannel(channel); };
   }, [logOpen]);
 
-  const filtered = useMemo(() => {
+  const filteredLog = useMemo(() => {
+    let list = logEntries;
+    if (logFilterType !== "all") {
+      const typeLabels: Record<string, string> = { export: "Export date", delete: "Ștergere cont", rectify: "Rectificare" };
+      const label = typeLabels[logFilterType] || logFilterType;
+      list = list.filter((n) => n.title?.includes(label) || n.message?.includes(label));
+    }
+    if (logFilterCategory !== "all") {
+      if (logFilterCategory === "new") list = list.filter((n) => n.title?.includes("🆕"));
+      else if (logFilterCategory === "status") list = list.filter((n) => !n.title?.includes("🆕") && !n.title?.includes("📝") && n.title?.includes("GDPR"));
+      else if (logFilterCategory === "note") list = list.filter((n) => n.title?.includes("📝"));
+    }
+    return list;
+  }, [logEntries, logFilterType, logFilterCategory]);
+
+
     let list = items;
     if (searchEmail.trim()) {
       const term = searchEmail.toLowerCase();

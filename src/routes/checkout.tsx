@@ -38,7 +38,7 @@ const JUDETE = [
 function CheckoutPage() {
   const { items, cartSubtotal, shippingCost, discountAmount, discountCode, cartTotal, clearCart } = useCart();
   const { user } = useAuth();
-  const { general } = useSiteSettings();
+  const { general, payment_methods: pmSettings } = useSiteSettings();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [billingType, setBillingType] = useState<"individual" | "company">("individual");

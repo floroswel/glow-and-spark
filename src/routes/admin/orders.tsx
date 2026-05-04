@@ -435,7 +435,10 @@ function AdminOrders() {
                           {items.length > 3 && <div className="h-7 w-7 rounded border-2 border-card bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground">+{items.length - 3}</div>}
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 font-semibold">{Number(o.total).toFixed(2)} RON</td>
+                      <td className="px-3 py-2.5 font-semibold">
+                        <span>{Number(o.total).toFixed(2)} RON</span>
+                        {o.gift_wrapping && <span className="ml-1.5 inline-flex items-center gap-0.5 text-[10px] font-medium text-accent bg-accent/10 px-1.5 py-0.5 rounded-full" title={`Ambalaj cadou${o.gift_wrapping_quantity > 1 ? ' ×' + o.gift_wrapping_quantity : ''}: ${(Number(o.gift_wrapping_price || 0) * (o.gift_wrapping_quantity || 1)).toFixed(2)} RON`}>🎁</span>}
+                      </td>
                       <td className="px-3 py-2.5">
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[o.status] || "bg-muted text-muted-foreground"}`}>
                           {statusLabels[o.status] || o.status}

@@ -81,6 +81,7 @@ function FAQPage() {
 
   return (
     <div className="min-h-screen">
+      <FAQPageJsonLd items={faqCategories.flatMap((c) => c.items)} />
       <MarqueeBanner />
       <TopBar />
       <SiteHeader />

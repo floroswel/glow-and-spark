@@ -168,7 +168,7 @@ export function resetConsent(): void {
       {
         version: CONSENT_POLICY_VERSION,
         timestamp: new Date().toISOString(),
-        categories: { necessary: true, analytics: false, marketing: false },
+        categories: { necessary: true, analytics: false, marketing: false, preferences: false },
       },
       "reset_requested"
     );

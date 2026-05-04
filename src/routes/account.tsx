@@ -1,7 +1,8 @@
 import { createFileRoute, Outlet, Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
+
 import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -19,14 +20,14 @@ export const Route = createFileRoute("/account")({
   component: AccountLayout,
 });
 
-const navItems = [
+const allNavItems = [
   { to: "/account", icon: LayoutDashboard, label: "Dashboard", end: true },
   { to: "/account/orders", icon: ShoppingBag, label: "Comenzile Mele" },
   { to: "/account/notifications", icon: Bell, label: "Notificări", badge: true },
   { to: "/account/favorites", icon: Heart, label: "Favorite" },
   { to: "/account/addresses", icon: MapPin, label: "Adrese" },
   { to: "/account/settings", icon: Settings, label: "Setări Cont" },
-  { to: "/account/gdpr", icon: Shield, label: "Date Personale (GDPR)" },
+  { to: "/account/gdpr", icon: Shield, label: "Date Personale (GDPR)", key: "gdpr" },
 ];
 
 function AccountLayout() {
@@ -34,6 +35,21 @@ function AccountLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [gdprEnabled, setGdprEnabled] = useState(false);
+
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", "gdpr_section_enabled").maybeSingle()
+      .then(({ data }) => {
+        if (data) setGdprEnabled(data.value === "true" || data.value === true);
+      });
+  }, []);
+
+  const navItems = useMemo(() => {
+    return allNavItems.filter((item) => {
+      if ((item as any).key === "gdpr" && !gdprEnabled) return false;
+      return true;
+    });
+  }, [gdprEnabled]);
 
   useEffect(() => {
     if (!user) return;

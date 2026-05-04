@@ -37,6 +37,24 @@ function AdminGdprPage() {
   const [logOpen, setLogOpen] = useState(false);
   const [logEntries, setLogEntries] = useState<any[]>([]);
   const [logLoading, setLogLoading] = useState(false);
+  const [gdprEnabled, setGdprEnabled] = useState(false);
+  const [gdprToggleLoading, setGdprToggleLoading] = useState(false);
+
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", "gdpr_section_enabled").maybeSingle()
+      .then(({ data }) => {
+        if (data) setGdprEnabled(data.value === "true" || data.value === true);
+      });
+  }, []);
+
+  const toggleGdprSection = async () => {
+    setGdprToggleLoading(true);
+    const newVal = !gdprEnabled;
+    const { error } = await supabase.from("site_settings").update({ value: String(newVal) }).eq("key", "gdpr_section_enabled");
+    if (error) toast.error("Eroare la salvare");
+    else { setGdprEnabled(newVal); toast.success(newVal ? "Secțiunea GDPR activată pentru clienți" : "Secțiunea GDPR dezactivată pentru clienți"); }
+    setGdprToggleLoading(false);
+  };
 
   const load = async () => {
     let q = supabase.from("gdpr_requests").select("*").order("created_at", { ascending: false });
@@ -118,10 +136,24 @@ function AdminGdprPage() {
             <p className="text-sm text-muted-foreground">Răspuns obligatoriu în {GDPR_RESPONSE_DAYS} zile calendaristice</p>
           </div>
         </div>
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded-full font-medium">{stats.pending} noi</span>
-          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">{stats.processing} în lucru</span>
-          <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full font-medium">{stats.completed} finalizate</span>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={toggleGdprSection}
+            disabled={gdprToggleLoading}
+            className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition ${
+              gdprEnabled
+                ? "border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                : "border-red-300 bg-red-50 text-red-700 hover:bg-red-100"
+            }`}
+          >
+            <span className={`h-2 w-2 rounded-full ${gdprEnabled ? "bg-emerald-500" : "bg-red-500"}`} />
+            {gdprEnabled ? "Secțiune client ACTIVĂ" : "Secțiune client DEZACTIVATĂ"}
+          </button>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded-full font-medium">{stats.pending} noi</span>
+            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">{stats.processing} în lucru</span>
+            <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full font-medium">{stats.completed} finalizate</span>
+          </div>
         </div>
       </div>
 

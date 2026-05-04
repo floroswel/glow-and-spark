@@ -459,6 +459,72 @@ function AdminGdprDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Notification Audit Log */}
+      <div className="rounded-xl border border-border bg-card">
+        <button
+          onClick={() => setAuditOpen((v) => !v)}
+          className="w-full flex items-center justify-between p-4 text-left hover:bg-secondary/30 transition"
+        >
+          <span className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
+            <ScrollText className="h-5 w-5 text-accent" /> Log audit notificări
+            <span className="text-xs font-normal text-muted-foreground">({auditLog.length})</span>
+          </span>
+        </button>
+        {auditOpen && (
+          <div className="border-t border-border">
+            {auditLog.length === 0 ? (
+              <p className="p-6 text-center text-sm text-muted-foreground">Niciun eveniment de audit înregistrat.</p>
+            ) : (
+              <div className="divide-y divide-border max-h-[400px] overflow-y-auto">
+                {auditLog.map((a: any) => {
+                  const eventLabels: Record<string, string> = {
+                    note_created: "📝 Notă creată",
+                    note_edited: "✏️ Notă editată",
+                    note_deleted: "🗑️ Notă ștearsă",
+                    status_change: "🔄 Schimbare status",
+                    new_request: "🆕 Cerere nouă",
+                  };
+                  return (
+                    <div key={a.id} className="px-4 py-3 flex items-start gap-3">
+                      {a.delivery_status === "sent" ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
+                      ) : (
+                        <XCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-medium text-foreground">
+                            {eventLabels[a.event_type] ?? a.event_type}
+                          </span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
+                            a.delivery_status === "sent"
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-red-100 text-red-700"
+                          }`}>
+                            {a.delivery_status === "sent" ? "Livrat" : "Eșuat"}
+                          </span>
+                        </div>
+                        {a.content && (
+                          <p className="text-xs text-muted-foreground mt-1 whitespace-pre-line line-clamp-3 bg-secondary/30 rounded p-2">{a.content}</p>
+                        )}
+                        {a.actor_id && (
+                          <span className="text-[10px] text-muted-foreground mt-1 block">
+                            Actor: {a.actor_id.slice(0, 8).toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-muted-foreground whitespace-nowrap shrink-0">
+                        {new Date(a.created_at).toLocaleString("ro-RO")}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

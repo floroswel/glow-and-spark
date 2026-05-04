@@ -18,6 +18,7 @@ export function CookieConsent() {
   const [details, setDetails] = useState(false);
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
+  const [preferences, setPreferences] = useState(false);
   const bannerRef = useRef<HTMLDivElement>(null);
 
   const show = useCallback(() => setVisible(true), []);
@@ -36,6 +37,7 @@ export function CookieConsent() {
       setDetails(false);
       setAnalytics(false);
       setMarketing(false);
+      setPreferences(false);
       setVisible(true);
     };
     window.addEventListener("cmp:reset", onReset);
@@ -61,17 +63,17 @@ export function CookieConsent() {
   }, [visible]);
 
   const acceptAll = () => {
-    setConsent({ analytics: true, marketing: true }, "accept_all");
+    setConsent({ analytics: true, marketing: true, preferences: true }, "accept_all");
     setVisible(false);
   };
 
   const acceptEssential = () => {
-    setConsent({ analytics: false, marketing: false }, "reject_optional");
+    setConsent({ analytics: false, marketing: false, preferences: false }, "reject_optional");
     setVisible(false);
   };
 
   const saveCustom = () => {
-    setConsent({ analytics, marketing }, "custom");
+    setConsent({ analytics, marketing, preferences }, "custom");
     setVisible(false);
   };
 
@@ -140,6 +142,17 @@ export function CookieConsent() {
                 type="checkbox"
                 checked={marketing}
                 onChange={(e) => setMarketing(e.target.checked)}
+                className="accent-accent"
+              />
+            </label>
+            <label className="flex items-center justify-between text-xs cursor-pointer">
+              <span>
+                <strong>Preferințe</strong> — limba, tema, setări interfață
+              </span>
+              <input
+                type="checkbox"
+                checked={preferences}
+                onChange={(e) => setPreferences(e.target.checked)}
                 className="accent-accent"
               />
             </label>

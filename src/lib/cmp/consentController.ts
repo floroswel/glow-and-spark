@@ -18,6 +18,7 @@ export interface ConsentCategories {
   necessary: true;
   analytics: boolean;
   marketing: boolean;
+  preferences: boolean;
 }
 
 export interface ConsentRecord {
@@ -74,6 +75,7 @@ export function getConsent(): ConsentRecord | null {
           necessary: true,
           analytics: !!old.analytics,
           marketing: !!old.marketing,
+          preferences: !!old.preferences,
         },
       };
       localStorage.setItem(CMP_KEY, JSON.stringify(migrated));
@@ -166,7 +168,7 @@ export function resetConsent(): void {
       {
         version: CONSENT_POLICY_VERSION,
         timestamp: new Date().toISOString(),
-        categories: { necessary: true, analytics: false, marketing: false },
+        categories: { necessary: true, analytics: false, marketing: false, preferences: false },
       },
       "reset_requested"
     );
@@ -287,7 +289,7 @@ function revokeVendorConsent(): void {
     if (Array.isArray((window as any).dataLayer)) {
       (window as any).dataLayer.push({
         event: "consent_revoked",
-        consent_categories: { analytics: false, marketing: false },
+        consent_categories: { analytics: false, marketing: false, preferences: false },
       });
       debugLog("GTM dataLayer: consent_revoked pushed");
     }
@@ -328,7 +330,7 @@ export function hasConsent(): boolean {
   return getConsent() !== null;
 }
 
-export function isCategoryAllowed(category: "analytics" | "marketing"): boolean {
+export function isCategoryAllowed(category: "analytics" | "marketing" | "preferences"): boolean {
   const consent = getConsent();
   if (!consent) return false;
   return consent.categories[category] === true;

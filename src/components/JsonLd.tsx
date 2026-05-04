@@ -119,3 +119,59 @@ export function OrganizationJsonLd() {
     />
   );
 }
+
+interface FaqItem {
+  q: string;
+  a: string;
+}
+
+export function FAQPageJsonLd({ items }: { items: FaqItem[] }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
+export function LocalBusinessJsonLd() {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          name: "Mama Lucica",
+          legalName: "SC Vomix Genius SRL",
+          url: "https://mamalucica.ro",
+          telephone: "+40753326405",
+          email: "contact@mamalucica.ro",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Strada Constructorilor Nr 39, sat Voievoda",
+            addressLocality: "Furculești",
+            addressRegion: "Teleorman",
+            postalCode: "147148",
+            addressCountry: "RO",
+          },
+          openingHours: "Mo-Fr 09:00-17:00",
+          priceRange: "$$",
+        }),
+      }}
+    />
+  );
+}

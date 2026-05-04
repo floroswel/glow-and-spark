@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { FAQPageJsonLd } from "@/components/JsonLd";
 import { TopBar } from "@/components/TopBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -80,6 +81,7 @@ function FAQPage() {
 
   return (
     <div className="min-h-screen">
+      <FAQPageJsonLd items={faqCategories.flatMap((c) => c.items)} />
       <MarqueeBanner />
       <TopBar />
       <SiteHeader />

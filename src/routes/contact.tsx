@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import { useCompanyInfo } from "@/hooks/useCompanyInfo";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -101,6 +102,7 @@ function ContactPage() {
 
   return (
     <div className="min-h-screen">
+      <LocalBusinessJsonLd />
       <MarqueeBanner />
       <TopBar />
       <SiteHeader />

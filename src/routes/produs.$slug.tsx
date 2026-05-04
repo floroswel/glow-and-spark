@@ -839,7 +839,7 @@ function ProductPage() {
                 <RotateCcw className="h-5 w-5 text-accent" />
                 <div>
                   <p className="text-xs font-medium text-foreground">Drept de retragere</p>
-                  <p className="text-xs text-muted-foreground">30 de zile</p>
+                  <p className="text-xs text-muted-foreground">14 zile</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 rounded-lg border border-border p-3">
@@ -904,7 +904,7 @@ function ProductPage() {
               <div className="space-y-3">
                 <p><strong>Livrare:</strong> Comenzile plasate până la ora 14:00 sunt expediate în aceeași zi. Livrare în 24-48h prin Fan Courier, DPD sau Sameday.</p>
                 <p><strong>Livrare gratuită:</strong> Pentru comenzi peste 200 RON.</p>
-                <p><strong>Retur:</strong> Ai 30 de zile pentru a returna produsul dacă nu ești mulțumit. Produsul trebuie să fie nefolosit și în ambalajul original.</p>
+                <p><strong>Retur:</strong> Ai 14 zile calendaristice pentru a returna produsul conform OUG 34/2014. Produsul trebuie să fie nefolosit și în ambalajul original.</p>
               </div>
             )}
           </div>

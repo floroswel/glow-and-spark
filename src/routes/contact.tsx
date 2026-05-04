@@ -102,6 +102,7 @@ function ContactPage() {
 
   return (
     <div className="min-h-screen">
+      <LocalBusinessJsonLd />
       <MarqueeBanner />
       <TopBar />
       <SiteHeader />

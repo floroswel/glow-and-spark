@@ -52,10 +52,25 @@ function AdminGdprPage() {
   useEffect(() => { load(); }, [statusFilter, typeFilter, dateFrom, dateTo]);
 
   const filtered = useMemo(() => {
-    if (!searchEmail.trim()) return items;
-    const term = searchEmail.toLowerCase();
-    return items.filter((r) => r.email?.toLowerCase().includes(term));
-  }, [items, searchEmail]);
+    let list = items;
+    if (searchEmail.trim()) {
+      const term = searchEmail.toLowerCase();
+      list = list.filter((r) => r.email?.toLowerCase().includes(term));
+    }
+    list = [...list].sort((a, b) => {
+      switch (sortBy) {
+        case "created_asc":
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case "processed_desc":
+          return (b.processed_at ? new Date(b.processed_at).getTime() : 0) - (a.processed_at ? new Date(a.processed_at).getTime() : 0);
+        case "processed_asc":
+          return (a.processed_at ? new Date(a.processed_at).getTime() : 0) - (b.processed_at ? new Date(b.processed_at).getTime() : 0);
+        default: // created_desc
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+    });
+    return list;
+  }, [items, searchEmail, sortBy]);
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase

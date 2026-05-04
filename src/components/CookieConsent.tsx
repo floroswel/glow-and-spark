@@ -63,7 +63,7 @@ export function CookieConsent() {
   }, [visible]);
 
   const acceptAll = () => {
-    setConsent({ analytics: true, marketing: true }, "accept_all");
+    setConsent({ analytics: true, marketing: true, preferences: true }, "accept_all");
     setVisible(false);
   };
 

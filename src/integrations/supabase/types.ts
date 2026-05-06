@@ -4484,6 +4484,14 @@ export type Database = {
       }
     }
     Views: {
+      chatbot_settings_public: {
+        Row: {
+          bot_name: string | null
+          is_enabled: boolean | null
+          welcome_message: string | null
+        }
+        Relationships: []
+      }
       products_public: {
         Row: {
           allow_backorder: boolean | null

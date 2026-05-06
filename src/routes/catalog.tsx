@@ -141,7 +141,7 @@ function CatalogPage() {
   useEffect(() => {
     setLoading(true);
     const fetchProducts = async () => {
-      let query = supabase.from("products_public").select("*, categories!products_category_id_fkey(slug, name)", { count: "exact" }).eq("is_active", true);
+      let query = supabase.from("products_public").select("*, categories(slug, name)", { count: "exact" }).eq("is_active", true);
 
       if (q.trim()) {
         const { data: matchIds } = await supabase.rpc("search_product_ids_unaccent", { term: q.trim() });

@@ -357,7 +357,7 @@ function ProductPage() {
       if (diff <= 0) {
         setCountdown(null);
         // Reload product data when countdown expires
-        supabase.from("products_public").select("*, categories!products_category_id_fkey(id, name, slug)").eq("slug", slug).eq("is_active", true).single().then(({ data }) => {
+        supabase.from("products_public").select("*, categories(id, name, slug)").eq("slug", slug).eq("is_active", true).single().then(({ data }) => {
           if (data) setProduct(data);
         });
         return false;
@@ -395,7 +395,7 @@ function ProductPage() {
     setSelectedVariant(null);
     supabase
       .from("products_public")
-      .select("*, categories!products_category_id_fkey(id, name, slug)")
+      .select("*, categories(id, name, slug)")
       .eq("slug", slug)
       .eq("is_active", true)
       .single()

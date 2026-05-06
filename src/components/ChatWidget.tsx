@@ -23,7 +23,7 @@ export function ChatWidget() {
 
   useEffect(() => {
     supabase
-      .from("chatbot_settings")
+      .from("chatbot_settings_public")
       .select("is_enabled")
       .limit(1)
       .maybeSingle()

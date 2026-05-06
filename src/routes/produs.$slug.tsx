@@ -357,7 +357,7 @@ function ProductPage() {
       if (diff <= 0) {
         setCountdown(null);
         // Reload product data when countdown expires
-        supabase.from("products").select("*, categories!products_category_id_fkey(id, name, slug)").eq("slug", slug).eq("is_active", true).single().then(({ data }) => {
+        supabase.from("products_public").select("*, categories!products_category_id_fkey(id, name, slug)").eq("slug", slug).eq("is_active", true).single().then(({ data }) => {
           if (data) setProduct(data);
         });
         return false;
@@ -394,7 +394,7 @@ function ProductPage() {
     setActiveTab("descriere");
     setSelectedVariant(null);
     supabase
-      .from("products")
+      .from("products_public")
       .select("*, categories!products_category_id_fkey(id, name, slug)")
       .eq("slug", slug)
       .eq("is_active", true)
@@ -411,7 +411,7 @@ function ProductPage() {
           // Fetch related, variants, reviews in parallel
           Promise.all([
             cat?.id
-              ? supabase.from("products").select("*").eq("is_active", true).eq("category_id", cat.id).neq("id", data.id).limit(4)
+              ? supabase.from("products_public").select("*").eq("is_active", true).eq("category_id", cat.id).neq("id", data.id).limit(4)
               : Promise.resolve({ data: [] }),
             supabase.from("product_variants").select("*").eq("product_id", data.id).eq("is_active", true).order("sort_order"),
             supabase.from("product_reviews").select("*").eq("product_id", data.id).eq("status", "approved").order("created_at", { ascending: false }).limit(20),

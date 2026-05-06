@@ -27,7 +27,7 @@ function ComparePage() {
   useEffect(() => {
     if (!ids.length) { setProducts([]); setLoading(false); return; }
     (async () => {
-      const { data } = await supabase.from("products").select("*, categories(name)").in("id", ids);
+      const { data } = await supabase.from("products_public").select("*, categories(name)").in("id", ids);
       setProducts(data || []);
       setLoading(false);
     })();

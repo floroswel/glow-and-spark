@@ -79,7 +79,7 @@ export function ProductCard({
     setQvAdded(false);
 
     const [productRes, variantsRes] = await Promise.all([
-      supabase.from("products").select("*").eq("slug", slug).eq("is_active", true).single(),
+      supabase.from("products_public").select("*").eq("slug", slug).eq("is_active", true).single(),
       supabase.from("product_variants").select("*").eq("product_id", id).eq("is_active", true).order("sort_order"),
     ]);
 

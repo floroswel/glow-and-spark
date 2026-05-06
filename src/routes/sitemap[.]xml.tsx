@@ -56,7 +56,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         try {
           const [productsRes, categoriesRes] = await Promise.all([
             supabaseAdmin
-              .from("products")
+              .from("products_public")
               .select("slug, updated_at")
               .eq("is_active", true)
               .order("updated_at", { ascending: false })

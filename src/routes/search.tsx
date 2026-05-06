@@ -50,7 +50,7 @@ function SearchPage() {
     const like = `%${term}%`;
     Promise.all([
       supabase
-        .from("products")
+        .from("products_public")
         .select("*")
         .eq("is_active", true)
         .or(`name.ilike.${like},description.ilike.${like},sku.ilike.${like}`)

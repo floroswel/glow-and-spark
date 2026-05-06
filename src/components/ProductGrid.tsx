@@ -11,7 +11,7 @@ export function ProductGrid() {
   useEffect(() => {
     setLoading(true);
     supabase
-      .from("products")
+      .from("products_public")
       .select("*")
       .eq("is_active", true)
       .eq("is_featured", true)

@@ -162,7 +162,7 @@ function AccountOrders() {
     setReorderingId(order.id);
     try {
       const { data: products } = await supabase
-        .from("products")
+        .from("products_public")
         .select("id, name, slug, price, old_price, image_url, stock, is_active")
         .in("id", productIds);
 

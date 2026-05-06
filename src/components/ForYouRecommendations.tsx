@@ -22,7 +22,7 @@ export function ForYouRecommendations({ excludeIds = [], categoryId, limit = 4 }
         const recentIds = stored.slice(0, 8);
         if (recentIds.length) {
           const { data: recentProducts } = await supabase
-            .from("products")
+            .from("products_public")
             .select("category_id")
             .in("id", recentIds)
             .eq("is_active", true);
@@ -43,7 +43,7 @@ export function ForYouRecommendations({ excludeIds = [], categoryId, limit = 4 }
       if (targetCategories.length) {
         // Fetch products from related categories
         let query = supabase
-          .from("products")
+          .from("products_public")
           .select("*")
           .eq("is_active", true)
           .in("category_id", targetCategories)
@@ -61,7 +61,7 @@ export function ForYouRecommendations({ excludeIds = [], categoryId, limit = 4 }
       if (results.length < limit) {
         const existingIds = [...excludeIds, ...results.map((p) => p.id)];
         const { data: popular } = await supabase
-          .from("products")
+          .from("products_public")
           .select("*")
           .eq("is_active", true)
           .order("is_featured", { ascending: false })

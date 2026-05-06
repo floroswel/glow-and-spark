@@ -32,7 +32,7 @@ export function ProductBundles({ productId }: { productId: string }) {
         .order("sort_order");
       const allProductIds = Array.from(new Set((items ?? []).map((i: any) => i.product_id)));
       const { data: prods } = await supabase
-        .from("products")
+        .from("products_public")
         .select("id, name, slug, price, image_url, stock")
         .in("id", allProductIds);
 

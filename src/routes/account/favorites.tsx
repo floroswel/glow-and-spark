@@ -19,7 +19,7 @@ function AccountFavorites() {
     const arr = Array.from(ids);
     if (!arr.length) { setProducts([]); setLoading(false); return; }
     (async () => {
-      const { data } = await supabase.from("products").select("*").in("id", arr);
+      const { data } = await supabase.from("products_public").select("*").in("id", arr);
       setProducts(data || []);
       setLoading(false);
     })();

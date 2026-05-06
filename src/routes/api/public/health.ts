@@ -45,7 +45,7 @@ async function checkProducts(sb: any): Promise<CheckResult> {
   const start = Date.now();
   try {
     const { count, error } = await sb
-      .from("products")
+      .from("products_public")
       .select("id", { count: "exact", head: true })
       .eq("is_active", true);
     const ms = Date.now() - start;

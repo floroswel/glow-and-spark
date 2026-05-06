@@ -24,7 +24,7 @@ export function RecentlyViewed({ excludeId }: { excludeId?: string }) {
       const ids = stored.filter((id) => id !== excludeId).slice(0, 4);
       if (!ids.length) return;
       supabase
-        .from("products")
+        .from("products_public")
         .select("*")
         .in("id", ids)
         .eq("is_active", true)

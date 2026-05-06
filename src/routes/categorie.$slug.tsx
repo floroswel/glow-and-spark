@@ -40,7 +40,7 @@ function CategoryPage() {
           setCategory(cat);
           setPageMeta({ title: cat.name, description: cat.description || `Produse din categoria ${cat.name}`, image: cat.image_url || undefined });
           supabase
-            .from("products")
+            .from("products_public")
             .select("*")
             .eq("is_active", true)
             .eq("category_id", cat.id)

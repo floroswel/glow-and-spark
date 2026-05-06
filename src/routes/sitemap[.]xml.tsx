@@ -70,7 +70,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
           const xml = buildXml(
             STATIC_PAGES,
-            productsRes.data || [],
+            (productsRes.data || []).filter((p): p is { slug: string; updated_at: string | null } => !!p.slug),
             categoriesRes.data || [],
           );
 

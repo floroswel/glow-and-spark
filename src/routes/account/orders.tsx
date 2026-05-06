@@ -172,7 +172,7 @@ function AccountOrders() {
       for (const p of available) {
         const origItem = items.find((i: any) => (i.product_id || i.id) === p.id);
         addItem(
-          { id: p.id, name: p.name, slug: p.slug, price: p.price, old_price: p.old_price, image_url: p.image_url ?? undefined },
+          { id: p.id!, name: p.name!, slug: p.slug!, price: p.price!, old_price: p.old_price, image_url: p.image_url ?? undefined },
           origItem?.quantity || origItem?.qty || 1
         );
       }

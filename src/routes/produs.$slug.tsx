@@ -414,8 +414,8 @@ function ProductPage() {
             cat?.id
                ? supabase.from("products_public").select("*").eq("is_active", true).eq("category_id", cat.id).neq("id", d.id).limit(4)
                : Promise.resolve({ data: [] }),
-            supabase.from("product_variants").select("*").eq("product_id", data.id).eq("is_active", true).order("sort_order"),
-            supabase.from("product_reviews").select("*").eq("product_id", data.id).eq("status", "approved").order("created_at", { ascending: false }).limit(20),
+            supabase.from("product_variants").select("*").eq("product_id", d.id).eq("is_active", true).order("sort_order"),
+            supabase.from("product_reviews").select("*").eq("product_id", d.id).eq("status", "approved").order("created_at", { ascending: false }).limit(20),
           ]).then(([relRes, varRes, revRes]) => {
             setRelated((relRes as any).data || []);
             setVariants((varRes as any).data || []);

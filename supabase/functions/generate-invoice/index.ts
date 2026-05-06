@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { buildCorsHeaders } from "../_shared/cors.ts";
+import { verifyAdmin } from "../_shared/auth-guard.ts";
 
 function escapeHtml(str: string): string {
   return String(str ?? "")
@@ -91,6 +92,15 @@ Deno.serve(async (req) => {
   const corsHeaders = buildCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  // Auth check — admin only
+  const admin = await verifyAdmin(req);
+  if (!admin) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const { order_id } = await req.json();
     if (!order_id) {
@@ -113,7 +123,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Read tax settings
     const { data: taxRow } = await supabase.from("site_settings").select("value").eq("key", "tax_settings").single();
     const taxSettings = taxRow?.value || { is_vat_payer: false };
 
@@ -121,10 +130,6 @@ Deno.serve(async (req) => {
     const invoiceNumber = `ML-${year}-${String(order.order_number).replace(/\D/g, "").padStart(5, "0").slice(-5)}`;
     const html = buildInvoiceHTML(order, invoiceNumber, taxSettings);
 
-    // Generate "PDF" — using HTML as PDF body via simple wrapper.
-    // Note: native PDF rendering libraries are not Worker/Deno-compatible here,
-    // so we deliver an HTML document that browsers/email clients can print as PDF.
-    // We still encode it as base64 so the client treats it uniformly.
     const bytes = new TextEncoder().encode(html);
     let binary = "";
     for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);

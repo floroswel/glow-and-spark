@@ -401,18 +401,19 @@ function ProductPage() {
       .single()
       .then(({ data }) => {
         if (data) {
-          setProduct(data);
-          setSelectedImage(data.image_url || "");
-          addToRecentlyViewed(data.id);
-          const cat = data.categories as any;
+          const d = data as any;
+          setProduct(d);
+          setSelectedImage(d.image_url || "");
+          addToRecentlyViewed(d.id);
+          const cat = d.categories as any;
           setCategory(cat);
-          trackViewItem({ id: data.id, name: data.name, price: data.price, slug: data.slug, category: cat?.name });
-          trackViewContent({ id: data.id, name: data.name, price: data.price, category: cat?.name });
+          trackViewItem({ id: d.id, name: d.name, price: d.price, slug: d.slug, category: cat?.name });
+          trackViewContent({ id: d.id, name: d.name, price: d.price, category: cat?.name });
           // Fetch related, variants, reviews in parallel
           Promise.all([
             cat?.id
-              ? supabase.from("products_public").select("*").eq("is_active", true).eq("category_id", cat.id).neq("id", data.id).limit(4)
-              : Promise.resolve({ data: [] }),
+               ? supabase.from("products_public").select("*").eq("is_active", true).eq("category_id", cat.id).neq("id", d.id).limit(4)
+               : Promise.resolve({ data: [] }),
             supabase.from("product_variants").select("*").eq("product_id", data.id).eq("is_active", true).order("sort_order"),
             supabase.from("product_reviews").select("*").eq("product_id", data.id).eq("status", "approved").order("created_at", { ascending: false }).limit(20),
           ]).then(([relRes, varRes, revRes]) => {

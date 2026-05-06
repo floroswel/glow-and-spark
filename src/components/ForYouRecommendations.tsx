@@ -53,7 +53,7 @@ export function ForYouRecommendations({ excludeIds = [], categoryId, limit = 4 }
 
         const { data } = await query;
         if (data) {
-          results = data.filter((p) => !excludeIds.includes(p.id)).slice(0, limit);
+          results = data.filter((p) => p.id && !excludeIds.includes(p.id)).slice(0, limit) as any[];
         }
       }
 
